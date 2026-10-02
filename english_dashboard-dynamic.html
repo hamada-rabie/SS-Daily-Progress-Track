@@ -491,7 +491,46 @@ body.lang-bilingual .home-title-bilingual .en + .ar::before{content:none !import
  .header-right-identity{width:205px !important;min-width:205px !important;max-width:205px !important;grid-template-columns:minmax(78px,1fr) 120px !important;gap:7px !important;}
  .header-right-identity > div:first-child{width:120px !important;min-width:120px !important;}
 }
+<style id="final-freeze-sidebar-language-fix">
+/* Final: the main content scrolls; the header is an opaque, true freeze-pane layer. */
+main{isolation:isolate !important;}
+#app-topbar{
+  position:sticky !important;
+  top:0 !important;
+  z-index:9999 !important;
+  flex-shrink:0 !important;
+  opacity:1 !important;
+  isolation:isolate !important;
+  background:linear-gradient(120deg,var(--teal),var(--teal-dark)) !important;
+  background-color:var(--teal-dark) !important;
+  box-shadow:0 3px 12px rgba(0,0,0,.16) !important;
+}
+/* Sidebar: same solid surface, header and active item in every language mode. */
+aside{
+  background:#FFFFFF !important;
+  border-color:var(--line) !important;
+  isolation:isolate !important;
+}
+aside > div:first-child{
+  background:linear-gradient(135deg,#EAF7F5,#F5FAF8) !important;
+  border-color:var(--line) !important;
+}
+aside nav{background:#FFFFFF !important;}
+body.lang-en aside,body.lang-ar aside,body.lang-bilingual aside{background:#FFFFFF !important;}
+body.lang-en aside nav,body.lang-ar aside nav,body.lang-bilingual aside nav{background:#FFFFFF !important;}
+body.lang-en .nav-link,body.lang-ar .nav-link,body.lang-bilingual .nav-link{background-color:transparent !important;color:#64736F !important;}
+body.lang-en .nav-link.active,body.lang-ar .nav-link.active,body.lang-bilingual .nav-link.active{
+  background:linear-gradient(90deg,var(--teal),var(--teal-dark)) !important;
+  color:#FFFFFF !important;
+}
+body.lang-en .nav-link.active .en,body.lang-en .nav-link.active .ar,
+body.lang-ar .nav-link.active .en,body.lang-ar .nav-link.active .ar,
+body.lang-bilingual .nav-link.active .en,body.lang-bilingual .nav-link.active .ar{color:#FFFFFF !important;}
+/* Arabic mode: never expose the English-only Honor Board labels. */
+body.lang-ar #tab-stars .en{display:none !important;}
+body.lang-ar #tab-stars .ar{display:block !important;}
 </style></head>
+<body</style></head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
 <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2"></div>
