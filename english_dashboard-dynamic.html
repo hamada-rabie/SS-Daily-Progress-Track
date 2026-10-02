@@ -431,7 +431,33 @@ body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
 /* Preserve the active-tab highlight in every language. */
 .nav-link.active{background:linear-gradient(90deg,var(--teal),var(--teal-dark)) !important;color:#fff !important;font-weight:700 !important;box-shadow:0 3px 10px rgba(0,0,0,.12) !important;}
 .nav-link.active i,.nav-link.active .en,.nav-link.active .ar{color:#fff !important;}
-</style>\n<style id="release-header-sidebar-final">
+ /* Final sidebar consistency: identical base colors and text treatment in all three language modes. */
+ body.lang-en aside,body.lang-ar aside,body.lang-bilingual aside{background:var(--card) !important;color:var(--ink) !important;}
+ body.lang-en .nav-link,body.lang-ar .nav-link,body.lang-bilingual .nav-link{color:#64736F !important;}
+ body.lang-en .nav-link .en,body.lang-en .nav-link .ar,
+ body.lang-ar .nav-link .en,body.lang-ar .nav-link .ar,
+ body.lang-bilingual .nav-link .en,body.lang-bilingual .nav-link .ar{color:inherit !important;}
+ body.lang-en .nav-link.active,body.lang-ar .nav-link.active,body.lang-bilingual .nav-link.active{color:#fff !important;}
+ body.lang-en .nav-link.active .en,body.lang-en .nav-link.active .ar,
+ body.lang-ar .nav-link.active .en,body.lang-ar .nav-link.active .ar,
+ body.lang-bilingual .nav-link.active .en,body.lang-bilingual .nav-link.active .ar{color:#fff !important;}
+ /* Apply the verified Arabic header geometry to EN and Bilingual without changing the AR rules. */
+ body.lang-en #app-topbar,body.lang-bilingual #app-topbar{grid-template-columns:132px minmax(0,1fr) 330px !important;column-gap:18px !important;}
+ body.lang-en .header-right-identity,body.lang-bilingual .header-right-identity{grid-template-columns:minmax(125px,1fr) 150px !important;gap:16px !important;}
+ body.lang-en .header-right-identity > div:first-child,body.lang-bilingual .header-right-identity > div:first-child{grid-column:2 !important;width:150px !important;min-width:150px !important;max-width:150px !important;align-items:flex-end !important;justify-self:end !important;}
+ body.lang-en .header-right-identity > div:last-child,body.lang-bilingual .header-right-identity > div:last-child{grid-column:1 !important;width:100% !important;min-width:0 !important;align-self:start !important;padding-top:38px !important;}
+ body.lang-en .header-right-identity > div:last-child{direction:ltr !important;text-align:left !important;}
+ body.lang-bilingual .header-right-identity > div:last-child{direction:ltr !important;text-align:left !important;}
+ @media(max-width:1023px){
+   body.lang-en #app-topbar,body.lang-bilingual #app-topbar{grid-template-columns:112px minmax(0,1fr) 300px !important;}
+   body.lang-en .header-right-identity,body.lang-bilingual .header-right-identity{grid-template-columns:minmax(110px,1fr) 125px !important;}
+ }
+ @media(max-width:480px){
+   body.lang-en #app-topbar,body.lang-bilingual #app-topbar{grid-template-columns:92px minmax(0,1fr) 205px !important;gap:6px !important;}
+   body.lang-en .header-right-identity,body.lang-bilingual .header-right-identity{grid-template-columns:minmax(78px,1fr) 120px !important;gap:7px !important;}
+ }
+</style>
+<style id="release-header-sidebar-final">
 /* Release layout: identical geometry in EN / AR / Bilingual. */
 #app-topbar{grid-template-columns:132px minmax(0,1fr) 330px !important;column-gap:18px !important;box-sizing:border-box;overflow:hidden;}
 .header-left-identity{width:132px !important;min-width:132px !important;max-width:132px !important;}
