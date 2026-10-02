@@ -924,13 +924,13 @@ function loadData(){
 
 async function loadCloudData(){
   try{
-    if(!auth.currentUser){
+   if(!window.auth.currentUser){
       console.warn('☁️ No authenticated user yet.');
       return;
     }
 
-    const uid = auth.currentUser.uid;
-    const cloudRef = doc(db, 'users', uid, 'appData', 'main');
+   const uid = window.auth.currentUser.uid;
+    const cloudRef = doc(window.db, 'users', uid, 'appData', 'main');
     const cloudSnap = await getDoc(cloudRef);
 
     if(cloudSnap.exists()){
@@ -955,8 +955,7 @@ async function loadCloudData(){
       localStorage.setItem('eng_daily', JSON.stringify(dailyArchives));
       localStorage.setItem('eng_settings', JSON.stringify(settings));
 
-      console.log('☁️ Cloud data loaded:', auth.currentUser.email);
-
+      console.log('☁️ Cloud data loaded:', window.auth.currentUser.email);
       if(typeof renderDashboard === 'function')
         renderDashboard();
 
@@ -995,14 +994,13 @@ function saveData(){
 
 async function saveCloudData(){
   try{
-    if(!auth.currentUser){
+    if(!window.auth.currentUser){
       console.warn('☁️ Cloud save skipped: no authenticated user.');
       return;
     }
 
-    const uid = auth.currentUser.uid;
-    const cloudRef = doc(db, 'users', uid, 'appData', 'main');
-
+    const uid = window.auth.currentUser.uid;
+    const cloudRef = doc(window.db, 'users', uid, 'appData', 'main');
     await setDoc(cloudRef, {
       classesData: classesData,
       studentsData: studentsData,
