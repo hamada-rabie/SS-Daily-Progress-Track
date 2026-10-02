@@ -33,6 +33,9 @@ body.auth-pending > *{visibility:hidden !important;} body{font-family:var(--user
 /* Bilingual inline content: English stays on the left, Arabic on the right. */
 .bilingual-inline{direction:ltr; unicode-bidi:plaintext;}
 .bilingual-inline .ar{direction:rtl; text-align:right;}
+.hero-bilingual-cta{direction:ltr;}
+.hero-bilingual-cta .hero-cta-en{direction:ltr; text-align:left; white-space:nowrap;}
+.hero-bilingual-cta .hero-cta-ar{direction:rtl; text-align:right; unicode-bidi:plaintext; white-space:nowrap;}
 
 /* Global bilingual rule: horizontal pairs always render English-left / Arabic-right,
    regardless of the page's RTL inheritance. Vertical pairs (.bi-label, column flex)
@@ -367,7 +370,7 @@ select, input{font-family:'Cairo',sans-serif;}
         </div>
 
         <div class="flex justify-center mt-5">
-          <button id="hero-cta" data-action="open-add-class" class="text-sm font-bold px-6 py-3 rounded-2xl flex items-center gap-2 shadow-lg transition-transform hover:scale-[1.02] active:scale-95" style="background:#fff; color:var(--ink);"><i class="fa-solid fa-plus" style="color:var(--teal-dark);"></i> <span>Add Your First Class / أضف أول صف</span></button>
+          <button id="hero-cta" data-action="open-add-class" class="hero-bilingual-cta text-sm font-bold px-6 py-3 rounded-2xl flex items-center gap-2 shadow-lg transition-transform hover:scale-[1.02] active:scale-95" style="background:#fff; color:var(--ink);"><i class="fa-solid fa-plus" style="color:var(--teal-dark);"></i> <span class="hero-cta-en">Add Your First Class</span><span class="hero-cta-ar">أضف أول صف</span></button>
         </div>
 
         <div id="hero-daily-status" class="max-w-md mx-auto mt-4"></div>
@@ -1527,17 +1530,20 @@ function renderDashboard(){
     if(classesData.length===0){
       heroCta.dataset.action = 'open-add-class';
       heroCta.removeAttribute('data-tab');
-      heroCta.querySelector('span').textContent = 'Add Your First Class / أضف أول صف';
+      heroCta.querySelector('.hero-cta-en').textContent = 'Add Your First Class';
+      heroCta.querySelector('.hero-cta-ar').textContent = 'أضف أول صف';
       heroCta.querySelector('i').className = 'fa-solid fa-plus';
     } else if(studentsData.length===0){
       heroCta.dataset.action = 'switch-tab';
       heroCta.dataset.tab = 'students';
-      heroCta.querySelector('span').textContent = 'Add Your First Student / أضف أول طالب';
-      heroCta.querySelector('i').className = 'fa-solid fa-user-plus';
+      heroCta.querySelector('.hero-cta-en').textContent = 'Go to Students';
+      heroCta.querySelector('.hero-cta-ar').textContent = 'الانتقال إلى الطلاب';
+      heroCta.querySelector('i').className = 'fa-solid fa-users';
     } else {
       heroCta.dataset.action = 'switch-tab';
       heroCta.dataset.tab = 'daily';
-      heroCta.querySelector('span').textContent = "Start Today's Tracking / ابدأ متابعة اليوم";
+      heroCta.querySelector('.hero-cta-en').textContent = "Start Today's Tracking";
+      heroCta.querySelector('.hero-cta-ar').textContent = 'ابدأ متابعة اليوم';
       heroCta.querySelector('i').className = 'fa-solid fa-calendar-check';
     }
   }
