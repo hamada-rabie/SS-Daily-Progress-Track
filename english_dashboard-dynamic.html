@@ -3214,28 +3214,15 @@ window.addEventListener('DOMContentLoaded', ()=>{
   refreshAllViews();
 });
 </script>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAlrLU20zWisISrmZKAMBNoAxclSA8B9iY",
-    authDomain: "ss-daily-progress-track.firebaseapp.com",
-    projectId: "ss-daily-progress-track",
-    storageBucket: "ss-daily-progress-track.firebasestorage.app",
-    messagingSenderId: "946203049271",
-    appId: "1:946203049271:web:7534618a40b304ac722eb2",
-    measurementId: "G-MH3X8WZW37"
-  };
-
-  <script type="module">
+  
+<script type="module">
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
   import {
     getAuth,
-    onAuthStateChanged
+    onAuthStateChanged,
+    signOut
   } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
   import {
@@ -3259,15 +3246,26 @@ window.addEventListener('DOMContentLoaded', ()=>{
   console.log("🔥 Firebase connected successfully");
 
   onAuthStateChanged(auth, (user) => {
-
     if (!user) {
       window.location.href = "login.html";
       return;
     }
 
     console.log("✅ User authenticated:", user.email);
-
   });
+
+  async function logoutUser() {
+    try {
+      await signOut(auth);
+      window.location.href = "login.html";
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Could not log out. Please try again.");
+    }
+  }
+
+  window.logoutUser = logoutUser;
 </script>
 </body>
-          </html>
+</html>
+  
