@@ -62,7 +62,7 @@ th .bi-label .ar{font-size:9.5px;}
 .nav-link.active::before{content:'';position:absolute;top:4px;bottom:4px;right:0;width:3px;border-radius:3px;background:var(--gold);}
 .nav-link.active i{color:#fff !important;}
 .nav-link.active .ar{color:#DFF3F0 !important;}
-.nav-link:not(.active):hover{background:#EAF5F2;}\n.nav-group-toggle{transition:background .15s ease, color .15s ease;}\n.nav-group-toggle:hover{background:#EAF5F2; color:var(--teal-dark);}\n.nav-group-toggle:hover .ar{color:var(--teal-dark);}\n.sidebar-bilingual{display:flex; align-items:center; gap:8px; direction:ltr;}\n.sidebar-bilingual .en{direction:ltr;}\n.sidebar-bilingual .ar{direction:rtl;}
+.nav-link:not(.active):hover{background:#EAF5F2;}\n.nav-group-toggle{transition:background .15s ease, color .15s ease;}\n.nav-group-toggle:hover{background:#EAF5F2; color:var(--teal-dark);}\n.nav-group-toggle:hover .ar{color:var(--teal-dark);}\n.nav-link .bi-label,.nav-group-toggle .bi-label{display:flex; flex-direction:row; align-items:baseline; gap:7px; direction:ltr; white-space:nowrap;}\n.nav-link .bi-label .en,.nav-group-toggle .bi-label .en{direction:ltr;}\n.nav-link .bi-label .ar,.nav-group-toggle .bi-label .ar{direction:rtl; text-align:right; unicode-bidi:plaintext;}\n.sidebar-bilingual{display:flex; align-items:center; justify-content:center; gap:8px; direction:ltr;}\n.sidebar-bilingual .en{direction:ltr;}\n.sidebar-bilingual .ar{direction:rtl; text-align:right; unicode-bidi:plaintext;}
 
 .hero-band{
   background:
@@ -152,7 +152,7 @@ select, input{font-family:'Cairo',sans-serif;}
       <a href="#" data-action="switch-tab" data-tab="students" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="students"><i class="fa-solid fa-user-graduate w-5 text-center"></i><span class="bi-label"><span class="en">Students</span><span class="ar">الطلاب</span></span></a>
 
       <button type="button" data-action="toggle-nav-group" data-group="daily" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
-        <span class="bi-label"><span class="en">Daily & Analytics</span><span class="ar">اليومي والتحليلات</span></span>
+        <span class="bi-label"><span class="en">Daily & Analytics</span><span class="ar">التحليلات / اليومي</span></span>
         <i class="fa-solid fa-chevron-down text-[9px] transition-transform" id="nav-chevron-daily"></i>
       </button>
       <div id="nav-group-daily" class="space-y-1">
@@ -3258,7 +3258,12 @@ document.addEventListener('click', function(e){
     case 'save-class-edit': saveClassEdit(); break;
     case 'download-template': downloadStudentTemplate(); break;
     case 'play-journey': playStudentJourney(id); break;
-    case 'toggle-nav-group': toggleNavGroup(t.dataset.group); break;\n    case 'open-backup':\n      switchTab('settings');\n      setTimeout(()=>document.getElementById('backup-panel')?.scrollIntoView({behavior:'smooth', block:'center'}), 0);\n      closeSidebar();\n      break;
+    case 'toggle-nav-group': toggleNavGroup(t.dataset.group); break;
+    case 'open-backup':
+      switchTab('settings');
+      setTimeout(()=>document.getElementById('backup-panel')?.scrollIntoView({behavior:'smooth', block:'center'}), 0);
+      closeSidebar();
+      break;
       case 'logout':
   logoutUser();
   break;
