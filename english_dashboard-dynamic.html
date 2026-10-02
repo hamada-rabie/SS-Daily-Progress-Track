@@ -3223,9 +3223,9 @@ function loadSettingsForm(){
 function editProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.setAttribute('aria-readonly','false');el.focus();try{el.setSelectionRange(el.value.length,el.value.length);}catch(_){}}
 function deleteProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.value='';el.setAttribute('aria-readonly','false');el.focus();}
 function saveSettings(){
-  settings.teacherName = document.getElementById('setting-teacher-name').value.trim() || settings.teacherName;
-  settings.coordinatorName = document.getElementById('setting-coordinator-name').value.trim() || settings.coordinatorName;
-  settings.schoolName = document.getElementById('setting-school-name').value.trim() || settings.schoolName;
+  settings.teacherName = document.getElementById('setting-teacher-name').value.trim();
+  settings.coordinatorName = document.getElementById('setting-coordinator-name').value.trim();
+  settings.schoolName = document.getElementById('setting-school-name').value.trim();
   const hw = Number(document.getElementById('setting-honor-weight').value);
   settings.honorParticipationWeight = isNaN(hw) ? settings.honorParticipationWeight : Math.max(0, Math.min(100, hw));
   settings.ministryName = document.getElementById('setting-ministry-name').value.trim();
@@ -3540,7 +3540,7 @@ function normalizeBilingualText(root=document){
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode(node){
       const p=node.parentElement;
-      if(!p || p.closest('script,style,textarea,option') || p.classList.contains('en') || p.classList.contains('ar') || p.classList.contains('bi-label')) return NodeFilter.FILTER_REJECT;
+      if(!p || p.closest('script,style,textarea,option,svg') || p.classList.contains('en') || p.classList.contains('ar') || p.classList.contains('bi-label')) return NodeFilter.FILTER_REJECT;
       return /[A-Za-z]{2,}\s*\/\s*[\u0600-\u06FF]/.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
     }
   });
