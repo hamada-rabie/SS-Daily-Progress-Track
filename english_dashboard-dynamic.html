@@ -62,6 +62,10 @@ body.lang-bilingual .sidebar-bilingual .en + .ar::before{content:"";}
 
 body.lang-en .ar,
 body.lang-ar .en{display:none !important;}
+.home-title-bilingual .en,.home-title-bilingual .ar{display:block !important;}
+.home-title-bilingual .home-title-slash{display:block !important;}
+.home-title-bilingual{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.home-title-bilingual .home-title-slash{font-size:.72em;line-height:1;opacity:.75;margin:2px 0;}
 body.lang-en .bi-label .en,
 body.lang-ar .bi-label .ar{display:block !important;}
 .header-teacher-photo{transition:transform .15s ease, box-shadow .15s ease;}
@@ -383,7 +387,7 @@ select, input{font-family:'Cairo',sans-serif;}
       <div class="hero-band text-white rounded-2xl p-6 sm:p-9 overflow-hidden">
         <div class="text-center max-w-2xl mx-auto space-y-1.5">
           <p class="text-[10px] font-bold tracking-widest text-white/60 uppercase"><span class="en">Teacher Progress Command Center</span><span class="ar">مركز متابعة تقدم المعلم</span></p>
-          <h1 class="font-display font-extrabold leading-tight text-3xl sm:text-4xl"><span class="en">Students' Daily Progress Track</span><span class="ar">متابعة التقدم اليومي للطلاب</span></h1>
+          <h1 class="home-title-bilingual font-display font-extrabold leading-tight text-3xl sm:text-4xl"><span class="en">Students' Daily Progress Track</span><span class="home-title-slash"> / </span><span class="ar">متابعة التقدم اليومي للطلاب</span></h1>
           <p class="text-white/75 text-xs sm:text-sm"><span class="en">Track student progress every day with clarity and evidence.</span><span class="ar">تابع تقدم الطلاب يوميًا بوضوح واستنادًا إلى بيانات موثوقة.</span></p>
         </div>
 
@@ -783,10 +787,10 @@ select, input{font-family:'Cairo',sans-serif;}
                 <span class="bi-label"><span class="en font-semibold">Teacher Profile Photo</span><span class="ar">صورة الملف الشخصي للمعلم</span></span>
                 <p class="text-[10px] text-gray-400 mt-1">Shown in your profile and teacher identity areas.<br>تظهر في ملفك الشخصي ومواضع تعريف المعلم.</p>
                 <div class="flex gap-2 mt-2 flex-wrap">
-                  <label class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border cursor-pointer" style="border-color:var(--teal); color:var(--teal-dark);">Upload / رفع
+                  <label class="icon-action-btn" title="Edit / تعديل" aria-label="Edit / تعديل"><i class="fa-solid fa-pen"></i>
                     <input type="file" accept="image/*" data-action="upload-teacher-photo" class="hidden">
                   </label>
-                  <button data-action="remove-logo" data-key="teacherPhoto" class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border text-gray-400" style="border-color:var(--line);">Remove / حذف</button>
+                  <button data-action="remove-logo" data-key="teacherPhoto" class="icon-action-btn danger" title="Delete / حذف" aria-label="Delete / حذف"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
               </div>
             </div>
@@ -807,20 +811,20 @@ select, input{font-family:'Cairo',sans-serif;}
               <div id="school-logo-preview" class="h-20 w-full rounded-xl border flex items-center justify-center overflow-hidden mb-2 px-3 bg-white" style="border-color:var(--line);"><i class="fa-solid fa-school text-gray-300 text-2xl"></i></div>
               <label class="bi-label justify-center mb-1"><span class="en">School Logo</span><span class="ar">شعار المدرسة</span></label>
               <div class="flex gap-2 justify-center mt-1">
-                <label class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border cursor-pointer" style="border-color:var(--teal); color:var(--teal-dark);">Upload / رفع
+                <label class="icon-action-btn" title="Edit / تعديل" aria-label="Edit / تعديل"><i class="fa-solid fa-pen"></i>
                   <input type="file" accept="image/*" data-action="upload-school-logo" class="hidden">
                 </label>
-                <button data-action="remove-logo" data-key="schoolLogo" class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border text-gray-400" style="border-color:var(--line);">Remove / حذف</button>
+                <button data-action="remove-logo" data-key="schoolLogo" class="icon-action-btn danger" title="Delete / حذف" aria-label="Delete / حذف"><i class="fa-solid fa-trash-can"></i></button>
               </div>
             </div>
             <div class="text-center">
               <div id="ministry-logo-preview" class="h-20 w-full rounded-xl border flex items-center justify-center overflow-hidden mb-2 px-3 bg-white" style="border-color:var(--line);"><i class="fa-solid fa-landmark text-gray-300 text-2xl"></i></div>
               <label class="bi-label justify-center mb-1"><span class="en">Ministry Logo</span><span class="ar">شعار الوزارة</span></label>
               <div class="flex gap-2 justify-center mt-1">
-                <label class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border cursor-pointer" style="border-color:var(--teal); color:var(--teal-dark);">Upload / رفع
+                <label class="icon-action-btn" title="Edit / تعديل" aria-label="Edit / تعديل"><i class="fa-solid fa-pen"></i>
                   <input type="file" accept="image/*" data-action="upload-ministry-logo" class="hidden">
                 </label>
-                <button data-action="remove-logo" data-key="ministryLogo" class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border text-gray-400" style="border-color:var(--line);">Remove / حذف</button>
+                <button data-action="remove-logo" data-key="ministryLogo" class="icon-action-btn danger" title="Delete / حذف" aria-label="Delete / حذف"><i class="fa-solid fa-trash-can"></i></button>
               </div>
             </div>
           </div>
@@ -3694,14 +3698,6 @@ function renderTeacherPhoto(){
   }
 }
 
-const languageObserver = new MutationObserver(mutations=>{
-  if(!document.body.classList.contains('lang-en') && !document.body.classList.contains('lang-ar')) return;
-  let relevant=false;
-  for(const m of mutations){ if(m.type==='childList' && m.addedNodes.length){ relevant=true; break; } }
-  if(relevant) normalizeBilingualText(document.body);
-});
-languageObserver.observe(document.body,{childList:true,subtree:true});
-
 let activeFrozenTable = null;
 let activeFrozenCleanup = null;
 
@@ -4036,3 +4032,21 @@ console.log("🔥 Firebase connected successfully");
 </body>
 </html>
   
+<style id="language-layout-overrides">
+body.lang-ar main, body.lang-ar .settings-panel, body.lang-ar .settings-section-heading,
+body.lang-ar .card, body.lang-ar .settings-header, body.lang-ar .profile-fields-grid{direction:rtl;}
+body.lang-ar .settings-switcher{direction:ltr;}
+body.lang-en main, body.lang-en .settings-panel, body.lang-en .settings-section-heading,
+body.lang-en .card, body.lang-en .settings-header, body.lang-en .profile-fields-grid{direction:ltr;}
+.settings-switcher-btn{direction:ltr;}
+body.lang-ar .bi-label{direction:rtl;align-items:flex-end;}
+body.lang-ar .bi-label .ar{text-align:right;}
+body.lang-ar .bi-label .en{text-align:right;}
+body.lang-ar input,body.lang-ar select,body.lang-ar textarea{text-align:right;direction:rtl;}
+body.lang-ar .settings-section-heading{text-align:right;}
+</style><style id="icon-action-styles">
+.icon-action-btn{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--teal-dark);background:var(--card);transition:.18s;}
+.icon-action-btn:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 3px 10px rgba(0,0,0,.08);}
+.icon-action-btn.danger{color:#b91c1c;}
+.icon-action-btn.danger:hover{border-color:#ef4444;background:#fff5f5;}
+</style>
