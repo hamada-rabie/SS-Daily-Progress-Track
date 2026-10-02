@@ -193,6 +193,16 @@ select, input{font-family:'Cairo',sans-serif;}
         <p id="sidebar-teacher-name" class="text-xs font-bold text-gray-800">Teacher</p>
         <p class="text-[10px] text-gray-500">Saved on this device / يُحفظ على جهازك</p>
         <p class="text-[9px] text-gray-300 mt-0.5">App Version: 2.0.0</p>
+        <button
+  type="button"
+  data-action="logout"
+  class="w-full mt-2 text-xs font-bold px-3 py-2 rounded-xl flex items-center justify-center gap-2 transition"
+  style="background:#fff1f2; color:#dc2626; border:1px solid #fecdd3;"
+>
+  <i class="fa-solid fa-right-from-bracket"></i>
+  <span class="en">Log Out</span>
+  <span class="ar">تسجيل الخروج</span>
+</button>
       </div>
     </div>
   </div>
@@ -3121,6 +3131,9 @@ document.addEventListener('click', function(e){
     case 'download-template': downloadStudentTemplate(); break;
     case 'play-journey': playStudentJourney(id); break;
     case 'toggle-nav-group': toggleNavGroup(t.dataset.group); break;
+      case 'logout':
+  logoutUser();
+  break;
   }
 });
 document.addEventListener('change', function(e){
