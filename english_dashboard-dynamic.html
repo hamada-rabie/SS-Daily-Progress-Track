@@ -33,7 +33,7 @@ body.auth-pending > *{visibility:hidden !important;}\nbody{font-family:var(--use
    already render English-top / Arabic-bottom correctly via source order. */
 .bi-row{display:flex; align-items:center; direction:ltr;}
 .bi-label .en{font-weight:700; font-size:12px; color:var(--ink);}
-.bi-label .ar{font-weight:400; font-size:10.5px; color:#8A9A96;}
+.bi-label .ar{font-weight:400; font-size:10.5px; color:#8A9A96; direction:rtl; text-align:right; unicode-bidi:plaintext;}
 th .bi-label .en{font-size:11px;}
 th .bi-label .ar{font-size:9.5px;}
 
@@ -62,7 +62,7 @@ th .bi-label .ar{font-size:9.5px;}
 .nav-link.active::before{content:'';position:absolute;top:4px;bottom:4px;right:0;width:3px;border-radius:3px;background:var(--gold);}
 .nav-link.active i{color:#fff !important;}
 .nav-link.active .ar{color:#DFF3F0 !important;}
-.nav-link:not(.active):hover{background:#EAF5F2;}
+.nav-link:not(.active):hover{background:#EAF5F2;}\n.nav-group-toggle{transition:background .15s ease, color .15s ease;}\n.nav-group-toggle:hover{background:#EAF5F2; color:var(--teal-dark);}\n.nav-group-toggle:hover .ar{color:var(--teal-dark);}\n.sidebar-bilingual{display:flex; align-items:center; gap:8px; direction:ltr;}\n.sidebar-bilingual .en{direction:ltr;}\n.sidebar-bilingual .ar{direction:rtl;}
 
 .hero-band{
   background:
@@ -151,7 +151,7 @@ select, input{font-family:'Cairo',sans-serif;}
       <a href="#" data-action="switch-tab" data-tab="dashboard" class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-xl" data-target="dashboard"><i class="fa-solid fa-house w-5 text-center" style="color:var(--teal);"></i><span class="bi-label"><span class="en">Home</span><span class="ar">الرئيسية</span></span></a>
       <a href="#" data-action="switch-tab" data-tab="students" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="students"><i class="fa-solid fa-user-graduate w-5 text-center"></i><span class="bi-label"><span class="en">Students</span><span class="ar">الطلاب</span></span></a>
 
-      <button type="button" data-action="toggle-nav-group" data-group="daily" class="w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
+      <button type="button" data-action="toggle-nav-group" data-group="daily" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
         <span class="bi-label"><span class="en">Daily & Analytics</span><span class="ar">اليومي والتحليلات</span></span>
         <i class="fa-solid fa-chevron-down text-[9px] transition-transform" id="nav-chevron-daily"></i>
       </button>
@@ -165,7 +165,7 @@ select, input{font-family:'Cairo',sans-serif;}
         <a href="#" data-action="switch-tab" data-tab="classpulse" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="classpulse"><i class="fa-solid fa-heart-pulse w-5 text-center" style="color:var(--leaf);"></i><span class="bi-label"><span class="en">Class Pulse</span><span class="ar">نبض الفصل</span></span></a>
       </div>
 
-      <button type="button" data-action="toggle-nav-group" data-group="achievement" class="w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
+      <button type="button" data-action="toggle-nav-group" data-group="achievement" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
         <span class="bi-label"><span class="en">Achievement</span><span class="ar">الإنجاز</span></span>
         <i class="fa-solid fa-chevron-down text-[9px] transition-transform" id="nav-chevron-achievement"></i>
       </button>
@@ -174,7 +174,7 @@ select, input{font-family:'Cairo',sans-serif;}
         <a href="#" data-action="switch-tab" data-tab="certificates" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="certificates"><i class="fa-solid fa-award w-5 text-center"></i><span class="bi-label"><span class="en">Certificates</span><span class="ar">الشهادات</span></span></a>
       </div>
 
-      <button type="button" data-action="toggle-nav-group" data-group="management" class="w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
+      <button type="button" data-action="toggle-nav-group" data-group="management" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
         <span class="bi-label"><span class="en">Management</span><span class="ar">الإدارة</span></span>
         <i class="fa-solid fa-chevron-down text-[9px] transition-transform" id="nav-chevron-management"></i>
       </button>
@@ -186,25 +186,19 @@ select, input{font-family:'Cairo',sans-serif;}
       </div>
     </nav>
   <div class="p-3 border-t space-y-2 shrink-0" style="border-color:var(--line); padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px));">
-    <button data-action="open-share-modal" class="w-full text-white text-xs font-bold px-3 py-2.5 rounded-xl flex items-center justify-center gap-2" style="background:linear-gradient(120deg, var(--violet), var(--teal-dark));"><i class="fa-solid fa-share-nodes"></i> Share Application / مشاركة التطبيق</button>
-    <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs" style="background:var(--teal);">T</div>
-      <div>
-        <p id="sidebar-teacher-name" class="text-xs font-bold text-gray-800">Teacher</p>
-        <p class="text-[10px] text-gray-500">Cloud synced / تتم المزامنة سحابياً</p>
-        <p class="text-[9px] text-gray-300 mt-0.5">App Version: 2.1.0</p>
-        <button
-  type="button"
-  data-action="logout"
-  class="w-full mt-2 text-xs font-bold px-3 py-2 rounded-xl flex items-center justify-center gap-2 transition"
-  style="background:#fff1f2; color:#dc2626; border:1px solid #fecdd3;"
->
-  <i class="fa-solid fa-right-from-bracket"></i>
-  <span class="en">Log Out</span>
-  <span class="ar">تسجيل الخروج</span>
-</button>
-      </div>
+    <div class="rounded-xl px-2 py-1.5" style="background:#F8FBFA;">
+      <p id="sidebar-teacher-name" class="text-xs font-bold text-gray-800">Teacher</p>
+      <p class="text-[10px] text-gray-500">Cloud synced / تتم المزامنة سحابياً</p>
+      <p class="text-[9px] text-gray-300 mt-0.5">App Version: 2.1.0</p>
+      <button type="button" data-action="logout" class="w-full mt-2 text-xs font-bold px-3 py-2 rounded-xl flex items-center justify-center gap-2 transition" style="background:#fff1f2; color:#dc2626; border:1px solid #fecdd3;">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span class="sidebar-bilingual"><span class="en">Log Out</span><span class="ar">تسجيل الخروج</span></span>
+      </button>
     </div>
+    <button data-action="open-share-modal" class="w-full text-white text-[11px] font-bold px-3 py-2 rounded-xl flex items-center justify-center gap-2" style="background:linear-gradient(120deg, var(--violet), var(--teal-dark));">
+      <i class="fa-solid fa-share-nodes"></i>
+      <span class="sidebar-bilingual"><span class="en">Share Application</span><span class="ar">مشاركة التطبيق</span></span>
+    </button>
   </div>
 </aside>
 <div id="sidebar-overlay" data-action="close-sidebar" class="no-print"></div>
@@ -2967,7 +2961,7 @@ function shareClean(){
 }
 
 function exportBackup(){
-  const payload = { version:'2.0', exportDate:new Date().toISOString(), settings, classesData, studentsData, dailyArchives };
+  const payload = { version:'2.1.0', exportDate:new Date().toISOString(), settings, classesData, studentsData, dailyArchives };
   const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
