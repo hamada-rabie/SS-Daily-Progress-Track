@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
   <title>SS' Daily Progress Track — Login</title>
 
   <style>
@@ -11,8 +12,19 @@
       box-sizing: border-box;
     }
 
+    html,
     body {
+      width: 100%;
+      min-height: 100%;
       margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background: #134e4a;
+    }
+
+    body {
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -20,15 +32,28 @@
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #0f766e, #134e4a);
       padding: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Prevent any accidental background content from showing */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #0f766e, #134e4a);
+      z-index: 0;
     }
 
     .login-card {
+      position: relative;
+      z-index: 1;
       width: 100%;
       max-width: 420px;
-      background: white;
+      background: #ffffff;
       border-radius: 20px;
       padding: 35px;
-      box-shadow: 0 20px 50px rgba(0,0,0,.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .2);
     }
 
     h1 {
@@ -62,11 +87,13 @@
       border-radius: 10px;
       font-size: 16px;
       outline: none;
+      background: #ffffff;
+      color: #222;
     }
 
     input:focus {
       border-color: #0f766e;
-      box-shadow: 0 0 0 3px rgba(15,118,110,.1);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, .1);
     }
 
     .toggle-password {
@@ -113,7 +140,7 @@
       border: 0;
       border-radius: 10px;
       background: #0f766e;
-      color: white;
+      color: #ffffff;
       font-size: 17px;
       font-weight: bold;
       cursor: pointer;
@@ -144,12 +171,17 @@
 <body>
 
   <div class="login-card">
+
     <h1>SS' Daily Progress Track</h1>
-    <div class="subtitle">Teacher Progress Command Center</div>
+
+    <div class="subtitle">
+      Teacher Progress Command Center
+    </div>
 
     <form id="loginForm">
 
       <label for="email">Email</label>
+
       <input
         id="email"
         type="email"
@@ -161,6 +193,7 @@
       <label for="password">Password</label>
 
       <div class="password-wrap">
+
         <input
           id="password"
           type="password"
@@ -176,23 +209,30 @@
           aria-label="Show password"
           title="Show password"
         >👁️</button>
+
       </div>
 
       <div class="forgot-wrap">
+
         <a
           href="#"
           class="forgot-password"
           id="forgotPassword"
         >Forgot password?</a>
+
       </div>
 
-      <button type="submit" class="login-button">
+      <button
+        type="submit"
+        class="login-button"
+      >
         Sign In
       </button>
 
       <div id="message"></div>
 
     </form>
+
   </div>
 
   <script type="module">
@@ -226,14 +266,18 @@
     const togglePassword = document.getElementById("togglePassword");
     const forgotPassword = document.getElementById("forgotPassword");
 
-    // Show / Hide Password
+    /* Show / Hide Password */
+
     togglePassword.addEventListener("click", () => {
 
-      const isHidden = passwordInput.type === "password";
+      const isHidden =
+        passwordInput.type === "password";
 
-      passwordInput.type = isHidden ? "text" : "password";
+      passwordInput.type =
+        isHidden ? "text" : "password";
 
-      togglePassword.textContent = isHidden ? "🙈" : "👁️";
+      togglePassword.textContent =
+        isHidden ? "🙈" : "👁️";
 
       togglePassword.setAttribute(
         "aria-label",
@@ -247,16 +291,22 @@
 
     });
 
-    // Sign In
+
+    /* Sign In */
+
     form.addEventListener("submit", async (event) => {
 
       event.preventDefault();
 
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
+      const email =
+        emailInput.value.trim();
+
+      const password =
+        passwordInput.value;
 
       message.className = "";
-      message.textContent = "Signing in...";
+      message.textContent =
+        "Signing in...";
 
       try {
 
@@ -266,7 +316,9 @@
           password
         );
 
-        message.className = "success";
+        message.className =
+          "success";
+
         message.textContent =
           "Login successful. Opening app...";
 
@@ -277,75 +329,113 @@
 
         console.error(error);
 
-        message.className = "error";
+        message.className =
+          "error";
 
-        if (error.code === "auth/invalid-credential") {
+        if (
+          error.code ===
+          "auth/invalid-credential"
+        ) {
+
           message.textContent =
             "Incorrect email or password.";
-        } else if (error.code === "auth/too-many-requests") {
+
+        } else if (
+          error.code ===
+          "auth/too-many-requests"
+        ) {
+
           message.textContent =
             "Too many attempts. Please try again later.";
+
         } else {
+
           message.textContent =
             "Login failed. Please check your email and password.";
+
         }
 
       }
 
     });
 
-    // Forgot Password
-    forgotPassword.addEventListener("click", async (event) => {
 
-      event.preventDefault();
+    /* Forgot Password */
 
-      const email = emailInput.value.trim();
+    forgotPassword.addEventListener(
+      "click",
+      async (event) => {
 
-      if (!email) {
+        event.preventDefault();
 
-        message.className = "error";
+        const email =
+          emailInput.value.trim();
+
+        if (!email) {
+
+          message.className =
+            "error";
+
+          message.textContent =
+            "Please enter your email first.";
+
+          emailInput.focus();
+
+          return;
+        }
+
+        message.className = "";
+
         message.textContent =
-          "Please enter your email first.";
+          "Sending password reset email...";
 
-        emailInput.focus();
-        return;
-      }
+        try {
 
-      message.className = "";
-      message.textContent =
-        "Sending password reset email...";
+          await sendPasswordResetEmail(
+            auth,
+            email
+          );
 
-      try {
+          message.className =
+            "success";
 
-        await sendPasswordResetEmail(
-          auth,
-          email
-        );
-
-        message.className = "success";
-        message.textContent =
-          "Password reset email sent. Please check your inbox.";
-
-      } catch (error) {
-
-        console.error(error);
-
-        message.className = "error";
-
-        if (error.code === "auth/user-not-found") {
           message.textContent =
-            "No account was found with this email.";
-        } else if (error.code === "auth/invalid-email") {
-          message.textContent =
-            "Please enter a valid email address.";
-        } else {
-          message.textContent =
-            "Could not send the reset email. Please try again.";
+            "Password reset email sent. Please check your inbox.";
+
+        } catch (error) {
+
+          console.error(error);
+
+          message.className =
+            "error";
+
+          if (
+            error.code ===
+            "auth/user-not-found"
+          ) {
+
+            message.textContent =
+              "No account was found with this email.";
+
+          } else if (
+            error.code ===
+            "auth/invalid-email"
+          ) {
+
+            message.textContent =
+              "Please enter a valid email address.";
+
+          } else {
+
+            message.textContent =
+              "Could not send the reset email. Please try again.";
+
+          }
+
         }
 
       }
-
-    });
+    );
 
   </script>
 
