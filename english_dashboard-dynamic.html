@@ -3257,7 +3257,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
   const db = getFirestore(firebaseApp);
 
   console.log("🔥 Firebase connected successfully");
-  document.documentElement.style.visibility = "hidden";
 
   onAuthStateChanged(auth, (user) => {
     if (!user) {
