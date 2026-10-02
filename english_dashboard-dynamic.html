@@ -3964,7 +3964,9 @@ window.addEventListener('DOMContentLoaded', ()=>{document.body.classList.remove(
   import {
     getAuth,
     onAuthStateChanged,
-    signOut
+    signOut,
+    setPersistence,
+    browserLocalPersistence
   } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
   import {
@@ -3996,17 +3998,24 @@ window.setDoc = setDoc;
 
 console.log("🔥 Firebase connected successfully");
   
- onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.replace("login.html");
+        return;
+      }
 
-  console.log("✅ User authenticated:", user.email);
-  document.body.classList.remove("auth-pending");
+      console.log("✅ User authenticated:", user.email);
+      document.body.classList.remove("auth-pending");
 
-  loadCloudData();
-});
+      loadCloudData();
+    });
+  })
+  .catch((error) => {
+    console.error("❌ Firebase Auth persistence error:", error);
+    document.body.classList.remove("auth-pending");
+  });
 
   async function logoutUser() {
     try {
