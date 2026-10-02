@@ -72,12 +72,13 @@ body.lang-ar .bi-label .ar{display:block !important;}
 .bi-row{display:flex; align-items:center; direction:ltr;}
 .bi-label .en{font-weight:700; font-size:12px; color:var(--ink);}
 .bi-label .ar{font-weight:400; font-size:10.5px; color:#8A9A96; direction:rtl; text-align:right; unicode-bidi:plaintext;}
-th .bi-label .en{font-size:11px; line-height:1.02;}
-th .bi-label .ar{font-size:9.5px; line-height:1.02; margin-top:-1px;}
+th .bi-label{align-items:center !important; justify-content:center; text-align:center; line-height:1 !important; gap:0 !important; min-width:max-content;}
+th .bi-label .en{font-size:10.5px; line-height:1 !important; white-space:nowrap; text-align:center;}
+th .bi-label .ar{font-size:9px; line-height:1 !important; margin-top:1px; width:auto !important; white-space:nowrap; text-align:center;}
+#tab-daily thead th:nth-child(1) .bi-label .en{font-size:10.5px;}
+#tab-daily thead th:nth-child(1) .bi-label .ar{font-size:9px;}
 #tab-daily thead th:nth-child(2) .bi-label,
 #tab-daily thead th:nth-child(3) .bi-label{align-items:center; text-align:center;}
-#tab-daily thead th:nth-child(2) .bi-label .ar,
-#tab-daily thead th:nth-child(3) .bi-label .ar{width:auto; text-align:center;}
 
 .nav-link{position:relative;}
 .backup-nav-toggle{transition:background .15s ease, color .15s ease; position:relative;}
@@ -589,7 +590,7 @@ select, input{font-family:'Cairo',sans-serif;}
               <th class="p-3 border-b-2" style="border-color:var(--teal);"><span class="bi-label"><span class="en" style="color:var(--teal-dark);">Student Name</span><span class="ar">اسم الطالب</span></span></th>
               <th class="p-3 border-b-2" style="border-color:var(--indigo, #5C6BC0);"><span class="bi-label"><span class="en" style="color:#5C6BC0;">Behaviour</span><span class="ar">السلوك</span></span></th>
               <th class="p-3 border-b-2" style="border-color:var(--violet);"><span class="bi-label"><span class="en" style="color:var(--violet);">Participation</span><span class="ar">المشاركة</span></span></th>
-              <th class="p-3 border-b-2" style="border-color:var(--gold);"><span class="bi-label"><span class="en" style="color:#B5850C;">Homework Done</span><span class="ar">تم حل الواجب</span></span></th>
+              <th class="p-3 border-b-2" style="border-color:var(--gold);"><span class="bi-label"><span class="en" style="color:#B5850C;">Homework</span><span class="ar">الواجب</span></span></th>
               <th class="p-3 border-b-2" style="border-color:var(--sky);"><span class="bi-label"><span class="en" style="color:var(--sky);">Attendance</span><span class="ar">الحضور</span></span></th>
             </tr>
           </thead>
@@ -3657,69 +3658,89 @@ function renderTeacherPhoto(){
   }
 }
 
+let activeFrozenTable = null;
+let activeFrozenCleanup = null;
+
 function syncFrozenTableHeaders(){
-  document.querySelectorAll('.table-scroll-x').forEach(wrapper=>{
-    if(wrapper._frozenSyncCleanup) wrapper._frozenSyncCleanup();
-  });
+  if(activeFrozenCleanup) activeFrozenCleanup();
+  activeFrozenCleanup = null;
   document.querySelectorAll('.frozen-table-header').forEach(el=>el.remove());
+  activeFrozenTable = null;
 
   const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-topbar-height')) || 72;
+  const main = document.querySelector('main');
+  if(!main) return;
 
-  document.querySelectorAll('.table-scroll-x').forEach(wrapper=>{
-    const table = wrapper.querySelector('table');
-    const thead = table && table.querySelector('thead');
-    if(!table || !thead) return;
-
-    const rect = wrapper.getBoundingClientRect();
-    const headRect = thead.getBoundingClientRect();
-
-    // Do not create a second header while the real header is still visible.
-    if(rect.bottom <= top || rect.top >= window.innerHeight || headRect.bottom > top + 1) return;
-
-    const overlay = document.createElement('div');
-    overlay.className='frozen-table-header';
-    overlay.style.left=rect.left+'px';
-    overlay.style.width=rect.width+'px';
-    overlay.style.top=top+'px';
-    overlay.style.height=headRect.height+'px';
-
-    const cloneTable=table.cloneNode(false);
-    const tableRect=table.getBoundingClientRect();
-    cloneTable.style.width=tableRect.width+'px';
-    cloneTable.style.minWidth=tableRect.width+'px';
-
-    const cloneHead=thead.cloneNode(true);
-    cloneTable.appendChild(cloneHead);
-    overlay.appendChild(cloneTable);
-    document.body.appendChild(overlay);
-    overlay.style.display='block';
-
-    const cells=[...thead.querySelectorAll('th')];
-    const cloneCells=[...cloneHead.querySelectorAll('th')];
-    cells.forEach((cell,i)=>{
-      if(cloneCells[i]){
-        const cr=cell.getBoundingClientRect();
-        cloneCells[i].style.width=cr.width+'px';
-        cloneCells[i].style.height=cr.height+'px';
-      }
-    });
-
-    const syncX=()=>{
-      const max=Math.max(0, tableRect.width-wrapper.clientWidth);
-      const scrollMax=Math.max(1, wrapper.scrollWidth-wrapper.clientWidth);
-      const ratio=Math.max(0,Math.min(1,wrapper.scrollLeft/scrollMax));
-      cloneTable.style.transform='translateX('+(-ratio*max)+'px)';
-    };
-    syncX();
-    wrapper._frozenSyncCleanup=()=>wrapper.removeEventListener('scroll',syncX);
-    wrapper.addEventListener('scroll',syncX,{passive:true});
+  // Only the table whose header has reached the topbar is allowed to create the frozen header.
+  const candidates = [...document.querySelectorAll('.table-scroll-x')].filter(wrapper=>{
+    const table=wrapper.querySelector('table');
+    const thead=table && table.querySelector('thead');
+    if(!table || !thead) return false;
+    const rect=wrapper.getBoundingClientRect();
+    return rect.top <= top + 1 && rect.bottom > top + 1;
   });
+  if(!candidates.length) return;
+
+  const wrapper=candidates[candidates.length-1];
+  const table=wrapper.querySelector('table');
+  const thead=table.querySelector('thead');
+  const wrapperRect=wrapper.getBoundingClientRect();
+  const headRect=thead.getBoundingClientRect();
+
+  const overlay=document.createElement('div');
+  overlay.className='frozen-table-header';
+  overlay.dataset.sourceTable='frozen';
+  overlay.style.left=wrapperRect.left+'px';
+  overlay.style.width=wrapperRect.width+'px';
+  overlay.style.top=top+'px';
+  overlay.style.height=headRect.height+'px';
+
+  const cloneTable=table.cloneNode(false);
+  const tableWidth=table.getBoundingClientRect().width;
+  cloneTable.style.width=tableWidth+'px';
+  cloneTable.style.minWidth=tableWidth+'px';
+
+  const cloneHead=thead.cloneNode(true);
+  cloneTable.appendChild(cloneHead);
+  overlay.appendChild(cloneTable);
+  document.body.appendChild(overlay);
+  overlay.style.display='block';
+
+  const cells=[...thead.querySelectorAll('th')];
+  const cloneCells=[...cloneHead.querySelectorAll('th')];
+  cells.forEach((cell,i)=>{
+    if(cloneCells[i]){
+      const cr=cell.getBoundingClientRect();
+      cloneCells[i].style.width=cr.width+'px';
+      cloneCells[i].style.height=cr.height+'px';
+    }
+  });
+
+  const syncX=()=>{
+    const max=Math.max(0, tableWidth-wrapper.clientWidth);
+    const scrollMax=Math.max(1, wrapper.scrollWidth-wrapper.clientWidth);
+    const ratio=Math.max(0,Math.min(1,wrapper.scrollLeft/scrollMax));
+    cloneTable.style.transform='translateX('+(-ratio*max)+'px)';
+  };
+  syncX();
+  const onResize=()=>scheduleFrozenTableHeaders();
+  wrapper.addEventListener('scroll',syncX,{passive:true});
+  window.addEventListener('resize',onResize);
+  activeFrozenCleanup=()=>{
+    wrapper.removeEventListener('scroll',syncX);
+    window.removeEventListener('resize',onResize);
+  };
+  activeFrozenTable=wrapper;
 }
+
 let frozenHeaderTick=false;
 function scheduleFrozenTableHeaders(){
   if(frozenHeaderTick) return;
   frozenHeaderTick=true;
-  requestAnimationFrame(()=>{ frozenHeaderTick=false; syncFrozenTableHeaders(); });
+  requestAnimationFrame(()=>{
+    frozenHeaderTick=false;
+    syncFrozenTableHeaders();
+  });
 }
 window.addEventListener('scroll',scheduleFrozenTableHeaders,true);
 window.addEventListener('resize',scheduleFrozenTableHeaders);
