@@ -3537,12 +3537,12 @@ function normalizeBilingualText(root=document){
     acceptNode(node){
       const p=node.parentElement;
       if(!p || p.closest('script,style,textarea,option') || p.classList.contains('en') || p.classList.contains('ar') || p.classList.contains('bi-label')) return NodeFilter.FILTER_REJECT;
-      return /[A-Za-z]{2,}\\s*\\/\\s*[\\u0600-\\u06FF]/.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      return /[A-Za-z]{2,}\s*\/\s*[\u0600-\u06FF]/.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
     }
   });
   const nodes=[]; let n; while((n=walker.nextNode())) nodes.push(n);
   nodes.forEach(node=>{
-    const m=node.nodeValue.match(/^\\s*(.*?)\\s*\\/\\s*([\\u0600-\\u06FF].*?)\\s*$/);
+    const m=node.nodeValue.match(/^\s*(.*?)\s*\/\s*([\u0600-\u06FF].*?)\s*$/);
     if(!m) return;
     const frag=document.createDocumentFragment();
     const en=document.createElement('span'); en.className='en'; en.textContent=m[1];
@@ -3552,8 +3552,8 @@ function normalizeBilingualText(root=document){
   const lang = document.body.classList.contains('lang-ar') ? 'ar' : 'en';
   document.querySelectorAll('option').forEach(opt=>{
     const raw = opt.dataset.i18nOriginal || opt.textContent;
-    if(/[A-Za-z]{2,}\\s*\\/\\s*[\\u0600-\\u06FF]/.test(raw)){
-      const m = raw.match(/^\\s*(.*?)\\s*\\/\\s*([\\u0600-\\u06FF].*?)\\s*$/);
+    if(/[A-Za-z]{2,}\s*\/\s*[\u0600-\u06FF]/.test(raw)){
+      const m = raw.match(/^\s*(.*?)\s*\/\s*([\u0600-\u06FF].*?)\s*$/);
       if(m){
         opt.dataset.i18nOriginal = raw;
         opt.textContent = lang==='ar' ? m[2] : m[1];
