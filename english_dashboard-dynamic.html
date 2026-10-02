@@ -1299,9 +1299,28 @@ function addClass(){
 }
 function deleteClass(id){
   if(!confirm('Delete this class and all its students? / حذف هذا الصف وكل طلابه؟')) return;
+
+  // Remove the class and its students from the live data.
+  const removedStudentIds = new Set(
+    studentsData.filter(s=>s.classId===id).map(s=>String(s.id))
+  );
   studentsData = studentsData.filter(s=>s.classId!==id);
   classesData = classesData.filter(c=>c.id!==id);
-  saveData(); refreshAllViews();
+
+  // Also remove historical daily records belonging to those deleted students.
+  // Otherwise their old records would remain as orphaned data in Firestore.
+  Object.keys(dailyArchives || {}).forEach(date=>{
+    if(!dailyArchives[date] || typeof dailyArchives[date] !== 'object') return;
+    removedStudentIds.forEach(studentId=>{
+      delete dailyArchives[date][studentId];
+    });
+    if(Object.keys(dailyArchives[date]).length===0){
+      delete dailyArchives[date];
+    }
+  });
+
+  saveData();
+  refreshAllViews();
   showToast('Class deleted / تم حذف الصف','success');
 }
 
