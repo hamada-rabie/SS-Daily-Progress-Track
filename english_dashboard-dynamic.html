@@ -44,6 +44,28 @@ th .bi-label .en{font-size:11px;}
 th .bi-label .ar{font-size:9.5px;}
 
 .nav-link{position:relative;}
+.backup-nav-toggle{transition:background .15s ease, color .15s ease; position:relative;}
+.backup-nav-toggle:hover{background:#EAF5F2; color:var(--teal-dark);}
+.backup-nav-toggle > .backup-chevron{color:#C94C4C !important; transition:transform .2s ease; margin-left:auto;}
+.backup-nav-toggle[aria-expanded="true"]{background:#EAF5F2; color:var(--teal-dark);}
+.backup-nav-toggle[aria-expanded="true"] > .backup-chevron{transform:rotate(0deg);}
+.backup-nav-toggle[aria-expanded="false"] > .backup-chevron{transform:rotate(-90deg);}
+.backup-nav-menu{margin:0 0 4px 32px; padding:4px; border-right:2px solid #E6EFEC; display:flex; flex-direction:column; gap:2px;}
+.backup-nav-menu.hidden{display:none;}
+.backup-nav-action{border:0; background:transparent; color:#64736F; text-align:left; direction:ltr; transition:background .15s ease, color .15s ease;}
+.backup-nav-action:hover{background:#F1F7F5; color:var(--teal-dark);}
+.backup-nav-action .bi-label{flex:1; min-width:0;}
+.backup-nav-action .bi-label .ar{font-size:9.5px;}
+.backup-nav-note{font-size:8px; color:#9AA9A5; padding:3px 8px 2px; direction:ltr; text-align:left;}
+.settings-switcher-btn{display:flex; align-items:center; justify-content:flex-start; gap:10px; padding:12px 14px; border:1px solid var(--line); border-radius:14px; background:#fff; color:#64736F; text-align:left; direction:ltr; transition:all .18s ease; cursor:pointer;}
+.settings-switcher-btn:hover{background:#F3F9F7; border-color:var(--teal-light); transform:translateY(-1px);}
+.settings-switcher-btn.active{border-color:var(--teal); background:linear-gradient(135deg,#EAF7F5,#F7FBFA); color:var(--teal-dark); box-shadow:0 5px 14px rgba(14,124,116,.10);}
+.settings-switcher-btn > i{width:22px; text-align:center; color:var(--violet);}
+.settings-switcher-btn.active > i{color:var(--teal);}
+.settings-switcher-btn .bi-label{flex:1;}
+.settings-section-heading{display:flex; align-items:center; gap:12px; direction:ltr;}
+.settings-section-icon{width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:#F1F7F5; color:var(--teal); flex-shrink:0;}
+
 @media (max-width:480px){
   .header-books-visual{display:none;}
   .header-clock-row{display:none;}
@@ -214,8 +236,26 @@ select, input{font-family:'Cairo',sans-serif;}
       <div id="nav-group-management" class="space-y-1">
         <a href="#" data-action="switch-tab" data-tab="dashboard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="dashboard-mgmt"><i class="fa-solid fa-chalkboard w-5 text-center"></i><span class="bi-label"><span class="en">Classes</span><span class="ar">الفصول</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="students" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="students-mgmt"><i class="fa-solid fa-file-excel w-5 text-center"></i><span class="bi-label"><span class="en">Import / Export</span><span class="ar">استيراد / تصدير</span></span></a>
-        <a href="#" data-action="open-backup" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600"><i class="fa-solid fa-clock-rotate-left w-5 text-center"></i><span class="bi-label"><span class="en">Backup / Restore</span><span class="ar">نسخ احتياطي / استعادة</span></span></a>
-        <a href="#" data-action="switch-tab" data-tab="settings" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="settings"><i class="fa-solid fa-gear w-5 text-center"></i><span class="bi-label"><span class="en">Settings</span><span class="ar">الإعدادات</span></span></a>
+
+        <button type="button" data-action="toggle-backup-menu" aria-expanded="false" class="backup-nav-toggle w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600">
+          <i class="fa-solid fa-shield-halved w-5 text-center"></i>
+          <span class="bi-label flex-1"><span class="en">Backup & Restore</span><span class="ar">النسخ الاحتياطي والاستعادة</span></span>
+          <i class="fa-solid fa-chevron-down backup-chevron text-[9px]" id="backup-chevron"></i>
+        </button>
+        <div id="backup-nav-menu" class="backup-nav-menu hidden">
+          <button type="button" data-action="export-backup" class="backup-nav-action w-full flex items-center gap-2 px-3 py-2 rounded-lg">
+            <i class="fa-solid fa-download w-4 text-center"></i>
+            <span class="bi-label"><span class="en">Export Backup</span><span class="ar">تصدير نسخة احتياطية</span></span>
+          </button>
+          <label class="backup-nav-action w-full flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer">
+            <i class="fa-solid fa-upload w-4 text-center"></i>
+            <span class="bi-label"><span class="en">Restore Backup</span><span class="ar">استعادة نسخة احتياطية</span></span>
+            <input id="backup-import-file" type="file" accept=".json" data-action="import-backup" class="hidden">
+          </label>
+          <p class="backup-nav-note">JSON backup file / ملف نسخة احتياطية بصيغة JSON</p>
+        </div>
+
+        <a href="#" data-action="switch-tab" data-tab="settings" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="settings"><i class="fa-solid fa-sliders w-5 text-center"></i><span class="bi-label"><span class="en">Settings</span><span class="ar">الإعدادات</span></span></a>
       </div>
     </nav>
   <div class="p-3 border-t space-y-2 shrink-0" style="border-color:var(--line); padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px));">
@@ -651,111 +691,152 @@ select, input{font-family:'Cairo',sans-serif;}
 
     <!-- SETTINGS -->
     <section id="tab-settings" class="tab-content space-y-4">
-      <div class="card p-5 space-y-3 max-w-xl" style="border:2px solid var(--violet);">
-        <span class="bi-label"><span class="en font-display font-bold" style="color:var(--violet);">📤 Share the App</span><span class="ar">مشاركة التطبيق</span></span>
-        <p class="text-xs text-gray-500">Creates a standalone HTML file — no Claude account, no login, no internet needed to use it. Works on any device with a browser.<br>ينشئ ملف HTML مستقلًا — دون حساب أو تسجيل دخول أو اتصال بالإنترنت لاستخدامه. ويعمل على أي جهاز مزود بمتصفح.</p>
-        <button data-action="open-share-modal" class="text-white text-sm font-bold px-5 py-3 rounded-xl flex items-center gap-2" style="background:linear-gradient(120deg, var(--violet), var(--teal-dark));"><i class="fa-solid fa-share-nodes"></i> Share Application / مشاركة التطبيق</button>
-      </div>
-      <div class="card p-5 space-y-4 max-w-xl">
-        <span class="bi-label"><span class="en font-display font-bold">General Settings</span><span class="ar">إعدادات عامة</span></span>
-        <div>
-          <label class="bi-label mb-1"><span class="en">Teacher Name</span><span class="ar">اسم المعلم/ة</span></label>
-          <input id="setting-teacher-name" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
-        </div>
-        <div>
-          <label class="bi-label mb-1"><span class="en">English Language Coordinator Name</span><span class="ar">اسم منسق اللغة الإنجليزية</span></label>
-          <input id="setting-coordinator-name" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
-        </div>
-        <div>
-          <label class="bi-label mb-1"><span class="en">School Name</span><span class="ar">اسم المدرسة</span></label>
-          <input id="setting-school-name" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
-        </div>
-        <div>
-          <label class="bi-label mb-1"><span class="en">Term</span><span class="ar">الفصل الدراسي</span></label>
-          <select id="setting-term-select" data-action="set-term" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
-            <option value="first">First Term 2026 / الفصل الدراسي الأول</option>
-            <option value="second">Second Term 2026 / الفصل الدراسي الثاني</option>
-          </select>
-        </div>
-        <div>
-          <label class="bi-label mb-1"><span class="en">Honor Board — Participation Weight (%)</span><span class="ar">لوحة الشرف — وزن المشاركة (%)</span></label>
-          <input id="setting-honor-weight" type="number" min="0" max="100" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
-          <p class="text-[10px] text-gray-400 mt-1">Academic skills make up the rest (default 80% academic / 20% participation).<br>تمثل المهارات الأكاديمية النسبة المتبقية (الافتراضي: ٨٠٪ للمهارات الأكاديمية و٢٠٪ للمشاركة).</p>
-        </div>
-        <div>
-          <label class="bi-label mb-1"><span class="en">Ministry / Authority Name</span><span class="ar">اسم الوزارة أو الجهة</span></label>
-          <input id="setting-ministry-name" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
-        </div>
-        <button data-action="save-settings" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:var(--teal);">Save / حفظ الإعدادات</button>
-      </div>
-      <div class="card p-5 space-y-4 max-w-xl">
-        <span class="bi-label"><span class="en font-display font-bold">Appearance</span><span class="ar">المظهر</span></span>
-        <div>
-          <label class="bi-label mb-2"><span class="en">Theme Color</span><span class="ar">لون الواجهة</span></label>
-          <div id="theme-swatches" class="flex gap-2.5 mt-2 flex-wrap"></div>
-          <p class="text-[10px] text-gray-400 mt-2">Recommended English Language identity variations / تنويعات مقترحة لهوية اللغة الإنجليزية: <span id="subject-theme-hint"></span></p>
-        </div>
-        <div>
-          <label class="bi-label mb-1"><span class="en">Font Style</span><span class="ar">نوع الخط</span></label>
-          <select id="setting-font-family" data-action="set-font-family" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
-            <option value="cairo">★ Cairo (Recommended / موصى به)</option>
-            <option value="tajawal">★ Tajawal (Recommended / موصى به)</option>
-            <option value="ibmplex">★ IBM Plex Sans Arabic (Recommended / موصى به)</option>
-            <option value="almarai">Almarai</option>
-            <option value="notokufi">Noto Kufi Arabic</option>
-            <option value="changa">Changa</option>
-            <option value="elmessiri">El Messiri</option>
-          </select>
-        </div>
-        <div>
-          <label class="bi-label mb-1"><span class="en">Font Size</span><span class="ar">حجم الخط</span></label>
-          <select id="setting-font-size" data-action="set-font-size" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
-            <option value="xs">Extra Small / أصغر</option>
-            <option value="sm">Small / صغير</option>
-            <option value="md">Medium / متوسط</option>
-            <option value="lg">Large / كبير</option>
-            <option value="xl">Extra Large / أكبر</option>
-            <option value="xxl">XX Large / أكبر بكثير</option>
-          </select>
+      <div class="card p-5" style="border:2px solid var(--violet);">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <p class="font-display font-extrabold text-lg" style="color:var(--violet);">Workspace Settings</p>
+            <p class="text-xs text-gray-500">Personalize your profile and app preferences in one place.<br>خصّص ملفك الشخصي وتفضيلات التطبيق من مكان واحد.</p>
+          </div>
+          <button data-action="open-share-modal" class="text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2" style="background:linear-gradient(120deg, var(--violet), var(--teal-dark));"><i class="fa-solid fa-share-nodes"></i> Share App / مشاركة التطبيق</button>
         </div>
       </div>
-      <div class="card p-5 space-y-4 max-w-xl">
-        <span class="bi-label"><span class="en font-display font-bold">Logos</span><span class="ar">الشعارات</span></span>
-        <p class="text-[11px] text-gray-500">Used in the header and on certificates. Wide logos work fine — they'll keep their shape.<br>تظهر في الرأس وعلى الشهادات. وتُعرض الشعارات المستطيلة بأبعادها الطبيعية دون تشويه.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="text-center">
-            <div id="school-logo-preview" class="h-20 w-full rounded-xl border flex items-center justify-center overflow-hidden mb-2 px-3 bg-white" style="border-color:var(--line);"><i class="fa-solid fa-school text-gray-300 text-2xl"></i></div>
-            <label class="bi-label justify-center mb-1"><span class="en">School Logo</span><span class="ar">شعار المدرسة</span></label>
-            <div class="flex gap-2 justify-center mt-1">
-              <label class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border cursor-pointer" style="border-color:var(--teal); color:var(--teal-dark);">
-                Upload / رفع
-                <input type="file" accept="image/*" data-action="upload-school-logo" class="hidden">
-              </label>
-              <button data-action="remove-logo" data-key="schoolLogo" class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border text-gray-400" style="border-color:var(--line);">Remove</button>
+
+      <div class="settings-switcher grid grid-cols-2 gap-3 max-w-xl">
+        <button type="button" data-action="switch-settings-panel" data-panel="profile" class="settings-switcher-btn active">
+          <i class="fa-solid fa-id-badge"></i>
+          <span class="bi-label"><span class="en">Profile</span><span class="ar">الملف الشخصي</span></span>
+        </button>
+        <button type="button" data-action="switch-settings-panel" data-panel="preferences" class="settings-switcher-btn">
+          <i class="fa-solid fa-sliders"></i>
+          <span class="bi-label"><span class="en">Preferences</span><span class="ar">التفضيلات</span></span>
+        </button>
+      </div>
+
+      <div id="settings-panel-profile" class="settings-panel space-y-4 max-w-2xl">
+        <div class="card p-5 space-y-4">
+          <div class="settings-section-heading">
+            <div class="settings-section-icon"><i class="fa-solid fa-user-tie"></i></div>
+            <div>
+              <span class="bi-label"><span class="en font-display font-bold">Teacher Profile</span><span class="ar">ملف المعلم</span></span>
+              <p class="text-[10px] text-gray-400 mt-1">Your professional identity shown throughout the application.<br>بياناتك المهنية التي تظهر في أنحاء التطبيق.</p>
             </div>
           </div>
-          <div class="text-center">
-            <div id="ministry-logo-preview" class="h-20 w-full rounded-xl border flex items-center justify-center overflow-hidden mb-2 px-3 bg-white" style="border-color:var(--line);"><i class="fa-solid fa-landmark text-gray-300 text-2xl"></i></div>
-            <label class="bi-label justify-center mb-1"><span class="en">Ministry Logo</span><span class="ar">شعار الوزارة</span></label>
-            <div class="flex gap-2 justify-center mt-1">
-              <label class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border cursor-pointer" style="border-color:var(--teal); color:var(--teal-dark);">
-                Upload / رفع
-                <input type="file" accept="image/*" data-action="upload-ministry-logo" class="hidden">
-              </label>
-              <button data-action="remove-logo" data-key="ministryLogo" class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border text-gray-400" style="border-color:var(--line);">Remove</button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="bi-label mb-1"><span class="en">Teacher Name</span><span class="ar">اسم المعلم</span></label>
+              <input id="setting-teacher-name" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
+            </div>
+            <div>
+              <label class="bi-label mb-1"><span class="en">English Language Coordinator</span><span class="ar">منسق اللغة الإنجليزية</span></label>
+              <input id="setting-coordinator-name" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
+            </div>
+            <div>
+              <label class="bi-label mb-1"><span class="en">School Name</span><span class="ar">اسم المدرسة</span></label>
+              <input id="setting-school-name" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
+            </div>
+            <div>
+              <label class="bi-label mb-1"><span class="en">Ministry / Authority Name</span><span class="ar">اسم الوزارة أو الجهة</span></label>
+              <input id="setting-ministry-name" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
+            </div>
+          </div>
+          <button data-action="save-settings" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:var(--teal);"><i class="fa-solid fa-check"></i> Save Profile / حفظ الملف الشخصي</button>
+        </div>
+
+        <div class="card p-5 space-y-4">
+          <div class="settings-section-heading">
+            <div class="settings-section-icon"><i class="fa-solid fa-building-columns"></i></div>
+            <div>
+              <span class="bi-label"><span class="en font-display font-bold">Branding & Logos</span><span class="ar">الهوية والشعارات</span></span>
+              <p class="text-[10px] text-gray-400 mt-1">Keep your school and ministry identity consistent across the app and certificates.<br>حافظ على اتساق هوية المدرسة والوزارة في التطبيق والشهادات.</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="text-center">
+              <div id="school-logo-preview" class="h-20 w-full rounded-xl border flex items-center justify-center overflow-hidden mb-2 px-3 bg-white" style="border-color:var(--line);"><i class="fa-solid fa-school text-gray-300 text-2xl"></i></div>
+              <label class="bi-label justify-center mb-1"><span class="en">School Logo</span><span class="ar">شعار المدرسة</span></label>
+              <div class="flex gap-2 justify-center mt-1">
+                <label class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border cursor-pointer" style="border-color:var(--teal); color:var(--teal-dark);">Upload / رفع
+                  <input type="file" accept="image/*" data-action="upload-school-logo" class="hidden">
+                </label>
+                <button data-action="remove-logo" data-key="schoolLogo" class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border text-gray-400" style="border-color:var(--line);">Remove / حذف</button>
+              </div>
+            </div>
+            <div class="text-center">
+              <div id="ministry-logo-preview" class="h-20 w-full rounded-xl border flex items-center justify-center overflow-hidden mb-2 px-3 bg-white" style="border-color:var(--line);"><i class="fa-solid fa-landmark text-gray-300 text-2xl"></i></div>
+              <label class="bi-label justify-center mb-1"><span class="en">Ministry Logo</span><span class="ar">شعار الوزارة</span></label>
+              <div class="flex gap-2 justify-center mt-1">
+                <label class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border cursor-pointer" style="border-color:var(--teal); color:var(--teal-dark);">Upload / رفع
+                  <input type="file" accept="image/*" data-action="upload-ministry-logo" class="hidden">
+                </label>
+                <button data-action="remove-logo" data-key="ministryLogo" class="text-[11px] font-semibold px-3 py-1.5 rounded-lg border text-gray-400" style="border-color:var(--line);">Remove / حذف</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="card p-5 space-y-3 max-w-xl">
-        <span class="bi-label"><span class="en font-display font-bold">Backup</span><span class="ar">النسخ الاحتياطي</span></span>
-        <p class="text-xs text-gray-500">Export saves your complete data — classes, students, daily tracking, evidence, Honor Score history, and settings — as one file. Your data lives on this device/browser only, so export regularly, especially before switching devices.<br>يحفظ التصدير جميع بياناتك — الصفوف والطلاب والمتابعة اليومية وسجل درجة التميز والإعدادات — في ملف واحد. وتتم مزامنة بياناتك تلقائيًا مع حسابك السحابي؛ ويُستحسن الاحتفاظ بنسخة احتياطية دورية، خصوصًا قبل تغيير الجهاز.</p>
-        <div class="flex gap-2 flex-wrap">
-          <button data-action="export-backup" class="text-xs font-semibold px-4 py-2 rounded-xl border" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-download"></i> Export / تصدير نسخة</button>
-          <label class="text-xs font-semibold px-4 py-2 rounded-xl border cursor-pointer" style="border-color:var(--teal); color:var(--teal-dark);">
-            <i class="fa-solid fa-upload"></i> Import / استيراد نسخة
-            <input type="file" accept=".json" data-action="import-backup" class="hidden">
-          </label>
+
+      <div id="settings-panel-preferences" class="settings-panel hidden space-y-4 max-w-2xl">
+        <div class="card p-5 space-y-4">
+          <div class="settings-section-heading">
+            <div class="settings-section-icon"><i class="fa-solid fa-palette"></i></div>
+            <div>
+              <span class="bi-label"><span class="en font-display font-bold">Appearance</span><span class="ar">المظهر</span></span>
+              <p class="text-[10px] text-gray-400 mt-1">Choose the visual style and typography that suit your workflow.<br>اختر المظهر ونمط الخط المناسبين لطريقة عملك.</p>
+            </div>
+          </div>
+          <div>
+            <label class="bi-label mb-2"><span class="en">Theme Color</span><span class="ar">لون الواجهة</span></label>
+            <div id="theme-swatches" class="flex gap-2.5 mt-2 flex-wrap"></div>
+            <p class="text-[10px] text-gray-400 mt-2">Recommended English Language identity variations / تنويعات مقترحة لهوية اللغة الإنجليزية: <span id="subject-theme-hint"></span></p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="bi-label mb-1"><span class="en">Font Style</span><span class="ar">نوع الخط</span></label>
+              <select id="setting-font-family" data-action="set-font-family" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
+                <option value="cairo">★ Cairo (Recommended / موصى به)</option>
+                <option value="tajawal">★ Tajawal (Recommended / موصى به)</option>
+                <option value="ibmplex">★ IBM Plex Sans Arabic (Recommended / موصى به)</option>
+                <option value="almarai">Almarai</option>
+                <option value="notokufi">Noto Kufi Arabic</option>
+                <option value="changa">Changa</option>
+                <option value="elmessiri">El Messiri</option>
+              </select>
+            </div>
+            <div>
+              <label class="bi-label mb-1"><span class="en">Font Size</span><span class="ar">حجم الخط</span></label>
+              <select id="setting-font-size" data-action="set-font-size" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
+                <option value="xs">Extra Small / أصغر</option>
+                <option value="sm">Small / صغير</option>
+                <option value="md">Medium / متوسط</option>
+                <option value="lg">Large / كبير</option>
+                <option value="xl">Extra Large / أكبر</option>
+                <option value="xxl">XX Large / أكبر بكثير</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-5 space-y-4">
+          <div class="settings-section-heading">
+            <div class="settings-section-icon"><i class="fa-solid fa-sliders"></i></div>
+            <div>
+              <span class="bi-label"><span class="en font-display font-bold">App Preferences</span><span class="ar">تفضيلات التطبيق</span></span>
+              <p class="text-[10px] text-gray-400 mt-1">Control term and recognition preferences used by the application.<br>تحكم في الفصل الدراسي وإعدادات التميز التي يستخدمها التطبيق.</p>
+            </div>
+          </div>
+          <div>
+            <label class="bi-label mb-1"><span class="en">Term</span><span class="ar">الفصل الدراسي</span></label>
+            <select id="setting-term-select" data-action="set-term" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
+              <option value="first">First Term 2026 / الفصل الدراسي الأول</option>
+              <option value="second">Second Term 2026 / الفصل الدراسي الثاني</option>
+            </select>
+          </div>
+          <div>
+            <label class="bi-label mb-1"><span class="en">Honor Board — Participation Weight (%)</span><span class="ar">لوحة الشرف — وزن المشاركة (%)</span></label>
+            <input id="setting-honor-weight" type="number" min="0" max="100" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
+            <p class="text-[10px] text-gray-400 mt-1">Academic skills make up the rest (default: 80% academic / 20% participation).<br>تمثل المهارات الأكاديمية النسبة المتبقية (الافتراضي: ٨٠٪ للمهارات الأكاديمية و٢٠٪ للمشاركة).</p>
+          </div>
+          <button data-action="save-settings" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:var(--teal);"><i class="fa-solid fa-check"></i> Save Preferences / حفظ التفضيلات</button>
         </div>
       </div>
     </section>
@@ -1325,11 +1406,37 @@ function deleteStudent(id){
 /* ---------- dashboard ---------- */
 function toggleSidebar(){ document.body.classList.toggle('sidebar-open'); }
 function closeSidebar(){ document.body.classList.remove('sidebar-open'); }
+
+function toggleBackupMenu(){
+  const menu = document.getElementById('backup-nav-menu');
+  const toggle = document.querySelector('[data-action="toggle-backup-menu"]');
+  if(!menu || !toggle) return;
+  const open = menu.classList.contains('hidden');
+  menu.classList.toggle('hidden', !open);
+  toggle.setAttribute('aria-expanded', String(open));
+}
+function switchSettingsPanel(panel){
+  const panels = {
+    profile: document.getElementById('settings-panel-profile'),
+    preferences: document.getElementById('settings-panel-preferences')
+  };
+  Object.keys(panels).forEach(key=>{ if(panels[key]) panels[key].classList.toggle('hidden', key!==panel); });
+  document.querySelectorAll('.settings-switcher-btn[data-panel]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.panel===panel);
+  });
+}
+
 function toggleNavGroup(name){
   const targetGroup = document.getElementById('nav-group-'+name);
   if(!targetGroup) return;
   const targetToggle = document.querySelector('.nav-group-toggle[data-group="'+name+'"]');
   const shouldOpen = targetGroup.classList.contains('hidden');
+
+  const backupMenu = document.getElementById('backup-nav-menu');
+  const backupToggle = document.querySelector('[data-action="toggle-backup-menu"]');
+  if(backupMenu) backupMenu.classList.add('hidden');
+  if(backupToggle) backupToggle.setAttribute('aria-expanded','false');
+  switchSettingsPanel('profile');
 
   document.querySelectorAll('.nav-group-toggle[data-group]').forEach(toggle=>{
     const groupName = toggle.dataset.group;
@@ -3365,11 +3472,8 @@ document.addEventListener('click', function(e){
     case 'download-template': downloadStudentTemplate(); break;
     case 'play-journey': playStudentJourney(id); break;
     case 'toggle-nav-group': toggleNavGroup(t.dataset.group); break;
-    case 'open-backup':
-      switchTab('settings');
-      setTimeout(()=>document.getElementById('backup-panel')?.scrollIntoView({behavior:'smooth', block:'center'}), 0);
-      closeSidebar();
-      break;
+    case 'toggle-backup-menu': toggleBackupMenu(); break;
+    case 'switch-settings-panel': switchSettingsPanel(t.dataset.panel); break;
       case 'logout':
   logoutUser();
   break;
