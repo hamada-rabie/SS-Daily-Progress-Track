@@ -257,51 +257,160 @@ body.lang-ar .bi-label .en{text-align:right;}
 body.lang-ar input,body.lang-ar select,body.lang-ar textarea{text-align:right;direction:rtl;}
 body.lang-ar .settings-section-heading{text-align:right;}
 </style><style id="icon-action-styles">
- .icon-action-btn{width:28px;height:28px;border:1px solid var(--line);border-radius:9px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--teal-dark);background:var(--card);transition:.18s;}
+.icon-action-btn{width:28px;height:28px;border:1px solid var(--line);border-radius:9px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--teal-dark);background:var(--card);transition:.18s;}
 .icon-action-btn:hover{transform:translateY(-1px);border-color:var(--teal);box-shadow:0 3px 10px rgba(0,0,0,.08);}
 .icon-action-btn.danger{color:#b91c1c;}
 .icon-action-btn.danger:hover{border-color:#ef4444;background:#fff5f5;}
-<style id="header-layout-v2"><style id="header-layout-v3">
-/* Final header stabilization: fixed geometry prevents clock/language text from shifting the header. */
-#app-topbar{position:sticky;direction:ltr;display:grid!important;grid-template-columns:132px minmax(0,1fr) 330px;align-items:start;gap:18px!important;}
-.header-left-identity{width:132px;min-width:132px;max-width:132px;flex-shrink:0;align-items:flex-start!important;}
-.header-right-identity{width:330px;min-width:330px;max-width:330px;margin-left:0!important;justify-self:end;display:grid!important;grid-template-columns:minmax(110px,1fr) 92px;align-items:start;gap:18px!important;}
-.header-right-identity > div:first-child{width:92px;min-width:92px;align-items:flex-end!important;}
-.header-right-identity > div:first-child #header-school-logo{width:100%;display:flex;justify-content:flex-end;}
-.header-right-identity .header-dept-name{width:100%;text-align:right;white-space:nowrap;}
+</style>
+<style id="header-layout-final">
+/* Header: fixed geometry, but NOT frozen/sticky. It scrolls naturally with the Home page. */
+#app-topbar{
+  position:relative!important;
+  top:auto!important;
+  direction:ltr!important;
+  display:grid!important;
+  grid-template-columns:132px minmax(0,1fr) 360px;
+  align-items:start;
+  gap:18px!important;
+  flex-shrink:0;
+}
+.header-left-identity{
+  grid-column:1;
+  width:132px;min-width:132px;max-width:132px;
+  flex-shrink:0;
+  align-items:flex-start!important;
+}
+.header-right-identity{
+  grid-column:3;
+  width:360px;min-width:360px;max-width:360px;
+  margin-left:0!important;
+  justify-self:end;
+  display:grid!important;
+  grid-template-columns:minmax(145px,1fr) 92px;
+  align-items:start;
+  gap:18px!important;
+  direction:ltr!important;
+}
+/* Current tab title is always LEFT of the school/teacher identity block. */
+.header-right-identity > div:last-child{
+  grid-column:1;
+  grid-row:1;
+  width:100%;min-width:0;
+  display:flex!important;
+  justify-content:flex-start!important;
+  align-items:flex-start!important;
+  text-align:left!important;
+  direction:ltr!important;
+  padding-top:2px;
+}
+.header-right-identity > div:first-child{
+  grid-column:2;
+  grid-row:1;
+  width:92px;min-width:92px;
+  align-items:flex-end!important;
+  direction:rtl!important;
+}
+.header-right-identity > div:first-child #header-school-logo{
+  width:100%;
+  display:flex;
+  justify-content:flex-end;
+}
 .header-right-identity #header-teacher-photo{margin-top:2px;}
-.header-right-identity > div:last-child{width:100%;min-width:0;justify-content:flex-start!important;}
-#current-page-title-en,#current-page-title-ar{white-space:nowrap;}
-body.lang-ar #app-topbar{direction:ltr!important;}
-body.lang-ar .header-left-identity{direction:ltr!important;align-items:flex-start!important;}
-body.lang-ar .header-right-identity{direction:ltr!important;}
-body.lang-ar .header-right-identity > div:first-child{direction:rtl!important;align-items:flex-end!important;}
-body.lang-ar .header-dept-name{text-align:right!important;}
-body.lang-ar #header-term-select,body.lang-ar #header-language-select{align-self:flex-start!important;}
-body.lang-ar .header-clock-row{direction:ltr!important;white-space:nowrap;}
-body.lang-bilingual .header-dept-name{display:flex!important;flex-direction:column;align-items:flex-end;line-height:1.05;}
-body.lang-bilingual .header-dept-name .en + .ar::before{content:""!important;}
-.home-title-bilingual .en + .ar::before{content:""!important;}
-.home-hero-tagline{white-space:nowrap;}
-body.lang-ar .home-books-visual{display:none!important;}
-body.lang-ar .home-english-hardcoded{display:none!important;}
+.header-right-identity .header-dept-name{
+  width:100%;
+  text-align:right!important;
+  white-space:nowrap;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-end!important;
+  line-height:1.05!important;
+}
+.header-right-identity .header-dept-name .en{
+  direction:ltr!important;
+  text-align:right!important;
+  width:100%;
+}
+.header-right-identity .header-dept-name .ar{
+  direction:rtl!important;
+  text-align:right!important;
+  width:100%;
+}
+/* Language modes: never show the other language inside a single-language view. */
+body.lang-ar .hero-cta-en,
+body.lang-ar .hero-status-en{display:none!important;}
+body.lang-en .hero-cta-ar,
+body.lang-en .hero-status-ar{display:none!important;}
+body.lang-ar #current-page-title-en{display:none!important;}
+body.lang-en #current-page-title-ar{display:none!important;}
+body.lang-ar .header-right-identity > div:last-child{
+  direction:rtl!important;
+  justify-content:flex-end!important;
+  text-align:right!important;
+}
+body.lang-ar #current-page-title-ar{
+  direction:rtl!important;
+  text-align:right!important;
+  width:100%;
+}
+body.lang-en #current-page-title-en{
+  direction:ltr!important;
+  text-align:left!important;
+}
+body.lang-bilingual #current-page-title-en,
+body.lang-bilingual #current-page-title-ar{display:block!important;}
+body.lang-bilingual .header-right-identity > div:last-child{
+  direction:ltr!important;
+  text-align:left!important;
+}
+/* Bilingual department identity: English top, Arabic bottom, Arabic aligned right. */
+body.lang-bilingual .header-right-identity .header-dept-name{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-end!important;
+}
+body.lang-bilingual .header-right-identity .header-dept-name .en,
+body.lang-bilingual .header-right-identity .header-dept-name .ar{display:block!important;}
+/* Keep the Arabic hero CTA as a true RTL sentence. */
+body.lang-ar .hero-bilingual-cta{direction:rtl!important;}
+body.lang-ar .hero-bilingual-cta .hero-cta-ar{direction:rtl!important;text-align:right!important;}
+body.lang-en .hero-bilingual-cta{direction:ltr!important;}
+body.lang-en .hero-bilingual-cta .hero-cta-en{direction:ltr!important;text-align:left!important;}
+/* Hero daily-status Arabic: number starts the RTL sentence at the right edge. */
+.hero-status-ar{direction:rtl!important;text-align:right!important;unicode-bidi:plaintext;display:block;}
+.hero-status-en{direction:ltr!important;text-align:left!important;display:block;}
+.hero-status-row{display:flex;align-items:center;justify-content:space-between;gap:12px;direction:ltr;}
+body.lang-ar .hero-status-row{direction:rtl!important;}
+body.lang-ar .hero-status-row > span:first-child{display:none!important;}
+body.lang-ar .hero-status-row > span:last-child{width:100%;text-align:right!important;}
+/* Sidebar tab highlighting is explicit and remains visible in every language. */
+.nav-link{position:relative!important;color:#64736F;}
+.nav-link.active{
+  background:linear-gradient(90deg,var(--teal),var(--teal-dark))!important;
+  color:#fff!important;
+  font-weight:700!important;
+  box-shadow:0 3px 10px rgba(0,0,0,.12)!important;
+}
+.nav-link.active i{color:#fff!important;}
+.nav-link.active .en,.nav-link.active .ar{color:#fff!important;}
+.nav-link:not(.active):hover{background:#EAF5F2!important;}
+/* Responsive header geometry */
 @media(max-width:1023px){
-  #app-topbar{grid-template-columns:112px minmax(0,1fr) 250px;gap:10px!important;}
+  #app-topbar{grid-template-columns:112px minmax(0,1fr) 270px;gap:10px!important;}
   .header-left-identity{width:112px;min-width:112px;max-width:112px;}
-  .header-right-identity{width:250px;min-width:250px;max-width:250px;grid-template-columns:minmax(92px,1fr) 82px;gap:10px!important;}
+  .header-right-identity{width:270px;min-width:270px;max-width:270px;grid-template-columns:minmax(110px,1fr) 82px;gap:10px!important;}
   .header-right-identity > div:first-child{width:82px;min-width:82px;}
 }
 @media(max-width:480px){
-  #app-topbar{grid-template-columns:92px minmax(0,1fr) 174px;gap:6px!important;padding-left:8px!important;padding-right:8px!important;}
+  #app-topbar{grid-template-columns:92px minmax(0,1fr) 190px;gap:6px!important;padding-left:8px!important;padding-right:8px!important;}
   .header-left-identity{width:92px;min-width:92px;max-width:92px;}
-  .header-right-identity{width:174px;min-width:174px;max-width:174px;grid-template-columns:minmax(70px,1fr) 70px;gap:7px!important;}
+  .header-right-identity{width:190px;min-width:190px;max-width:190px;grid-template-columns:minmax(78px,1fr) 70px;gap:7px!important;}
   .header-right-identity > div:first-child{width:70px;min-width:70px;}
   .header-right-identity .header-dept-name{font-size:8px!important;}
-  .header-right-identity > div:last-child{min-width:0!important;}
   #current-page-title-en{font-size:11px!important;}
   #current-page-title-ar{font-size:9px!important;}
 }
-</style></style></head>
+</style>
+</head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
 <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2"></div>
@@ -1636,6 +1745,7 @@ function renderHeroDailyStatus(){
   if(!wrap) return;
   const total = studentsData.length;
   if(total===0){ wrap.innerHTML = ''; return; }
+
   const today = todayStr();
   const todayRecs = dailyArchives[today] || {};
   const trackedIds = Object.keys(todayRecs).map(Number);
@@ -1645,22 +1755,27 @@ function renderHeroDailyStatus(){
 
   let statusHtml;
   if(tracked===0){
-    statusHtml = `<div class="rounded-xl px-3 py-2 text-center text-[11px] font-semibold bg-white/15">No tracking recorded yet today. / لا توجد متابعة مسجّلة اليوم بعد.</div>`;
+    statusHtml = `<div class="rounded-xl px-3 py-2 text-center text-[11px] font-semibold bg-white/15">
+      <span class="hero-status-en">No tracking recorded yet today.</span>
+      <span class="hero-status-ar">لا توجد متابعة مسجّلة اليوم بعد.</span>
+    </div>`;
   } else if(untracked>0){
     statusHtml = `<div data-action="switch-tab" data-tab="daily" class="cursor-pointer rounded-xl px-3 py-2 flex items-center justify-between gap-2 text-[11px] font-semibold hover:brightness-110 transition" style="background:rgba(242,169,59,0.25);">
-      <span><i class="fa-solid fa-triangle-exclamation" style="color:var(--gold);"></i> ${untracked} student${untracked===1?'':'s'} still need today's tracking</span>
-      <span class="opacity-80 shrink-0">${untracked} طالب لا تزال متابعته اليوم مطلوبة</span>
+      <span class="hero-status-en"><i class="fa-solid fa-triangle-exclamation" style="color:var(--gold);"></i> ${untracked} student${untracked===1?'':'s'} still need today's tracking</span>
+      <span class="hero-status-ar"><i class="fa-solid fa-triangle-exclamation" style="color:var(--gold);"></i> ${untracked} طالب لا تزال متابعته اليوم مطلوبة</span>
     </div>`;
   } else {
     statusHtml = `<div class="rounded-xl px-3 py-2 text-center text-[11px] font-semibold" style="background:rgba(95,174,110,0.25);">
-      <i class="fa-solid fa-circle-check" style="color:var(--leaf);"></i> All students tracked today / تمت متابعة جميع الطلاب اليوم
+      <span class="hero-status-en"><i class="fa-solid fa-circle-check" style="color:var(--leaf);"></i> All students tracked today</span>
+      <span class="hero-status-ar"><i class="fa-solid fa-circle-check" style="color:var(--leaf);"></i> تمت متابعة جميع الطلاب اليوم</span>
     </div>`;
   }
 
   wrap.innerHTML = `
     <div class="space-y-1.5">
-      <div class="flex items-center justify-between text-[10px] text-white/70 px-0.5">
-        <span>Today's Tracking / متابعة اليوم</span>
+      <div class="hero-status-row text-[10px] text-white/70 px-0.5">
+        <span class="hero-status-en">Today's Tracking</span>
+        <span class="hero-status-ar">متابعة اليوم</span>
         <span>${tracked} / ${total}</span>
       </div>
       <div class="w-full h-2 rounded-full bg-white/15 overflow-hidden"><div class="h-full rounded-full" style="width:${pct}%; background:${pct===100?'var(--leaf)':(pct>0?'var(--gold)':'rgba(255,255,255,0.5)')}; transition:width .5s ease;"></div></div>
