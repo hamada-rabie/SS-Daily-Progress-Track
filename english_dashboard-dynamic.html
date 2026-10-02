@@ -34,13 +34,16 @@ body.auth-pending > *{visibility:hidden !important;} body{font-family:var(--user
 .bilingual-inline{direction:ltr; unicode-bidi:plaintext;}
 .bilingual-inline .ar{direction:rtl; text-align:right;}
 .hero-bilingual-cta{direction:ltr;}
-/* Keep table column headings visible while scrolling through long tab content. */
-table thead{
+/* Frozen table headers:
+   The page scrolls vertically, while each table wrapper scrolls horizontally only.
+   Using overflow:auto clip prevents the horizontal wrapper from becoming the
+   vertical sticky reference, so the header can stay pinned below the app topbar. */
+.table-scroll-x{overflow:auto clip;}
+.table-scroll-x thead{position:static;}
+.table-scroll-x thead th{
   position:sticky;
   top:var(--app-topbar-height,72px);
-  z-index:20;
-}
-table thead th{
+  z-index:25;
   background:var(--card);
   box-shadow:0 2px 0 var(--line);
 }
@@ -522,7 +525,7 @@ select, input{font-family:'Cairo',sans-serif;}
           </div>
         </div>
       </div>
-      <div class="card overflow-x-auto">
+      <div class="card table-scroll-x">
         <table class="w-full text-sm text-right">
           <thead>
             <tr class="text-gray-500 border-b-2" style="border-color:var(--line);">
@@ -550,7 +553,7 @@ select, input{font-family:'Cairo',sans-serif;}
         </div>
         <p class="text-[11px] text-gray-500">Behaviour & Participation: dropdown · Homework: checkbox · Attendance: tap to cycle<br>السلوك والمشاركة: قائمة منسدلة · الواجب: مربع اختيار · الحضور: اضغط للتبديل</p>
       </div>
-      <div class="card overflow-x-auto">
+      <div class="card table-scroll-x">
         <table class="w-full text-sm text-right">
           <thead>
             <tr class="text-gray-500 border-b-2" style="border-color:var(--line);">
@@ -1213,6 +1216,32 @@ function showToast(msg, type){
   el.textContent = msg;
   c.appendChild(el);
   setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 2200);
+}
+function showBilingualToast(en, ar, type){
+  const c = document.getElementById('toast-container');
+  const colors = {success:'#2C8C46', error:'#C0392B', info:'#0E7C74'};
+  const el = document.createElement('div');
+  el.className = 'text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg';
+  el.style.background = colors[type] || colors.info;
+  el.style.direction = 'ltr';
+  el.style.display = 'flex';
+  el.style.alignItems = 'center';
+  el.style.justifyContent = 'space-between';
+  el.style.gap = '10px';
+  const enSpan = document.createElement('span');
+  enSpan.textContent = en;
+  enSpan.style.direction = 'ltr';
+  enSpan.style.textAlign = 'left';
+  enSpan.style.whiteSpace = 'nowrap';
+  const arSpan = document.createElement('span');
+  arSpan.textContent = ar;
+  arSpan.style.direction = 'rtl';
+  arSpan.style.textAlign = 'right';
+  arSpan.style.unicodeBidi = 'plaintext';
+  arSpan.style.whiteSpace = 'nowrap';
+  el.append(enSpan, arSpan);
+  c.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 3000);
 }
 
 /* ---------- nav ---------- */
@@ -2963,7 +2992,7 @@ function sendReportWhatsApp(){
   const studentSelect = document.getElementById('report-student-select');
   const id = studentSelect ? Number(studentSelect.value) : NaN;
   if(!studentSelect || !studentSelect.value || !studentsData.some(s=>s.id===id)){
-    showToast('Please select a student from the list above / رجاء اختيار طالب من القائمة أعلاه','error');
+    showBilingualToast('Please select a student from the list above','رجاء اختيار طالب من القائمة أعلاه','error');
     return;
   }
   const dateInput = document.getElementById('report-period-date');
