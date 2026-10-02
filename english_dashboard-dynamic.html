@@ -66,12 +66,25 @@ th .bi-label .ar{font-size:9.5px;}
 .nav-group-toggle{transition:background .15s ease, color .15s ease;}
 .nav-group-toggle:hover{background:#EAF5F2; color:var(--teal-dark);}
 .nav-group-toggle:hover .ar{color:var(--teal-dark);}
-.nav-link .bi-label,.nav-group-toggle .bi-label{display:flex; flex-direction:row; align-items:baseline; gap:7px; direction:ltr; white-space:nowrap;}
-.nav-link .bi-label .en,.nav-group-toggle .bi-label .en{direction:ltr;}
-.nav-link .bi-label .ar,.nav-group-toggle .bi-label .ar{direction:rtl; text-align:right; unicode-bidi:plaintext;}
-.sidebar-bilingual{display:flex; align-items:center; justify-content:center; gap:8px; direction:ltr;}
+.nav-link .bi-label,.nav-group-toggle .bi-label{display:flex; flex-direction:column; align-items:flex-start; gap:2px; direction:ltr; white-space:normal; min-width:0; line-height:1.15;}
+.nav-link .bi-label .en,.nav-group-toggle .bi-label .en{direction:ltr; white-space:normal;}
+.nav-link .bi-label .ar,.nav-group-toggle .bi-label .ar{direction:rtl; text-align:right; unicode-bidi:plaintext; white-space:normal; width:100%;}
+.sidebar-bilingual{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; direction:ltr; line-height:1.15;}
 .sidebar-bilingual .en{direction:ltr;}
-.sidebar-bilingual .ar{direction:rtl; text-align:right; unicode-bidi:plaintext;}
+.sidebar-bilingual .ar{direction:rtl; text-align:center; unicode-bidi:plaintext;}
+.cloud-status{display:flex; align-items:center; gap:7px; margin-top:3px; padding:4px 6px; border-radius:9px; width:max-content; max-width:100%; background:#F0F8F5; border:1px solid #DDEEE9; color:#2C8C46; cursor:default; transition:all .2s ease;}
+.cloud-status-icon{width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; font-size:12px;}
+.cloud-status-text{display:flex; flex-direction:column; line-height:1.05;}
+.cloud-status-en{font-size:9.5px; font-weight:800; direction:ltr;}
+.cloud-status-ar{font-size:8.5px; font-weight:500; direction:rtl; margin-top:2px;}
+.cloud-status[data-state="syncing"]{color:#B5850C; background:#FFF9EA; border-color:#F4E7BC;}
+.cloud-status[data-state="syncing"] .cloud-status-icon i{animation:cloudSyncSpin 1.15s linear infinite;}
+.cloud-status[data-state="synced"] .cloud-status-icon i{animation:cloudSyncDone 2.2s ease-in-out infinite;}
+.cloud-status[data-state="error"]{color:#C0392B; background:#FFF1F0; border-color:#F5D0CC;}
+@keyframes cloudSyncSpin{from{transform:translateY(0) rotate(0deg);opacity:.7;}50%{transform:translateY(-1px) rotate(-8deg);opacity:1;}to{transform:translateY(0) rotate(0deg);opacity:.7;}}
+@keyframes cloudSyncDone{0%,100%{transform:scale(1);opacity:.85;}50%{transform:scale(1.12);opacity:1;}}
+@media (prefers-reduced-motion: reduce){.cloud-status[data-state="syncing"] .cloud-status-icon i,.cloud-status[data-state="synced"] .cloud-status-icon i{animation:none;}}
+
 
 .hero-band{
   background:
@@ -197,7 +210,10 @@ select, input{font-family:'Cairo',sans-serif;}
   <div class="p-3 border-t space-y-2 shrink-0" style="border-color:var(--line); padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px));">
     <div class="rounded-xl px-2 py-1.5" style="background:#F8FBFA;">
       <p id="sidebar-teacher-name" class="text-xs font-bold text-gray-800">Teacher</p>
-      <p class="text-[10px] text-gray-500">Cloud synced / تتم المزامنة سحابياً</p>
+      <div id="cloud-status" class="cloud-status" data-state="synced" title="Cloud synced / تمت المزامنة سحابياً" aria-live="polite">
+        <span class="cloud-status-icon" aria-hidden="true"><i class="fa-solid fa-cloud-check"></i></span>
+        <span class="cloud-status-text"><span class="cloud-status-en">Cloud synced</span><span class="cloud-status-ar">تمت المزامنة سحابياً</span></span>
+      </div>
       <p class="text-[9px] text-gray-300 mt-0.5">App Version: 2.1.0</p>
       <button type="button" data-action="logout" class="w-full mt-2 text-xs font-bold px-3 py-2 rounded-xl flex items-center justify-center gap-2 transition" style="background:#fff1f2; color:#dc2626; border:1px solid #fecdd3;">
         <i class="fa-solid fa-right-from-bracket"></i>
@@ -1007,10 +1023,31 @@ function saveData(){
 }
 
 
+function setCloudStatus(state){
+  const el = document.getElementById('cloud-status');
+  if(!el) return;
+  const states = {
+    syncing:{icon:'fa-cloud-arrow-up', en:'Syncing…', ar:'جارٍ التزامن السحابي', title:'Syncing / جارٍ التزامن'},
+    synced:{icon:'fa-cloud-check', en:'Cloud synced', ar:'تمت المزامنة سحابياً', title:'Cloud synced / تمت المزامنة سحابياً'},
+    error:{icon:'fa-cloud-xmark', en:'Sync error', ar:'تعذر التزامن', title:'Cloud sync error / تعذر التزامن'}
+  };
+  const s = states[state] || states.synced;
+  el.dataset.state = state;
+  el.title = s.title;
+  const icon = el.querySelector('.cloud-status-icon i');
+  const en = el.querySelector('.cloud-status-en');
+  const ar = el.querySelector('.cloud-status-ar');
+  if(icon) icon.className = 'fa-solid '+s.icon;
+  if(en) en.textContent = s.en;
+  if(ar) ar.textContent = s.ar;
+}
+
 async function saveCloudData(){
+  setCloudStatus('syncing');
   try{
     if(!window.auth.currentUser){
       console.warn('☁️ Cloud save skipped: no authenticated user.');
+      setCloudStatus('error');
       return;
     }
 
@@ -1025,13 +1062,11 @@ async function saveCloudData(){
     });
 
     console.log('☁️ Cloud data saved:', window.auth.currentUser.email);
-    const cloudStatus = document.getElementById('cloud-status');
-    if(cloudStatus) cloudStatus.textContent = '☁️ Synced';
+    setCloudStatus('synced');
 
   }catch(error){
     console.error('❌ Cloud save error:', error);
-    const cloudStatus = document.getElementById('cloud-status');
-    if(cloudStatus) cloudStatus.textContent = '⚠️ Cloud sync error';
+    setCloudStatus('error');
   }
 }
 
