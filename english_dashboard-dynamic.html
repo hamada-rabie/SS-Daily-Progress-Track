@@ -34,6 +34,17 @@ body.auth-pending > *{visibility:hidden !important;} body{font-family:var(--user
 .bilingual-inline{direction:ltr; unicode-bidi:plaintext;}
 .bilingual-inline .ar{direction:rtl; text-align:right;}
 .hero-bilingual-cta{direction:ltr;}
+/* Keep table column headings visible while scrolling through long tab content. */
+table thead{
+  position:sticky;
+  top:var(--app-topbar-height,72px);
+  z-index:20;
+}
+table thead th{
+  background:var(--card);
+  box-shadow:0 2px 0 var(--line);
+}
+
 .hero-bilingual-cta .hero-cta-en{direction:ltr; text-align:left; white-space:nowrap;}
 .hero-bilingual-cta .hero-cta-ar{direction:rtl; text-align:right; unicode-bidi:plaintext; white-space:nowrap;}
 
@@ -284,7 +295,7 @@ select, input{font-family:'Cairo',sans-serif;}
 
 <!-- Main -->
 <main class="flex-1 flex flex-col h-screen overflow-y-auto" style="height:100dvh; overflow-y:auto; display:flex; flex-direction:column; flex:1 1 0%; min-width:0; position:relative;">
-  <header class="text-white px-4 sm:px-6 py-3 flex items-start justify-between sticky z-10 no-print" style="top:env(safe-area-inset-top,0px); background:linear-gradient(120deg, var(--teal), var(--teal-dark)); background-color:var(--teal-dark); position:sticky; z-index:30; flex-shrink:0; direction:ltr; gap:10px;">
+  <header id="app-topbar" class="text-white px-4 sm:px-6 py-3 flex items-start justify-between sticky z-10 no-print" style="top:env(safe-area-inset-top,0px); background:linear-gradient(120deg, var(--teal), var(--teal-dark)); background-color:var(--teal-dark); position:sticky; z-index:30; flex-shrink:0; direction:ltr; gap:10px;">
     <!-- LEFT: mobile menu trigger + school logo + date/time -->
     <div class="flex items-start gap-2 shrink-0">
       <button type="button" data-action="toggle-sidebar" class="sidebar-toggle-btn" aria-label="Menu">
@@ -1471,6 +1482,21 @@ function toggleNavGroup(name){
 
   if(targetToggle) targetToggle.focus({preventScroll:true});
 }
+function syncAppTopbarHeight(){
+  const topbar = document.getElementById('app-topbar');
+  if(!topbar) return;
+  document.documentElement.style.setProperty('--app-topbar-height', topbar.offsetHeight + 'px');
+}
+window.addEventListener('resize', syncAppTopbarHeight);
+if(window.ResizeObserver){
+  const topbarObserver = new ResizeObserver(syncAppTopbarHeight);
+  setTimeout(()=>{
+    const topbar = document.getElementById('app-topbar');
+    if(topbar) topbarObserver.observe(topbar);
+  }, 0);
+}
+setTimeout(syncAppTopbarHeight, 0);
+
 function updateGreeting(){
   const nameEl = document.getElementById('hero-teacher-name');
   const enEl = document.getElementById('hero-greeting-en');
