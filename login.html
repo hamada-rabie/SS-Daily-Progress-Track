@@ -242,7 +242,9 @@
     import {
       getAuth,
       signInWithEmailAndPassword,
-      sendPasswordResetEmail
+      sendPasswordResetEmail,
+      setPersistence,
+      browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -308,6 +310,8 @@
         "Signing in...";
 
       try {
+
+        await setPersistence(auth, browserLocalPersistence);
 
         await signInWithEmailAndPassword(
           auth,
