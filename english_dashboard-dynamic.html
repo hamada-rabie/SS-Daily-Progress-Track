@@ -3791,6 +3791,10 @@ window.addEventListener('resize',scheduleFrozenTableHeaders);
 setTimeout(scheduleFrozenTableHeaders,200);
 
 /* ---------- global event delegation (avoids inline handlers) ---------- */
+document.addEventListener('input', function(e){
+  const t=e.target.closest('[data-action="set-accessibility-zoom"]');
+  if(t) applyAccessibilityZoom(t.value);
+});
 document.addEventListener('click', function(e){
   const t = e.target.closest('[data-action]');
   if(!t) return;
