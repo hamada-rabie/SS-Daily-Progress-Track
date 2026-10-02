@@ -4080,7 +4080,8 @@ setPersistence(auth, browserLocalPersistence)
   })
   .catch((error) => {
     console.error("❌ Firebase Auth persistence error:", error);
-    document.body.classList.remove("auth-pending");
+    // Never reveal the dashboard when Auth initialization fails.
+    window.location.replace("login.html");
   });
 
   async function logoutUser() {
