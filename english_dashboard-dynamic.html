@@ -21,7 +21,7 @@
   box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%; height:100dvh; font-size:17px; overflow:hidden;}
-body.auth-pending > *{visibility:hidden !important;}\nbody{font-family:var(--user-font); background:var(--paper); color:var(--ink); height:100%; height:100dvh; margin:0; overflow:hidden; display:flex;}
+body.auth-pending > *{visibility:hidden !important;} body{font-family:var(--user-font); background:var(--paper); color:var(--ink); height:100%; height:100dvh; margin:0; overflow:hidden; display:flex;}
 .font-display{font-family:'Baloo 2','Cairo',sans-serif;}
 ::-webkit-scrollbar{width:8px;height:8px;}
 ::-webkit-scrollbar-thumb{background:#CFE3DE;border-radius:8px;}
@@ -3402,6 +3402,7 @@ console.log("🔥 Firebase connected successfully");
   }
 
   console.log("✅ User authenticated:", user.email);
+  document.body.classList.remove("auth-pending");
 
   loadCloudData();
 });
