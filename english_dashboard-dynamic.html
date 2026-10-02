@@ -988,6 +988,8 @@ async function loadCloudData(){
 }
 
 
+let cloudSaveQueue = Promise.resolve();
+
 function saveData(){
   try{
     localStorage.setItem('eng_classes', JSON.stringify(classesData));
@@ -995,7 +997,9 @@ function saveData(){
     localStorage.setItem('eng_daily', JSON.stringify(dailyArchives));
     localStorage.setItem('eng_settings', JSON.stringify(settings));
 
-    saveCloudData();
+    cloudSaveQueue = cloudSaveQueue
+      .then(() => saveCloudData())
+      .catch(error => console.error('❌ Cloud save queue error:', error));
 
   }catch(e){
     console.error('save error',e);
@@ -1021,9 +1025,13 @@ async function saveCloudData(){
     });
 
     console.log('☁️ Cloud data saved:', window.auth.currentUser.email);
+    const cloudStatus = document.getElementById('cloud-status');
+    if(cloudStatus) cloudStatus.textContent = '☁️ Synced';
 
   }catch(error){
     console.error('❌ Cloud save error:', error);
+    const cloudStatus = document.getElementById('cloud-status');
+    if(cloudStatus) cloudStatus.textContent = '⚠️ Cloud sync error';
   }
 }
 
