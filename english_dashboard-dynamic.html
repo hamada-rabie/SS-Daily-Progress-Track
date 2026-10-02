@@ -3461,8 +3461,16 @@ document.addEventListener('click', function(e){
     case 'open-class':
       switchTab('students');
       setTimeout(()=>{
+        const classId = String(t.dataset.id);
         const sel = document.getElementById('students-class-filter');
-        if(sel){ sel.value = t.dataset.id; renderStudentsTable(); }
+        const destSel = document.getElementById('import-destination-class');
+        if(sel){
+          sel.value = classId;
+          renderStudentsTable();
+        }
+        // Opening a specific class now also selects it as the Excel import destination.
+        // This prevents Excel's Class/Section columns from creating a duplicate class.
+        if(destSel) destSel.value = classId;
       }, 0);
       break;
     case 'open-edit-class': openEditClassModal(id); break;
