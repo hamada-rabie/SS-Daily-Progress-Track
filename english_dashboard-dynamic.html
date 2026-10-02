@@ -21,7 +21,7 @@
   box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%; height:100dvh; font-size:17px; overflow:hidden;}
-body.auth-pending > *{visibility:visible !important;} body{font-family:var(--user-font); background:var(--paper); color:var(--ink); height:100%; height:100dvh; margin:0; overflow:hidden; display:flex;}
+body.auth-pending > *{visibility:hidden !important;} body{font-family:var(--user-font); background:var(--paper); color:var(--ink); height:100%; height:100dvh; margin:0; overflow:hidden; display:flex;}
 .font-display{font-family:'Baloo 2','Cairo',sans-serif;}
 ::-webkit-scrollbar{width:8px;height:8px;}
 ::-webkit-scrollbar-thumb{background:#CFE3DE;border-radius:8px;}
@@ -3934,7 +3934,7 @@ function updateClock(){
   if(el) el.textContent = dateStr + '  ·  ' + timeStr;
 }
 
-window.addEventListener('DOMContentLoaded', ()=>{document.body.classList.remove('auth-pending');setTimeout(()=>document.body.classList.remove('auth-pending'),4000);
+window.addEventListener('DOMContentLoaded', ()=>{
   document.querySelectorAll('.nav-group-toggle[data-group]').forEach(toggle=>{
     const group = document.getElementById('nav-group-'+toggle.dataset.group);
     const isOpen = toggle.dataset.group === 'daily';
