@@ -236,8 +236,8 @@ select, input{font-family:'Cairo',sans-serif;}
     <div class="p-4 border-b flex items-center gap-3 shrink-0" style="border-color:var(--line); background:linear-gradient(135deg,#EAF7F5,#F5FAF8);">
       <div id="sidebar-logo-box" class="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-display font-bold text-xl shrink-0" style="background:var(--teal);">Aa</div>
       <div>
-        <h1 class="font-display font-extrabold text-sm" style="color:var(--teal-dark);">English Department</h1>
-        <p id="sidebar-school-name" class="text-[10px] text-gray-500">اسم المدرسة</p>
+        <h1 class="font-display font-extrabold text-sm" style="color:var(--teal-dark);"><span class="en">English Department</span><span class="ar">قسم اللغة الإنجليزية</span></h1>
+        <p id="sidebar-school-name" class="text-[10px] text-gray-500"><span class="en">School Name</span><span class="ar">اسم المدرسة</span></p>
       </div>
     </div>
     <nav class="p-3 space-y-1 text-sm overflow-y-auto" style="flex:1 1 auto; min-height:0;">
@@ -303,7 +303,7 @@ select, input{font-family:'Cairo',sans-serif;}
         <span class="cloud-status-icon" aria-hidden="true"><i class="fa-solid fa-cloud-check"></i></span>
         <span class="cloud-status-text"><span class="cloud-status-en">Cloud synced</span><span class="cloud-status-ar">تمت المزامنة سحابياً</span></span>
       </div>
-      <p class="text-[9px] text-gray-300 mt-0.5">App Version: 2.1.0</p>
+      <p class="text-[9px] text-gray-300 mt-0.5"><span class="en">App Version: 2.1.0</span><span class="ar">إصدار التطبيق: 2.1.0</span></p>
       <button type="button" data-action="logout" class="w-full mt-2 text-xs font-bold px-3 py-2 rounded-xl flex items-center justify-center gap-2 transition" style="background:#fff1f2; color:#dc2626; border:1px solid #fecdd3;">
         <i class="fa-solid fa-right-from-bracket"></i>
         <span class="sidebar-bilingual"><span class="en">Log Out</span><span class="ar">تسجيل الخروج</span></span>
@@ -352,9 +352,9 @@ select, input{font-family:'Cairo',sans-serif;}
     <div class="flex items-center gap-2 shrink-0 text-right" style="direction:rtl;">
       <div class="flex flex-col items-end gap-1">
         <div id="header-ministry-logo"></div>
-        <p class="text-[9px] leading-tight text-white/75 header-dept-name">English Language Department<br>قسم اللغة الإنجليزية</p>
+        <p class="text-[9px] leading-tight text-white/75 header-dept-name"><span class="en">English Language Department</span><span class="ar">قسم اللغة الإنجليزية</span></p>
         <div class="flex items-center gap-2" style="direction:rtl;">
-          <div id="header-teacher-photo" class="header-teacher-photo w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.18); border:2px solid rgba(255,255,255,0.72); box-shadow:0 2px 8px rgba(0,0,0,0.16);" title="Teacher Profile / ملف المعلم"></div>
+          <div id="header-teacher-photo" class="header-teacher-photo w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.18); border:2px solid rgba(255,255,255,0.72); box-shadow:0 2px 8px rgba(0,0,0,0.16); transform:translateX(4px);" title="Teacher Profile / ملف المعلم"></div>
           <span class="bi-label items-end"><span class="en text-sm font-display font-bold" id="current-page-title-en" style="color:#fff;">Home</span><span class="ar text-[11px]" id="current-page-title-ar" style="color:#DFF3F0;">الرئيسية</span></span>
         </div>
       </div>
@@ -367,9 +367,9 @@ select, input{font-family:'Cairo',sans-serif;}
     <section id="tab-dashboard" class="tab-content active space-y-5">
       <div class="hero-band text-white rounded-2xl p-6 sm:p-9 overflow-hidden">
         <div class="text-center max-w-2xl mx-auto space-y-1.5">
-          <p class="text-[10px] font-bold tracking-widest text-white/60 uppercase">Teacher Progress Command Center</p>
-          <h1 class="font-display font-extrabold leading-tight text-3xl sm:text-4xl">Students' Daily Progress Track</h1>
-          <p class="text-white/75 text-xs sm:text-sm">متابعة التقدم اليومي للطلاب</p>
+          <p class="text-[10px] font-bold tracking-widest text-white/60 uppercase"><span class="en">Teacher Progress Command Center</span><span class="ar">مركز متابعة تقدم المعلم</span></p>
+          <h1 class="font-display font-extrabold leading-tight text-3xl sm:text-4xl"><span class="en">Students' Daily Progress Track</span><span class="ar">متابعة التقدم اليومي للطلاب</span></h1>
+          <p class="text-white/75 text-xs sm:text-sm"><span class="en">Track student progress every day with clarity and evidence.</span><span class="ar">تابع تقدم الطلاب يوميًا بوضوح واستنادًا إلى بيانات موثوقة.</span></p>
         </div>
 
         <div class="home-books-visual flex justify-center mt-3" title="Learn · Practice · Succeed" aria-label="Learn, Practice, Succeed">
@@ -383,8 +383,8 @@ select, input{font-family:'Cairo',sans-serif;}
         </div>
 
         <div class="bi-row justify-center gap-1.5 mt-3 text-xs text-white/85">
-          <span id="hero-greeting-en">Welcome <span id="hero-teacher-name">Teacher</span></span>
-          <span id="hero-greeting-ar" class="text-white/60">مرحباً</span> 👋
+          <span id="hero-greeting-en" class="en">Welcome <span id="hero-teacher-name">Teacher</span> 👋</span>
+          <span id="hero-greeting-ar" class="ar text-white/60">مرحبًا <span id="hero-teacher-name-ar">بالمعلم</span> 👋</span>
         </div>
 
         <div class="flex justify-center mt-5">
@@ -394,7 +394,7 @@ select, input{font-family:'Cairo',sans-serif;}
         <div id="hero-daily-status" class="max-w-md mx-auto mt-4"></div>
 
         <div class="flex flex-wrap justify-center gap-2 mt-5">
-          <a href="#" data-action="switch-tab" data-tab="daily" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors"><i class="fa-solid fa-calendar-check"></i> Daily Tracking / المتابعة اليومية</a>
+          <a href="#" data-action="switch-tab" data-tab="daily" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors bilingual-inline"><i class="fa-solid fa-calendar-check"></i> Daily Tracking / المتابعة اليومية</a>
           <a href="#" data-action="switch-tab" data-tab="quickprofile" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors"><i class="fa-solid fa-lightbulb"></i> Insights / رؤى</a>
           <a href="#" data-action="switch-tab" data-tab="student360" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors"><i class="fa-solid fa-chart-simple"></i> Student Progress / تقدم الطالب</a>
           <a href="#" data-action="switch-tab" data-tab="journey" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors"><i class="fa-solid fa-route"></i> Journey / الرحلة</a>
@@ -405,11 +405,11 @@ select, input{font-family:'Cairo',sans-serif;}
         <div class="flex items-center justify-center gap-3 mt-5 pt-4" style="border-top:1px solid rgba(255,255,255,0.15);">
           <div class="bg-white/15 rounded-xl px-3 py-1.5 text-center min-w-[64px]">
             <p class="text-base font-extrabold" id="hero-stat-classes">0</p>
-            <p class="text-[9px] text-white/75">Classes / صفوف</p>
+            <p class="text-[9px] text-white/75 bilingual-inline">Classes / صفوف</p>
           </div>
           <div class="bg-white/15 rounded-xl px-3 py-1.5 text-center min-w-[64px]">
             <p class="text-base font-extrabold" id="hero-stat-students">0</p>
-            <p class="text-[9px] text-white/75">Students / طلاب</p>
+            <p class="text-[9px] text-white/75 bilingual-inline">Students / طلاب</p>
           </div>
         </div>
       </div>
@@ -440,8 +440,7 @@ select, input{font-family:'Cairo',sans-serif;}
 
       <div class="card p-3 sm:p-4 flex items-center gap-4 overflow-x-auto" style="background:#F6FBFA;">
         <div class="shrink-0 pr-3" style="border-right:1px solid var(--line);">
-          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wide">App Preview · Sample</p>
-          <p class="text-[9px] text-gray-400">معاينة توضيحية — بيانات افتراضية</p>
+          <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wide"><span class="en">App Preview · Sample</span><span class="ar">معاينة توضيحية — بيانات افتراضية</span></p>
         </div>
         <div class="flex items-center gap-1.5 shrink-0">
           <svg viewBox="0 0 170 34" class="w-[150px] h-[30px]">
@@ -453,7 +452,7 @@ select, input{font-family:'Cairo',sans-serif;}
           </svg>
         </div>
         <div class="flex items-center gap-2 text-[10px] font-semibold shrink-0 pl-3" style="border-left:1px solid var(--line);">
-          <span style="color:var(--sky);">Reading</span>
+          <span class="en" style="color:var(--sky);">Reading</span><span class="ar" style="color:var(--sky);">القراءة</span>
           <span class="text-gray-300">50%</span>
           <i class="fa-solid fa-arrow-right-long text-gray-300 text-[9px]"></i>
           <span style="color:var(--sky);">80%</span>
@@ -3528,16 +3527,39 @@ const FONT_FAMILIES = {
   changa:"'Changa',sans-serif", elmessiri:"'El Messiri',sans-serif"
 };
 const FONT_SIZES = { xs:'14px', sm:'15.5px', md:'17px', lg:'18.5px', xl:'20px', xxl:'22px' };
+function normalizeBilingualText(root=document){
+  // Convert remaining static/dynamic strings written as "English / العربية"
+  // into the same .en/.ar structure used throughout the app.
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node){
+      const p=node.parentElement;
+      if(!p || p.closest('script,style,textarea,option') || p.classList.contains('en') || p.classList.contains('ar') || p.classList.contains('bi-label')) return NodeFilter.FILTER_REJECT;
+      return /[A-Za-z]{2,}\\s*\\/\\s*[\\u0600-\\u06FF]/.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  const nodes=[]; let n; while((n=walker.nextNode())) nodes.push(n);
+  nodes.forEach(node=>{
+    const m=node.nodeValue.match(/^\\s*(.*?)\\s*\\/\\s*([\\u0600-\\u06FF].*?)\\s*$/);
+    if(!m) return;
+    const frag=document.createDocumentFragment();
+    const en=document.createElement('span'); en.className='en'; en.textContent=m[1];
+    const ar=document.createElement('span'); ar.className='ar'; ar.textContent=m[2];
+    frag.append(en,ar); node.parentNode.replaceChild(frag,node);
+  });
+}
 function applyLanguage(language){
   const lang = ['bilingual','en','ar'].includes(language) ? language : 'bilingual';
   settings.preferredLanguage = lang;
   document.body.classList.remove('lang-bilingual','lang-en','lang-ar');
   document.body.classList.add('lang-'+lang);
   document.documentElement.lang = lang==='ar' ? 'ar' : 'en';
+  document.documentElement.dir = lang==='ar' ? 'rtl' : 'ltr';
   const headerSel = document.getElementById('header-language-select');
   const settingsSel = document.getElementById('setting-preferred-language');
   if(headerSel) headerSel.value = lang;
   if(settingsSel) settingsSel.value = lang;
+  normalizeBilingualText(document.body);
+  updateClock();
 }
 function applyTheme(themeName){
   const pal = THEME_PALETTES[themeName] || THEME_PALETTES.teal;
@@ -3631,6 +3653,14 @@ function renderTeacherPhoto(){
       : '<i class="fa-solid fa-user text-white/80 text-sm"></i>';
   }
 }
+
+const languageObserver = new MutationObserver(mutations=>{
+  if(!document.body.classList.contains('lang-en') && !document.body.classList.contains('lang-ar')) return;
+  let relevant=false;
+  for(const m of mutations){ if(m.type==='childList' && m.addedNodes.length){ relevant=true; break; } }
+  if(relevant) normalizeBilingualText(document.body);
+});
+languageObserver.observe(document.body,{childList:true,subtree:true});
 
 let activeFrozenTable = null;
 let activeFrozenCleanup = null;
@@ -3849,6 +3879,7 @@ document.addEventListener('input', function(e){
 /* ---------- refresh ---------- */
 function refreshAllViews(){
   renderDashboard();
+  normalizeBilingualText(document.body);
   renderStudentsTable();
   renderDailyTable();
   renderSkillsTable();
