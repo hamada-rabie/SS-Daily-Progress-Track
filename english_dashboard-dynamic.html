@@ -1772,7 +1772,21 @@ const SKILL_META = {
   listening:{label:'Listening / الاستماع', icon:'fa-headphones', chip:'chip-listening', color:SKILL_COLORS.listening},
   speaking:{label:'Speaking / المحادثة', icon:'fa-comments', chip:'chip-speaking', color:SKILL_COLORS.speaking}
 };
-function totalScore(s){ return Object.values(s.skills).reduce((a,b)=>a+b,0); }
+/* ---------- Skill scoring rules: only actually assessed skills count ---------- */
+function getCurrentSkillValue(s, key){
+  const history = Array.isArray(s.skillHistory) ? s.skillHistory : [];
+  const dated = history.filter(h=>typeof h[key]==='number' && h.date).sort((a,b)=>a.date<b.date?-1:(a.date>b.date?1:0));
+  return dated.length ? dated[dated.length-1][key] : null;
+}
+function getAssessedSkillEntries(s){
+  return Object.keys(QP_SKILL_LABELS).map(k=>[k,getCurrentSkillValue(s,k)]).filter(([,v])=>v!==null);
+}
+function totalScore(s){ return getAssessedSkillEntries(s).reduce((sum,[,v])=>sum+v,0); }
+function assessedSkillCount(s){ return getAssessedSkillEntries(s).length; }
+function skillPercentage(s,key){
+  const v = getCurrentSkillValue(s,key);
+  return v===null ? null : v*10;
+}
 /* Short class display (e.g. "G.9 / A") — display-only, never touches the stored class name/section. */
 function shortClass(cls){
   if(!cls) return '-';
@@ -1781,7 +1795,8 @@ function shortClass(cls){
 }
 const PARTICIPATION_WEIGHTS = { excellent:10, active:6, passive:3, sleepy:0 };
 function honorScore(s){
-  const academicPct = (totalScore(s)/40)*100;
+  const count = assessedSkillCount(s);
+  const academicPct = count ? (totalScore(s)/(count*10))*100 : 0;
   const partPct = (PARTICIPATION_WEIGHTS[s.participationLevel] !== undefined ? PARTICIPATION_WEIGHTS[s.participationLevel] : 6) / 10 * 100;
   const pWeight = (settings.honorParticipationWeight !== undefined ? settings.honorParticipationWeight : 20) / 100;
   const aWeight = 1 - pWeight;
@@ -2030,9 +2045,9 @@ function renderQuickProfileCard(){
   const medal = rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':null;
 
   // Strength / Focus Area — derived live from the four skill scores, ties handled explicitly.
-  const skillEntries = Object.keys(s.skills).map(k=>[k, s.skills[k]]);
-  const maxVal = Math.max(...skillEntries.map(e=>e[1]));
-  const minVal = Math.min(...skillEntries.map(e=>e[1]));
+  const skillEntries = getAssessedSkillEntries(s);
+  const maxVal = skillEntries.length ? Math.max(...skillEntries.map(e=>e[1])) : 0;
+  const minVal = skillEntries.length ? Math.min(...skillEntries.map(e=>e[1])) : 0;
   const strengthKeys = skillEntries.filter(([k,v])=>v===maxVal).map(([k])=>QP_SKILL_LABELS[k]);
   const focusKeys = skillEntries.filter(([k,v])=>v===minVal).map(([k])=>QP_SKILL_LABELS[k]);
   const noSkillData = (maxVal===0 && minVal===0);
@@ -2079,10 +2094,10 @@ function renderQuickProfileCard(){
       <!-- Performance Snapshot -->
       <div class="space-y-3">
         <p class="text-xs font-semibold text-gray-500">Performance Snapshot / لمحة عن الأداء</p>
-        ${skillBar('Reading / القراءة', s.skills.reading, SKILL_COLORS.reading)}
-        ${skillBar('Writing / الكتابة', s.skills.writing, SKILL_COLORS.writing)}
-        ${skillBar('Listening / الاستماع', s.skills.listening, SKILL_COLORS.listening)}
-        ${skillBar('Speaking / المحادثة', s.skills.speaking, SKILL_COLORS.speaking)}
+        ${skillBar('Reading / القراءة', skillPercentage(s,'reading'), SKILL_COLORS.reading)}
+        ${skillBar('Writing / الكتابة', skillPercentage(s,'writing'), SKILL_COLORS.writing)}
+        ${skillBar('Listening / الاستماع', skillPercentage(s,'listening'), SKILL_COLORS.listening)}
+        ${skillBar('Speaking / المحادثة', skillPercentage(s,'speaking'), SKILL_COLORS.speaking)}
       </div>
 
       <!-- Strength / Focus Area -->
@@ -2323,8 +2338,8 @@ function getStudentDataConfidence(s){
 function getStudentEvidenceSummary(s){ return getStudentDataConfidence(s); }
 function getStudentStrengths(s){
   const out = [];
-  const entries = Object.keys(s.skills).map(k=>[k, s.skills[k]]);
-  const max = Math.max(...entries.map(e=>e[1]));
+  const entries = getAssessedSkillEntries(s);
+  const max = entries.length ? Math.max(...entries.map(e=>e[1])) : 0;
   if(max>0){
     const top = entries.filter(([k,v])=>v===max).map(([k])=>k);
     if(top.length===1){
@@ -2340,9 +2355,9 @@ function getStudentStrengths(s){
 }
 function getStudentFocusAreas(s){
   const out = [];
-  const entries = Object.keys(s.skills).map(k=>[k, s.skills[k]]);
-  const max = Math.max(...entries.map(e=>e[1]));
-  const min = Math.min(...entries.map(e=>e[1]));
+  const entries = getAssessedSkillEntries(s);
+  const max = entries.length ? Math.max(...entries.map(e=>e[1])) : 0;
+  const min = entries.length ? Math.min(...entries.map(e=>e[1])) : 0;
   if(max>0 && min<max){
     const bottom = entries.filter(([k,v])=>v===min).map(([k])=>k);
     if(bottom.length===1 && min<=5){
@@ -2420,11 +2435,19 @@ function monthLabel(ym){
 /* ---- Class Pulse: class-level analytics (reuses per-student foundation functions) ---- */
 function getClassStudents(classId){ return studentsData.filter(s=>String(s.classId)===String(classId)); }
 function getClassAcademicAverages(students){
-  const withData = students.filter(s=>totalScore(s)>0);
-  if(!withData.length) return null;
   const avg = {};
-  Object.keys(QP_SKILL_LABELS).forEach(k=>{ avg[k] = Math.round(withData.reduce((sum,s)=>sum+s.skills[k],0)/withData.length*10); });
-  return {avg, count:withData.length, total:students.length};
+  let assessedAny = false;
+  Object.keys(QP_SKILL_LABELS).forEach(k=>{
+    const vals = students.map(s=>getCurrentSkillValue(s,k)).filter(v=>v!==null);
+    if(vals.length){
+      assessedAny = true;
+      avg[k] = Math.round(vals.reduce((sum,v)=>sum+v,0)/vals.length*10);
+    }else{
+      avg[k] = null;
+    }
+  });
+  if(!assessedAny) return null;
+  return {avg, count:students.filter(s=>assessedSkillCount(s)>0).length, total:students.length};
 }
 function getClassHomeworkAverage(students){
   let done=0, total=0;
@@ -2526,10 +2549,13 @@ function renderS360Card(){
 
   const confColor = conf.level==='high' ? {bg:'#E7F6EB', c:'#2C8C46'} : conf.level==='limited' ? {bg:'#FFF6E0', c:'#B5850C'} : {bg:'#F1F5F4', c:'#8A9A96'};
 
-  const skillItem = (k)=>`<div class="text-center">
-    <p class="text-[10px] font-bold" style="color:${SKILL_COLORS[k]};">${QP_SKILL_LABELS[k].en}<br>${QP_SKILL_LABELS[k].ar}</p>
-    <p class="font-extrabold text-lg" style="color:${SKILL_COLORS[k]};">${s.skills[k]*10}%</p>
-  </div>`;
+  const skillItem = (k)=>{
+    const v = skillPercentage(s,k);
+    return `<div class="text-center">
+      <p class="text-[10px] font-bold" style="color:${SKILL_COLORS[k]};">${QP_SKILL_LABELS[k].en}<br>${QP_SKILL_LABELS[k].ar}</p>
+      <p class="font-extrabold text-lg" style="color:${SKILL_COLORS[k]};">${v===null?'—':v+'%'}</p>
+    </div>`;
+  };
 
   // Insights (max 3): Strength, Progress, Focus
   const insightStrength = strengths.length
@@ -2577,8 +2603,8 @@ function renderS360Card(){
           ${skillItem('reading')}${skillItem('writing')}${skillItem('listening')}${skillItem('speaking')}
         </div>
         <div class="text-center mt-3 border-t pt-2" style="border-color:var(--line);">
-          <span class="font-bold" style="color:var(--coral);">${totalScore(s)} / 40</span>
-          <span class="text-[10px] text-gray-400"> · 4 Skills / 4 مهارات</span>
+          <span class="font-bold" style="color:var(--coral);">${totalScore(s)} / ${assessedSkillCount(s)*10}</span>
+          <span class="text-[10px] text-gray-400"> · ${assessedSkillCount(s)} of 4 skills assessed / ${assessedSkillCount(s)} من 4 مهارات تم تقييمها</span>
         </div>
       </div>
 
@@ -2678,7 +2704,7 @@ function renderClassPulseCard(){
   };
   const tr = TREND_LABEL[trend.status];
 
-  const skillItem = k=>`<div class="text-center"><p class="text-[10px] font-bold" style="color:${SKILL_COLORS[k]};">${QP_SKILL_LABELS[k].en}<br>${QP_SKILL_LABELS[k].ar}</p><p class="font-extrabold text-lg" style="color:${SKILL_COLORS[k]};">${acad? acad.avg[k]+'%' : '—'}</p></div>`;
+  const skillItem = k=>`<div class="text-center"><p class="text-[10px] font-bold" style="color:${SKILL_COLORS[k]};">${QP_SKILL_LABELS[k].en}<br>${QP_SKILL_LABELS[k].ar}</p><p class="font-extrabold text-lg" style="color:${SKILL_COLORS[k]};">${acad && acad.avg[k]!==null ? acad.avg[k]+'%' : '—'}</p></div>`;
   const distRow = (opts, dist)=>opts.map(o=>`<div class="flex items-center justify-between text-xs py-1"><span>${o.en} / ${o.ar}</span><span class="font-bold">${dist[o.key]}</span></div>`).join('');
 
   wrap.innerHTML = `
