@@ -27,7 +27,13 @@ body.auth-pending > *{visibility:hidden !important;} body{font-family:var(--user
 ::-webkit-scrollbar-thumb{background:#CFE3DE;border-radius:8px;}
 ::-webkit-scrollbar-track{background:transparent;}
 
-.bi-label{display:flex; flex-direction:column; line-height:1.2;}
+.bi-label{display:flex; flex-direction:column; align-items:flex-start; line-height:1.2; direction:ltr;}
+.bi-label .en{direction:ltr; text-align:left;}
+.bi-label .ar{direction:rtl; text-align:right; unicode-bidi:plaintext; width:100%;}
+/* Bilingual inline content: English stays on the left, Arabic on the right. */
+.bilingual-inline{direction:ltr; unicode-bidi:plaintext;}
+.bilingual-inline .ar{direction:rtl; text-align:right;}
+
 /* Global bilingual rule: horizontal pairs always render English-left / Arabic-right,
    regardless of the page's RTL inheritance. Vertical pairs (.bi-label, column flex)
    already render English-top / Arabic-bottom correctly via source order. */
@@ -424,7 +430,7 @@ select, input{font-family:'Cairo',sans-serif;}
           <button type="button" data-action="open-add-student" class="text-right rounded-2xl border p-4 flex items-center gap-3 transition hover:-translate-y-0.5" style="border-color:#CDE6E1; background:#FFFFFF;">
             <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EAF7F5; color:var(--teal);"><i class="fa-solid fa-user-plus"></i></span>
             <span class="min-w-0">
-              <span class="block font-display font-extrabold text-xs" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
+              <span class="block font-display font-extrabold text-xs bilingual-inline" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
               <span class="block text-[10px] text-gray-500 mt-1">Add one student without Excel / إضافة طالب واحد بدون ملف إكسل</span>
             </span>
           </button>
@@ -594,7 +600,7 @@ select, input{font-family:'Cairo',sans-serif;}
             <div id="report-field-checks" class="flex flex-wrap gap-x-4 gap-y-2 text-xs"></div>
           </div>
           <div class="flex gap-2 items-center flex-wrap">
-            <button data-action="generate-report" class="text-white text-xs font-semibold px-4 py-2 rounded-xl" style="background:var(--teal);">Preview / معاينة</button>
+            <button data-action="generate-report" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:var(--teal);">Preview / معاينة</button>
             <button data-action="send-whatsapp-report" class="text-xs font-semibold px-4 py-2 rounded-xl text-white flex items-center gap-2" style="background:#25D366;"><i class="fa-brands fa-whatsapp"></i> Send / إرسال واتساب</button>
             <button data-action="print-report" class="text-xs font-semibold px-4 py-2 rounded-xl border flex items-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-print"></i> Print / Save as PDF / طباعة أو حفظ PDF</button>
           </div>
@@ -618,12 +624,12 @@ select, input{font-family:'Cairo',sans-serif;}
             <option value="ar">العربية (Arabic)</option>
             <option value="en">English</option>
           </select>
-          <button data-action="cert-change" class="text-white text-xs font-semibold px-4 py-2 rounded-xl" style="background:var(--teal);">Preview / معاينة</button>
+          <button data-action="cert-change" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:var(--teal);">Preview / معاينة</button>
           <button data-action="download-cert" class="text-xs font-semibold px-4 py-2 rounded-xl border flex items-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-download"></i> Save PDF / تنزيل</button>
           <button data-action="print-certificate" class="text-xs font-semibold px-4 py-2 rounded-xl border flex items-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-print"></i> Print / Save as PDF / طباعة أو حفظ PDF</button>
           <button data-action="send-cert-whatsapp" class="text-xs font-semibold px-4 py-2 rounded-xl text-white flex items-center gap-2" style="background:#25D366;"><i class="fa-brands fa-whatsapp"></i> Download & Send / تنزيل وإرسال</button>
         </div>
-        <p class="text-[11px] text-gray-500 max-w-2xl mx-auto text-center">WhatsApp links can't auto-attach files — this downloads the certificate and opens the chat; you attach it with one tap.<br>واتساب لا يسمح بإرفاق الملفات تلقائياً — الزرار ده بينزّل الشهادة ويفتح المحادثة، وتقدر ترفقها بضغطة واحدة.</p>
+        <p class="text-[11px] text-gray-500 max-w-2xl mx-auto text-center">WhatsApp links can't auto-attach files — this downloads the certificate and opens the chat; you attach it with one tap.<br>واتساب لا يسمح بإرفاق الملفات تلقائياً — يُنزّل هذا الزر الشهادة ويفتح المحادثة، ويمكنك إرفاقها بضغطة واحدة.</p>
       </div>
       <div class="max-w-2xl mx-auto printable-area" id="single-cert-wrap">
         <div id="cert-preview" class="cert-wrap"></div>
@@ -647,7 +653,7 @@ select, input{font-family:'Cairo',sans-serif;}
     <section id="tab-settings" class="tab-content space-y-4">
       <div class="card p-5 space-y-3 max-w-xl" style="border:2px solid var(--violet);">
         <span class="bi-label"><span class="en font-display font-bold" style="color:var(--violet);">📤 Share the App</span><span class="ar">مشاركة التطبيق</span></span>
-        <p class="text-xs text-gray-500">Creates a standalone HTML file — no Claude account, no login, no internet needed to use it. Works on any device with a browser.<br>بينشئ ملف HTML مستقل — بدون حساب أو تسجيل دخول أو إنترنت لاستخدامه. يشتغل على أي جهاز فيه متصفح.</p>
+        <p class="text-xs text-gray-500">Creates a standalone HTML file — no Claude account, no login, no internet needed to use it. Works on any device with a browser.<br>ينشئ ملف HTML مستقلًا — دون حساب أو تسجيل دخول أو اتصال بالإنترنت لاستخدامه. ويعمل على أي جهاز مزود بمتصفح.</p>
         <button data-action="open-share-modal" class="text-white text-sm font-bold px-5 py-3 rounded-xl flex items-center gap-2" style="background:linear-gradient(120deg, var(--violet), var(--teal-dark));"><i class="fa-solid fa-share-nodes"></i> Share Application / مشاركة التطبيق</button>
       </div>
       <div class="card p-5 space-y-4 max-w-xl">
@@ -674,13 +680,13 @@ select, input{font-family:'Cairo',sans-serif;}
         <div>
           <label class="bi-label mb-1"><span class="en">Honor Board — Participation Weight (%)</span><span class="ar">لوحة الشرف — وزن المشاركة (%)</span></label>
           <input id="setting-honor-weight" type="number" min="0" max="100" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
-          <p class="text-[10px] text-gray-400 mt-1">Academic skills make up the rest (default 80% academic / 20% participation).<br>الباقي من المهارات الأكاديمية (الافتراضي ٨٠٪ أكاديمي / ٢٠٪ مشاركة).</p>
+          <p class="text-[10px] text-gray-400 mt-1">Academic skills make up the rest (default 80% academic / 20% participation).<br>تمثل المهارات الأكاديمية النسبة المتبقية (الافتراضي: ٨٠٪ للمهارات الأكاديمية و٢٠٪ للمشاركة).</p>
         </div>
         <div>
           <label class="bi-label mb-1"><span class="en">Ministry / Authority Name</span><span class="ar">اسم الوزارة أو الجهة</span></label>
           <input id="setting-ministry-name" class="w-full border rounded-lg px-3 py-2 text-sm mt-1" style="border-color:var(--line);">
         </div>
-        <button data-action="save-settings" class="text-white text-xs font-semibold px-4 py-2 rounded-xl" style="background:var(--teal);">Save / حفظ الإعدادات</button>
+        <button data-action="save-settings" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:var(--teal);">Save / حفظ الإعدادات</button>
       </div>
       <div class="card p-5 space-y-4 max-w-xl">
         <span class="bi-label"><span class="en font-display font-bold">Appearance</span><span class="ar">المظهر</span></span>
@@ -715,7 +721,7 @@ select, input{font-family:'Cairo',sans-serif;}
       </div>
       <div class="card p-5 space-y-4 max-w-xl">
         <span class="bi-label"><span class="en font-display font-bold">Logos</span><span class="ar">الشعارات</span></span>
-        <p class="text-[11px] text-gray-500">Used in the header and on certificates. Wide logos work fine — they'll keep their shape.<br>تظهر في الهيدر وعلى الشهادات. اللوجوهات المستطيلة تظهر بشكلها الطبيعي بدون تشويه.</p>
+        <p class="text-[11px] text-gray-500">Used in the header and on certificates. Wide logos work fine — they'll keep their shape.<br>تظهر في الرأس وعلى الشهادات. وتُعرض الشعارات المستطيلة بأبعادها الطبيعية دون تشويه.</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="text-center">
             <div id="school-logo-preview" class="h-20 w-full rounded-xl border flex items-center justify-center overflow-hidden mb-2 px-3 bg-white" style="border-color:var(--line);"><i class="fa-solid fa-school text-gray-300 text-2xl"></i></div>
@@ -743,7 +749,7 @@ select, input{font-family:'Cairo',sans-serif;}
       </div>
       <div class="card p-5 space-y-3 max-w-xl">
         <span class="bi-label"><span class="en font-display font-bold">Backup</span><span class="ar">النسخ الاحتياطي</span></span>
-        <p class="text-xs text-gray-500">Export saves your complete data — classes, students, daily tracking, evidence, Honor Score history, and settings — as one file. Your data lives on this device/browser only, so export regularly, especially before switching devices.<br>التصدير يحفظ كل بياناتك — الصفوف والطلاب والمتابعة اليومية والدليل وسجل درجة التميز والإعدادات — في ملف واحد. بياناتك محفوظة على هذا الجهاز والمتصفح فقط، فيُفضّل تصدير نسخة بشكل دوري، خصوصاً قبل تغيير الجهاز.</p>
+        <p class="text-xs text-gray-500">Export saves your complete data — classes, students, daily tracking, evidence, Honor Score history, and settings — as one file. Your data lives on this device/browser only, so export regularly, especially before switching devices.<br>يحفظ التصدير جميع بياناتك — الصفوف والطلاب والمتابعة اليومية وسجل درجة التميز والإعدادات — في ملف واحد. وتتم مزامنة بياناتك تلقائيًا مع حسابك السحابي؛ ويُستحسن الاحتفاظ بنسخة احتياطية دورية، خصوصًا قبل تغيير الجهاز.</p>
         <div class="flex gap-2 flex-wrap">
           <button data-action="export-backup" class="text-xs font-semibold px-4 py-2 rounded-xl border" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-download"></i> Export / تصدير نسخة</button>
           <label class="text-xs font-semibold px-4 py-2 rounded-xl border cursor-pointer" style="border-color:var(--teal); color:var(--teal-dark);">
@@ -836,13 +842,13 @@ select, input{font-family:'Cairo',sans-serif;}
 <div id="modal-share" class="fixed inset-0 bg-black/40 z-40 hidden items-center justify-center p-4">
   <div class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3">
     <span class="bi-label"><span class="en font-display font-bold">Share the App</span><span class="ar">مشاركة التطبيق</span></span>
-    <p class="text-[11px] text-gray-500">Choose what to include. This creates a new file — your own data here stays exactly as it is.<br>اختر اللي عايز تشاركه. هيتعمل ملف جديد — بياناتك هنا هتفضل زي ما هي بدون أي تغيير.</p>
+    <p class="text-[11px] text-gray-500">Choose what to include. This creates a new file — your own data here stays exactly as it is.<br>اختر ما تريد مشاركته. سيُنشأ ملف جديد، وستظل بياناتك الحالية دون أي تغيير.</p>
 
     <button data-action="share-full" class="w-full text-right border rounded-xl p-3 flex items-center gap-3 hover:bg-gray-50" style="border-color:var(--teal);">
       <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white shrink-0" style="background:var(--teal);"><i class="fa-solid fa-database"></i></div>
       <div>
         <p class="font-bold text-sm">Full Copy (with my data) / نسخة كاملة ببيانات الطلاب</p>
-        <p class="text-[11px] text-gray-500">Everything, including your classes, students, and settings — for moving to your own other device.<br>كل حاجة، بما فيها صفوفك وطلابك وإعداداتك — لنقلها لجهازك الآخر.</p>
+        <p class="text-[11px] text-gray-500">Everything, including your classes, students, and settings — for moving to your own other device.<br>يتضمن جميع بياناتك، بما فيها الصفوف والطلاب والإعدادات، لنقلها إلى جهاز آخر.</p>
       </div>
     </button>
 
@@ -850,7 +856,7 @@ select, input{font-family:'Cairo',sans-serif;}
       <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white shrink-0" style="background:var(--violet);"><i class="fa-solid fa-user-shield"></i></div>
       <div>
         <p class="font-bold text-sm">Clean Copy (for colleagues) / نسخة نظيفة للزملاء</p>
-        <p class="text-[11px] text-gray-500">Same app, design and settings — with no student names, numbers, or tracking data.<br>نفس التطبيق والتصميم والإعدادات — من غير أي أسماء طلاب أو أرقام أو بيانات متابعة.</p>
+        <p class="text-[11px] text-gray-500">Same app, design and settings — with no student names, numbers, or tracking data.<br>التطبيق والتصميم والإعدادات نفسها، دون أسماء طلاب أو أرقام هواتف أو بيانات متابعة.</p>
       </div>
     </button>
 
@@ -1368,7 +1374,7 @@ function renderHeroDailyStatus(){
   } else if(untracked>0){
     statusHtml = `<div data-action="switch-tab" data-tab="daily" class="cursor-pointer rounded-xl px-3 py-2 flex items-center justify-between gap-2 text-[11px] font-semibold hover:brightness-110 transition" style="background:rgba(242,169,59,0.25);">
       <span><i class="fa-solid fa-triangle-exclamation" style="color:var(--gold);"></i> ${untracked} student${untracked===1?'':'s'} still need today's tracking</span>
-      <span class="opacity-80 shrink-0">${untracked} طالب لسه محتاج متابعة</span>
+      <span class="opacity-80 shrink-0">${untracked} طالب لا تزال متابعته اليوم مطلوبة</span>
     </div>`;
   } else {
     statusHtml = `<div class="rounded-xl px-3 py-2 text-center text-[11px] font-semibold" style="background:rgba(95,174,110,0.25);">
@@ -1415,7 +1421,7 @@ function renderDashboard(){
   if(classesData.length===0){
     grid.innerHTML = `<div class="card p-8 text-center text-gray-400 col-span-full">
       <i class="fa-solid fa-chalkboard text-3xl mb-2"></i>
-      <p class="text-sm">No classes yet. Tap "Add Class" to start.<br>لا توجد صفوف بعد. اضغط "إضافة صف" للبدء.</p></div>`;
+      <p class="text-sm">No classes yet. Tap "Add Class" to start.<br>لا توجد صفوف بعد. اضغط على «إضافة صف» للبدء.</p></div>`;
     return;
   }
   grid.innerHTML = classesData.map(c=>{
@@ -1952,7 +1958,7 @@ function renderQuickProfileCard(){
             <p class="font-bold text-sm">${part.en} / ${part.ar}</p>
           </div>
         </div>
-        ${totalDays===0 ? `<p class="text-[10px] text-gray-400">Attendance/Homework % will appear once Daily Tracking has records for this student / هتظهر النسب لما يكون في سجل متابعة يومية لهذا الطالب</p>` : ''}
+        ${totalDays===0 ? `<p class="text-[10px] text-gray-400">Attendance/Homework percentages will appear once Daily Tracking has records for this student / ستظهر النسب عند وجود سجلات للمتابعة اليومية لهذا الطالب</p>` : ''}
       </div>
 
       <!-- Honor Status -->
