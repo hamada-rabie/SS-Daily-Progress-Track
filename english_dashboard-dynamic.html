@@ -410,7 +410,28 @@ body.lang-ar .hero-status-row > span:last-child{width:100%;text-align:right!impo
   #current-page-title-ar{font-size:9px!important;}
 }
 </style>
-</head>
+<style id="language-visibility-final">
+/* Final language visibility: JS controls single-language mode; CSS is the fallback. */
+body.lang-en .ar{display:none !important;}
+body.lang-en .en{display:block !important;}
+body.lang-ar .en{display:none !important;}
+body.lang-ar .ar{display:block !important;}
+body.lang-bilingual .en,
+body.lang-bilingual .ar{display:revert !important;}
+/* Keep bilingual header identity neatly stacked. */
+.header-right-identity .header-dept-name{display:flex !important;flex-direction:column !important;align-items:flex-end !important;gap:1px !important;line-height:1.05 !important;}
+.header-right-identity .header-dept-name .en,
+.header-right-identity .header-dept-name .ar{width:100%;text-align:right !important;white-space:nowrap;}
+/* Current tab title follows the selected language. */
+body.lang-ar #current-page-title-ar{text-align:right !important;direction:rtl !important;}
+body.lang-en #current-page-title-en{text-align:left !important;direction:ltr !important;}
+/* Daily status: Arabic reads naturally from the right. */
+body.lang-ar .hero-status-row{direction:rtl !important;}
+body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
+/* Preserve the active-tab highlight in every language. */
+.nav-link.active{background:linear-gradient(90deg,var(--teal),var(--teal-dark)) !important;color:#fff !important;font-weight:700 !important;box-shadow:0 3px 10px rgba(0,0,0,.12) !important;}
+.nav-link.active i,.nav-link.active .en,.nav-link.active .ar{color:#fff !important;}
+</style>\n</head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
 <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2"></div>
@@ -1454,9 +1475,13 @@ function switchTab(name){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
-  document.querySelector('.nav-link[data-target="'+name+'"]').classList.add('active');
-  document.getElementById('current-page-title-en').textContent = TAB_TITLES[name][0];
-  document.getElementById('current-page-title-ar').textContent = TAB_TITLES[name][1];
+  const activeNav = document.querySelector('.nav-link[data-target="'+name+'"]');
+  if(activeNav) activeNav.classList.add('active');
+  if(TAB_TITLES[name]){
+    document.getElementById('current-page-title-en').textContent = TAB_TITLES[name][0];
+    document.getElementById('current-page-title-ar').textContent = TAB_TITLES[name][1];
+  }
+  syncLanguageVisibility();
   refreshAllViews();
 }
 
@@ -3731,6 +3756,14 @@ function normalizeBilingualText(root=document){
     }
   });
 }
+function syncLanguageVisibility(){
+  const lang = ['bilingual','en','ar'].includes(settings.preferredLanguage) ? settings.preferredLanguage : 'bilingual';
+  document.querySelectorAll('.en, .ar').forEach(el=>{
+    if(lang==='en') el.style.display = el.classList.contains('en') ? '' : 'none';
+    else if(lang==='ar') el.style.display = el.classList.contains('ar') ? '' : 'none';
+    else el.style.removeProperty('display');
+  });
+}
 function applyLanguage(language){
   const lang = ['bilingual','en','ar'].includes(language) ? language : 'bilingual';
   settings.preferredLanguage = lang;
@@ -3744,6 +3777,7 @@ function applyLanguage(language){
   if(headerSel) headerSel.value = lang;
   if(settingsSel) settingsSel.value = lang;
   normalizeBilingualText(document.body);
+  syncLanguageVisibility();
   updateClock();
 }
 function applyTheme(themeName){
