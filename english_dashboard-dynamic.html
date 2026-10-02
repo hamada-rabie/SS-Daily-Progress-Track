@@ -930,8 +930,8 @@ async function loadCloudData(){
     }
 
    const uid = window.auth.currentUser.uid;
-    const cloudRef = doc(window.db, 'users', uid, 'appData', 'main');
-    const cloudSnap = await getDoc(cloudRef);
+    const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
+    const cloudSnap = await window.getDoc(cloudRef);
 
     if(cloudSnap.exists()){
       const data = cloudSnap.data();
@@ -1000,8 +1000,8 @@ async function saveCloudData(){
     }
 
     const uid = window.auth.currentUser.uid;
-    const cloudRef = doc(window.db, 'users', uid, 'appData', 'main');
-    await setDoc(cloudRef, {
+    const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
+    await window.setDoc(cloudRef, {
       classesData: classesData,
       studentsData: studentsData,
       dailyArchives: dailyArchives,
@@ -1009,7 +1009,7 @@ async function saveCloudData(){
       updatedAt: new Date().toISOString()
     });
 
-    console.log('☁️ Cloud data saved:', auth.currentUser.email);
+    console.log('☁️ Cloud data saved:', window.auth.currentUser.email);
 
   }catch(error){
     console.error('❌ Cloud save error:', error);
@@ -3395,6 +3395,9 @@ const db = getFirestore(firebaseApp);
 
 window.auth = auth;
 window.db = db;
+window.doc = doc;
+window.getDoc = getDoc;
+window.setDoc = setDoc;
 
 console.log("🔥 Firebase connected successfully");
   
