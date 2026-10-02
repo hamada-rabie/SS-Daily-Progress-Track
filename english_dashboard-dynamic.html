@@ -2960,7 +2960,12 @@ function sendReportWhatsAppFor(id, phoneIndex, date){
   window.open(`https://wa.me/${phone.replace(/[^0-9]/g,'')}?text=${text}`, '_blank');
 }
 function sendReportWhatsApp(){
-  const id = Number(document.getElementById('report-student-select').value);
+  const studentSelect = document.getElementById('report-student-select');
+  const id = studentSelect ? Number(studentSelect.value) : NaN;
+  if(!studentSelect || !studentSelect.value || !studentsData.some(s=>s.id===id)){
+    showToast('Please select a student from the list above / رجاء اختيار طالب من القائمة أعلاه','error');
+    return;
+  }
   const dateInput = document.getElementById('report-period-date');
   const date = (dateInput && dateInput.value) ? dateInput.value : todayStr();
   sendReportWhatsAppFor(id, undefined, date);
