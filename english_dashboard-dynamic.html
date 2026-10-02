@@ -929,16 +929,24 @@ async function loadCloudData(){
 
     if(cloudSnap.exists()){
       const data = cloudSnap.data();
+      const localClasses = Array.isArray(classesData) ? classesData : [];
+      const localStudents = Array.isArray(studentsData) ? studentsData : [];
+      const localDaily = dailyArchives && typeof dailyArchives === 'object' ? dailyArchives : {};
+      const cloudClasses = Array.isArray(data.classesData) ? data.classesData : [];
+      const cloudStudents = Array.isArray(data.studentsData) ? data.studentsData : [];
+      const cloudDaily = data.dailyArchives && typeof data.dailyArchives === 'object' ? data.dailyArchives : {};
+      const cloudIsEmpty = cloudClasses.length === 0 && cloudStudents.length === 0 && Object.keys(cloudDaily).length === 0;
+      const localHasData = localClasses.length > 0 || localStudents.length > 0 || Object.keys(localDaily).length > 0;
 
-      classesData = Array.isArray(data.classesData)
-        ? data.classesData
-        : [];
+      if(cloudIsEmpty && localHasData){
+        console.log('☁️ Cloud record is empty; preserving local data and migrating it to Firestore...');
+        await saveCloudData();
+        return;
+      }
 
-      studentsData = Array.isArray(data.studentsData)
-        ? data.studentsData
-        : [];
-
-      dailyArchives = data.dailyArchives || {};
+      classesData = cloudClasses;
+      studentsData = cloudStudents;
+      dailyArchives = cloudDaily;
 
       if(data.settings){
         settings = Object.assign({}, settings, data.settings);
