@@ -63,7 +63,12 @@ th .bi-label .ar{font-size:9.5px;}
 .nav-link.active i{color:#fff !important;}
 .nav-link.active .ar{color:#DFF3F0 !important;}
 .nav-link:not(.active):hover{background:#EAF5F2;}
-.nav-group-toggle{transition:background .15s ease, color .15s ease;}
+.nav-group-toggle{transition:background .15s ease, color .15s ease; position:relative;}
+.nav-group-toggle > i{color:#C94C4C !important; transition:transform .2s ease, color .15s ease; flex-shrink:0;}
+.nav-group-toggle[aria-expanded="false"] > i{transform:rotate(-90deg);}
+.nav-group-toggle[aria-expanded="true"] > i{transform:rotate(0deg);}
+.nav-group-toggle:hover > i{color:#A13636 !important;}
+.nav-group-toggle[aria-expanded="true"]{color:var(--teal-dark);}
 .nav-group-toggle:hover{background:#EAF5F2; color:var(--teal-dark);}
 .nav-group-toggle:hover .ar{color:var(--teal-dark);}
 .nav-link .bi-label,.nav-group-toggle .bi-label{display:flex; flex-direction:column; align-items:flex-start; gap:2px; direction:ltr; white-space:normal; min-width:0; line-height:1.15;}
@@ -173,7 +178,7 @@ select, input{font-family:'Cairo',sans-serif;}
       <a href="#" data-action="switch-tab" data-tab="dashboard" class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-xl" data-target="dashboard"><i class="fa-solid fa-house w-5 text-center" style="color:var(--teal);"></i><span class="bi-label"><span class="en">Home</span><span class="ar">الرئيسية</span></span></a>
       <a href="#" data-action="switch-tab" data-tab="students" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="students"><i class="fa-solid fa-user-graduate w-5 text-center"></i><span class="bi-label"><span class="en">Students</span><span class="ar">الطلاب</span></span></a>
 
-      <button type="button" data-action="toggle-nav-group" data-group="daily" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
+      <button type="button" data-action="toggle-nav-group" data-group="daily" aria-expanded="true" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
         <span class="bi-label"><span class="en">Daily & Analytics</span><span class="ar">التحليلات / اليومي</span></span>
         <i class="fa-solid fa-chevron-down text-[9px] transition-transform" id="nav-chevron-daily"></i>
       </button>
@@ -187,7 +192,7 @@ select, input{font-family:'Cairo',sans-serif;}
         <a href="#" data-action="switch-tab" data-tab="classpulse" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="classpulse"><i class="fa-solid fa-heart-pulse w-5 text-center" style="color:var(--leaf);"></i><span class="bi-label"><span class="en">Class Pulse</span><span class="ar">نبض الفصل</span></span></a>
       </div>
 
-      <button type="button" data-action="toggle-nav-group" data-group="achievement" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
+      <button type="button" data-action="toggle-nav-group" data-group="achievement" aria-expanded="false" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
         <span class="bi-label"><span class="en">Achievement</span><span class="ar">الإنجاز</span></span>
         <i class="fa-solid fa-chevron-down text-[9px] transition-transform" id="nav-chevron-achievement"></i>
       </button>
@@ -196,7 +201,7 @@ select, input{font-family:'Cairo',sans-serif;}
         <a href="#" data-action="switch-tab" data-tab="certificates" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="certificates"><i class="fa-solid fa-award w-5 text-center"></i><span class="bi-label"><span class="en">Certificates</span><span class="ar">الشهادات</span></span></a>
       </div>
 
-      <button type="button" data-action="toggle-nav-group" data-group="management" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
+      <button type="button" data-action="toggle-nav-group" data-group="management" aria-expanded="false" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
         <span class="bi-label"><span class="en">Management</span><span class="ar">الإدارة</span></span>
         <i class="fa-solid fa-chevron-down text-[9px] transition-transform" id="nav-chevron-management"></i>
       </button>
@@ -408,28 +413,53 @@ select, input{font-family:'Cairo',sans-serif;}
         </div>
         <button data-action="open-add-student" class="text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 justify-center" style="background:var(--teal);"><i class="fa-solid fa-user-plus"></i> Add Student / إضافة طالب</button>
       </div>
-      <div class="card p-4 flex flex-col sm:flex-row gap-3 sm:items-center justify-between" style="background:#F6FBFA;">
-        <p class="text-[11px] text-gray-500 max-w-sm">Bulk-add students from Excel: download the template, fill it, then import. Up to 3 phone numbers per student.<br>لإضافة الطلاب دفعة واحدة من إكسل: نزّل النموذج، املأه، ثم استورده. حتى 3 أرقام لكل طالب.</p>
-        <div class="flex gap-2 flex-wrap items-center">
-          <select id="import-destination-class" class="text-xs border rounded-lg px-2 py-2" style="border-color:var(--line);">
-            <option value="">Use Class/Section from Excel / استخدم الصف من ملف الإكسل</option>
-          </select>
-          <select id="import-country-code" class="text-xs border rounded-lg px-2 py-2" style="border-color:var(--line);">
-            <option value="">No country code / بدون رمز دولة</option>
-            <option value="974">Qatar +974</option>
-            <option value="20">Egypt +20</option>
-            <option value="966">Saudi Arabia +966</option>
-            <option value="971">UAE +971</option>
-            <option value="965">Kuwait +965</option>
-            <option value="973">Bahrain +973</option>
-            <option value="968">Oman +968</option>
-            <option value="other">Other / أخرى</option>
-          </select>
-          <button data-action="download-template" class="text-xs font-semibold px-4 py-2 rounded-xl border flex items-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-file-arrow-down"></i> Template / تحميل نموذج</button>
-          <label class="text-xs font-semibold px-4 py-2 rounded-xl text-white flex items-center gap-2 cursor-pointer" style="background:var(--leaf);">
-            <i class="fa-solid fa-file-excel"></i> Import Excel / استيراد إكسل
-            <input type="file" accept=".xlsx,.xls,.csv" data-action="import-excel" class="hidden">
-          </label>
+      <div class="card p-4 space-y-4" style="background:#F6FBFA;">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div class="font-display font-extrabold text-sm" style="color:var(--teal-dark);">Add Students / إضافة الطلاب</div>
+            <div class="text-[10px] text-gray-500 mt-0.5">Choose the quickest way to add students / اختر الطريقة الأنسب لإضافة الطلاب</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <button type="button" data-action="open-add-student" class="text-right rounded-2xl border p-4 flex items-center gap-3 transition hover:-translate-y-0.5" style="border-color:#CDE6E1; background:#FFFFFF;">
+            <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EAF7F5; color:var(--teal);"><i class="fa-solid fa-user-plus"></i></span>
+            <span class="min-w-0">
+              <span class="block font-display font-extrabold text-xs" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
+              <span class="block text-[10px] text-gray-500 mt-1">Add one student without Excel / إضافة طالب واحد بدون ملف إكسل</span>
+            </span>
+          </button>
+          <div class="rounded-2xl border p-4" style="border-color:#DCE8E5; background:#FFFFFF;">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EEF8F0; color:var(--leaf);"><i class="fa-solid fa-file-excel"></i></span>
+              <span>
+                <span class="block font-display font-extrabold text-xs" style="color:#347A43;">Import from Excel / استيراد من Excel</span>
+                <span class="block text-[10px] text-gray-500 mt-1">Add many students at once / إضافة مجموعة طلاب دفعة واحدة</span>
+              </span>
+            </div>
+            <div class="text-[9.5px] text-gray-500 mb-2">Optional class assignment / تعيين الصف اختياري</div>
+            <select id="import-destination-class" class="w-full text-xs border rounded-lg px-2 py-2 mb-2" style="border-color:var(--line);" title="Choose a class to assign all imported students to it, or leave blank to use Class/Section from Excel.">
+              <option value="">Use Class/Section from Excel / استخدم الصف/الشعبة من ملف الإكسل</option>
+            </select>
+            <div class="text-[9px] text-gray-400 mb-2">Choose a class to assign all imported students to it. Leave blank to use the Class/Section column from Excel.<br>اختر صفًا لتعيين جميع الطلاب المستوردين إليه، أو اتركه فارغًا لاستخدام عمود الصف/الشعبة من ملف الإكسل.</div>
+            <div class="flex gap-2 flex-wrap items-center">
+              <select id="import-country-code" class="text-xs border rounded-lg px-2 py-2" style="border-color:var(--line);">
+                <option value="">No country code / بدون رمز دولة</option>
+                <option value="974">Qatar +974</option>
+                <option value="20">Egypt +20</option>
+                <option value="966">Saudi Arabia +966</option>
+                <option value="971">UAE +971</option>
+                <option value="965">Kuwait +965</option>
+                <option value="973">Bahrain +973</option>
+                <option value="968">Oman +968</option>
+                <option value="other">Other / أخرى</option>
+              </select>
+              <button type="button" data-action="download-template" class="text-xs font-semibold px-4 py-2 rounded-xl border flex items-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-file-arrow-down"></i> Template / تحميل نموذج</button>
+              <label class="text-xs font-semibold px-4 py-2 rounded-xl text-white flex items-center gap-2 cursor-pointer" style="background:var(--leaf);">
+                <i class="fa-solid fa-file-excel"></i> Import from Excel / استيراد من Excel
+                <input type="file" accept=".xlsx,.xls,.csv" data-action="import-excel" class="hidden">
+              </label>
+            </div>
+          </div>
         </div>
       </div>
       <div class="card overflow-x-auto">
@@ -1290,11 +1320,21 @@ function deleteStudent(id){
 function toggleSidebar(){ document.body.classList.toggle('sidebar-open'); }
 function closeSidebar(){ document.body.classList.remove('sidebar-open'); }
 function toggleNavGroup(name){
-  const group = document.getElementById('nav-group-'+name);
-  const chevron = document.getElementById('nav-chevron-'+name);
-  if(!group) return;
-  const collapsed = group.classList.toggle('hidden');
-  if(chevron) chevron.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+  const targetGroup = document.getElementById('nav-group-'+name);
+  if(!targetGroup) return;
+  const targetToggle = document.querySelector('.nav-group-toggle[data-group="'+name+'"]');
+  const shouldOpen = targetGroup.classList.contains('hidden');
+
+  document.querySelectorAll('.nav-group-toggle[data-group]').forEach(toggle=>{
+    const groupName = toggle.dataset.group;
+    const group = document.getElementById('nav-group-'+groupName);
+    if(!group) return;
+    const isOpen = groupName === name ? shouldOpen : false;
+    group.classList.toggle('hidden', !isOpen);
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  if(targetToggle) targetToggle.focus({preventScroll:true});
 }
 function updateGreeting(){
   const nameEl = document.getElementById('hero-teacher-name');
@@ -3408,6 +3448,12 @@ function updateClock(){
 }
 
 window.addEventListener('DOMContentLoaded', ()=>{
+  document.querySelectorAll('.nav-group-toggle[data-group]').forEach(toggle=>{
+    const group = document.getElementById('nav-group-'+toggle.dataset.group);
+    const isOpen = toggle.dataset.group === 'daily';
+    if(group) group.classList.toggle('hidden', !isOpen);
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
   loadData();
   applyTheme(settings.theme || 'teal');
   applyFontFamily(settings.fontFamily || 'cairo');
