@@ -33,7 +33,7 @@ body.auth-pending > *{visibility:hidden !important;} body{font-family:var(--user
 /* Bilingual inline content: English stays on the left, Arabic on the right. */
 .bilingual-inline{direction:ltr; unicode-bidi:plaintext;}
 .bilingual-inline .ar{direction:rtl; text-align:right;}
-body.lang-bilingual .en + .ar::before{content:" / "; white-space:pre;}
+body.lang-bilingual .bilingual-inline .en + .ar::before{content:" / "; white-space:pre;}
 body.lang-bilingual .bi-label .en + .ar::before,
 body.lang-bilingual .sidebar-bilingual .en + .ar::before{content:"";}
 .hero-bilingual-cta{direction:ltr;}
@@ -269,7 +269,7 @@ body.lang-ar .settings-section-heading{text-align:right;}
   top:auto!important;
   direction:ltr!important;
   display:grid!important;
-  grid-template-columns:132px minmax(0,1fr) 360px;
+  grid-template-columns:132px minmax(0,1fr) 330px;
   align-items:start;
   gap:18px!important;
   flex-shrink:0;
@@ -282,11 +282,11 @@ body.lang-ar .settings-section-heading{text-align:right;}
 }
 .header-right-identity{
   grid-column:3;
-  width:360px;min-width:360px;max-width:360px;
+  width:330px;min-width:330px;max-width:330px;
   margin-left:0!important;
   justify-self:end;
   display:grid!important;
-  grid-template-columns:minmax(145px,1fr) 92px;
+  grid-template-columns:minmax(125px,1fr) 150px;
   align-items:start;
   gap:18px!important;
   direction:ltr!important;
@@ -306,7 +306,7 @@ body.lang-ar .settings-section-heading{text-align:right;}
 .header-right-identity > div:first-child{
   grid-column:2;
   grid-row:1;
-  width:92px;min-width:92px;
+  width:150px;min-width:150px;
   align-items:flex-end!important;
   direction:rtl!important;
 }
@@ -395,16 +395,16 @@ body.lang-ar .hero-status-row > span:last-child{width:100%;text-align:right!impo
 .nav-link:not(.active):hover{background:#EAF5F2!important;}
 /* Responsive header geometry */
 @media(max-width:1023px){
-  #app-topbar{grid-template-columns:112px minmax(0,1fr) 270px;gap:10px!important;}
+  #app-topbar{grid-template-columns:112px minmax(0,1fr) 300px;gap:10px!important;}
   .header-left-identity{width:112px;min-width:112px;max-width:112px;}
-  .header-right-identity{width:270px;min-width:270px;max-width:270px;grid-template-columns:minmax(110px,1fr) 82px;gap:10px!important;}
-  .header-right-identity > div:first-child{width:82px;min-width:82px;}
+  .header-right-identity{width:300px;min-width:300px;max-width:300px;grid-template-columns:minmax(110px,1fr) 125px;gap:10px!important;}
+  .header-right-identity > div:first-child{width:125px;min-width:125px;}
 }
 @media(max-width:480px){
-  #app-topbar{grid-template-columns:92px minmax(0,1fr) 190px;gap:6px!important;padding-left:8px!important;padding-right:8px!important;}
-  .header-left-identity{width:92px;min-width:92px;max-width:92px;}
-  .header-right-identity{width:190px;min-width:190px;max-width:190px;grid-template-columns:minmax(78px,1fr) 70px;gap:7px!important;}
-  .header-right-identity > div:first-child{width:70px;min-width:70px;}
+  #app-topbar{grid-template-columns:92px minmax(0,1fr) 205px;gap:6px!important;padding-left:8px!important;padding-right:8px!important;}
+  .header-left-identity{width:150px;min-width:150px;max-width:92px;}
+  .header-right-identity{width:205px;min-width:205px;max-width:205px;grid-template-columns:minmax(78px,1fr) 120px;gap:7px!important;}
+  .header-right-identity > div:first-child{width:120px;min-width:120px;}
   .header-right-identity .header-dept-name{font-size:8px!important;}
   #current-page-title-en{font-size:11px!important;}
   #current-page-title-ar{font-size:9px!important;}
@@ -431,7 +431,41 @@ body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
 /* Preserve the active-tab highlight in every language. */
 .nav-link.active{background:linear-gradient(90deg,var(--teal),var(--teal-dark)) !important;color:#fff !important;font-weight:700 !important;box-shadow:0 3px 10px rgba(0,0,0,.12) !important;}
 .nav-link.active i,.nav-link.active .en,.nav-link.active .ar{color:#fff !important;}
-</style>\n</head>
+</style>\n<style id="release-header-sidebar-final">
+/* Release layout: identical geometry in EN / AR / Bilingual. */
+#app-topbar{grid-template-columns:132px minmax(0,1fr) 330px !important;column-gap:18px !important;box-sizing:border-box;overflow:hidden;}
+.header-left-identity{width:132px !important;min-width:132px !important;max-width:132px !important;}
+.header-right-identity{width:330px !important;min-width:330px !important;max-width:330px !important;grid-template-columns:minmax(125px,1fr) 150px !important;gap:16px !important;box-sizing:border-box;align-items:start !important;}
+.header-right-identity > div:first-child{grid-column:2 !important;width:150px !important;min-width:150px !important;max-width:150px !important;align-items:flex-end !important;justify-self:end !important;}
+.header-right-identity > div:first-child #header-school-logo{width:100% !important;justify-content:flex-end !important;}
+.header-right-identity > div:first-child #header-school-logo img{max-width:150px !important;height:44px !important;}
+.header-right-identity #header-teacher-photo{margin-left:auto !important;margin-right:0 !important;}
+.header-right-identity > div:last-child{grid-column:1 !important;width:100% !important;min-width:0 !important;align-self:start !important;padding-top:38px !important;}
+.header-right-identity > div:last-child .bi-label{width:100% !important;align-items:flex-start !important;}
+body.lang-ar .header-right-identity > div:last-child{direction:rtl !important;text-align:right !important;}
+body.lang-en .header-right-identity > div:last-child{direction:ltr !important;text-align:left !important;}
+body.lang-bilingual .header-right-identity > div:last-child{direction:ltr !important;text-align:left !important;}
+/* Sidebar remains visually consistent in all language modes. */
+body.lang-en aside,body.lang-ar aside,body.lang-bilingual aside{background:var(--card) !important;border-color:var(--line) !important;}
+body.lang-en aside > div:first-child,body.lang-ar aside > div:first-child,body.lang-bilingual aside > div:first-child{background:linear-gradient(135deg,#EAF7F5,#F5FAF8) !important;border-color:var(--line) !important;}
+.nav-link.active{background:linear-gradient(90deg,var(--teal),var(--teal-dark)) !important;color:#fff !important;}
+.nav-link.active i,.nav-link.active .en,.nav-link.active .ar{color:#fff !important;}
+/* Stacked bilingual labels never get a slash. */
+body.lang-bilingual .header-dept-name .en + .ar::before,
+body.lang-bilingual .home-title-bilingual .en + .ar::before{content:none !important;}
+@media(max-width:1023px){
+ #app-topbar{grid-template-columns:112px minmax(0,1fr) 300px !important;}
+ .header-left-identity{width:112px !important;min-width:112px !important;max-width:112px !important;}
+ .header-right-identity{width:300px !important;min-width:300px !important;max-width:300px !important;grid-template-columns:minmax(110px,1fr) 125px !important;}
+ .header-right-identity > div:first-child{width:125px !important;min-width:125px !important;}
+}
+@media(max-width:480px){
+ #app-topbar{grid-template-columns:92px minmax(0,1fr) 205px !important;gap:6px !important;}
+ .header-left-identity{width:92px !important;min-width:92px !important;max-width:92px !important;}
+ .header-right-identity{width:205px !important;min-width:205px !important;max-width:205px !important;grid-template-columns:minmax(78px,1fr) 120px !important;gap:7px !important;}
+ .header-right-identity > div:first-child{width:120px !important;min-width:120px !important;}
+}
+</style></head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
 <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2"></div>
