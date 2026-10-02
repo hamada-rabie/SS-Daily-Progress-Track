@@ -824,63 +824,199 @@ let editingStudentId = null;
 
 function loadData(){
   try{
-    // If this file carries embedded seed data (from the Share feature), decide whether to apply it.
-    // FULL-copy seeds are force-applied exactly once per unique share (fixes data not transferring
-    // when the target browser already had older/partial leftover data under these keys).
-    // CLEAN-copy seeds (empty data) only apply when this browser truly has nothing yet, so we never
-    // wipe a colleague's own entered data on a later reopen.
     const seedEl = document.getElementById('seed-data-script');
+
     if(seedEl && seedEl.textContent && seedEl.textContent.trim()){
       try{
         const seed = JSON.parse(seedEl.textContent);
-        const hasOwnData = localStorage.getItem('eng_classes') || localStorage.getItem('eng_students');
-        const alreadyApplied = seed._shareId && localStorage.getItem('eng_last_share_id') === seed._shareId;
-        const shouldApply = seed._forceOnce ? !alreadyApplied : !hasOwnData;
+        const hasOwnData =
+          localStorage.getItem('eng_classes') ||
+          localStorage.getItem('eng_students');
+
+        const alreadyApplied =
+          seed._shareId &&
+          localStorage.getItem('eng_last_share_id') === seed._shareId;
+
+        const shouldApply =
+          seed._forceOnce ? !alreadyApplied : !hasOwnData;
+
         if(shouldApply){
-          if(seed.classesData) localStorage.setItem('eng_classes', JSON.stringify(seed.classesData));
-          if(seed.studentsData) localStorage.setItem('eng_students', JSON.stringify(seed.studentsData));
-          if(seed.dailyArchives) localStorage.setItem('eng_daily', JSON.stringify(seed.dailyArchives));
-          if(seed.settings) localStorage.setItem('eng_settings', JSON.stringify(seed.settings));
-          if(seed._shareId) localStorage.setItem('eng_last_share_id', seed._shareId);
+          if(seed.classesData)
+            localStorage.setItem('eng_classes', JSON.stringify(seed.classesData));
+
+          if(seed.studentsData)
+            localStorage.setItem('eng_students', JSON.stringify(seed.studentsData));
+
+          if(seed.dailyArchives)
+            localStorage.setItem('eng_daily', JSON.stringify(seed.dailyArchives));
+
+          if(seed.settings)
+            localStorage.setItem('eng_settings', JSON.stringify(seed.settings));
+
+          if(seed._shareId)
+            localStorage.setItem('eng_last_share_id', seed._shareId);
         }
-      }catch(seedErr){ console.error('seed parse error', seedErr); }
+      }catch(seedErr){
+        console.error('seed parse error', seedErr);
+      }
     }
-    classesData = JSON.parse(localStorage.getItem('eng_classes')||'[]');
-    studentsData = JSON.parse(localStorage.getItem('eng_students')||'[]');
-    dailyArchives = JSON.parse(localStorage.getItem('eng_daily')||'{}');
-    const storedSettings = JSON.parse(localStorage.getItem('eng_settings')||'null');
-    if(storedSettings) settings = Object.assign({}, settings, storedSettings);
-    // migrate old star-based skills (0-5) to score scale if needed, and ensure fields exist
-    classesData.forEach(c=>{ if(!c.icon) c.icon = 'fa-book'; });
+
+    classesData = JSON.parse(localStorage.getItem('eng_classes') || '[]');
+    studentsData = JSON.parse(localStorage.getItem('eng_students') || '[]');
+    dailyArchives = JSON.parse(localStorage.getItem('eng_daily') || '{}');
+
+    const storedSettings =
+      JSON.parse(localStorage.getItem('eng_settings') || 'null');
+
+    if(storedSettings){
+      settings = Object.assign({}, settings, storedSettings);
+    }
+
+    classesData.forEach(c=>{
+      if(!c.icon) c.icon = 'fa-book';
+    });
+
     studentsData.forEach(s=>{
-      if(!s.skills) s.skills = {reading:0,writing:0,listening:0,speaking:0};
-      if(s.parentPhone===undefined) s.parentPhone = '';
+      if(!s.skills)
+        s.skills = {reading:0,writing:0,listening:0,speaking:0};
+
+      if(s.parentPhone===undefined)
+        s.parentPhone = '';
+
       if(!Array.isArray(s.phoneNumbers)){
         s.phoneNumbers = s.parentPhone ? [s.parentPhone] : [];
       }
-      if(s.notes===undefined) s.notes = '';
-      if(!Array.isArray(s.skillHistory)) s.skillHistory = [];
-      if(typeof s.homeworkDone !== 'boolean') s.homeworkDone = (s.homework==='تم' || s.homework===true);
+
+      if(s.notes===undefined)
+        s.notes = '';
+
+      if(!Array.isArray(s.skillHistory))
+        s.skillHistory = [];
+
+      if(typeof s.homeworkDone !== 'boolean')
+        s.homeworkDone = (s.homework==='تم' || s.homework===true);
+
       if(!s.participationLevel){
-        const oldScore = typeof s.participationScore === 'number' ? s.participationScore : null;
+        const oldScore =
+          typeof s.participationScore === 'number'
+            ? s.participationScore
+            : null;
+
         if(oldScore===null) s.participationLevel = 'active';
         else if(oldScore>=8) s.participationLevel = 'excellent';
         else if(oldScore>=4) s.participationLevel = 'active';
         else if(oldScore>=1) s.participationLevel = 'passive';
         else s.participationLevel = 'sleepy';
       }
-      if(!s.attendance) s.attendance = 'present';
-      if(!s.behaviourLevel) s.behaviourLevel = 'disciplined';
+
+      if(!s.attendance)
+        s.attendance = 'present';
+
+      if(!s.behaviourLevel)
+        s.behaviourLevel = 'disciplined';
     });
-  }catch(e){ console.error('load error',e); }
+
+  }catch(e){
+    console.error('load error',e);
+  }
 }
+
+
+async function loadCloudData(){
+  try{
+    if(!auth.currentUser){
+      console.warn('☁️ No authenticated user yet.');
+      return;
+    }
+
+    const uid = auth.currentUser.uid;
+    const cloudRef = doc(db, 'users', uid, 'appData', 'main');
+    const cloudSnap = await getDoc(cloudRef);
+
+    if(cloudSnap.exists()){
+      const data = cloudSnap.data();
+
+      classesData = Array.isArray(data.classesData)
+        ? data.classesData
+        : [];
+
+      studentsData = Array.isArray(data.studentsData)
+        ? data.studentsData
+        : [];
+
+      dailyArchives = data.dailyArchives || {};
+
+      if(data.settings){
+        settings = Object.assign({}, settings, data.settings);
+      }
+
+      localStorage.setItem('eng_classes', JSON.stringify(classesData));
+      localStorage.setItem('eng_students', JSON.stringify(studentsData));
+      localStorage.setItem('eng_daily', JSON.stringify(dailyArchives));
+      localStorage.setItem('eng_settings', JSON.stringify(settings));
+
+      console.log('☁️ Cloud data loaded:', auth.currentUser.email);
+
+      if(typeof renderDashboard === 'function')
+        renderDashboard();
+
+      if(typeof renderStudentsTable === 'function')
+        renderStudentsTable();
+
+      if(typeof renderDailyTable === 'function')
+        renderDailyTable();
+
+    }else{
+      console.log('☁️ No cloud data found. Migrating local data...');
+      await saveCloudData();
+      console.log('✅ Local data migrated to Firestore');
+    }
+
+  }catch(error){
+    console.error('❌ Cloud load error:', error);
+  }
+}
+
+
 function saveData(){
   try{
     localStorage.setItem('eng_classes', JSON.stringify(classesData));
     localStorage.setItem('eng_students', JSON.stringify(studentsData));
     localStorage.setItem('eng_daily', JSON.stringify(dailyArchives));
     localStorage.setItem('eng_settings', JSON.stringify(settings));
-  }catch(e){ console.error('save error',e); }
+
+    saveCloudData();
+
+  }catch(e){
+    console.error('save error',e);
+  }
+}
+
+
+async function saveCloudData(){
+  try{
+    if(!auth.currentUser){
+      console.warn('☁️ Cloud save skipped: no authenticated user.');
+      return;
+    }
+
+    const uid = auth.currentUser.uid;
+    const cloudRef = doc(db, 'users', uid, 'appData', 'main');
+
+    await setDoc(cloudRef, {
+      classesData: classesData,
+      studentsData: studentsData,
+      dailyArchives: dailyArchives,
+      settings: settings,
+      updatedAt: new Date().toISOString()
+    });
+
+    console.log('☁️ Cloud data saved:', auth.currentUser.email);
+
+  }catch(error){
+    console.error('❌ Cloud save error:', error);
+  }
+}
 }
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 
@@ -3239,8 +3375,11 @@ window.addEventListener('DOMContentLoaded', ()=>{
   } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
   import {
-    getFirestore
-  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAlrLU20zWisISrmZKAMBNoAxclSA8B9iY",
@@ -3258,14 +3397,16 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
   console.log("🔥 Firebase connected successfully");
 
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
+ onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
 
-    console.log("✅ User authenticated:", user.email);
-  });
+  console.log("✅ User authenticated:", user.email);
+
+  loadCloudData();
+});
 
   async function logoutUser() {
     try {
