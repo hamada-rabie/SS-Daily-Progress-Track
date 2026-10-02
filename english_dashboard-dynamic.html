@@ -181,7 +181,7 @@ select, input{font-family:'Cairo',sans-serif;}
       <div id="nav-group-management" class="space-y-1">
         <a href="#" data-action="switch-tab" data-tab="dashboard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="dashboard-mgmt"><i class="fa-solid fa-chalkboard w-5 text-center"></i><span class="bi-label"><span class="en">Classes</span><span class="ar">الفصول</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="students" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="students-mgmt"><i class="fa-solid fa-file-excel w-5 text-center"></i><span class="bi-label"><span class="en">Import / Export</span><span class="ar">استيراد / تصدير</span></span></a>
-        <a href="#" data-action="switch-tab" data-tab="settings" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="settings-mgmt"><i class="fa-solid fa-clock-rotate-left w-5 text-center"></i><span class="bi-label"><span class="en">Backup / Restore</span><span class="ar">نسخ احتياطي / استعادة</span></span></a>
+        <a href="#" data-action="open-backup" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600"><i class="fa-solid fa-clock-rotate-left w-5 text-center"></i><span class="bi-label"><span class="en">Backup / Restore</span><span class="ar">نسخ احتياطي / استعادة</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="settings" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="settings"><i class="fa-solid fa-gear w-5 text-center"></i><span class="bi-label"><span class="en">Settings</span><span class="ar">الإعدادات</span></span></a>
       </div>
     </nav>
@@ -3258,7 +3258,7 @@ document.addEventListener('click', function(e){
     case 'save-class-edit': saveClassEdit(); break;
     case 'download-template': downloadStudentTemplate(); break;
     case 'play-journey': playStudentJourney(id); break;
-    case 'toggle-nav-group': toggleNavGroup(t.dataset.group); break;
+    case 'toggle-nav-group': toggleNavGroup(t.dataset.group); break;\n    case 'open-backup':\n      switchTab('settings');\n      setTimeout(()=>document.getElementById('backup-panel')?.scrollIntoView({behavior:'smooth', block:'center'}), 0);\n      closeSidebar();\n      break;
       case 'logout':
   logoutUser();
   break;
