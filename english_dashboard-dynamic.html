@@ -108,7 +108,7 @@ th .bi-label .ar{font-size:9px; line-height:1 !important; margin-top:1px; width:
   .header-clock-row{display:none;}
   .header-dept-name{display:none;}
   #header-school-logo img, #header-ministry-logo img{ max-width:56px !important; height:30px !important; padding:4px !important; }
-  #header-term-select{ max-width:84px !important; font-size:9px !important; padding:3px 8px !important; margin-left:6px !important; }
+  #header-term-select, #header-language-select{ width:84px !important; max-width:84px !important; font-size:9px !important; padding:3px 6px !important; }
   #current-page-title-en{ font-size:12px !important; }
   #current-page-title-ar{ font-size:9px !important; }
   header{ gap:6px !important; }
@@ -373,12 +373,12 @@ select, input{font-family:'Cairo',sans-serif;}
 
     <!-- CENTER: breathing room + term selector, anchored at the far-left of this region (next to the school/date-time side) -->
     <div class="flex-1 flex flex-col items-start justify-end min-w-0" style="padding-top:10px;">
-      <div class="flex items-center gap-2 ml-3">
-        <select id="header-term-select" data-action="set-term" class="text-[11px] font-semibold rounded-full px-3 py-1 border-0 outline-none" style="background:rgba(255,255,255,0.18); color:#fff; max-width:150px;">
+      <div class="flex flex-col items-start gap-1 ml-3">
+        <select id="header-term-select" data-action="set-term" class="text-[10px] font-semibold rounded-full px-2.5 py-1 border-0 outline-none" style="background:rgba(255,255,255,0.18); color:#fff; width:120px; max-width:120px;">
           <option value="first" style="color:#111;">First Term 2026</option>
           <option value="second" style="color:#111;">Second Term 2026</option>
         </select>
-        <select id="header-language-select" data-action="set-language" class="text-[11px] font-semibold rounded-full px-2.5 py-1 border-0 outline-none" title="Preferred Language / اللغة المفضلة" style="background:rgba(255,255,255,0.18); color:#fff; max-width:135px;">
+        <select id="header-language-select" data-action="set-language" class="text-[10px] font-semibold rounded-full px-2.5 py-1 border-0 outline-none" title="Preferred Language / اللغة المفضلة" style="background:rgba(255,255,255,0.18); color:#fff; width:120px; max-width:120px;">
           <option value="bilingual" style="color:#111;">Bilingual / ثنائي</option>
           <option value="en" style="color:#111;">English</option>
           <option value="ar" style="color:#111;">العربية</option>
@@ -391,9 +391,11 @@ select, input{font-family:'Cairo',sans-serif;}
       <div class="flex flex-col items-end gap-1">
         <div id="header-ministry-logo"></div>
         <p class="text-[9px] leading-tight text-white/75 header-dept-name">English Language Department<br>قسم اللغة الإنجليزية</p>
-        <span class="bi-label items-end"><span class="en text-sm font-display font-bold" id="current-page-title-en" style="color:#fff;">Home</span><span class="ar text-[11px]" id="current-page-title-ar" style="color:#DFF3F0;">الرئيسية</span></span>
+        <div class="flex items-center gap-2" style="direction:rtl;">
+          <div id="header-teacher-photo" class="header-teacher-photo w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.18); border:2px solid rgba(255,255,255,0.72); box-shadow:0 2px 8px rgba(0,0,0,0.16);" title="Teacher Profile / ملف المعلم"></div>
+          <span class="bi-label items-end"><span class="en text-sm font-display font-bold" id="current-page-title-en" style="color:#fff;">Home</span><span class="ar text-[11px]" id="current-page-title-ar" style="color:#DFF3F0;">الرئيسية</span></span>
+        </div>
       </div>
-      <div id="header-teacher-photo" class="header-teacher-photo w-10 h-10 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,0.18); border:2px solid rgba(255,255,255,0.72); box-shadow:0 2px 8px rgba(0,0,0,0.16);" title="Teacher Profile / ملف المعلم"></div>
     </div>
   </header>
 
