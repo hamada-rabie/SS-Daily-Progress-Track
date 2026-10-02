@@ -33,6 +33,9 @@ body.auth-pending > *{visibility:hidden !important;} body{font-family:var(--user
 /* Bilingual inline content: English stays on the left, Arabic on the right. */
 .bilingual-inline{direction:ltr; unicode-bidi:plaintext;}
 .bilingual-inline .ar{direction:rtl; text-align:right;}
+body.lang-bilingual .en + .ar::before{content:" / "; white-space:pre;}
+body.lang-bilingual .bi-label .en + .ar::before,
+body.lang-bilingual .sidebar-bilingual .en + .ar::before{content:"";}
 .hero-bilingual-cta{direction:ltr;}
 /* Frozen table headers:
    The page scrolls vertically, while each table wrapper scrolls horizontally only.
@@ -3546,6 +3549,17 @@ function normalizeBilingualText(root=document){
     const ar=document.createElement('span'); ar.className='ar'; ar.textContent=m[2];
     frag.append(en,ar); node.parentNode.replaceChild(frag,node);
   });
+  const lang = document.body.classList.contains('lang-ar') ? 'ar' : 'en';
+  document.querySelectorAll('option').forEach(opt=>{
+    const raw = opt.dataset.i18nOriginal || opt.textContent;
+    if(/[A-Za-z]{2,}\\s*\\/\\s*[\\u0600-\\u06FF]/.test(raw)){
+      const m = raw.match(/^\\s*(.*?)\\s*\\/\\s*([\\u0600-\\u06FF].*?)\\s*$/);
+      if(m){
+        opt.dataset.i18nOriginal = raw;
+        opt.textContent = lang==='ar' ? m[2] : m[1];
+      }
+    }
+  });
 }
 function applyLanguage(language){
   const lang = ['bilingual','en','ar'].includes(language) ? language : 'bilingual';
@@ -3894,8 +3908,9 @@ function refreshAllViews(){
 
 function updateClock(){
   const d = new Date();
-  const dateStr = d.toLocaleDateString('en-GB',{weekday:'long', year:'numeric', month:'long', day:'numeric'});
-  const timeStr = d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const isAr = document.body.classList.contains('lang-ar');
+  const dateStr = d.toLocaleDateString(isAr?'ar-QA':'en-GB',{weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  const timeStr = d.toLocaleTimeString(isAr?'ar-QA':'en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   const el = document.getElementById('top-date-span');
   if(el) el.textContent = dateStr + '  ·  ' + timeStr;
 }
