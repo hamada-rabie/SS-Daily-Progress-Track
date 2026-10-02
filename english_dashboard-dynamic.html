@@ -3392,11 +3392,14 @@ window.addEventListener('DOMContentLoaded', ()=>{
   };
 
   const firebaseApp = initializeApp(firebaseConfig);
-  const auth = getAuth(firebaseApp);
-  const db = getFirestore(firebaseApp);
+ const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 
-  console.log("🔥 Firebase connected successfully");
+window.auth = auth;
+window.db = db;
 
+console.log("🔥 Firebase connected successfully");
+  
  onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
