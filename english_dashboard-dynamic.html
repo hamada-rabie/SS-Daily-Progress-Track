@@ -3214,5 +3214,26 @@ window.addEventListener('DOMContentLoaded', ()=>{
   refreshAllViews();
 });
 </script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAlrLU20zWisISrmZKAMBNoAxclSA8B9iY",
+    authDomain: "ss-daily-progress-track.firebaseapp.com",
+    projectId: "ss-daily-progress-track",
+    storageBucket: "ss-daily-progress-track.firebasestorage.app",
+    messagingSenderId: "946203049271",
+    appId: "1:946203049271:web:7534618a40b304ac722eb2",
+    measurementId: "G-MH3X8WZW37"
+  };
+
+  const firebaseApp = initializeApp(firebaseConfig);
+  const auth = getAuth(firebaseApp);
+  const db = getFirestore(firebaseApp);
+
+  console.log("🔥 Firebase connected successfully");
+</script>
 </body>
           </html>
