@@ -3595,6 +3595,9 @@ function renderTeacherPhoto(){
 }
 
 function syncFrozenTableHeaders(){
+  document.querySelectorAll('.table-scroll-x').forEach(wrapper=>{
+    if(wrapper._frozenSyncCleanup) wrapper._frozenSyncCleanup();
+  });
   document.querySelectorAll('.frozen-table-header').forEach(el=>el.remove());
   const main = document.querySelector('main');
   if(!main) return;
@@ -3631,8 +3634,8 @@ function syncFrozenTableHeaders(){
       cloneTable.style.transform='translateX('+(-ratio*max)+'px)';
     };
     syncX();
+    wrapper._frozenSyncCleanup=()=>wrapper.removeEventListener('scroll',syncX);
     wrapper.addEventListener('scroll',syncX,{passive:true});
-    overlay._cleanup=()=>wrapper.removeEventListener('scroll',syncX);
   });
 }
 let frozenHeaderTick=false;
@@ -3644,14 +3647,6 @@ function scheduleFrozenTableHeaders(){
 window.addEventListener('scroll',scheduleFrozenTableHeaders,true);
 window.addEventListener('resize',scheduleFrozenTableHeaders);
 setTimeout(scheduleFrozenTableHeaders,200);
-
-function renderTeacherPhoto(){
-  const el = document.getElementById('teacher-profile-photo-preview');
-  if(!el) return;
-  el.innerHTML = settings.teacherPhoto
-    ? `<img src="${settings.teacherPhoto}" class="w-full h-full object-cover">`
-    : '<i class="fa-solid fa-user text-gray-300 text-2xl"></i>';
-}
 
 /* ---------- global event delegation (avoids inline handlers) ---------- */
 document.addEventListener('click', function(e){
