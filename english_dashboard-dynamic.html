@@ -164,12 +164,17 @@ body.theme-dark .backup-nav-toggle:hover,body.theme-dark .backup-nav-toggle[aria
 .nav-group-toggle[aria-expanded="true"]{color:var(--teal-dark);}
 .nav-group-toggle:hover{background:#EAF5F2; color:var(--teal-dark);}
 .nav-group-toggle:hover .ar{color:var(--teal-dark);}
-/* Sidebar hierarchy: the 3 dropdown group headers (Analytics/Achievement/Management)
-   always use the strong primary theme color; their submenu items use a visibly
-   lighter shade of the same color. Scoped to .bi-label text only, so existing
-   per-item icon colors (and the active-item's white text) are left untouched. */
+/* Sidebar 2-level hierarchy:
+   LEVEL 1 (strong primary theme color) — the 3 dropdown group headers
+   (Analytics/Achievement/Management) AND every top-level direct item
+   (Home, Students, Settings — matched as direct children of <nav>, which
+   excludes items nested one level deeper inside a #nav-group-* dropdown).
+   LEVEL 2 (softer shade of the same color) — the items inside those 3
+   dropdowns. Scoped to .bi-label text only, so existing per-item icon
+   colors and the active-item's white text are left untouched. */
 .nav-group-toggle,
-.nav-group-toggle .ar{color:var(--teal-dark) !important;}
+.nav-group-toggle .ar,
+nav > .nav-link:not(.active) .bi-label{color:var(--teal-dark) !important;}
 #nav-group-daily .nav-link:not(.active) .bi-label,
 #nav-group-achievement .nav-link:not(.active) .bi-label,
 #nav-group-management .nav-link:not(.active) .bi-label{
