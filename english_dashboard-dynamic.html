@@ -164,6 +164,17 @@ body.theme-dark .backup-nav-toggle:hover,body.theme-dark .backup-nav-toggle[aria
 .nav-group-toggle[aria-expanded="true"]{color:var(--teal-dark);}
 .nav-group-toggle:hover{background:#EAF5F2; color:var(--teal-dark);}
 .nav-group-toggle:hover .ar{color:var(--teal-dark);}
+/* Sidebar hierarchy: the 3 dropdown group headers (Analytics/Achievement/Management)
+   always use the strong primary theme color; their submenu items use a visibly
+   lighter shade of the same color. Scoped to .bi-label text only, so existing
+   per-item icon colors (and the active-item's white text) are left untouched. */
+.nav-group-toggle,
+.nav-group-toggle .ar{color:var(--teal-dark) !important;}
+#nav-group-daily .nav-link:not(.active) .bi-label,
+#nav-group-achievement .nav-link:not(.active) .bi-label,
+#nav-group-management .nav-link:not(.active) .bi-label{
+  color:var(--teal) !important;
+}
 .nav-link .bi-label,.nav-group-toggle .bi-label{display:flex; flex-direction:column; align-items:flex-start; gap:2px; direction:ltr; white-space:normal; min-width:0; line-height:1.15;}
 .nav-link .bi-label .en,.nav-group-toggle .bi-label .en{direction:ltr; white-space:normal;}
 .nav-link .bi-label .ar,.nav-group-toggle .bi-label .ar{direction:rtl; text-align:right; unicode-bidi:plaintext; white-space:normal; width:100%;}
@@ -808,8 +819,8 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
 <div id="sidebar-overlay" data-action="close-sidebar" class="no-print"></div>
 
 <!-- Main -->
-<main class="flex-1 flex flex-col h-screen" style="height:100dvh; display:flex; flex-direction:column; flex:1 1 0%; min-width:0; min-height:0; position:relative; overflow:hidden;">
-  <header id="app-topbar" class="text-white px-4 sm:px-6 py-3 flex items-start justify-between no-print" style="background:linear-gradient(120deg,var(--teal),var(--teal-dark));flex-shrink:0;direction:ltr;gap:18px;">
+<main class="flex-1 flex flex-col h-screen overflow-y-auto" style="height:100dvh; display:flex; flex-direction:column; flex:1 1 0%; min-width:0; min-height:0; position:relative; overflow-y:auto;">
+  <header id="app-topbar" class="text-white px-4 sm:px-6 py-3 flex items-start justify-between no-print" style="background:linear-gradient(120deg,var(--teal),var(--teal-dark));flex-shrink:0;direction:ltr;gap:18px;position:static;">
 <div class="flex flex-col items-start gap-1.5 shrink-0 header-left-identity">
 <div id="header-ministry-logo"></div>
 <select id="header-term-select" data-action="set-term" class="text-[9.5px] font-semibold rounded-full px-2 py-1 border-0 outline-none header-left-control" style="background:rgba(255,255,255,.18);color:#fff;width:112px;max-width:112px;"><option value="first" style="color:#111;">First Term 2026</option><option value="second" style="color:#111;">Second Term 2026</option></select>
@@ -821,7 +832,7 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
 <div class="flex items-center min-w-[110px] max-w-[220px]" style="direction:ltr;"><span class="bi-label items-start"><span class="en text-sm font-display font-bold" id="current-page-title-en" style="color:#fff;">Home</span><span class="ar text-[11px] font-bold" id="current-page-title-ar" style="color:#fff;">الرئيسية</span></span></div>
 </div></header>
 
-  <div class="p-5 sm:p-6 space-y-6 flex-1" style="overflow-y:auto; min-height:0;">
+  <div class="p-5 sm:p-6 space-y-6 flex-1" style="min-height:0;">
 
     <!-- DASHBOARD -->
     <section id="tab-dashboard" class="tab-content active space-y-5">
