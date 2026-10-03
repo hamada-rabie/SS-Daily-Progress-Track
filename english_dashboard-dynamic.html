@@ -721,7 +721,12 @@ body.lang-bilingual #app-topbar .header-right-identity > div:last-child .bi-labe
 #app-topbar .header-dept-name .ar{
   display:block !important;
   width:100% !important;
-  white-space:nowrap !important;
+  /* Root cause of the clipped/overlapping bilingual department line: nowrap
+     forced each line onto a single row inside a width-constrained container,
+     clipping the longer Arabic line. Allow natural wrapping instead so both
+     full lines always render completely. */
+  white-space:normal !important;
+  overflow-wrap:break-word !important;
 }
 
 /* Keep the Arabic frozen header colors on the actual cloned overlay. */
@@ -4197,7 +4202,11 @@ function syncFrozenTableHeaders(){
   document.querySelectorAll('.frozen-table-header').forEach(el=>el.remove());
   activeFrozenTable = null;
 
-  const top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--app-topbar-height')) || 72;
+  // The frozen clone anchors to the very top of the viewport (0), not to the old
+  // --app-topbar-height offset: #app-topbar is now non-sticky and scrolls away
+  // with the page, so there is no longer any persistent chrome above this point
+  // for the clone to sit below.
+  const top = 0;
   const main = document.querySelector('main');
   if(!main) return;
 
