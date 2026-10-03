@@ -141,7 +141,7 @@ body.theme-dark .backup-nav-toggle:hover,body.theme-dark .backup-nav-toggle[aria
   #current-page-title-ar{ font-size:9px !important; }
   header{ gap:6px !important; }
 }
-.notif-bell-btn{position:relative;width:24px;height:24px;border-radius:8px;border:none;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:background .15s ease;}
+.notif-bell-btn{position:relative; transform:translateX(10px);width:24px;height:24px;border-radius:8px;border:none;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:background .15s ease;}
 .notif-bell-btn:hover{background:rgba(255,255,255,.26);}
 .notif-badge{position:absolute;top:-4px;right:-4px;min-width:14px;height:14px;padding:0 3px;border-radius:999px;background:#C94C4C;color:#fff;font-size:8.5px;font-weight:800;line-height:14px;text-align:center;border:1.5px solid var(--teal-dark);}
 .notif-badge.hidden{display:none;}
@@ -487,7 +487,7 @@ body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
 .header-right-identity > div:first-child{grid-column:2 !important;width:150px !important;min-width:150px !important;max-width:150px !important;align-items:flex-end !important;justify-self:end !important;}
 .header-right-identity > div:first-child #header-school-logo{width:100% !important;justify-content:flex-end !important;}
 .header-right-identity > div:first-child #header-school-logo img{max-width:128px !important;height:40px !important;}
-.header-right-identity > div:first-child #header-school-logo img{transform:translateX(44px) !important;}
+.header-right-identity > div:first-child #header-school-logo img{transform:translateX(20px) !important;}
 .header-right-identity #header-teacher-photo{margin-left:auto !important;margin-right:0 !important;}
 .header-right-identity > div:last-child{grid-column:1 !important;width:100% !important;min-width:0 !important;}
 body.lang-ar .header-right-identity > div:last-child{direction:rtl !important;text-align:right !important;}
@@ -758,8 +758,10 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
 .global-search-trigger-btn{
   position:absolute;
   top:14px;
-  right:14px;
-  inset-inline-end:14px;
+  left:14px;
+  right:auto;
+  inset-inline-start:14px;
+  inset-inline-end:auto;
   min-width:42px;
   min-height:36px;
   justify-content:center;
