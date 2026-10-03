@@ -920,6 +920,23 @@ body.lang-bilingual #app-topbar .header-right-identity .header-dept-name .ar{
   overflow:hidden !important;
 }
 </style>
+<style id="final-language-specific-dept-position">
+/* Language-specific final positioning. */
+body.lang-ar #app-topbar .header-right-identity .header-dept-name,
+body.lang-en #app-topbar .header-right-identity .header-dept-name{
+  transform:translate(8px,-7px) !important;
+}
+body.lang-ar #app-topbar .header-right-identity #header-teacher-photo,
+body.lang-en #app-topbar .header-right-identity #header-teacher-photo{
+  transform:translateX(8px) !important;
+}
+body.lang-bilingual #app-topbar .header-right-identity .header-dept-name{
+  transform:translate(12px,-7px) !important;
+}
+body.lang-bilingual #app-topbar .header-right-identity #header-teacher-photo{
+  transform:translateX(12px) !important;
+}
+</style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
