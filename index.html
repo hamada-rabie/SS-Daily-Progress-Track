@@ -3,8 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0E7C74">
   <meta http-equiv="refresh" content="0; url=login.html">
   <title>SS' Daily Progress Track</title>
+  <script>
+    if('serviceWorker' in navigator){
+      window.addEventListener('load',()=>{
+        navigator.serviceWorker.register('firebase-messaging-sw.js',{scope:'./'})
+          .catch(err=>console.warn('PWA service worker registration failed:',err));
+      });
+    }
+  </script>
 </head>
 <body>
   <p>Loading SS' Daily Progress Track...</p>
