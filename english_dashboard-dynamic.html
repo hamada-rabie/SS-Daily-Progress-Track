@@ -3,6 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0E7C74">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="icon-192.svg" type="image/svg+xml">
+<script>
+  // PWA shell registration — deliberately separate from Firebase Messaging token registration.
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('firebase-messaging-sw.js',{scope:'./'})
+        .then(reg=>console.log('📦 PWA service worker ready:',reg.scope))
+        .catch(err=>console.warn('PWA service worker registration failed:',err));
+    });
+  }
+</script>
 <title>English Dashboard | لوحة متابعة اللغة الإنجليزية</title>
 <script id="seed-data-script" type="application/json"></script>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -1899,6 +1915,12 @@ async function loadCloudData(){
 
     if(cloudSnap.exists()){
       const data = cloudSnap.data();
+      const hasUnsyncedLocalEdits = localStorage.getItem('ss_cloud_dirty') === '1';
+      if(hasUnsyncedLocalEdits && navigator.onLine){
+        console.log('☁️ Local changes are pending; pushing local data before accepting cloud snapshot.');
+        await saveCloudData();
+        return;
+      }
       const localClasses = Array.isArray(classesData) ? classesData : [];
       const localStudents = Array.isArray(studentsData) ? studentsData : [];
       const localDaily = dailyArchives && typeof dailyArchives === 'object' ? dailyArchives : {};
@@ -1953,6 +1975,9 @@ let cloudSaveQueue = Promise.resolve();
 
 function saveData(){
   try{
+    // LocalStorage is the immediate source of truth while offline.
+    // The dirty marker guarantees the local edits are pushed when connectivity returns.
+    localStorage.setItem('ss_cloud_dirty', '1');
     localStorage.setItem('eng_classes', JSON.stringify(classesData));
     localStorage.setItem('eng_students', JSON.stringify(studentsData));
     localStorage.setItem('eng_daily', JSON.stringify(dailyArchives));
@@ -1974,7 +1999,8 @@ function setCloudStatus(state){
   const states = {
     syncing:{icon:'fa-cloud-arrow-up', en:'Syncing…', ar:'جارٍ التزامن السحابي', title:'Syncing / جارٍ التزامن'},
     synced:{icon:'fa-cloud-check', en:'Cloud synced', ar:'تمت المزامنة سحابياً', title:'Cloud synced / تمت المزامنة سحابياً'},
-    error:{icon:'fa-cloud-xmark', en:'Sync error', ar:'تعذر التزامن', title:'Cloud sync error / تعذر التزامن'}
+    error:{icon:'fa-cloud-xmark', en:'Sync error', ar:'تعذر التزامن', title:'Cloud sync error / تعذر التزامن'},
+    offline:{icon:'fa-cloud-slash', en:'Offline — saved locally', ar:'دون اتصال — تم الحفظ محلياً', title:'Offline — saved locally / دون اتصال — تم الحفظ محلياً'}
   };
   const s = states[state] || states.synced;
   el.dataset.state = state;
@@ -1988,12 +2014,16 @@ function setCloudStatus(state){
 }
 
 async function saveCloudData(){
+  if(!navigator.onLine){
+    setCloudStatus('offline');
+    return false;
+  }
   setCloudStatus('syncing');
   try{
     if(!window.auth.currentUser){
       console.warn('☁️ Cloud save skipped: no authenticated user.');
       setCloudStatus('error');
-      return;
+      return false;
     }
 
     const uid = window.auth.currentUser.uid;
@@ -2008,12 +2038,37 @@ async function saveCloudData(){
 
     console.log('☁️ Cloud data saved:', window.auth.currentUser.email);
     setCloudStatus('synced');
+    try{ localStorage.removeItem('ss_cloud_dirty'); }catch(e){}
+    return true;
 
   }catch(error){
     console.error('❌ Cloud save error:', error);
-    setCloudStatus('error');
+    setCloudStatus(navigator.onLine ? 'error' : 'offline');
+    return false;
   }
 }
+
+
+// ---------- Offline / online bridge ----------
+let offlineSyncTimer = null;
+async function syncPendingCloudChanges(){
+  if(!navigator.onLine || !window.auth?.currentUser) return;
+  if(localStorage.getItem('ss_cloud_dirty') !== '1') return;
+  clearTimeout(offlineSyncTimer);
+  offlineSyncTimer = setTimeout(async ()=>{
+    const ok = await saveCloudData();
+    if(ok) console.log('🔄 Pending offline changes synchronized automatically.');
+  }, 250);
+}
+window.addEventListener('offline', ()=>{
+  setCloudStatus('offline');
+  console.log('📴 App is offline. Changes continue to be saved locally.');
+});
+window.addEventListener('online', ()=>{
+  console.log('🌐 Connection restored. Checking for pending changes...');
+  syncPendingCloudChanges();
+});
+if(!navigator.onLine) setTimeout(()=>setCloudStatus('offline'),0);
 
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
@@ -5220,6 +5275,8 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
   import {
   getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
   doc,
   getDoc,
   setDoc,
@@ -5250,7 +5307,20 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
   const firebaseApp = initializeApp(firebaseConfig);
  const auth = getAuth(firebaseApp);
-const db = getFirestore(firebaseApp);
+
+// Persistent Firestore cache: keeps the teacher's active cloud data available offline.
+// If the browser cannot provide persistent IndexedDB storage, safely fall back to the
+// normal in-memory Firestore client without blocking the dashboard.
+let db;
+try{
+  db = initializeFirestore(firebaseApp, {
+    localCache: persistentLocalCache()
+  });
+  console.log("💾 Firestore persistent offline cache enabled");
+}catch(offlineInitError){
+  console.warn("Firestore persistent cache unavailable; using normal Firestore client:", offlineInitError);
+  db = getFirestore(firebaseApp);
+}
 
 window.auth = auth;
 window.db = db;
@@ -5391,7 +5461,11 @@ setPersistence(auth, browserLocalPersistence)
       console.log("✅ User authenticated:", user.email);
       document.body.classList.remove("auth-pending");
 
-      loadCloudData();
+      if(localStorage.getItem('ss_cloud_dirty') === '1' && navigator.onLine){
+        await syncPendingCloudChanges();
+      }else{
+        await loadCloudData();
+      }
       startNotificationsListener(user.uid);
     });
   })
