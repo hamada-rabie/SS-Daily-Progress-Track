@@ -5660,6 +5660,52 @@ window.deactivatePushToken = async function deactivatePushToken(){
 // Kept in its own subcollection, separate from users/{uid}/appData/main, so it
 // never touches existing classes/students/daily-records data.
 let notifUnsubscribe = null;
+
+// Create one smart notification record and, when this device is active, surface it
+// immediately as a real browser notification. Cross-device/background delivery
+// still requires a server-side FCM sender; this client-side trigger must never
+// pretend that Firestore alone can wake a closed phone.
+let notifKnownIds = new Set();
+let notifListenerReady = false;
+window.createTriggeredNotification = async function createTriggeredNotification(payload){
+  if(!auth.currentUser || !payload || !payload.key) return false;
+  const uid = auth.currentUser.uid;
+  const id = 'trigger_' + String(payload.key).replace(/[^a-zA-Z0-9_-]/g,'_');
+  const ref = doc(db, 'users', uid, 'notifications', id);
+  const item = {
+    titleEn: payload.titleEn || 'Notification',
+    titleAr: payload.titleAr || 'إشعار',
+    bodyEn: payload.bodyEn || '',
+    bodyAr: payload.bodyAr || '',
+    createdAt: new Date().toISOString(),
+    read: false,
+    type: payload.type || 'workflow',
+    data: payload.data || null,
+    triggerKey: String(payload.key)
+  };
+  try{
+    const existing = await getDoc(ref);
+    if(existing.exists()) return false;
+    await setDoc(ref, item, {merge:false});
+    // If this is the device that performed the action, show it immediately.
+    if(notifAppEnabled && Notification.permission === 'granted' && document.visibilityState === 'visible'){
+      try{
+        const reg = await navigator.serviceWorker.ready;
+        await reg.showNotification(item.titleEn, {
+          body:item.bodyEn,
+          icon:'icon-192.svg',
+          badge:'icon-192.svg',
+          tag:id,
+          data:item.data || {}
+        });
+      }catch(pushErr){ console.warn('Active-device notification display failed:',pushErr); }
+    }
+    return true;
+  }catch(err){
+    console.error('Triggered notification write failed:',err);
+    return false;
+  }
+};
 function startNotificationsListener(uid){
   if(notifUnsubscribe){ notifUnsubscribe(); notifUnsubscribe = null; } // guard against duplicate listeners
   const notifQuery = query(collection(db, 'users', uid, 'notifications'), orderBy('createdAt', 'desc'), limit(50));
