@@ -5724,6 +5724,26 @@ function startNotificationsListener(uid){
         data: data.data || null
       };
     });
+    // After the initial snapshot, any newly-created notification arriving from
+    // another device is surfaced locally on this device when notifications are ON.
+    if(notifListenerReady && notifAppEnabled && Notification.permission === 'granted' && document.visibilityState !== 'hidden'){
+      items.filter(n=>!notifKnownIds.has(n.id)).forEach(async n=>{
+        notifKnownIds.add(n.id);
+        try{
+          const reg = await navigator.serviceWorker.ready;
+          await reg.showNotification(n.titleEn || 'SS\\' Daily Progress Track', {
+            body:n.bodyEn || '',
+            icon:'icon-192.svg',
+            badge:'icon-192.svg',
+            tag:n.id,
+            data:n.data || {}
+          });
+        }catch(pushErr){ console.warn('Cross-device notification display failed:',pushErr); }
+      });
+    }else{
+      items.forEach(n=>notifKnownIds.add(n.id));
+    }
+    notifListenerReady = true;
     if(typeof window.onNotificationsSynced === 'function') window.onNotificationsSynced(items);
   }, (err) => {
     console.error('Notifications listener error:', err);
