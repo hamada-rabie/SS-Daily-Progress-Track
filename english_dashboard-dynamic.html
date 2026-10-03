@@ -1381,6 +1381,24 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
           </div>
           <button data-action="save-settings" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:var(--teal);"><i class="fa-solid fa-check"></i> Save Preferences / حفظ التفضيلات</button>
         </div>
+
+        <div class="card p-5 space-y-4">
+          <div class="settings-section-heading">
+            <div class="settings-section-icon"><i class="fa-solid fa-bell"></i></div>
+            <div>
+              <span class="bi-label"><span class="en font-display font-bold">Notifications</span><span class="ar">الإشعارات</span></span>
+              <p class="text-[10px] text-gray-400 mt-1"><span class="en">Get browser notifications on this device for important updates.</span><span class="ar">احصل على إشعارات في هذا المتصفح على هذا الجهاز للتحديثات المهمة.</span></p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <span class="bi-label"><span class="en">Enable Notifications</span><span class="ar">تفعيل الإشعارات</span></span>
+            <button type="button" id="notif-toggle-btn" data-action="toggle-notifications" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:var(--teal);"><i class="fa-solid fa-bell"></i> <span class="en">Enable</span><span class="ar">تفعيل</span></button>
+          </div>
+          <p id="notif-status-indicator" class="text-[10px] flex items-center gap-1.5" style="color:#64736F;">
+            <i id="notif-status-dot" class="fa-solid fa-circle" style="font-size:7px; color:#9CA3AF;"></i>
+            <span id="notif-status-label"><span class="en">Not enabled on this device</span><span class="ar">غير مفعّل على هذا الجهاز</span></span>
+          </p>
+        </div>
       </div>
     </section>
 
@@ -3723,6 +3741,71 @@ function loadSettingsForm(){
 }
 function editProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.setAttribute('aria-readonly','false');el.focus();try{el.setSelectionRange(el.value.length,el.value.length);}catch(_){}}
 function deleteProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.value='';el.setAttribute('aria-readonly','false');el.focus();}
+/* ---------- web push notifications (teacher device, foundation only) ---------- */
+function updateNotificationStatusUI(){
+  const dot = document.getElementById('notif-status-dot');
+  const label = document.getElementById('notif-status-label');
+  const btn = document.getElementById('notif-toggle-btn');
+  if(!dot || !label || !btn) return;
+  const supported = 'Notification' in window && 'serviceWorker' in navigator;
+  if(!supported){
+    dot.style.color = '#9CA3AF';
+    label.innerHTML = '<span class="en">Not supported in this browser</span><span class="ar">غير مدعوم في هذا المتصفح</span>';
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    return;
+  }
+  const perm = Notification.permission;
+  if(perm === 'granted'){
+    dot.style.color = '#1BA648';
+    label.innerHTML = '<span class="en">Enabled on this device</span><span class="ar">مفعّل على هذا الجهاز</span>';
+    btn.innerHTML = '<i class="fa-solid fa-bell-slash"></i> <span class="en">Enabled</span><span class="ar">مفعّل</span>';
+  }else if(perm === 'denied'){
+    dot.style.color = '#C94C4C';
+    label.innerHTML = '<span class="en">Blocked in browser settings</span><span class="ar">محظور من إعدادات المتصفح</span>';
+    btn.innerHTML = '<i class="fa-solid fa-bell"></i> <span class="en">Enable</span><span class="ar">تفعيل</span>';
+  }else{
+    dot.style.color = '#9CA3AF';
+    label.innerHTML = '<span class="en">Not enabled on this device</span><span class="ar">غير مفعّل على هذا الجهاز</span>';
+    btn.innerHTML = '<i class="fa-solid fa-bell"></i> <span class="en">Enable</span><span class="ar">تفعيل</span>';
+  }
+  normalizeBilingualText(document.getElementById('notif-status-indicator'));
+  syncLanguageVisibility();
+}
+
+async function toggleNotifications(){
+  if(!('Notification' in window) || !('serviceWorker' in navigator)){
+    showToast('Notifications are not supported in this browser / الإشعارات غير مدعومة في هذا المتصفح','error');
+    return;
+  }
+  if(Notification.permission === 'denied'){
+    showToast('Notifications are blocked — enable them in your browser settings / الإشعارات محظورة، فعّلها من إعدادات المتصفح','error');
+    return;
+  }
+  if(Notification.permission === 'granted'){
+    // Minimal foundation: this build only registers the device. Revoking is done
+    // from the browser's own site settings, consistent with standard web push UX.
+    showToast('Already enabled on this device / مُفعّل بالفعل على هذا الجهاز','success');
+    return;
+  }
+  try{
+    const permission = await Notification.requestPermission();
+    if(permission !== 'granted'){
+      updateNotificationStatusUI();
+      showToast('Notifications permission was not granted / لم يتم منح إذن الإشعارات','error');
+      return;
+    }
+    if(typeof window.registerPushToken === 'function'){
+      await window.registerPushToken();
+    }
+    updateNotificationStatusUI();
+    showToast('Notifications enabled / تم تفعيل الإشعارات','success');
+  }catch(err){
+    console.error('Notification setup error:', err);
+    showToast('Could not enable notifications / تعذّر تفعيل الإشعارات','error');
+  }
+}
+
 function saveSettings(){
   settings.teacherName = document.getElementById('setting-teacher-name').value.trim();
   settings.coordinatorName = document.getElementById('setting-coordinator-name').value.trim();
@@ -4336,6 +4419,7 @@ document.addEventListener('click', function(e){
     case 'generate-bulk-certs': generateBulkCerts(); break;
     case 'send-cert-whatsapp': sendCertificateWhatsApp(); break;
     case 'save-settings': saveSettings(); break;
+    case 'toggle-notifications': toggleNotifications(); break;
     case 'edit-profile-field': editProfileField(t.dataset.field); break;
     case 'delete-profile-field': deleteProfileField(t.dataset.field); break;
     case 'export-backup': exportBackup(); break;
@@ -4502,6 +4586,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   updateClock();
   setInterval(updateClock, 1000);
   refreshAllViews();
+  updateNotificationStatusUI();
   // Restore the exact page the teacher was viewing after a browser refresh.
   try{
     const hashTab = (location.hash || '').replace(/^#/, '');
@@ -4536,6 +4621,11 @@ window.addEventListener('DOMContentLoaded', ()=>{
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
+  import {
+    getMessaging,
+    getToken
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyAlrLU20zWisISrmZKAMBNoAxclSA8B9iY",
     authDomain: "ss-daily-progress-track.firebaseapp.com",
@@ -4557,6 +4647,59 @@ window.getDoc = getDoc;
 window.setDoc = setDoc;
 
 console.log("🔥 Firebase connected successfully");
+
+// ---------- Web Push (Firebase Cloud Messaging) — teacher device foundation ----------
+// BLOCKER (see delivery notes): this needs a VAPID key, which Firebase generates
+// per-project in the Console (Project Settings -> Cloud Messaging -> Web
+// configuration -> "Generate key pair"). It is a public key (safe in client code,
+// same trust level as the rest of firebaseConfig above) but it cannot be invented
+// here — paste the real value from that project's Console below.
+const VAPID_KEY = "BAzmhoBxpE0Y8-rnAfjte1bcu1OUpODJQTwN2z1kwPnroDef9q51WyrF_xFtuuWYFi0rwLnvN7CEt_9Q0JSpNzs";
+
+let messaging = null;
+try{
+  if('serviceWorker' in navigator && 'Notification' in window){
+    messaging = getMessaging(firebaseApp);
+  }
+}catch(err){
+  console.warn('Firebase Messaging not available in this browser:', err);
+}
+
+// Called only after the teacher explicitly enables notifications and the browser
+// permission prompt has already been granted (see toggleNotifications() in the
+// main script). Registers the messaging service worker, requests an FCM
+// registration token, and stores it under this teacher's own Firestore user
+// document — a new, separate subcollection that does not touch existing app data.
+window.registerPushToken = async function registerPushToken(){
+  if(!messaging){
+    console.warn('Messaging not initialized; cannot register push token.');
+    return null;
+  }
+  if(!VAPID_KEY || VAPID_KEY.indexOf('PASTE_YOUR') === 0){
+    console.error('FCM VAPID key is not configured yet. Notification permission was granted, but no push token can be requested until a real VAPID key from the Firebase Console is set in this file.');
+    return null;
+  }
+  try{
+    const registration = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
+    if(!token){
+      console.warn('No FCM registration token was returned.');
+      return null;
+    }
+    if(auth.currentUser){
+      const tokenRef = doc(db, 'users', auth.currentUser.uid, 'pushTokens', token);
+      await setDoc(tokenRef, {
+        token,
+        platform: navigator.userAgent,
+        createdAt: new Date().toISOString()
+      }, { merge: true });
+    }
+    return token;
+  }catch(err){
+    console.error('Push token registration failed:', err);
+    return null;
+  }
+};
   
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
