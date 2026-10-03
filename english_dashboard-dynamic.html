@@ -2381,6 +2381,16 @@ function saveStudent(){
     showToast('Student added / تمت إضافة الطالب بنجاح','success');
   }
   saveData(); closeModal('modal-student'); refreshAllViews();
+  if(!editingStudentId){
+    const added=studentsData[studentsData.length-1];
+    triggerSmartNotification({
+      key:'student-added-'+added.id,type:'workflow',
+      titleEn:'New student added',titleAr:'تمت إضافة طالب جديد',
+      bodyEn:name+' was added to '+getStudentClassLabel(added.id)+'.',
+      bodyAr:'تمت إضافة '+name+' إلى '+getStudentClassLabel(added.id)+'.',
+      data:{studentId:added.id,classId}
+    });
+  }
 }
 function deleteStudent(id){
   if(!confirm('Delete this student? / حذف هذا الطالب؟')) return;
@@ -2695,6 +2705,19 @@ function cycleAttendance(id){
   rec.attendance = rec.attendance ? order[(order.indexOf(rec.attendance)+1)%order.length] : 'present';
   s.attendance = latestDailyFieldValue(id, 'attendance', 'present');
   saveData(); renderDailyTable(); renderStudentsTable();
+  if(rec.attendance==='absent'){
+    const recent=countRecentAbsences(id,date,5);
+    if(recent>=2){
+      triggerSmartNotification({
+        key:'attendance-concern-'+id+'-'+date,type:'attention',
+        titleEn:'Attendance needs attention',titleAr:'الحضور يحتاج متابعة',
+        bodyEn:s.name+' has been absent '+recent+' times in the recent records.',
+        bodyAr:'الطالب '+s.name+' تغيب '+recent+' مرات في السجلات الأخيرة.',
+        data:{studentId:id,date,absences:recent}
+      });
+    }
+  }
+  checkDailyClassCompletion(date,s.classId);
 }
 function toggleHomework(id){
   const s = studentsData.find(x=>x.id===id); if(!s) return;
@@ -2820,6 +2843,33 @@ function setSkill(studentId, key, val){
   const dated = s.skillHistory.filter(h=>typeof h[key]==='number').sort((a,b)=>a.date<b.date?-1:1);
   s.skills[key] = dated.length ? dated[dated.length-1][key] : 0;
   saveData(); renderSkillsTable(); renderStudentsTable();
+  if(val!==''){
+    const score=Number(val);
+    const skillName=SKILL_META[key].label.split(' / ')[0];
+    const skillNameAr=SKILL_META[key].label.split(' / ')[1];
+    if(score<=3){
+      triggerSmartNotification({
+        key:'skill-attention-'+s.id+'-'+date+'-'+key,type:'attention',
+        titleEn:'Student needs skill support',titleAr:'الطالب يحتاج دعماً في مهارة',
+        bodyEn:s.name+' scored '+score+'/10 in '+skillName+'.',
+        bodyAr:'حصل '+s.name+' على '+score+'/10 في مهارة '+skillNameAr+'.',
+        data:{studentId:s.id,date,skill:key,score}
+      });
+    }
+    if(score>=8){
+      const previous=s.skillHistory.filter(h=>h.date<date&&typeof h[key]==='number').sort((a,b)=>a.date<b.date?-1:1).pop();
+      if(!previous||previous[key]<8){
+        triggerSmartNotification({
+          key:'skill-milestone-'+s.id+'-'+date+'-'+key,type:'milestone',
+          titleEn:'Progress milestone',titleAr:'محطة تقدم جديدة',
+          bodyEn:s.name+' reached '+score+'/10 in '+skillName+'.',
+          bodyAr:'وصل '+s.name+' إلى '+score+'/10 في مهارة '+skillNameAr+'.',
+          data:{studentId:s.id,date,skill:key,score}
+        });
+      }
+    }
+    checkDailyClassCompletion(date,s.classId);
+  }
 }
 
 /* ---------- honor board / English Excellence Board ---------- */
@@ -4312,6 +4362,38 @@ function markAllNotifsRead(){
   renderNotifBadge();
   renderNotifList();
   if(typeof window.markAllNotificationsReadRemote === 'function') window.markAllNotificationsReadRemote();
+}
+
+/* ---------- Smart Notification Triggers ---------- */
+function triggerSmartNotification(payload){
+  if(typeof window.createTriggeredNotification === 'function') window.createTriggeredNotification(payload);
+}
+function getStudentClassLabel(studentId){
+  const s=studentsData.find(x=>x.id===studentId);
+  const cls=s?classesData.find(c=>c.id===s.classId):null;
+  return cls?shortClass(cls):'';
+}
+function countRecentAbsences(studentId,throughDate,limitDays=5){
+  const dates=Object.keys(dailyArchives).filter(d=>d<=throughDate).sort().slice(-limitDays);
+  return dates.reduce((n,d)=>{
+    const rec=dailyArchives[d]&&dailyArchives[d][studentId];
+    return n+(rec&&rec.attendance==='absent'?1:0);
+  },0);
+}
+function checkDailyClassCompletion(date,classId){
+  const clsStudents=studentsData.filter(s=>s.classId===classId);
+  if(!clsStudents.length)return;
+  const recs=dailyArchives[date]||{};
+  if(clsStudents.every(s=>recs[s.id])){
+    const cls=classesData.find(c=>c.id===classId);
+    triggerSmartNotification({
+      key:'class-complete-'+date+'-'+classId,type:'workflow',
+      titleEn:'Daily tracking complete',titleAr:'اكتملت متابعة اليوم',
+      bodyEn:(cls?shortClass(cls):'Class')+' — all students have a record for '+date+'.',
+      bodyAr:(cls?shortClass(cls):'الفصل')+' — تم تسجيل بيانات جميع الطلاب ليوم '+date+'.',
+      data:{date,classId}
+    });
+  }
 }
 
 /* ---------- Global Search ---------- */
