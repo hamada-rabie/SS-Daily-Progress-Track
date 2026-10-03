@@ -123,6 +123,16 @@ body.theme-dark .backup-nav-toggle:hover,body.theme-dark .backup-nav-toggle[aria
 @media (max-width:480px){
   .header-books-visual{display:none;}
   .header-clock-row{display:none;}
+}
+/* Root cause of the clock vertical jump: Arabic web fonts (Cairo etc.) load via
+   font-display:swap, so the first paint uses the fallback font's metrics, then
+   reflows once the real font swaps in a second or two later. Reserving a fixed
+   line-height/min-height here means that swap never changes the row's box size. */
+.header-clock-row{
+  line-height:14px;
+  min-height:14px;
+}
+@media (max-width:480px){
   .header-dept-name{display:none;}
   #header-school-logo img, #header-ministry-logo img{ max-width:56px !important; height:30px !important; padding:4px !important; }
   .header-controls-visual{gap:5px !important;}
@@ -432,9 +442,6 @@ body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
  body.lang-en #app-topbar,body.lang-bilingual #app-topbar{grid-template-columns:132px minmax(0,1fr) 330px !important;column-gap:18px !important;}
  body.lang-en .header-right-identity,body.lang-bilingual .header-right-identity{grid-template-columns:minmax(125px,1fr) 150px !important;gap:16px !important;}
  body.lang-en .header-right-identity > div:first-child,body.lang-bilingual .header-right-identity > div:first-child{grid-column:2 !important;width:150px !important;min-width:150px !important;max-width:150px !important;align-items:flex-end !important;justify-self:end !important;}
- body.lang-en .header-right-identity > div:last-child,body.lang-bilingual .header-right-identity > div:last-child{grid-column:1 !important;width:100% !important;min-width:0 !important;align-self:start !important;padding-top:38px !important;}
- body.lang-en .header-right-identity > div:last-child{direction:ltr !important;text-align:left !important;}
- body.lang-bilingual .header-right-identity > div:last-child{direction:ltr !important;text-align:left !important;}
  @media(max-width:1023px){
    body.lang-en #app-topbar,body.lang-bilingual #app-topbar{grid-template-columns:112px minmax(0,1fr) 300px !important;}
    body.lang-en .header-right-identity,body.lang-bilingual .header-right-identity{grid-template-columns:minmax(110px,1fr) 125px !important;}
@@ -453,8 +460,7 @@ body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
 .header-right-identity > div:first-child #header-school-logo{width:100% !important;justify-content:flex-end !important;}
 .header-right-identity > div:first-child #header-school-logo img{max-width:150px !important;height:44px !important;}
 .header-right-identity #header-teacher-photo{margin-left:auto !important;margin-right:0 !important;}
-.header-right-identity > div:last-child{grid-column:1 !important;width:100% !important;min-width:0 !important;align-self:start !important;padding-top:38px !important;}
-.header-right-identity > div:last-child .bi-label{width:100% !important;align-items:flex-start !important;}
+.header-right-identity > div:last-child{grid-column:1 !important;width:100% !important;min-width:0 !important;}
 body.lang-ar .header-right-identity > div:last-child{direction:rtl !important;text-align:right !important;}
 body.lang-en .header-right-identity > div:last-child{direction:ltr !important;text-align:left !important;}
 body.lang-bilingual .header-right-identity > div:last-child{direction:ltr !important;text-align:left !important;}
@@ -509,36 +515,13 @@ body.lang-ar #tab-stars .ar{display:block !important;}
 </style><style id="final-ui-fixes-2026-10-03">
 /* Final UI fixes: page-aware header, bilingual stacking, sidebar color, and Arabic table-header colors. */
 
-/* Sidebar: give the rail a clear soft theme surface instead of plain white. */
-aside,
-body.lang-en aside,
-body.lang-ar aside,
-body.lang-bilingual aside,
-aside nav{
-  background:linear-gradient(180deg,#EAF7F5 0%,#F6FBFA 55%,#FFFFFF 100%) !important;
-}
-aside > div:first-child{
-  background:linear-gradient(135deg,#DDF3EF 0%,#F4FBF9 100%) !important;
-}
-
 /* The topbar is shared by all pages, but its title must always represent the
    currently selected tab — never a permanently frozen Home title. */
 #app-topbar{position:relative !important;}
 
-/* Page title sits lower, on the same visual line as the teacher profile photo. */
-.header-right-identity > div:last-child{
-  padding-top:52px !important;
-  align-self:start !important;
-}
-.header-right-identity > div:last-child .bi-label{
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:flex-start !important;
-  justify-content:center !important;
-  gap:1px !important;
-  line-height:1.05 !important;
-  white-space:nowrap !important;
-}
+/* Page title vertical position/alignment with the teacher photo is set once,
+   authoritatively, by the #app-topbar-scoped rule further below — see
+   final-header-behavior-2026-10-03. This block used to duplicate it. */
 #current-page-title-en,
 #current-page-title-ar{
   display:block !important;
@@ -596,35 +579,11 @@ body.lang-ar #tab-daily thead th:nth-child(5) .bi-label .ar{color:var(--sky) !im
 /* Definitive header/sidebar/table/refresh fix. */
 
 /* The app header remains the common app chrome, but its title is the CURRENT tab.
-   Align the title vertically with the teacher photo (bottom of identity block). */
+   Align the title vertically with the teacher photo (bottom of identity block).
+   The actual, authoritative rule for this is further below
+   (#app-topbar .header-right-identity > div:last-child, in final-header-behavior) —
+   it fully supersedes an earlier, less complete attempt that used to live here. */
 #app-topbar .header-right-identity{align-items:stretch !important;}
-#app-topbar .header-right-identity > div:last-child{
-  align-self:stretch !important;
-  padding-top:0 !important;
-  padding-bottom:0 !important;
-  display:flex !important;
-  align-items:flex-end !important;
-  justify-content:flex-start !important;
-}
-#app-topbar .header-right-identity > div:last-child .bi-label{
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:flex-start !important;
-  justify-content:flex-end !important;
-  line-height:1.02 !important;
-  margin-bottom:2px !important;
-  white-space:nowrap !important;
-}
-body.lang-ar #app-topbar .header-right-identity > div:last-child{
-  justify-content:flex-end !important;
-}
-body.lang-ar #app-topbar .header-right-identity > div:last-child .bi-label{
-  align-items:flex-end !important;
-  text-align:right !important;
-}
-body.lang-bilingual #app-topbar .header-right-identity > div:last-child .bi-label{
-  align-items:flex-start !important;
-}
 body.lang-bilingual #current-page-title-en,
 body.lang-bilingual #current-page-title-ar{
   display:block !important;
@@ -647,14 +606,9 @@ body.lang-bilingual #current-page-title-ar{
   text-align:right !important;
 }
 
-/* Sidebar: visibly tinted in every language mode. */
-aside,
-aside nav{
-  background:#EAF7F5 !important;
-}
-aside > div:first-child{
-  background:#DDF3EF !important;
-}
+/* Sidebar surface color is set once, canonically, earlier in this stylesheet
+   (aside{background:var(--card)}) so it stays theme-aware in light/dark mode.
+   This block only handles the active/inactive nav-link states. */
 aside .nav-link:not(.active){
   background:transparent !important;
   color:#526661 !important;
@@ -664,33 +618,34 @@ aside .nav-link.active{
   color:#fff !important;
 }
 
-/* Arabic frozen headers: the frozen clone lives under <body>, not inside #tab-*.
-   Therefore color BOTH the real header and its fixed clone. */
+/* Arabic frozen headers: the frozen clone lives under <body>, not inside #tab-*,
+   and is now tagged data-source-table="students"|"daily" by syncFrozenTableHeaders()
+   (see JS) so these rules can finally tell the two tables' clones apart. */
 body.lang-ar #tab-students thead th:nth-child(1) .ar,
-body.lang-ar .frozen-table-header th:nth-child(1) .ar{color:var(--teal-dark) !important;}
+body.lang-ar .frozen-table-header[data-source-table="students"] th:nth-child(1) .ar{color:var(--teal-dark) !important;}
 body.lang-ar #tab-students thead th:nth-child(2) .ar,
-body.lang-ar .frozen-table-header th:nth-child(2) .ar{color:#8B6BC7 !important;}
+body.lang-ar .frozen-table-header[data-source-table="students"] th:nth-child(2) .ar{color:#8B6BC7 !important;}
 body.lang-ar #tab-students thead th:nth-child(3) .ar,
-body.lang-ar .frozen-table-header th:nth-child(3) .ar{color:#4C8FD1 !important;}
+body.lang-ar .frozen-table-header[data-source-table="students"] th:nth-child(3) .ar{color:#4C8FD1 !important;}
 body.lang-ar #tab-students thead th:nth-child(4) .ar,
-body.lang-ar .frozen-table-header th:nth-child(4) .ar{color:#B5850C !important;}
+body.lang-ar .frozen-table-header[data-source-table="students"] th:nth-child(4) .ar{color:#B5850C !important;}
 body.lang-ar #tab-students thead th:nth-child(5) .ar,
-body.lang-ar .frozen-table-header th:nth-child(5) .ar{color:var(--coral) !important;}
+body.lang-ar .frozen-table-header[data-source-table="students"] th:nth-child(5) .ar{color:var(--coral) !important;}
 body.lang-ar #tab-students thead th:nth-child(6) .ar,
-body.lang-ar .frozen-table-header th:nth-child(6) .ar{color:#1BA648 !important;}
+body.lang-ar .frozen-table-header[data-source-table="students"] th:nth-child(6) .ar{color:#1BA648 !important;}
 body.lang-ar #tab-students thead th:nth-child(7) .ar,
-body.lang-ar .frozen-table-header th:nth-child(7) .ar{color:#B5850C !important;}
+body.lang-ar .frozen-table-header[data-source-table="students"] th:nth-child(7) .ar{color:#B5850C !important;}
 
 body.lang-ar #tab-daily thead th:nth-child(1) .ar,
-body.lang-ar .frozen-table-header th:nth-child(1) .ar{color:var(--teal-dark) !important;}
+body.lang-ar .frozen-table-header[data-source-table="daily"] th:nth-child(1) .ar{color:var(--teal-dark) !important;}
 body.lang-ar #tab-daily thead th:nth-child(2) .ar,
-body.lang-ar .frozen-table-header th:nth-child(2) .ar{color:#5C6BC0 !important;}
+body.lang-ar .frozen-table-header[data-source-table="daily"] th:nth-child(2) .ar{color:#5C6BC0 !important;}
 body.lang-ar #tab-daily thead th:nth-child(3) .ar,
-body.lang-ar .frozen-table-header th:nth-child(3) .ar{color:#8B6BC7 !important;}
+body.lang-ar .frozen-table-header[data-source-table="daily"] th:nth-child(3) .ar{color:#8B6BC7 !important;}
 body.lang-ar #tab-daily thead th:nth-child(4) .ar,
-body.lang-ar .frozen-table-header th:nth-child(4) .ar{color:#B5850C !important;}
+body.lang-ar .frozen-table-header[data-source-table="daily"] th:nth-child(4) .ar{color:#B5850C !important;}
 body.lang-ar #tab-daily thead th:nth-child(5) .ar,
-body.lang-ar .frozen-table-header th:nth-child(5) .ar{color:#4C8FD1 !important;}
+body.lang-ar .frozen-table-header[data-source-table="daily"] th:nth-child(5) .ar{color:#4C8FD1 !important;}
 </style>
 <style id="final-header-behavior-2026-10-03">
 /* FINAL header geometry: title and teacher photo share the same baseline. */
@@ -1815,7 +1770,7 @@ function switchTab(name){
     if(arTitle) arTitle.textContent = TAB_TITLES[name][1];
   }
   try{
-    sessionStorage.setItem('ss_active_tab', name);
+    localStorage.setItem('ss_active_tab', name);
     history.replaceState(null, '', '#'+name);
   }catch(e){}
   syncLanguageVisibility();
@@ -4253,7 +4208,12 @@ function syncFrozenTableHeaders(){
 
   const overlay=document.createElement('div');
   overlay.className='frozen-table-header';
-  overlay.dataset.sourceTable='frozen';
+  // Root cause of the wrong Arabic column colors: this was hardcoded to the
+  // literal string 'frozen', so the clone never actually recorded which table
+  // (students vs daily) it was cloned from, and the CSS below had no reliable
+  // way to tell the two apart.
+  const sourceTabId = wrapper.closest('[id^="tab-"]');
+  overlay.dataset.sourceTable = sourceTabId ? sourceTabId.id.replace('tab-','') : '';
   overlay.style.left=wrapperRect.left+'px';
   overlay.style.width=wrapperRect.width+'px';
   overlay.style.top=top+'px';
@@ -4520,7 +4480,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   // Restore the exact page the teacher was viewing after a browser refresh.
   try{
     const hashTab = (location.hash || '').replace(/^#/, '');
-    const savedTab = hashTab || sessionStorage.getItem('ss_active_tab');
+    const savedTab = hashTab || localStorage.getItem('ss_active_tab');
     if(savedTab && document.getElementById('tab-'+savedTab)){
       switchTab(savedTab);
     }else{
@@ -4596,7 +4556,7 @@ setPersistence(auth, browserLocalPersistence)
   async function logoutUser() {
     try {
       await signOut(auth);
-      try{ sessionStorage.removeItem('ss_active_tab'); }catch(e){}
+      try{ localStorage.removeItem('ss_active_tab'); }catch(e){}
       window.location.href = "login.html";
     } catch (error) {
       console.error("Logout error:", error);
