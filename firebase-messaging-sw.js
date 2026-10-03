@@ -10,8 +10,8 @@ const APP_SHELL = [
   './login.html',
   './english_dashboard-dynamic.html',
   './manifest.json',
-  './icon-192.svg',
-  './icon-512.svg',
+  './app-icon-192.svg',
+  './app-icon-512.svg',
   './firebase-messaging-sw.js'
 ];
 
