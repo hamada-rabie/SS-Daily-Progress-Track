@@ -141,7 +141,7 @@ body.theme-dark .backup-nav-toggle:hover,body.theme-dark .backup-nav-toggle[aria
   #current-page-title-ar{ font-size:9px !important; }
   header{ gap:6px !important; }
 }
-.notif-bell-btn{position:relative;width:24px;height:24px;border-radius:8px;border:none;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:background .15s ease;}
+.notif-bell-btn{position:relative; transform:translateX(28px);width:24px;height:24px;border-radius:8px;border:none;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:background .15s ease;}
 .notif-bell-btn:hover{background:rgba(255,255,255,.26);}
 .notif-badge{position:absolute;top:-4px;right:-4px;min-width:14px;height:14px;padding:0 3px;border-radius:999px;background:#C94C4C;color:#fff;font-size:8.5px;font-weight:800;line-height:14px;text-align:center;border:1.5px solid var(--teal-dark);}
 .notif-badge.hidden{display:none;}
@@ -487,6 +487,7 @@ body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
 .header-right-identity > div:first-child{grid-column:2 !important;width:150px !important;min-width:150px !important;max-width:150px !important;align-items:flex-end !important;justify-self:end !important;}
 .header-right-identity > div:first-child #header-school-logo{width:100% !important;justify-content:flex-end !important;}
 .header-right-identity > div:first-child #header-school-logo img{max-width:128px !important;height:40px !important;}
+.header-right-identity > div:first-child #header-school-logo img{transform:translateX(36px) !important;}
 .header-right-identity #header-teacher-photo{margin-left:auto !important;margin-right:0 !important;}
 .header-right-identity > div:last-child{grid-column:1 !important;width:100% !important;min-width:0 !important;}
 body.lang-ar .header-right-identity > div:last-child{direction:rtl !important;text-align:right !important;}
@@ -507,6 +508,7 @@ body.lang-bilingual .home-title-bilingual .en + .ar::before{content:none !import
  .header-right-identity{width:205px !important;min-width:205px !important;max-width:205px !important;grid-template-columns:minmax(78px,1fr) 120px !important;gap:7px !important;}
  .header-right-identity > div:first-child{width:120px !important;min-width:120px !important;}
 }
+</style>
 <style id="final-freeze-sidebar-language-fix">
 /* Freeze: #app-topbar is a normal (non-scrolling) flex child of <main>; only the
    content div below it scrolls. No sticky/z-index hack needed — see <main> structure. */
@@ -749,6 +751,192 @@ body.lang-bilingual #app-topbar .header-right-identity > div:last-child .bi-labe
 /* Keep the Arabic frozen header colors on the actual cloned overlay. */
 body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
 </style>
+<style id="global-search-styles">
+/* Trigger button: top-right corner of the Home hero band, out of the way of
+   existing hero content; never placed in #app-topbar so it cannot disturb the
+   logos, teacher photo, title, language selector, notifications or sidebar. */
+.global-search-trigger-btn{
+  position:absolute;
+  top:14px;
+  left:14px;
+  right:auto;
+  inset-inline-start:14px;
+  inset-inline-end:auto;
+  min-width:42px;
+  min-height:36px;
+  justify-content:center;
+  z-index:5;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.14);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+  transition:background .15s ease, transform .15s ease;
+}
+.global-search-trigger-btn:hover{background:rgba(255,255,255,.30); transform:translateY(-1px);}
+.global-search-trigger-btn i{display:inline-flex !important; align-items:center; justify-content:center; width:18px; height:18px; font-size:15px; color:#fff !important;}
+.global-search-trigger-label{display:none !important;}
+@media(min-width:640px){ .global-search-trigger-label{display:flex !important;} }
+@media(max-width:480px){
+  .global-search-trigger-btn{top:10px; inset-inline-end:10px; padding:7px 9px;}
+}
+
+#global-search-overlay{position:fixed; inset:0; background:rgba(15,25,23,.45); z-index:70; display:none;}
+#global-search-overlay.open{display:block;}
+#global-search-panel{
+  position:fixed;
+  top:8vh;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(560px,92vw);
+  max-height:76vh;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.28);
+  z-index:71;
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+}
+#global-search-panel.open{display:flex;}
+.gs-input-row{display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--line); direction:ltr;}
+.gs-input-icon{color:var(--teal); font-size:15px; flex-shrink:0;}
+.gs-input{flex:1; border:none; outline:none; background:transparent; font-size:14px; color:var(--ink); direction:ltr; text-align:left; font-family:inherit;}
+body.lang-ar .gs-input{direction:rtl; text-align:right;}
+.gs-input::placeholder{color:#9AA8A5; font-size:12.5px;}
+.gs-close-btn{width:26px; height:26px; border-radius:8px; border:none; background:#F1F5F4; color:#64736F; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:background .15s ease;}
+.gs-close-btn:hover{background:#E2ECE9;}
+.gs-kbd-hint{padding:7px 16px; font-size:9.5px; color:#9AA8A5; border-bottom:1px solid var(--line); flex-wrap:wrap;}
+.gs-kbd-hint kbd{display:inline-block; padding:1px 5px; border-radius:4px; background:#F1F5F4; border:1px solid var(--line); font-family:inherit; font-size:9px; color:#64736F;}
+@media(max-width:480px){ .gs-kbd-hint{display:none;} }
+.gs-results{overflow-y:auto; flex:1; min-height:0; padding:6px 0;}
+.gs-group-label{padding:8px 16px 4px; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--teal-dark);}
+.gs-item{display:flex; align-items:center; gap:10px; padding:9px 16px; cursor:pointer; transition:background .1s ease;}
+.gs-item:hover, .gs-item.gs-active{background:#EAF7F5;}
+.gs-item-icon{width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; flex-shrink:0;}
+.gs-item-text{min-width:0; flex:1;}
+.gs-item-title{font-size:12.5px; font-weight:700; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.gs-item-title mark{background:#FFE9B3; color:inherit; border-radius:2px; padding:0 1px;}
+.gs-item-sub{font-size:10.5px; color:#8A9A96; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.gs-empty{padding:34px 16px; text-align:center; color:#9AA8A5; font-size:12px;}
+.gs-empty i{font-size:22px; color:#C9D3D0; margin-bottom:6px; display:block;}
+body.theme-dark .gs-item:hover, body.theme-dark .gs-item.gs-active{background:#183B39;}
+body.theme-dark .gs-input::placeholder{color:#6B7E79;}
+body.theme-dark .gs-kbd-hint kbd{background:#111827; border-color:#374151; color:#9CA3AF;}
+body.theme-dark .gs-close-btn{background:#111827; color:#9CA3AF;}
+#app-topbar .header-right-identity .header-dept-name{position:relative !important; top:8px !important; transform:none !important;}
+/* Sidebar bilingual department title: English on top, Arabic below, no slash. */
+body.lang-bilingual #sidebar-logo-box + div h1{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  line-height:1.05 !important;
+  gap:1px !important;
+}
+body.lang-bilingual #sidebar-logo-box + div h1 .en,
+body.lang-bilingual #sidebar-logo-box + div h1 .ar{
+  display:block !important;
+  width:100% !important;
+}
+body.lang-bilingual #sidebar-logo-box + div h1 .en + .ar::before{
+  content:none !important;
+}
+</style>
+<style id="final-dept-label-alignment">
+/* Final right-side department label alignment: logo above, profile row below. */
+#app-topbar .header-right-identity .header-dept-name{
+  width:100% !important;
+  text-align:right !important;
+  align-items:flex-end !important;
+  justify-content:center !important;
+  line-height:1.05 !important;
+}
+#app-topbar .header-right-identity .header-dept-name .en,
+#app-topbar .header-right-identity .header-dept-name .ar{
+  width:100% !important;
+  text-align:right !important;
+}
+
+/* Arabic mode: Arabic only. */
+body.lang-ar #app-topbar .header-right-identity .header-dept-name .en{
+  display:none !important;
+}
+body.lang-ar #app-topbar .header-right-identity .header-dept-name .ar{
+  display:block !important;
+}
+
+/* English mode: English only. */
+body.lang-en #app-topbar .header-right-identity .header-dept-name .ar{
+  display:none !important;
+}
+body.lang-en #app-topbar .header-right-identity .header-dept-name .en{
+  display:block !important;
+}
+
+/* Bilingual mode: both, stacked and slightly raised for balance. */
+body.lang-bilingual #app-topbar .header-right-identity .header-dept-name{
+  transform:translateY(-3px) !important;
+}
+body.lang-bilingual #app-topbar .header-right-identity .header-dept-name .en,
+body.lang-bilingual #app-topbar .header-right-identity .header-dept-name .ar{
+  display:block !important;
+}
+</style>
+<style id="final-header-cosmetic-stability">
+/* Final cosmetic alignment: department label and teacher photo sit under the school logo. */
+#app-topbar .header-right-identity .header-dept-name{
+  transform:translate(8px,-3px) !important;
+}
+#app-topbar .header-right-identity #header-teacher-photo{
+  transform:translateX(8px) !important;
+}
+
+/* Keep the live clock from changing header geometry as its text updates every second. */
+#app-topbar .header-clock-row{
+  display:flex !important;
+  align-items:center !important;
+  height:14px !important;
+  min-height:14px !important;
+  max-height:14px !important;
+  line-height:14px !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+}
+#app-topbar #top-date-span{
+  display:inline-block !important;
+  width:225px !important;
+  min-width:225px !important;
+  max-width:225px !important;
+  height:14px !important;
+  line-height:14px !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+}
+</style>
+<style id="final-language-specific-dept-position">
+/* Language-specific final positioning. */
+body.lang-ar #app-topbar .header-right-identity .header-dept-name,
+body.lang-en #app-topbar .header-right-identity .header-dept-name{
+  transform:translate(8px,-7px) !important;
+}
+body.lang-ar #app-topbar .header-right-identity #header-teacher-photo,
+body.lang-en #app-topbar .header-right-identity #header-teacher-photo{
+  transform:translateX(8px) !important;
+}
+body.lang-bilingual #app-topbar .header-right-identity .header-dept-name{
+  transform:translate(12px,-7px) !important;
+}
+body.lang-bilingual #app-topbar .header-right-identity #header-teacher-photo{
+  transform:translateX(12px) !important;
+}
+</style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
@@ -850,7 +1038,7 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
 <span class="flex items-center gap-1.5 text-[10px] text-white/70 header-clock-row"><i class="fa-solid fa-clock"></i><span id="top-date-span">--</span></span>
 </div>
 <div class="flex items-center gap-5 shrink-0 text-right header-right-identity" style="direction:ltr;">
-<div class="flex flex-col items-end gap-1"><div id="header-school-logo"></div><p class="text-[9px] leading-tight text-white/85 header-dept-name"><span class="en">English Department</span><span class="ar">قسم اللغة الإنجليزية</span></p><div class="flex items-center gap-1" style="direction:ltr;">
+<div class="flex flex-col items-end gap-1"><div id="header-school-logo"></div><p class="text-[9px] leading-tight text-white/85 header-dept-name"><span class="en">English Department</span><span class="ar">قسم اللغة الإنجليزية</span></p><div class="flex items-center justify-between gap-1 w-full" style="direction:ltr;">
   <button type="button" id="notif-bell-btn" data-action="toggle-notif-center" class="notif-bell-btn" title="Notifications / الإشعارات" aria-label="Notifications">
     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.5c-3.3 0-6 2.7-6 6v3.4c0 .6-.2 1.2-.6 1.7L4 15.5c-.7.9-.1 2.3 1 2.3h14c1.1 0 1.7-1.4 1-2.3l-1.4-1.9c-.4-.5-.6-1.1-.6-1.7V8.5c0-3.3-2.7-6-6-6Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 19.5a2.5 2.5 0 0 0 5 0" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
     <span id="notif-badge" class="notif-badge hidden">0</span>
@@ -873,11 +1061,31 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
   </div>
 </div>
 
+<!-- Global Search -->
+<div id="global-search-overlay" data-action="close-global-search"></div>
+<div id="global-search-panel" role="dialog" aria-label="Global Search / البحث الشامل">
+  <div class="gs-input-row">
+    <i class="fa-solid fa-magnifying-glass gs-input-icon"></i>
+    <input id="global-search-input" type="text" class="gs-input" autocomplete="off" placeholder="Search students, classes, pages… / ابحث عن طالب أو صف أو صفحة…">
+    <button type="button" id="global-search-close-btn" data-action="close-global-search" class="gs-close-btn" aria-label="Close / إغلاق"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <p class="gs-kbd-hint bi-label" style="direction:ltr; flex-direction:row; gap:10px; align-items:center;">
+    <span><kbd>↓</kbd><kbd>↑</kbd> <span class="en">navigate</span><span class="ar">تنقل</span></span>
+    <span><kbd>Enter</kbd> <span class="en">select</span><span class="ar">اختيار</span></span>
+    <span><kbd>Esc</kbd> <span class="en">close</span><span class="ar">إغلاق</span></span>
+  </p>
+  <div id="global-search-results" class="gs-results"></div>
+</div>
+
   <div class="p-5 sm:p-6 space-y-6 flex-1" style="min-height:0;">
 
     <!-- DASHBOARD -->
     <section id="tab-dashboard" class="tab-content active space-y-5">
-      <div class="hero-band text-white rounded-2xl p-6 sm:p-9 overflow-hidden">
+      <div class="hero-band text-white rounded-2xl p-6 sm:p-9 overflow-hidden" style="position:relative;">
+        <button type="button" id="global-search-trigger-btn" data-action="open-global-search" class="global-search-trigger-btn" title="Search / بحث" aria-label="Search / بحث">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span class="global-search-trigger-label bi-label" style="gap:0;"><span class="en">Search</span><span class="ar">بحث</span></span>
+        </button>
         <div class="text-center max-w-2xl mx-auto space-y-1.5">
           <p class="text-[10px] font-bold tracking-widest text-white/80 uppercase"><span class="en">Progress Command Center</span><span class="ar" style="margin-inline-start:8px;">مركز المتابعة</span></p>
           <h1 class="home-title-bilingual font-display font-extrabold leading-tight text-3xl sm:text-4xl"><span class="en">Students' Daily Progress Track</span><span class="ar">متابعة التقدم اليومي للطلاب</span></h1>
@@ -1228,7 +1436,7 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
           <div>
             <p class="font-display font-extrabold text-lg" style="color:var(--violet);">Workspace Settings</p>
             <p class="text-xs text-gray-500">Personalize your profile and app preferences in one place.<br>خصّص ملفك الشخصي وتفضيلات التطبيق من مكان واحد.</p>
-          </div>
+</div>
           <button data-action="open-share-modal" class="text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2" style="background:linear-gradient(120deg, var(--violet), var(--teal-dark));"><i class="fa-solid fa-share-nodes"></i> Share App / مشاركة التطبيق</button>
         </div>
       </div>
@@ -1578,7 +1786,6 @@ const DEFAULT_SCHOOL_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAA
 let settings = { teacherName:'Mr. Hamada Rabie', coordinatorName:'Samir Hassouna', schoolName:'مدرسة عبدالله بن علي المسند الإعدادية', selectedTerm:'first', ministryName:'وزارة التربية والتعليم والتعليم العالي - دولة قطر', schoolLogo: DEFAULT_SCHOOL_LOGO, ministryLogo: DEFAULT_MINISTRY_LOGO, teacherPhoto:'', preferredLanguage:'bilingual', theme:'purple', themeMode:'light', accessibilityZoom:100, fontFamily:'cairo', fontSize:'md', dateFormat:'long', honorParticipationWeight:20 };
 let classColors = ['#0E7C74','#4C8FD1','#8B6BC7','#EF7A5C','#5FAE6E','#F2A93B'];
 let editingStudentId = null;
-
 function loadData(){
   try{
     const seedEl = document.getElementById('seed-data-script');
@@ -4006,6 +4213,193 @@ function markAllNotifsRead(){
   if(typeof window.markAllNotificationsReadRemote === 'function') window.markAllNotificationsReadRemote();
 }
 
+/* ---------- Global Search ---------- */
+/* Index is rebuilt only when the search panel opens (not on every keystroke),
+   from the app's own real data — classesData/studentsData — plus the existing
+   bilingual TAB_TITLES used by the sidebar/header, so results and navigation
+   always match what is actually in the app. No separate/fake data model. */
+let globalSearchIndex = null;
+let globalSearchActiveIndex = -1;
+let globalSearchFlatResults = [];
+
+function buildGlobalSearchIndex(){
+  const index = { students: [], classes: [], pages: [] };
+  classesData.forEach(c=>{
+    const label = shortClass(c);
+    index.classes.push({
+      type:'class', id:c.id, titleEn: label, titleAr: label,
+      searchText: (c.name+' '+c.section+' '+label).toLowerCase(),
+      icon: c.icon||'fa-book', color: c.color||'var(--violet)'
+    });
+  });
+  studentsData.forEach(s=>{
+    const cls = classesData.find(c=>c.id===s.classId);
+    const clsLabel = cls ? shortClass(cls) : '';
+    const phones = (s.phoneNumbers||[]).join(' ');
+    index.students.push({
+      type:'student', id:s.id, titleEn:s.name, titleAr:s.name,
+      subEn: clsLabel, subAr: clsLabel, noteSnippet: s.notes || '',
+      searchText: [s.name, clsLabel, s.notes||'', phones].join(' ').toLowerCase(),
+      color: cls ? cls.color : 'var(--teal)'
+    });
+  });
+  Object.keys(TAB_TITLES).forEach(key=>{
+    const [en,ar] = TAB_TITLES[key];
+    index.pages.push({ type:'page', id:key, titleEn:en, titleAr:ar, searchText:(en+' '+ar).toLowerCase() });
+  });
+  return index;
+}
+
+function openGlobalSearch(){
+  globalSearchIndex = buildGlobalSearchIndex();
+  document.getElementById('global-search-overlay').classList.add('open');
+  document.getElementById('global-search-panel').classList.add('open');
+  const input = document.getElementById('global-search-input');
+  input.value = '';
+  renderGlobalSearchResults('');
+  setTimeout(()=>input.focus(), 30);
+}
+function closeGlobalSearch(){
+  document.getElementById('global-search-overlay').classList.remove('open');
+  document.getElementById('global-search-panel').classList.remove('open');
+  globalSearchActiveIndex = -1;
+}
+
+function gsHighlight(text, query){
+  if(!query) return escapeHtml(text);
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if(idx===-1) return escapeHtml(text);
+  return escapeHtml(text.slice(0,idx)) + '<mark>' + escapeHtml(text.slice(idx, idx+query.length)) + '</mark>' + escapeHtml(text.slice(idx+query.length));
+}
+
+// Partial, case-insensitive, Arabic+English matching, starts-with ranked above contains.
+function gsSearchCategory(items, q){
+  const starts = [], contains = [];
+  items.forEach(it=>{
+    if(it.searchText.startsWith(q)) starts.push(it);
+    else if(it.searchText.includes(q)) contains.push(it);
+  });
+  return starts.concat(contains);
+}
+
+function renderGlobalSearchResults(rawQuery){
+  const container = document.getElementById('global-search-results');
+  const q = rawQuery.trim().toLowerCase();
+  globalSearchFlatResults = [];
+  globalSearchActiveIndex = -1;
+  if(!q){
+    container.innerHTML = `<div class="gs-empty"><i class="fa-solid fa-keyboard"></i><span class="en">Start typing to search</span><br><span class="ar">ابدأ الكتابة للبحث</span></div>`;
+    return;
+  }
+  const students = gsSearchCategory(globalSearchIndex.students, q).slice(0,6);
+  const classes = gsSearchCategory(globalSearchIndex.classes, q).slice(0,4);
+  const pages = gsSearchCategory(globalSearchIndex.pages, q).slice(0,4);
+
+  if(students.length===0 && classes.length===0 && pages.length===0){
+    container.innerHTML = `<div class="gs-empty"><i class="fa-solid fa-circle-question"></i><span class="en">No results for "${escapeHtml(rawQuery.trim())}"</span><br><span class="ar">لا توجد نتائج لـ "${escapeHtml(rawQuery.trim())}"</span></div>`;
+    return;
+  }
+
+  let html = '';
+  const addGroup = (labelEn, labelAr, items, render) => {
+    if(!items.length) return;
+    html += `<div class="gs-group-label bi-label" style="flex-direction:row;gap:4px;align-items:baseline;"><span class="en">${labelEn}</span><span class="ar">${labelAr}</span></div>`;
+    items.forEach(it=>{
+      const i = globalSearchFlatResults.length;
+      globalSearchFlatResults.push(it);
+      html += render(it, i);
+    });
+  };
+
+  addGroup('Students','الطلاب', students, (it,i)=>{
+    const nameMatches = it.titleEn.toLowerCase().includes(q);
+    const clsMatches = it.subEn.toLowerCase().includes(q);
+    const noteMatches = !nameMatches && !clsMatches && it.noteSnippet.toLowerCase().includes(q);
+    let subLine = escapeHtml(it.subEn);
+    if(noteMatches){
+      const noteIdx = it.noteSnippet.toLowerCase().indexOf(q);
+      const snippet = it.noteSnippet.slice(Math.max(0,noteIdx-10), noteIdx+30);
+      subLine += ' · 📝 ' + gsHighlight(snippet, q);
+    }
+    return `<div class="gs-item" data-result-index="${i}" data-action="select-search-result">
+      <div class="gs-item-icon" style="background:${it.color};"><i class="fa-solid fa-user-graduate"></i></div>
+      <div class="gs-item-text">
+        <div class="gs-item-title">${gsHighlight(it.titleEn, q)}</div>
+        <div class="gs-item-sub">${subLine}</div>
+      </div>
+    </div>`;
+  });
+
+  addGroup('Classes','الصفوف', classes, (it,i)=>`<div class="gs-item" data-result-index="${i}" data-action="select-search-result">
+      <div class="gs-item-icon" style="background:${it.color};"><i class="fa-solid ${it.icon}"></i></div>
+      <div class="gs-item-text"><div class="gs-item-title">${gsHighlight(it.titleEn, q)}</div></div>
+    </div>`);
+
+  addGroup('Pages','الصفحات', pages, (it,i)=>`<div class="gs-item" data-result-index="${i}" data-action="select-search-result">
+      <div class="gs-item-icon" style="background:var(--sky);"><i class="fa-solid fa-table-columns"></i></div>
+      <div class="gs-item-text"><div class="gs-item-title bi-label" style="flex-direction:row;gap:4px;"><span class="en">${gsHighlight(it.titleEn, q)}</span><span class="ar">${gsHighlight(it.titleAr, q)}</span></div></div>
+    </div>`);
+
+  container.innerHTML = html;
+}
+
+function updateGlobalSearchActiveUI(){
+  document.querySelectorAll('#global-search-results .gs-item').forEach((el,i)=>{
+    el.classList.toggle('gs-active', i===globalSearchActiveIndex);
+  });
+  const active = document.querySelector('#global-search-results .gs-item.gs-active');
+  if(active) active.scrollIntoView({block:'nearest'});
+}
+
+function selectGlobalSearchResult(idx){
+  const it = globalSearchFlatResults[idx];
+  if(!it) return;
+  closeGlobalSearch();
+  if(it.type==='page'){
+    switchTab(it.id);
+  } else if(it.type==='class'){
+    switchTab('students');
+    setTimeout(()=>{
+      const sel = document.getElementById('students-class-filter');
+      if(sel){ sel.value = String(it.id); renderStudentsTable(); }
+    }, 0);
+  } else if(it.type==='student'){
+    switchTab('students');
+    setTimeout(()=>{
+      const s = studentsData.find(x=>x.id===it.id);
+      if(!s) return;
+      const sel = document.getElementById('students-class-filter');
+      if(sel){ sel.value = String(s.classId); }
+      const search = document.getElementById('students-search');
+      if(search){ search.value = s.name; }
+      renderStudentsTable();
+    }, 0);
+  }
+}
+
+document.addEventListener('keydown', function(e){
+  const panel = document.getElementById('global-search-panel');
+  if(!panel || !panel.classList.contains('open')) return;
+  if(e.key==='Escape'){
+    e.preventDefault(); closeGlobalSearch(); return;
+  }
+  if(e.key==='ArrowDown'){
+    if(!globalSearchFlatResults.length) return;
+    e.preventDefault();
+    globalSearchActiveIndex = (globalSearchActiveIndex+1) % globalSearchFlatResults.length;
+    updateGlobalSearchActiveUI();
+  } else if(e.key==='ArrowUp'){
+    if(!globalSearchFlatResults.length) return;
+    e.preventDefault();
+    globalSearchActiveIndex = (globalSearchActiveIndex-1+globalSearchFlatResults.length) % globalSearchFlatResults.length;
+    updateGlobalSearchActiveUI();
+  } else if(e.key==='Enter'){
+    if(!globalSearchFlatResults.length) return;
+    e.preventDefault();
+    selectGlobalSearchResult(globalSearchActiveIndex>=0 ? globalSearchActiveIndex : 0);
+  }
+});
+
 function saveSettings(){
   settings.teacherName = document.getElementById('setting-teacher-name').value.trim();
   settings.coordinatorName = document.getElementById('setting-coordinator-name').value.trim();
@@ -4624,6 +5018,9 @@ document.addEventListener('click', function(e){
     case 'show-notif-help': showNotifHelp(); break;
     case 'toggle-notif-center': toggleNotifCenter(); break;
     case 'close-notif-center': closeNotifCenter(); break;
+    case 'open-global-search': openGlobalSearch(); break;
+    case 'close-global-search': closeGlobalSearch(); break;
+    case 'select-search-result': selectGlobalSearchResult(Number(t.dataset.resultIndex)); break;
     case 'mark-all-notifs-read': markAllNotifsRead(); break;
     case 'read-notif': markNotifRead(t.dataset.id); break;
     case 'edit-profile-field': editProfileField(t.dataset.field); break;
@@ -4718,6 +5115,7 @@ document.addEventListener('change', function(e){
 document.addEventListener('input', function(e){
   if(e.target.id === 'students-search') renderStudentsTable();
   if(e.target.id === 'report-student-search') renderReportSelect();
+  if(e.target.id === 'global-search-input') renderGlobalSearchResults(e.target.value);
 });
 
 /* ---------- refresh ---------- */
@@ -5019,4 +5417,3 @@ setPersistence(auth, browserLocalPersistence)
 </script>
 </body>
 </html>
-  
