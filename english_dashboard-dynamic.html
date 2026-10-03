@@ -141,6 +141,18 @@ body.theme-dark .backup-nav-toggle:hover,body.theme-dark .backup-nav-toggle[aria
   #current-page-title-ar{ font-size:9px !important; }
   header{ gap:6px !important; }
 }
+.notif-bell-btn{position:relative;width:24px;height:24px;border-radius:8px;border:none;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:background .15s ease;}
+.notif-bell-btn:hover{background:rgba(255,255,255,.26);}
+.notif-badge{position:absolute;top:-4px;right:-4px;min-width:14px;height:14px;padding:0 3px;border-radius:999px;background:#C94C4C;color:#fff;font-size:8.5px;font-weight:800;line-height:14px;text-align:center;border:1.5px solid var(--teal-dark);}
+.notif-badge.hidden{display:none;}
+#notif-center-panel{position:fixed;top:0;display:none;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.22);z-index:60;max-height:70vh;width:320px;max-width:92vw;overflow:hidden;}
+#notif-center-panel.open{display:flex;}
+.notif-item{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s ease;}
+.notif-item:hover{background:#F5FAF8;}
+.notif-item.unread{background:#EAF7F5;}
+.notif-item.unread::before{content:'';display:inline-block;width:6px;height:6px;border-radius:999px;background:var(--coral);margin-inline-end:6px;vertical-align:middle;}
+#notif-center-overlay{position:fixed;inset:0;background:transparent;z-index:55;display:none;}
+#notif-center-overlay.open{display:block;}
 .sidebar-toggle-btn{display:none;background:rgba(255,255,255,0.22);color:#fff;width:38px;height:38px;border-radius:10px;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(255,255,255,0.35);cursor:pointer;transition:background .15s ease;}
 .sidebar-toggle-btn:active{background:rgba(255,255,255,0.35);}
 #sidebar-overlay{display:none;}
@@ -474,7 +486,7 @@ body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
 .header-right-identity{width:330px !important;min-width:330px !important;max-width:330px !important;grid-template-columns:minmax(125px,1fr) 150px !important;gap:16px !important;box-sizing:border-box;align-items:start !important;}
 .header-right-identity > div:first-child{grid-column:2 !important;width:150px !important;min-width:150px !important;max-width:150px !important;align-items:flex-end !important;justify-self:end !important;}
 .header-right-identity > div:first-child #header-school-logo{width:100% !important;justify-content:flex-end !important;}
-.header-right-identity > div:first-child #header-school-logo img{max-width:150px !important;height:44px !important;}
+.header-right-identity > div:first-child #header-school-logo img{max-width:128px !important;height:40px !important;}
 .header-right-identity #header-teacher-photo{margin-left:auto !important;margin-right:0 !important;}
 .header-right-identity > div:last-child{grid-column:1 !important;width:100% !important;min-width:0 !important;}
 body.lang-ar .header-right-identity > div:last-child{direction:rtl !important;text-align:right !important;}
@@ -838,9 +850,28 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
 <span class="flex items-center gap-1.5 text-[10px] text-white/70 header-clock-row"><i class="fa-solid fa-clock"></i><span id="top-date-span">--</span></span>
 </div>
 <div class="flex items-center gap-5 shrink-0 text-right header-right-identity" style="direction:ltr;">
-<div class="flex flex-col items-end gap-1"><div id="header-school-logo"></div><p class="text-[9px] leading-tight text-white/85 header-dept-name"><span class="en">English Department</span><span class="ar">قسم اللغة الإنجليزية</span></p><div id="header-teacher-photo" class="header-teacher-photo w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.72);box-shadow:0 2px 8px rgba(0,0,0,.16);" title="Teacher Profile / ملف المعلم"></div></div>
+<div class="flex flex-col items-end gap-1"><div id="header-school-logo"></div><p class="text-[9px] leading-tight text-white/85 header-dept-name"><span class="en">English Department</span><span class="ar">قسم اللغة الإنجليزية</span></p><div class="flex items-center gap-1" style="direction:ltr;">
+  <button type="button" id="notif-bell-btn" data-action="toggle-notif-center" class="notif-bell-btn" title="Notifications / الإشعارات" aria-label="Notifications">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.5c-3.3 0-6 2.7-6 6v3.4c0 .6-.2 1.2-.6 1.7L4 15.5c-.7.9-.1 2.3 1 2.3h14c1.1 0 1.7-1.4 1-2.3l-1.4-1.9c-.4-.5-.6-1.1-.6-1.7V8.5c0-3.3-2.7-6-6-6Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 19.5a2.5 2.5 0 0 0 5 0" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <span id="notif-badge" class="notif-badge hidden">0</span>
+  </button>
+  <div id="header-teacher-photo" class="header-teacher-photo w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.72);box-shadow:0 2px 8px rgba(0,0,0,.16);" title="Teacher Profile / ملف المعلم"></div>
+</div></div>
 <div class="flex items-center min-w-[110px] max-w-[220px]" style="direction:ltr;"><span class="bi-label items-start"><span class="en text-sm font-display font-bold" id="current-page-title-en" style="color:#fff;">Home</span><span class="ar text-[11px] font-bold" id="current-page-title-ar" style="color:#fff;">الرئيسية</span></span></div>
 </div></header>
+<div id="notif-center-overlay" data-action="close-notif-center"></div>
+<div id="notif-center-panel" role="dialog" aria-label="Notifications">
+  <div class="flex items-center justify-between px-4 py-3" style="border-bottom:1px solid var(--line); direction:ltr;">
+    <span class="bi-label" style="direction:ltr;"><span class="en font-display font-bold" style="color:var(--teal-dark);">Notifications</span><span class="ar" style="color:var(--teal-dark);">الإشعارات</span></span>
+    <button type="button" data-action="mark-all-notifs-read" class="text-[10px] font-semibold bilingual-inline" style="color:var(--teal);"><span class="en">Mark all as read</span><span class="ar">تحديد الكل كمقروء</span></button>
+  </div>
+  <div id="notif-list" class="overflow-y-auto" style="max-height:52vh;">
+    <div id="notif-empty-state" class="text-center text-[11px] text-gray-400 py-10 bi-label" style="align-items:center;">
+      <i class="fa-regular fa-bell-slash" style="font-size:20px; color:#C9D3D0; margin-bottom:6px;"></i>
+      <span class="en">No notifications</span><span class="ar">لا توجد إشعارات</span>
+    </div>
+  </div>
+</div>
 
   <div class="p-5 sm:p-6 space-y-6 flex-1" style="min-height:0;">
 
@@ -1387,17 +1418,34 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
             <div class="settings-section-icon"><i class="fa-solid fa-bell"></i></div>
             <div>
               <span class="bi-label"><span class="en font-display font-bold">Notifications</span><span class="ar">الإشعارات</span></span>
-              <p class="text-[10px] text-gray-400 mt-1"><span class="en">Get browser notifications on this device for important updates.</span><span class="ar">احصل على إشعارات في هذا المتصفح على هذا الجهاز للتحديثات المهمة.</span></p>
+              <p class="text-[10px] text-gray-400 mt-1"><span class="en">Get notifications on this device for important updates.</span><span class="ar">احصل على إشعارات في هذا الجهاز للتحديثات المهمة.</span></p>
             </div>
           </div>
-          <div class="flex items-center justify-between gap-3">
-            <span class="bi-label"><span class="en">Enable Notifications</span><span class="ar">تفعيل الإشعارات</span></span>
-            <button type="button" id="notif-toggle-btn" data-action="toggle-notifications" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:var(--teal);"><i class="fa-solid fa-bell"></i> <span class="en">Enable</span><span class="ar">تفعيل</span></button>
+
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <p id="notif-state-label" class="text-xs font-bold flex items-center gap-1.5" style="color:#64736F;">
+              <i id="notif-status-dot" class="fa-solid fa-circle" style="font-size:8px; color:#9CA3AF;"></i>
+              <span id="notif-status-label"><span class="en">Notifications are OFF</span><span class="ar">الإشعارات متوقفة</span></span>
+            </p>
+            <button type="button" id="notif-toggle-btn" data-action="toggle-notifications" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:#1BA648;"><i class="fa-solid fa-bell"></i> <span class="en">Enable Notifications</span><span class="ar">تفعيل الإشعارات</span></button>
           </div>
-          <p id="notif-status-indicator" class="text-[10px] flex items-center gap-1.5" style="color:#64736F;">
-            <i id="notif-status-dot" class="fa-solid fa-circle" style="font-size:7px; color:#9CA3AF;"></i>
-            <span id="notif-status-label"><span class="en">Not enabled on this device</span><span class="ar">غير مفعّل على هذا الجهاز</span></span>
-          </p>
+
+          <div id="notif-blocked-box" class="hidden text-[10px] rounded-xl p-3" style="background:#FDF0EF; color:#9A3B34; border:1px solid #F3CBC7;">
+            <p class="bi-label" style="gap:1px;"><span class="en">Notifications are blocked by your browser. Please allow notifications from your browser/site settings.</span><span class="ar">الإشعارات محظورة من المتصفح. يرجى السماح بها من إعدادات الموقع في المتصفح.</span></p>
+            <button type="button" data-action="show-notif-help" class="mt-2 text-[10px] font-bold underline bilingual-inline" style="color:#9A3B34;"><span class="en">How to enable</span><span class="ar">كيفية التفعيل</span></button>
+          </div>
+
+          <p class="text-[9px] text-gray-400"><span class="en">App notifications are separate from your browser's own permission — both are shown above.</span><span class="ar">إشعارات التطبيق منفصلة عن إذن المتصفح نفسه — الحالتان موضحتان أعلاه.</span></p>
+        </div>
+
+        <div class="card p-5 space-y-3">
+          <div class="settings-section-heading">
+            <div class="settings-section-icon"><i class="fa-solid fa-inbox"></i></div>
+            <div>
+              <span class="bi-label"><span class="en font-display font-bold">Notification Center</span><span class="ar">مركز الإشعارات</span></span>
+              <p class="text-[10px] text-gray-400 mt-1"><span class="en">Open the bell icon in the header to view and manage your notifications.</span><span class="ar">افتح أيقونة الجرس في الأعلى لعرض وإدارة إشعاراتك.</span></p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1476,6 +1524,18 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
       <button data-action="clear-note" class="text-xs px-4 py-2 rounded-lg border text-gray-400" style="border-color:var(--line);">Clear / مسح</button>
       <button data-action="close-modal" data-modal="modal-note" class="text-xs px-4 py-2 rounded-lg border" style="border-color:var(--line);">Cancel / إلغاء</button>
       <button data-action="save-note" class="text-xs px-4 py-2 rounded-lg text-white" style="background:var(--teal);">Save / حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Disable Notifications Confirmation Modal -->
+<div id="modal-disable-notif" class="fixed inset-0 bg-black/40 z-40 hidden items-center justify-center p-4">
+  <div class="bg-white rounded-2xl p-5 w-full max-w-sm space-y-3">
+    <span class="bi-label"><span class="en font-display font-bold">Turn Off Notifications?</span><span class="ar">هل تريد إيقاف الإشعارات؟</span></span>
+    <p class="text-[11px] text-gray-500"><span class="en">You will no longer receive app notifications on this device.</span><br><span class="ar">لن تتلقى إشعارات التطبيق على هذا الجهاز.</span></p>
+    <div class="flex gap-2 justify-end pt-2">
+      <button data-action="close-modal" data-modal="modal-disable-notif" class="text-xs px-4 py-2 rounded-lg border bilingual-inline" style="border-color:var(--line);"><span class="en">Cancel</span><span class="ar">إلغاء</span></button>
+      <button data-action="confirm-disable-notifications" class="text-xs px-4 py-2 rounded-lg text-white bilingual-inline" style="background:#C94C4C;"><span class="en">Disable</span><span class="ar">إيقاف</span></button>
     </div>
   </div>
 </div>
@@ -3741,35 +3801,56 @@ function loadSettingsForm(){
 }
 function editProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.setAttribute('aria-readonly','false');el.focus();try{el.setSelectionRange(el.value.length,el.value.length);}catch(_){}}
 function deleteProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.value='';el.setAttribute('aria-readonly','false');el.focus();}
-/* ---------- web push notifications (teacher device, foundation only) ---------- */
+/* ---------- notifications: app-level state (OFF/ON) vs browser permission ---------- */
+// These two are tracked and shown separately, as required: the app's own
+// notifShieldEnabled flag (persisted per-device in localStorage, independent of
+// Firestore reachability) and the browser's real Notification.permission, which
+// JS can never programmatically revoke once granted.
+let notifAppEnabled = (localStorage.getItem('ss_notif_app_enabled') === '1');
+let notifList = [];        // local cache, kept in sync by the Firestore listener (see module script)
+let notifUnreadCount = 0;
+
+function escapeHtml(str){
+  return String(str==null?'':str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function updateNotificationStatusUI(){
   const dot = document.getElementById('notif-status-dot');
   const label = document.getElementById('notif-status-label');
   const btn = document.getElementById('notif-toggle-btn');
+  const blockedBox = document.getElementById('notif-blocked-box');
   if(!dot || !label || !btn) return;
   const supported = 'Notification' in window && 'serviceWorker' in navigator;
+  blockedBox.classList.add('hidden');
+
   if(!supported){
     dot.style.color = '#9CA3AF';
     label.innerHTML = '<span class="en">Not supported in this browser</span><span class="ar">غير مدعوم في هذا المتصفح</span>';
-    btn.disabled = true;
-    btn.style.opacity = '0.5';
+    btn.disabled = true; btn.style.opacity = '0.5';
     return;
   }
+  btn.disabled = false; btn.style.opacity = '1';
+
   const perm = Notification.permission;
-  if(perm === 'granted'){
-    dot.style.color = '#1BA648';
-    label.innerHTML = '<span class="en">Enabled on this device</span><span class="ar">مفعّل على هذا الجهاز</span>';
-    btn.innerHTML = '<i class="fa-solid fa-bell-slash"></i> <span class="en">Enabled</span><span class="ar">مفعّل</span>';
-  }else if(perm === 'denied'){
+  if(perm === 'denied'){
     dot.style.color = '#C94C4C';
-    label.innerHTML = '<span class="en">Blocked in browser settings</span><span class="ar">محظور من إعدادات المتصفح</span>';
-    btn.innerHTML = '<i class="fa-solid fa-bell"></i> <span class="en">Enable</span><span class="ar">تفعيل</span>';
+    label.innerHTML = '<span class="en">Blocked by browser</span><span class="ar">محظور من المتصفح</span>';
+    btn.innerHTML = '<i class="fa-solid fa-bell"></i> <span class="en">Enable Notifications</span><span class="ar">تفعيل الإشعارات</span>';
+    btn.style.background = '#1BA648';
+    blockedBox.classList.remove('hidden');
+  }else if(perm === 'granted' && notifAppEnabled){
+    dot.style.color = '#1BA648';
+    label.innerHTML = '<span class="en">Notifications are ON</span><span class="ar">الإشعارات مفعلة</span>';
+    btn.innerHTML = '<i class="fa-solid fa-bell-slash"></i> <span class="en">Disable Notifications</span><span class="ar">إيقاف الإشعارات</span>';
+    btn.style.background = '#C94C4C';
   }else{
     dot.style.color = '#9CA3AF';
-    label.innerHTML = '<span class="en">Not enabled on this device</span><span class="ar">غير مفعّل على هذا الجهاز</span>';
-    btn.innerHTML = '<i class="fa-solid fa-bell"></i> <span class="en">Enable</span><span class="ar">تفعيل</span>';
+    label.innerHTML = '<span class="en">Notifications are OFF</span><span class="ar">الإشعارات متوقفة</span>';
+    btn.innerHTML = '<i class="fa-solid fa-bell"></i> <span class="en">Enable Notifications</span><span class="ar">تفعيل الإشعارات</span>';
+    btn.style.background = '#1BA648';
   }
-  normalizeBilingualText(document.getElementById('notif-status-indicator'));
+  normalizeBilingualText(document.getElementById('notif-state-label'));
+  normalizeBilingualText(btn);
   syncLanguageVisibility();
 }
 
@@ -3778,18 +3859,20 @@ async function toggleNotifications(){
     showToast('Notifications are not supported in this browser / الإشعارات غير مدعومة في هذا المتصفح','error');
     return;
   }
+  // Currently ON -> ask for confirmation before disabling.
+  if(Notification.permission === 'granted' && notifAppEnabled){
+    const modal = document.getElementById('modal-disable-notif');
+    modal.classList.remove('hidden'); modal.classList.add('flex');
+    return;
+  }
   if(Notification.permission === 'denied'){
-    showToast('Notifications are blocked — enable them in your browser settings / الإشعارات محظورة، فعّلها من إعدادات المتصفح','error');
+    showToast('Notifications are blocked — allow them from your browser/site settings / الإشعارات محظورة، فعّلها من إعدادات الموقع في المتصفح','error');
     return;
   }
-  if(Notification.permission === 'granted'){
-    // Minimal foundation: this build only registers the device. Revoking is done
-    // from the browser's own site settings, consistent with standard web push UX.
-    showToast('Already enabled on this device / مُفعّل بالفعل على هذا الجهاز','success');
-    return;
-  }
+  // OFF (or permission not yet decided) -> enable.
   try{
-    const permission = await Notification.requestPermission();
+    let permission = Notification.permission;
+    if(permission !== 'granted') permission = await Notification.requestPermission();
     if(permission !== 'granted'){
       updateNotificationStatusUI();
       showToast('Notifications permission was not granted / لم يتم منح إذن الإشعارات','error');
@@ -3798,12 +3881,129 @@ async function toggleNotifications(){
     if(typeof window.registerPushToken === 'function'){
       await window.registerPushToken();
     }
+    notifAppEnabled = true;
+    localStorage.setItem('ss_notif_app_enabled','1');
     updateNotificationStatusUI();
-    showToast('Notifications enabled / تم تفعيل الإشعارات','success');
+    showToast('Notifications enabled successfully / تم تفعيل الإشعارات بنجاح','success');
   }catch(err){
     console.error('Notification setup error:', err);
     showToast('Could not enable notifications / تعذّر تفعيل الإشعارات','error');
   }
+}
+
+async function confirmDisableNotifications(){
+  closeModal('modal-disable-notif');
+  notifAppEnabled = false;
+  localStorage.setItem('ss_notif_app_enabled','0');
+  if(typeof window.deactivatePushToken === 'function'){
+    try{ await window.deactivatePushToken(); }catch(err){ console.error('Token deactivation error:', err); }
+  }
+  updateNotificationStatusUI();
+  showToast('Notifications have been turned off / تم إيقاف الإشعارات','success');
+}
+
+function showNotifHelp(){
+  // Browser permission, once denied, cannot be re-requested or opened from a web
+  // page via JS in any browser — this is a deliberate browser security limit,
+  // not something this app can bypass. Clear instructions are the honest option.
+  const isAr = document.body.classList.contains('lang-ar');
+  const msg = isAr
+    ? 'افتح إعدادات الموقع من المتصفح (أيقونة القفل بجانب شريط العنوان) وفعّل الإشعارات، ثم أعد تحميل الصفحة.'
+    : "Open your browser's site settings (the lock icon next to the address bar), allow Notifications, then reload this page.";
+  showToast(msg, 'error');
+}
+
+/* ---------- Notification Center (panel UI; Firestore sync lives in the module script) ---------- */
+function positionNotifCenterPanel(){
+  const panel = document.getElementById('notif-center-panel');
+  const bell = document.getElementById('notif-bell-btn');
+  if(!panel || !bell) return;
+  const r = bell.getBoundingClientRect();
+  const panelWidth = Math.min(320, window.innerWidth * 0.92);
+  let left = r.left + r.width/2 - panelWidth/2;
+  left = Math.max(8, Math.min(left, window.innerWidth - panelWidth - 8));
+  panel.style.left = left + 'px';
+  panel.style.top = Math.min(r.bottom + 8, window.innerHeight - 100) + 'px';
+}
+function toggleNotifCenter(){
+  const panel = document.getElementById('notif-center-panel');
+  const overlay = document.getElementById('notif-center-overlay');
+  if(!panel) return;
+  const isOpen = panel.classList.contains('open');
+  if(isOpen){ closeNotifCenter(); return; }
+  positionNotifCenterPanel();
+  panel.classList.add('open');
+  overlay.classList.add('open');
+}
+function closeNotifCenter(){
+  document.getElementById('notif-center-panel').classList.remove('open');
+  document.getElementById('notif-center-overlay').classList.remove('open');
+}
+function formatNotifTime(iso){
+  try{
+    const d = new Date(iso);
+    const isAr = document.body.classList.contains('lang-ar');
+    return d.toLocaleString(isAr?'ar-QA':'en-GB', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  }catch(e){ return ''; }
+}
+function renderNotifBadge(){
+  const badge = document.getElementById('notif-badge');
+  if(!badge) return;
+  if(notifUnreadCount > 0){
+    badge.textContent = notifUnreadCount > 99 ? '99+' : String(notifUnreadCount);
+    badge.classList.remove('hidden');
+  }else{
+    badge.classList.add('hidden');
+  }
+}
+function renderNotifList(){
+  const list = document.getElementById('notif-list');
+  const empty = document.getElementById('notif-empty-state');
+  if(!list) return;
+  list.querySelectorAll('.notif-item').forEach(el=>el.remove());
+  if(!notifList.length){
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+  notifList.forEach(n=>{
+    const div = document.createElement('div');
+    div.className = 'notif-item' + (n.read ? '' : ' unread');
+    div.dataset.id = n.id;
+    div.dataset.action = 'read-notif';
+    div.innerHTML =
+      '<span class="bi-label" style="gap:1px;"><span class="en" style="font-weight:700;font-size:12px;color:var(--ink);">'+escapeHtml(n.titleEn)+'</span><span class="ar" style="font-weight:700;font-size:12px;color:var(--ink);">'+escapeHtml(n.titleAr)+'</span></span>'+
+      '<span class="bi-label" style="gap:1px;"><span class="en" style="font-size:11px;color:#64736F;">'+escapeHtml(n.bodyEn)+'</span><span class="ar" style="font-size:11px;color:#64736F;">'+escapeHtml(n.bodyAr)+'</span></span>'+
+      '<span style="font-size:9px;color:#9CA3AF;" dir="ltr">'+formatNotifTime(n.createdAt)+'</span>';
+    list.appendChild(div);
+  });
+  syncLanguageVisibility();
+}
+// Called by the module script's Firestore onSnapshot listener whenever the
+// teacher's notifications subcollection changes (initial load, new item, or a
+// read-state change made from another tab/device).
+window.onNotificationsSynced = function onNotificationsSynced(items){
+  notifList = items;
+  notifUnreadCount = items.filter(n=>!n.read).length;
+  renderNotifBadge();
+  renderNotifList();
+};
+function markNotifRead(id){
+  const n = notifList.find(x=>x.id===id);
+  if(!n || n.read) return;
+  n.read = true;
+  notifUnreadCount = Math.max(0, notifUnreadCount-1);
+  renderNotifBadge();
+  renderNotifList();
+  if(typeof window.markNotificationReadRemote === 'function') window.markNotificationReadRemote(id);
+}
+function markAllNotifsRead(){
+  if(!notifList.length) return;
+  notifList.forEach(n=>n.read=true);
+  notifUnreadCount = 0;
+  renderNotifBadge();
+  renderNotifList();
+  if(typeof window.markAllNotificationsReadRemote === 'function') window.markAllNotificationsReadRemote();
 }
 
 function saveSettings(){
@@ -4420,6 +4620,12 @@ document.addEventListener('click', function(e){
     case 'send-cert-whatsapp': sendCertificateWhatsApp(); break;
     case 'save-settings': saveSettings(); break;
     case 'toggle-notifications': toggleNotifications(); break;
+    case 'confirm-disable-notifications': confirmDisableNotifications(); break;
+    case 'show-notif-help': showNotifHelp(); break;
+    case 'toggle-notif-center': toggleNotifCenter(); break;
+    case 'close-notif-center': closeNotifCenter(); break;
+    case 'mark-all-notifs-read': markAllNotifsRead(); break;
+    case 'read-notif': markNotifRead(t.dataset.id); break;
     case 'edit-profile-field': editProfileField(t.dataset.field); break;
     case 'delete-profile-field': deleteProfileField(t.dataset.field); break;
     case 'export-backup': exportBackup(); break;
@@ -4618,7 +4824,15 @@ window.addEventListener('DOMContentLoaded', ()=>{
   getFirestore,
   doc,
   getDoc,
-  setDoc
+  setDoc,
+  collection,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+  updateDoc,
+  writeBatch,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
   import {
@@ -4700,7 +4914,74 @@ window.registerPushToken = async function registerPushToken(){
     return null;
   }
 };
-  
+
+// Called when the teacher explicitly disables notifications. This cannot revoke
+// the browser's OWN permission grant (no web API allows that — see showNotifHelp()
+// in the main script for why), but it removes this device's token from Firestore
+// so no further app-sent pushes are addressed to it, and avoids any stale/duplicate
+// token documents accumulating from repeated enable/disable cycles.
+window.deactivatePushToken = async function deactivatePushToken(){
+  if(!messaging || !auth.currentUser) return;
+  try{
+    const registration = await navigator.serviceWorker.getRegistration('firebase-messaging-sw.js');
+    if(!registration || !VAPID_KEY || VAPID_KEY.indexOf('PASTE_YOUR') === 0) return;
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration }).catch(()=>null);
+    if(token){
+      const tokenRef = doc(db, 'users', auth.currentUser.uid, 'pushTokens', token);
+      await deleteDoc(tokenRef).catch(()=>{});
+    }
+  }catch(err){
+    console.error('Push token deactivation error:', err);
+  }
+};
+
+// ---------- Notification Center: Firestore sync (users/{uid}/notifications) ----------
+// Kept in its own subcollection, separate from users/{uid}/appData/main, so it
+// never touches existing classes/students/daily-records data.
+let notifUnsubscribe = null;
+function startNotificationsListener(uid){
+  if(notifUnsubscribe){ notifUnsubscribe(); notifUnsubscribe = null; } // guard against duplicate listeners
+  const notifQuery = query(collection(db, 'users', uid, 'notifications'), orderBy('createdAt', 'desc'), limit(50));
+  notifUnsubscribe = onSnapshot(notifQuery, (snap) => {
+    const items = snap.docs.map(d => {
+      const data = d.data();
+      return {
+        id: d.id,
+        titleEn: data.titleEn || '',
+        titleAr: data.titleAr || '',
+        bodyEn: data.bodyEn || '',
+        bodyAr: data.bodyAr || '',
+        createdAt: data.createdAt || '',
+        read: !!data.read,
+        type: data.type || 'general',
+        data: data.data || null
+      };
+    });
+    if(typeof window.onNotificationsSynced === 'function') window.onNotificationsSynced(items);
+  }, (err) => {
+    console.error('Notifications listener error:', err);
+  });
+}
+window.markNotificationReadRemote = async function markNotificationReadRemote(id){
+  if(!auth.currentUser) return;
+  try{ await updateDoc(doc(db, 'users', auth.currentUser.uid, 'notifications', id), { read: true }); }
+  catch(err){ console.error('Mark-read error:', err); }
+};
+window.markAllNotificationsReadRemote = async function markAllNotificationsReadRemote(){
+  if(!auth.currentUser) return;
+  try{
+    const notifQuery = query(collection(db, 'users', auth.currentUser.uid, 'notifications'), orderBy('createdAt', 'desc'), limit(50));
+    const unsub = onSnapshot(notifQuery, async (snap) => {
+      unsub();
+      const batch = writeBatch(db);
+      snap.docs.forEach(d => { if(!d.data().read) batch.update(d.ref, { read: true }); });
+      try{ await batch.commit(); }catch(err){ console.error('Mark-all-read batch error:', err); }
+    });
+  }catch(err){
+    console.error('Mark-all-read error:', err);
+  }
+};
+
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
     onAuthStateChanged(auth, (user) => {
@@ -4713,6 +4994,7 @@ setPersistence(auth, browserLocalPersistence)
       document.body.classList.remove("auth-pending");
 
       loadCloudData();
+      startNotificationsListener(user.uid);
     });
   })
   .catch((error) => {
@@ -4723,6 +5005,7 @@ setPersistence(auth, browserLocalPersistence)
 
   async function logoutUser() {
     try {
+      if(notifUnsubscribe){ notifUnsubscribe(); notifUnsubscribe = null; }
       await signOut(auth);
       try{ localStorage.removeItem('ss_active_tab'); }catch(e){}
       window.location.href = "login.html";
