@@ -832,6 +832,23 @@ body.theme-dark .gs-input::placeholder{color:#6B7E79;}
 body.theme-dark .gs-kbd-hint kbd{background:#111827; border-color:#374151; color:#9CA3AF;}
 body.theme-dark .gs-close-btn{background:#111827; color:#9CA3AF;}
 #app-topbar .header-right-identity .header-dept-name{position:relative !important; top:8px !important; transform:none !important;}
+#app-topbar .header-right-identity > div:first-child{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  grid-template-rows:auto auto auto !important;
+  align-items:end !important;
+  justify-items:stretch !important;
+  row-gap:2px !important;
+}
+#app-topbar .header-right-identity > div:first-child #header-school-logo{grid-row:1 !important;}
+#app-topbar .header-right-identity > div:first-child .header-dept-name{
+  grid-row:2 !important;
+  position:static !important;
+  transform:none !important;
+  margin:0 !important;
+  width:100% !important;
+}
+#app-topbar .header-right-identity > div:first-child > div:last-child{grid-row:3 !important; width:100% !important;}
 </style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
