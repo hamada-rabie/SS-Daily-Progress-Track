@@ -506,7 +506,93 @@ body.lang-bilingual .nav-link.active .en,body.lang-bilingual .nav-link.active .a
 /* Arabic mode: never expose the English-only Honor Board labels. */
 body.lang-ar #tab-stars .en{display:none !important;}
 body.lang-ar #tab-stars .ar{display:block !important;}
-</style></head>
+</style><style id="final-ui-fixes-2026-10-03">
+/* Final UI fixes: page-aware header, bilingual stacking, sidebar color, and Arabic table-header colors. */
+
+/* Sidebar: give the rail a clear soft theme surface instead of plain white. */
+aside,
+body.lang-en aside,
+body.lang-ar aside,
+body.lang-bilingual aside,
+aside nav{
+  background:linear-gradient(180deg,#EAF7F5 0%,#F6FBFA 55%,#FFFFFF 100%) !important;
+}
+aside > div:first-child{
+  background:linear-gradient(135deg,#DDF3EF 0%,#F4FBF9 100%) !important;
+}
+
+/* The topbar is shared by all pages, but its title must always represent the
+   currently selected tab — never a permanently frozen Home title. */
+#app-topbar{position:relative !important;}
+
+/* Page title sits lower, on the same visual line as the teacher profile photo. */
+.header-right-identity > div:last-child{
+  padding-top:52px !important;
+  align-self:start !important;
+}
+.header-right-identity > div:last-child .bi-label{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  gap:1px !important;
+  line-height:1.05 !important;
+  white-space:nowrap !important;
+}
+#current-page-title-en,
+#current-page-title-ar{
+  display:block !important;
+  white-space:nowrap !important;
+}
+body.lang-bilingual #current-page-title-en,
+body.lang-bilingual #current-page-title-ar{
+  width:100% !important;
+  text-align:left !important;
+}
+body.lang-ar #current-page-title-en{display:none !important;}
+body.lang-ar #current-page-title-ar{display:block !important;text-align:right !important;}
+body.lang-en #current-page-title-ar{display:none !important;}
+body.lang-en #current-page-title-en{display:block !important;text-align:left !important;}
+
+/* Bilingual department label under the school logo: English on top, Arabic
+   fully underneath, never side-by-side. */
+.header-right-identity .header-dept-name{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-end !important;
+  justify-content:center !important;
+  gap:1px !important;
+  line-height:1.05 !important;
+  width:100% !important;
+}
+.header-right-identity .header-dept-name .en,
+.header-right-identity .header-dept-name .ar{
+  display:block !important;
+  width:100% !important;
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+/* Arabic table headers: match the label color to the column icon/accent.
+   These rules also flow into the JS frozen-header clone. */
+body.lang-ar #tab-students thead th:nth-child(1) .bi-label .ar{color:var(--teal-dark) !important;}
+body.lang-ar #tab-students thead th:nth-child(2) .bi-label .ar{color:var(--violet) !important;}
+body.lang-ar #tab-students thead th:nth-child(3) .bi-label .ar{color:var(--sky) !important;}
+body.lang-ar #tab-students thead th:nth-child(4) .bi-label .ar{color:#B5850C !important;}
+body.lang-ar #tab-students thead th:nth-child(5) .bi-label .ar{color:var(--coral) !important;}
+body.lang-ar #tab-students thead th:nth-child(6) .bi-label .ar{color:#1BA648 !important;}
+body.lang-ar #tab-students thead th:nth-child(7) .bi-label .ar{color:#B5850C !important;}
+
+body.lang-ar #tab-daily thead th:nth-child(1) .bi-label .ar{color:var(--teal-dark) !important;}
+body.lang-ar #tab-daily thead th:nth-child(2) .bi-label .ar{color:#5C6BC0 !important;}
+body.lang-ar #tab-daily thead th:nth-child(3) .bi-label .ar{color:var(--violet) !important;}
+body.lang-ar #tab-daily thead th:nth-child(4) .bi-label .ar{color:#B5850C !important;}
+body.lang-ar #tab-daily thead th:nth-child(5) .bi-label .ar{color:var(--sky) !important;}
+
+/* Keep the frozen header below the app topbar and visually identical. */
+.frozen-table-header{z-index:28 !important;}
+</style>
+</head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
 <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2"></div>
@@ -1546,15 +1632,20 @@ const TAB_TITLES = {
   certificates:['Certificates','شهادات التقدير'], settings:['Settings','الإعدادات']
 };
 function switchTab(name){
+  const target = document.getElementById('tab-'+name);
+  if(!target) return;
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+  target.classList.add('active');
   document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
   const activeNav = document.querySelector('.nav-link[data-target="'+name+'"]');
   if(activeNav) activeNav.classList.add('active');
   if(TAB_TITLES[name]){
-    document.getElementById('current-page-title-en').textContent = TAB_TITLES[name][0];
-    document.getElementById('current-page-title-ar').textContent = TAB_TITLES[name][1];
+    const enTitle = document.getElementById('current-page-title-en');
+    const arTitle = document.getElementById('current-page-title-ar');
+    if(enTitle) enTitle.textContent = TAB_TITLES[name][0];
+    if(arTitle) arTitle.textContent = TAB_TITLES[name][1];
   }
+  try{ sessionStorage.setItem('ss_active_tab', name); }catch(e){}
   syncLanguageVisibility();
   refreshAllViews();
 }
@@ -4240,6 +4331,15 @@ window.addEventListener('DOMContentLoaded', ()=>{
   updateClock();
   setInterval(updateClock, 1000);
   refreshAllViews();
+  // Restore the exact page the teacher was viewing after a browser refresh.
+  try{
+    const savedTab = sessionStorage.getItem('ss_active_tab');
+    if(savedTab && document.getElementById('tab-'+savedTab)){
+      switchTab(savedTab);
+    }else{
+      try{ sessionStorage.setItem('ss_active_tab','dashboard'); }catch(e){}
+    }
+  }catch(e){}
 });
 </script>
   
@@ -4307,6 +4407,7 @@ setPersistence(auth, browserLocalPersistence)
   async function logoutUser() {
     try {
       await signOut(auth);
+      try{ sessionStorage.removeItem('ss_active_tab'); }catch(e){}
       window.location.href = "login.html";
     } catch (error) {
       console.error("Logout error:", error);
