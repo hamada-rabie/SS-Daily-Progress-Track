@@ -1,4 +1,92 @@
 // firebase-messaging-sw.js
+// PWA + offline caching is intentionally integrated into this SAME service worker.
+// Do not create a second service worker: Firebase Cloud Messaging and the PWA
+// shell must share this root-scope worker.
+
+const PWA_CACHE = 'ss-dpt-pwa-v1';
+const APP_SHELL = [
+  './',
+  './index.html',
+  './login.html',
+  './english_dashboard-dynamic.html',
+  './manifest.json',
+  './icon-192.svg',
+  './icon-512.svg',
+  './firebase-messaging-sw.js'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(PWA_CACHE)
+      .then(cache => cache.addAll(APP_SHELL))
+      .then(() => self.skipWaiting())
+      .catch(err => {
+        console.warn('PWA shell cache install warning:', err);
+      })
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(
+        keys
+          .filter(key => key.startsWith('ss-dpt-pwa-') && key !== PWA_CACHE)
+          .map(key => caches.delete(key))
+      ))
+      .then(() => self.clients.claim())
+  );
+});
+
+// Navigation requests: prefer the network so the teacher gets the latest app,
+// but fall back to the cached shell when offline.
+self.addEventListener('fetch', (event) => {
+  const request = event.request;
+  if(request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+
+  if(url.origin === self.location.origin){
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if(response && response.ok){
+            const copy = response.clone();
+            caches.open(PWA_CACHE).then(cache => cache.put(request, copy)).catch(()=>{});
+          }
+          return response;
+        })
+        .catch(() => caches.match(request).then(cached => cached || caches.match('./english_dashboard-dynamic.html')))
+    );
+    return;
+  }
+
+  // Runtime-cache static CDN assets after the first successful online load.
+  // Firestore writes/reads are not affected because the SDK uses non-GET
+  // requests for its backend operations.
+  if(url.protocol === 'https:' && (
+    url.hostname === 'www.gstatic.com' ||
+    url.hostname === 'cdn.tailwindcss.com' ||
+    url.hostname === 'cdnjs.cloudflare.com' ||
+    url.hostname === 'cdn.jsdelivr.net' ||
+    url.hostname === 'fonts.googleapis.com' ||
+    url.hostname === 'fonts.gstatic.com'
+  )){
+    event.respondWith(
+      caches.match(request).then(cached => {
+        const network = fetch(request).then(response => {
+          if(response && (response.ok || response.type === 'opaque')){
+            const copy = response.clone();
+            caches.open(PWA_CACHE).then(cache => cache.put(request, copy)).catch(()=>{});
+          }
+          return response;
+        }).catch(() => cached);
+        return cached || network;
+      })
+    );
+  }
+});
+
 // Required by Firebase Cloud Messaging for Web Push.
 // Must be served from the SAME origin as the main app, at the ROOT of the
 // path scope you want it to control (for this project: the same folder as
