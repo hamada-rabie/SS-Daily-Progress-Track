@@ -428,20 +428,7 @@ body.lang-en #current-page-title-en{text-align:left !important;direction:ltr !im
 /* Daily status: Arabic reads naturally from the right. */
 body.lang-ar .hero-status-row{direction:rtl !important;}
 body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
-/* Preserve the active-tab highlight in every language. */
-.nav-link.active{background:linear-gradient(90deg,var(--teal),var(--teal-dark)) !important;color:#fff !important;font-weight:700 !important;box-shadow:0 3px 10px rgba(0,0,0,.12) !important;}
-.nav-link.active i,.nav-link.active .en,.nav-link.active .ar{color:#fff !important;}
- /* Final sidebar consistency: identical base colors and text treatment in all three language modes. */
- body.lang-en aside,body.lang-ar aside,body.lang-bilingual aside{background:var(--card) !important;color:var(--ink) !important;}
- body.lang-en .nav-link,body.lang-ar .nav-link,body.lang-bilingual .nav-link{color:#64736F !important;}
- body.lang-en .nav-link .en,body.lang-en .nav-link .ar,
- body.lang-ar .nav-link .en,body.lang-ar .nav-link .ar,
- body.lang-bilingual .nav-link .en,body.lang-bilingual .nav-link .ar{color:inherit !important;}
- body.lang-en .nav-link.active,body.lang-ar .nav-link.active,body.lang-bilingual .nav-link.active{color:#fff !important;}
- body.lang-en .nav-link.active .en,body.lang-en .nav-link.active .ar,
- body.lang-ar .nav-link.active .en,body.lang-ar .nav-link.active .ar,
- body.lang-bilingual .nav-link.active .en,body.lang-bilingual .nav-link.active .ar{color:#fff !important;}
- /* Apply the verified Arabic header geometry to EN and Bilingual without changing the AR rules. */
+/* Apply the verified Arabic header geometry to EN and Bilingual without changing the AR rules. */
  body.lang-en #app-topbar,body.lang-bilingual #app-topbar{grid-template-columns:132px minmax(0,1fr) 330px !important;column-gap:18px !important;}
  body.lang-en .header-right-identity,body.lang-bilingual .header-right-identity{grid-template-columns:minmax(125px,1fr) 150px !important;gap:16px !important;}
  body.lang-en .header-right-identity > div:first-child,body.lang-bilingual .header-right-identity > div:first-child{grid-column:2 !important;width:150px !important;min-width:150px !important;max-width:150px !important;align-items:flex-end !important;justify-self:end !important;}
@@ -471,11 +458,6 @@ body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
 body.lang-ar .header-right-identity > div:last-child{direction:rtl !important;text-align:right !important;}
 body.lang-en .header-right-identity > div:last-child{direction:ltr !important;text-align:left !important;}
 body.lang-bilingual .header-right-identity > div:last-child{direction:ltr !important;text-align:left !important;}
-/* Sidebar remains visually consistent in all language modes. */
-body.lang-en aside,body.lang-ar aside,body.lang-bilingual aside{background:var(--card) !important;border-color:var(--line) !important;}
-body.lang-en aside > div:first-child,body.lang-ar aside > div:first-child,body.lang-bilingual aside > div:first-child{background:linear-gradient(135deg,#EAF7F5,#F5FAF8) !important;border-color:var(--line) !important;}
-.nav-link.active{background:linear-gradient(90deg,var(--teal),var(--teal-dark)) !important;color:#fff !important;}
-.nav-link.active i,.nav-link.active .en,.nav-link.active .ar{color:#fff !important;}
 /* Stacked bilingual labels never get a slash. */
 body.lang-bilingual .header-dept-name .en + .ar::before,
 body.lang-bilingual .home-title-bilingual .en + .ar::before{content:none !important;}
@@ -492,22 +474,17 @@ body.lang-bilingual .home-title-bilingual .en + .ar::before{content:none !import
  .header-right-identity > div:first-child{width:120px !important;min-width:120px !important;}
 }
 <style id="final-freeze-sidebar-language-fix">
-/* Final: the main content scrolls; the header is an opaque, true freeze-pane layer. */
-main{isolation:isolate !important;}
+/* Freeze: #app-topbar is a normal (non-scrolling) flex child of <main>; only the
+   content div below it scrolls. No sticky/z-index hack needed — see <main> structure. */
 #app-topbar{
-  position:sticky !important;
-  top:0 !important;
-  z-index:9999 !important;
   flex-shrink:0 !important;
-  opacity:1 !important;
-  isolation:isolate !important;
   background:linear-gradient(120deg,var(--teal),var(--teal-dark)) !important;
   background-color:var(--teal-dark) !important;
   box-shadow:0 3px 12px rgba(0,0,0,.16) !important;
 }
-/* Sidebar: same solid surface, header and active item in every language mode. */
+/* Sidebar: one canonical, theme-aware surface and active item in every language mode. */
 aside{
-  background:#FFFFFF !important;
+  background:var(--card) !important;
   border-color:var(--line) !important;
   isolation:isolate !important;
 }
@@ -515,9 +492,9 @@ aside > div:first-child{
   background:linear-gradient(135deg,#EAF7F5,#F5FAF8) !important;
   border-color:var(--line) !important;
 }
-aside nav{background:#FFFFFF !important;}
-body.lang-en aside,body.lang-ar aside,body.lang-bilingual aside{background:#FFFFFF !important;}
-body.lang-en aside nav,body.lang-ar aside nav,body.lang-bilingual aside nav{background:#FFFFFF !important;}
+aside nav{background:var(--card) !important;}
+body.lang-en aside,body.lang-ar aside,body.lang-bilingual aside{background:var(--card) !important;}
+body.lang-en aside nav,body.lang-ar aside nav,body.lang-bilingual aside nav{background:var(--card) !important;}
 body.lang-en .nav-link,body.lang-ar .nav-link,body.lang-bilingual .nav-link{background-color:transparent !important;color:#64736F !important;}
 body.lang-en .nav-link.active,body.lang-ar .nav-link.active,body.lang-bilingual .nav-link.active{
   background:linear-gradient(90deg,var(--teal),var(--teal-dark)) !important;
@@ -530,7 +507,6 @@ body.lang-bilingual .nav-link.active .en,body.lang-bilingual .nav-link.active .a
 body.lang-ar #tab-stars .en{display:none !important;}
 body.lang-ar #tab-stars .ar{display:block !important;}
 </style></head>
-<body</style></head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
 <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2"></div>
@@ -622,8 +598,8 @@ body.lang-ar #tab-stars .ar{display:block !important;}
 <div id="sidebar-overlay" data-action="close-sidebar" class="no-print"></div>
 
 <!-- Main -->
-<main class="flex-1 flex flex-col h-screen overflow-y-auto" style="height:100dvh; overflow-y:auto; display:flex; flex-direction:column; flex:1 1 0%; min-width:0; position:relative;">
-  <header id="app-topbar" class="text-white px-4 sm:px-6 py-3 flex items-start justify-between sticky z-10 no-print" style="top:env(safe-area-inset-top,0px);background:linear-gradient(120deg,var(--teal),var(--teal-dark));position:sticky;z-index:30;flex-shrink:0;direction:ltr;gap:18px;">
+<main class="flex-1 flex flex-col h-screen" style="height:100dvh; display:flex; flex-direction:column; flex:1 1 0%; min-width:0; min-height:0; position:relative; overflow:hidden;">
+  <header id="app-topbar" class="text-white px-4 sm:px-6 py-3 flex items-start justify-between no-print" style="background:linear-gradient(120deg,var(--teal),var(--teal-dark));flex-shrink:0;direction:ltr;gap:18px;">
 <div class="flex flex-col items-start gap-1.5 shrink-0 header-left-identity">
 <div id="header-ministry-logo"></div>
 <select id="header-term-select" data-action="set-term" class="text-[9.5px] font-semibold rounded-full px-2 py-1 border-0 outline-none header-left-control" style="background:rgba(255,255,255,.18);color:#fff;width:112px;max-width:112px;"><option value="first" style="color:#111;">First Term 2026</option><option value="second" style="color:#111;">Second Term 2026</option></select>
@@ -635,13 +611,13 @@ body.lang-ar #tab-stars .ar{display:block !important;}
 <div class="flex items-center min-w-[110px] max-w-[220px]" style="direction:ltr;"><span class="bi-label items-start"><span class="en text-sm font-display font-bold" id="current-page-title-en" style="color:#fff;">Home</span><span class="ar text-[11px] font-bold" id="current-page-title-ar" style="color:#fff;">الرئيسية</span></span></div>
 </div></header>
 
-  <div class="p-5 sm:p-6 space-y-6 flex-1">
+  <div class="p-5 sm:p-6 space-y-6 flex-1" style="overflow-y:auto; min-height:0;">
 
     <!-- DASHBOARD -->
     <section id="tab-dashboard" class="tab-content active space-y-5">
       <div class="hero-band text-white rounded-2xl p-6 sm:p-9 overflow-hidden">
         <div class="text-center max-w-2xl mx-auto space-y-1.5">
-          <p class="text-[10px] font-bold tracking-widest text-white/80 uppercase"><span class="en">Progress Command Center</span><span class="ar">مركز المتابعة</span></p>
+          <p class="text-[10px] font-bold tracking-widest text-white/80 uppercase"><span class="en">Progress Command Center</span><span class="ar" style="margin-inline-start:8px;">مركز المتابعة</span></p>
           <h1 class="home-title-bilingual font-display font-extrabold leading-tight text-3xl sm:text-4xl"><span class="en">Students' Daily Progress Track</span><span class="ar">متابعة التقدم اليومي للطلاب</span></h1>
           <p class="text-white/75 text-xs sm:text-sm home-hero-tagline"><span class="en">Track student progress every day with clarity and evidence.</span><span class="ar">تابع تقدم الطلاب يوميًا بوضوح واستنادًا إلى بيانات موثوقة.</span></p>
         </div>
@@ -1021,8 +997,7 @@ body.lang-ar #tab-stars .ar{display:block !important;}
               <div class="profile-field-editor mt-1"><input id="setting-teacher-name" readonly class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--line);" aria-readonly="true"><button type="button" data-action="edit-profile-field" data-field="setting-teacher-name" class="icon-action-btn" title="Edit / تعديل" aria-label="Edit / تعديل"><i class="fa-solid fa-pen"></i></button><button type="button" data-action="delete-profile-field" data-field="setting-teacher-name" class="icon-action-btn danger" title="Delete / حذف" aria-label="Delete / حذف"><i class="fa-solid fa-trash-can"></i></button></div>
             </div>
             <div class="profile-field">
-              <label class="bi-label mb-1"><span class="en">English Language Coordinator</span><span class="ar">منسق اللغة الإنجليزية</span></label>
-              <div class="profile-field-editor mt-1"><input id="setting-coordinator-name" readonly class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--line);" aria-readonly="true"><button type="button" data-action="edit-profile-field" data-field="setting-coordinator-name" class="icon-action-btn" title="Edit / تعديل" aria-label="Edit / تعديل"><i class="fa-solid fa-pen"></i></button><button type="button" data-action="delete-profile-field" data-field="setting-coordinator-name" class="icon-action-btn danger" title="Delete / حذف" aria-label="Delete / حذف"><i class="fa-solid fa-trash-can"></i></button></div>
+              <label class="bi-label mb-1"><span class="en">English Language Coordinator</span><span class="ar">منسق اللغة الإنجليزية</span></label>              <div class="profile-field-editor mt-1"><input id="setting-coordinator-name" readonly class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--line);" aria-readonly="true"><button type="button" data-action="edit-profile-field" data-field="setting-coordinator-name" class="icon-action-btn" title="Edit / تعديل" aria-label="Edit / تعديل"><i class="fa-solid fa-pen"></i></button><button type="button" data-action="delete-profile-field" data-field="setting-coordinator-name" class="icon-action-btn danger" title="Delete / حذف" aria-label="Delete / حذف"><i class="fa-solid fa-trash-can"></i></button></div>
             </div>
             <div>
               <label class="bi-label mb-1"><span class="en">School Name</span><span class="ar">اسم المدرسة</span></label>
@@ -2021,8 +1996,7 @@ const PARTICIPATION_OPTIONS = [
   {key:'passive', en:'Not Engaged', ar:'غير متفاعل', cls:'badge-warn'},
   {key:'active', en:'Engaged', ar:'متفاعل', cls:'badge-mid'},
   {key:'excellent', en:'Engaged & Diligent', ar:'متفاعل ومجتهد', cls:'badge-ok'}
-];
-function participationLabel(key){
+];function participationLabel(key){
   return PARTICIPATION_OPTIONS.find(o=>o.key===key) || PARTICIPATION_OPTIONS[2];
 }
 const BEHAVIOUR_OPTIONS = [
@@ -3021,7 +2995,6 @@ function renderS360Card(){
              <p class="text-[9px] text-gray-400 mt-1">Evidence: ${bestPeriod.daily} daily records, ${bestPeriod.skills} skill-history points. / الأدلة: ${bestPeriod.daily} سجلاً يوميًا، ${bestPeriod.skills} نقطة مهارات.</p>`
           : `<p class="text-xs text-gray-500 mt-1">Not enough historical data to determine a reliable best period.<br>لا توجد بيانات تاريخية كافية لتحديد أفضل فترة بشكل موثوق.</p>`}
       </div>
-
       ${whyBlock}
     </div>`;
 }
@@ -3829,12 +3802,12 @@ function normalizeBilingualText(root=document){
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode(node){
       const p=node.parentElement;
-      if(!p || p.closest('script,style,textarea,option,svg') || p.classList.contains('en') || p.classList.contains('ar') || p.classList.contains('bi-label')) return NodeFilter.FILTER_REJECT;
+      if(!p || p.closest('script,style,textarea,option,svg,#app-topbar,aside') || p.classList.contains('en') || p.classList.contains('ar') || p.classList.contains('bi-label')) return NodeFilter.FILTER_REJECT;
       return /[A-Za-z]{2,}\s*\/\s*[\u0600-\u06FF]/.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
     }
   });
   const nodes=[]; let n; while((n=walker.nextNode())) nodes.push(n);
-  if(document.body.classList.contains('lang-ar')) nodes.slice().forEach(node=>{const txt=node.nodeValue||'';if(/[A-Za-z]{2,}/.test(txt)&&!/[\\u0600-\\u06FF]/.test(txt)){const span=document.createElement('span');span.className='en';span.textContent=txt;node.parentNode.replaceChild(span,node);}});
+  if(document.body.classList.contains('lang-ar')) nodes.slice().forEach(node=>{const txt=node.nodeValue||'';if(/[A-Za-z]{2,}/.test(txt)&&!/[\u0600-\u06FF]/.test(txt)){const span=document.createElement('span');span.className='en';span.textContent=txt;node.parentNode.replaceChild(span,node);}});
   nodes.forEach(node=>{
     const m=node.nodeValue.match(/^\s*(.*?)\s*\/\s*([\u0600-\u06FF].*?)\s*$/);
     if(!m) return;
@@ -4022,7 +3995,6 @@ function syncFrozenTableHeaders(){
   overlay.style.width=wrapperRect.width+'px';
   overlay.style.top=top+'px';
   overlay.style.height=headRect.height+'px';
-
   const cloneTable=table.cloneNode(false);
   const tableWidth=table.getBoundingClientRect().width;
   cloneTable.style.width=tableWidth+'px';
