@@ -487,7 +487,7 @@ body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
 .header-right-identity > div:first-child{grid-column:2 !important;width:150px !important;min-width:150px !important;max-width:150px !important;align-items:flex-end !important;justify-self:end !important;}
 .header-right-identity > div:first-child #header-school-logo{width:100% !important;justify-content:flex-end !important;}
 .header-right-identity > div:first-child #header-school-logo img{max-width:128px !important;height:40px !important;}
-.header-right-identity > div:first-child #header-school-logo img{transform:translateX(28px) !important;}
+.header-right-identity > div:first-child #header-school-logo img{transform:translateX(44px) !important;}
 .header-right-identity #header-teacher-photo{margin-left:auto !important;margin-right:0 !important;}
 .header-right-identity > div:last-child{grid-column:1 !important;width:100% !important;min-width:0 !important;}
 body.lang-ar .header-right-identity > div:last-child{direction:rtl !important;text-align:right !important;}
@@ -758,7 +758,11 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
 .global-search-trigger-btn{
   position:absolute;
   top:14px;
+  right:14px;
   inset-inline-end:14px;
+  min-width:42px;
+  min-height:36px;
+  justify-content:center;
   z-index:5;
   display:flex;
   align-items:center;
@@ -773,9 +777,10 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
   cursor:pointer;
   transition:background .15s ease, transform .15s ease;
 }
-.global-search-trigger-btn:hover{background:rgba(255,255,255,.26); transform:translateY(-1px);}
-.global-search-trigger-label{display:none;}
-@media(min-width:640px){ .global-search-trigger-label{display:flex;} }
+.global-search-trigger-btn:hover{background:rgba(255,255,255,.30); transform:translateY(-1px);}
+.global-search-trigger-btn i{display:inline-flex !important; align-items:center; justify-content:center; width:18px; height:18px; font-size:15px; color:#fff !important;}
+.global-search-trigger-label{display:none !important;}
+@media(min-width:640px){ .global-search-trigger-label{display:flex !important;} }
 @media(max-width:480px){
   .global-search-trigger-btn{top:10px; inset-inline-end:10px; padding:7px 9px;}
 }
