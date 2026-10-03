@@ -849,6 +849,46 @@ body.lang-bilingual #sidebar-logo-box + div h1 .en + .ar::before{
   content:none !important;
 }
 </style>
+<style id="final-dept-label-alignment">
+/* Final right-side department label alignment: logo above, profile row below. */
+#app-topbar .header-right-identity .header-dept-name{
+  width:100% !important;
+  text-align:center !important;
+  align-items:center !important;
+  justify-content:center !important;
+  line-height:1.05 !important;
+}
+#app-topbar .header-right-identity .header-dept-name .en,
+#app-topbar .header-right-identity .header-dept-name .ar{
+  width:100% !important;
+  text-align:center !important;
+}
+
+/* Arabic mode: Arabic only. */
+body.lang-ar #app-topbar .header-right-identity .header-dept-name .en{
+  display:none !important;
+}
+body.lang-ar #app-topbar .header-right-identity .header-dept-name .ar{
+  display:block !important;
+}
+
+/* English mode: English only. */
+body.lang-en #app-topbar .header-right-identity .header-dept-name .ar{
+  display:none !important;
+}
+body.lang-en #app-topbar .header-right-identity .header-dept-name .en{
+  display:block !important;
+}
+
+/* Bilingual mode: both, stacked and slightly raised for balance. */
+body.lang-bilingual #app-topbar .header-right-identity .header-dept-name{
+  transform:translateY(-3px) !important;
+}
+body.lang-bilingual #app-topbar .header-right-identity .header-dept-name .en,
+body.lang-bilingual #app-topbar .header-right-identity .header-dept-name .ar{
+  display:block !important;
+}
+</style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
