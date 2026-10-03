@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="SS Daily Progress Track">
+<rect width="192" height="192" rx="42" fill="#0E7C74"/>
+<rect x="24" y="24" width="144" height="144" rx="32" fill="#F5FAF8" opacity=".12"/>
+<path d="M50 124V74c0-7 5-12 12-12h25c7 0 12 5 12 12v50H50Zm10-10h29V74H60v40Z" fill="#fff"/>
+<path d="M99 124V55c0-7 5-12 12-12h19c7 0 12 5 12 12v69H99Zm10-10h23V55h-23v59Z" fill="#F2A93B"/>
+<circle cx="69" cy="91" r="8" fill="#38A79C"/>
+<path d="M47 139h100" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
+</svg>
