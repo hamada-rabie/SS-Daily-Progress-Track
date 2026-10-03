@@ -5461,8 +5461,9 @@ setPersistence(auth, browserLocalPersistence)
       console.log("✅ User authenticated:", user.email);
       document.body.classList.remove("auth-pending");
 
-      if(localStorage.getItem('ss_cloud_dirty') === '1' && navigator.onLine){
-        await syncPendingCloudChanges();
+      if(localStorage.getItem('ss_cloud_dirty') === '1'){
+        if(navigator.onLine) await syncPendingCloudChanges();
+        else setCloudStatus('offline');
       }else{
         await loadCloudData();
       }
