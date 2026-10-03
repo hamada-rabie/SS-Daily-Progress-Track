@@ -889,6 +889,37 @@ body.lang-bilingual #app-topbar .header-right-identity .header-dept-name .ar{
   display:block !important;
 }
 </style>
+<style id="final-header-cosmetic-stability">
+/* Final cosmetic alignment: department label and teacher photo sit under the school logo. */
+#app-topbar .header-right-identity .header-dept-name{
+  transform:translate(8px,-3px) !important;
+}
+#app-topbar .header-right-identity #header-teacher-photo{
+  transform:translateX(8px) !important;
+}
+
+/* Keep the live clock from changing header geometry as its text updates every second. */
+#app-topbar .header-clock-row{
+  display:flex !important;
+  align-items:center !important;
+  height:14px !important;
+  min-height:14px !important;
+  max-height:14px !important;
+  line-height:14px !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+}
+#app-topbar #top-date-span{
+  display:inline-block !important;
+  width:225px !important;
+  min-width:225px !important;
+  max-width:225px !important;
+  height:14px !important;
+  line-height:14px !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+}
+</style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
