@@ -592,6 +592,106 @@ body.lang-ar #tab-daily thead th:nth-child(5) .bi-label .ar{color:var(--sky) !im
 /* Keep the frozen header below the app topbar and visually identical. */
 .frozen-table-header{z-index:28 !important;}
 </style>
+<style id="definitive-ui-fix-2026-10-03">
+/* Definitive header/sidebar/table/refresh fix. */
+
+/* The app header remains the common app chrome, but its title is the CURRENT tab.
+   Align the title vertically with the teacher photo (bottom of identity block). */
+#app-topbar .header-right-identity{align-items:stretch !important;}
+#app-topbar .header-right-identity > div:last-child{
+  align-self:stretch !important;
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+  display:flex !important;
+  align-items:flex-end !important;
+  justify-content:flex-start !important;
+}
+#app-topbar .header-right-identity > div:last-child .bi-label{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:flex-end !important;
+  line-height:1.02 !important;
+  margin-bottom:2px !important;
+  white-space:nowrap !important;
+}
+body.lang-ar #app-topbar .header-right-identity > div:last-child{
+  justify-content:flex-end !important;
+}
+body.lang-ar #app-topbar .header-right-identity > div:last-child .bi-label{
+  align-items:flex-end !important;
+  text-align:right !important;
+}
+body.lang-bilingual #app-topbar .header-right-identity > div:last-child .bi-label{
+  align-items:flex-start !important;
+}
+body.lang-bilingual #current-page-title-en,
+body.lang-bilingual #current-page-title-ar{
+  display:block !important;
+  width:auto !important;
+}
+
+/* Bilingual department name: English on top, Arabic COMPLETELY underneath. */
+#app-topbar .header-dept-name{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-end !important;
+  gap:1px !important;
+  line-height:1.02 !important;
+}
+#app-topbar .header-dept-name .en,
+#app-topbar .header-dept-name .ar{
+  display:block !important;
+  width:100% !important;
+  white-space:nowrap !important;
+  text-align:right !important;
+}
+
+/* Sidebar: visibly tinted in every language mode. */
+aside,
+aside nav{
+  background:#EAF7F5 !important;
+}
+aside > div:first-child{
+  background:#DDF3EF !important;
+}
+aside .nav-link:not(.active){
+  background:transparent !important;
+  color:#526661 !important;
+}
+aside .nav-link.active{
+  background:linear-gradient(90deg,var(--teal),var(--teal-dark)) !important;
+  color:#fff !important;
+}
+
+/* Arabic frozen headers: the frozen clone lives under <body>, not inside #tab-*.
+   Therefore color BOTH the real header and its fixed clone. */
+body.lang-ar #tab-students thead th:nth-child(1) .ar,
+body.lang-ar .frozen-table-header th:nth-child(1) .ar{color:var(--teal-dark) !important;}
+body.lang-ar #tab-students thead th:nth-child(2) .ar,
+body.lang-ar .frozen-table-header th:nth-child(2) .ar{color:#8B6BC7 !important;}
+body.lang-ar #tab-students thead th:nth-child(3) .ar,
+body.lang-ar .frozen-table-header th:nth-child(3) .ar{color:#4C8FD1 !important;}
+body.lang-ar #tab-students thead th:nth-child(4) .ar,
+body.lang-ar .frozen-table-header th:nth-child(4) .ar{color:#B5850C !important;}
+body.lang-ar #tab-students thead th:nth-child(5) .ar,
+body.lang-ar .frozen-table-header th:nth-child(5) .ar{color:var(--coral) !important;}
+body.lang-ar #tab-students thead th:nth-child(6) .ar,
+body.lang-ar .frozen-table-header th:nth-child(6) .ar{color:#1BA648 !important;}
+body.lang-ar #tab-students thead th:nth-child(7) .ar,
+body.lang-ar .frozen-table-header th:nth-child(7) .ar{color:#B5850C !important;}
+
+body.lang-ar #tab-daily thead th:nth-child(1) .ar,
+body.lang-ar .frozen-table-header th:nth-child(1) .ar{color:var(--teal-dark) !important;}
+body.lang-ar #tab-daily thead th:nth-child(2) .ar,
+body.lang-ar .frozen-table-header th:nth-child(2) .ar{color:#5C6BC0 !important;}
+body.lang-ar #tab-daily thead th:nth-child(3) .ar,
+body.lang-ar .frozen-table-header th:nth-child(3) .ar{color:#8B6BC7 !important;}
+body.lang-ar #tab-daily thead th:nth-child(4) .ar,
+body.lang-ar .frozen-table-header th:nth-child(4) .ar{color:#B5850C !important;}
+body.lang-ar #tab-daily thead th:nth-child(5) .ar,
+body.lang-ar .frozen-table-header th:nth-child(5) .ar{color:#4C8FD1 !important;}
+</style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
@@ -1645,7 +1745,10 @@ function switchTab(name){
     if(enTitle) enTitle.textContent = TAB_TITLES[name][0];
     if(arTitle) arTitle.textContent = TAB_TITLES[name][1];
   }
-  try{ sessionStorage.setItem('ss_active_tab', name); }catch(e){}
+  try{
+    sessionStorage.setItem('ss_active_tab', name);
+    history.replaceState(null, '', '#'+name);
+  }catch(e){}
   syncLanguageVisibility();
   refreshAllViews();
 }
@@ -4145,6 +4248,7 @@ document.addEventListener('input', function(e){
 document.addEventListener('click', function(e){
   const t = e.target.closest('[data-action]');
   if(!t) return;
+  if(t.dataset.action === 'switch-tab') e.preventDefault();
   const action = t.dataset.action;
   const id = t.dataset.id ? Number(t.dataset.id) : null;
   switch(action){
@@ -4333,13 +4437,16 @@ window.addEventListener('DOMContentLoaded', ()=>{
   refreshAllViews();
   // Restore the exact page the teacher was viewing after a browser refresh.
   try{
-    const savedTab = sessionStorage.getItem('ss_active_tab');
+    const hashTab = (location.hash || '').replace(/^#/, '');
+    const savedTab = hashTab || sessionStorage.getItem('ss_active_tab');
     if(savedTab && document.getElementById('tab-'+savedTab)){
       switchTab(savedTab);
     }else{
-      try{ sessionStorage.setItem('ss_active_tab','dashboard'); }catch(e){}
+      switchTab('dashboard');
     }
-  }catch(e){}
+  }catch(e){
+    try{ switchTab('dashboard'); }catch(_e){}
+  }
 });
 </script>
   
