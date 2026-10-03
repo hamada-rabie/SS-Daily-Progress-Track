@@ -692,6 +692,75 @@ body.lang-ar .frozen-table-header th:nth-child(4) .ar{color:#B5850C !important;}
 body.lang-ar #tab-daily thead th:nth-child(5) .ar,
 body.lang-ar .frozen-table-header th:nth-child(5) .ar{color:#4C8FD1 !important;}
 </style>
+<style id="final-header-behavior-2026-10-03">
+/* FINAL header geometry: title and teacher photo share the same baseline. */
+#app-topbar .header-right-identity{
+  position:relative !important;
+  min-height:70px !important;
+  display:grid !important;
+  grid-template-columns:minmax(125px,1fr) 150px !important;
+  align-items:end !important;
+}
+#app-topbar .header-right-identity > div:first-child{
+  grid-column:2 !important;
+  grid-row:1 !important;
+  align-self:end !important;
+}
+#app-topbar .header-right-identity > div:last-child{
+  grid-column:1 !important;
+  grid-row:1 !important;
+  align-self:end !important;
+  height:auto !important;
+  min-height:36px !important;
+  padding:0 0 3px 0 !important;
+  margin:0 !important;
+  display:flex !important;
+  align-items:flex-end !important;
+  justify-content:flex-start !important;
+}
+#app-topbar .header-right-identity > div:last-child .bi-label{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:flex-end !important;
+  gap:1px !important;
+  line-height:1.05 !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+}
+body.lang-ar #app-topbar .header-right-identity > div:last-child{
+  justify-content:flex-end !important;
+}
+body.lang-ar #app-topbar .header-right-identity > div:last-child .bi-label{
+  align-items:flex-end !important;
+  text-align:right !important;
+}
+body.lang-bilingual #app-topbar .header-right-identity > div:last-child .en,
+body.lang-bilingual #app-topbar .header-right-identity > div:last-child .ar{
+  display:block !important;
+}
+body.lang-bilingual #app-topbar .header-right-identity > div:last-child .bi-label{
+  flex-direction:column !important;
+}
+
+/* The department identity is always vertically stacked in bilingual mode. */
+#app-topbar .header-dept-name{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-end !important;
+  gap:1px !important;
+}
+#app-topbar .header-dept-name .en,
+#app-topbar .header-dept-name .ar{
+  display:block !important;
+  width:100% !important;
+  white-space:nowrap !important;
+}
+
+/* Keep the Arabic frozen header colors on the actual cloned overlay. */
+body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
+</style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
@@ -4377,8 +4446,21 @@ document.addEventListener('input', function(e){
 });
 
 /* ---------- refresh ---------- */
+function syncCurrentPageHeader(){
+  const active=document.querySelector('.tab-content.active');
+  if(!active) return;
+  const name=(active.id||'').replace(/^tab-/,'');
+  const title=TAB_TITLES[name];
+  if(!title) return;
+  const en=document.getElementById('current-page-title-en');
+  const ar=document.getElementById('current-page-title-ar');
+  if(en) en.textContent=title[0];
+  if(ar) ar.textContent=title[1];
+}
+
 function refreshAllViews(){
   renderDashboard();
+  syncCurrentPageHeader();
   normalizeBilingualText(document.body);
   renderStudentsTable();
   renderDailyTable();
