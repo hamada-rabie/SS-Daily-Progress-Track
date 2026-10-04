@@ -4129,7 +4129,7 @@ function exportReportDataToExcel(){
   const classMap=Object.fromEntries(classesData.map(c=>[c.id,shortClass(c)]));
   const F=reportFieldSelection;
   const skillLabel={reading:'Reading / القراءة',writing:'Writing / الكتابة',listening:'Listening / الاستماع',speaking:'Speaking / المحادثة'};
-  const getSkill=(s,date,key)=>{ const h=Array.isArray(s.skillHistory)?s.skillHistory.find(x=>x.date===date):null; return h && typeof h[key]==='number' ? h[key] : ''; };
+  const getSkill=(s,date,key)=>{ const h=Array.isArray(s.skillHistory)?s.skillHistory.find(x=>x.date===date):null; return h && skillLevelScore(h[key])!==null ? h[key] : ''; };
   const addCommon=(row,s,date)=>{
     row['Date / التاريخ']=date;
     row['Student Name / اسم الطالب']=s.name;
@@ -4140,8 +4140,8 @@ function exportReportDataToExcel(){
     if(F.participation) row['Participation / المشاركة']=rec&&rec.participationLevel ? participationLabel(rec.participationLevel).en : '';
     if(F.behaviour) row['Behaviour / السلوك']=rec&&rec.behaviourLevel ? behaviourLabel(rec.behaviourLevel).en : '';
     let total=0,count=0;
-    ['reading','writing','listening','speaking'].forEach(k=>{ if(F[k]){ const v=getSkill(s,date,k); row[skillLabel[k]]=v!=='' && skillLevelScore(v)!==null ? skillLevelLabel(v).en+' / '+skillLevelLabel(v).ar : ''; if(v!=='' ){total+=Number(v);count++;} } });
-    if(F.total) row['Total Score / المجموع']=count ? total+' / '+(count*10) : '';
+    ['reading','writing','listening','speaking'].forEach(k=>{ if(F[k]){ const v=getSkill(s,date,k); row[skillLabel[k]]=v!=='' && skillLevelScore(v)!==null ? skillLevelLabel(v).en+' / '+skillLevelLabel(v).ar : ''; if(v!=='' ){const n=skillLevelScore(v);if(n!==null){total+=n;count++;}} } });
+    if(F.total) row['Total Score / المجموع']=count ? total+' / '+(count*6) : '';
     return !!rec;
   };
   const wb=XLSX.utils.book_new();
