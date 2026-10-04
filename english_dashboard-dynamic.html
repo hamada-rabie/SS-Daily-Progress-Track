@@ -2962,6 +2962,20 @@ async function notifyPerfectSkill(studentId, key, date, oldVal, newVal){
     }
   }
 }
+window.persistSmartAlert = async function persistSmartAlert(item){
+  if(!auth.currentUser || !item || !item.id) return;
+  const ref=doc(db,'users',auth.currentUser.uid,'notifications',item.id);
+  try{
+    const existing=await getDoc(ref);
+    if(existing.exists()) return;
+    await setDoc(ref,item);
+    if('Notification' in window && Notification.permission==='granted' && notifAppEnabled){
+      try{new Notification(item.titleEn || 'Smart Alert',{body:item.bodyEn || '',tag:item.id});}catch(e){}
+    }
+  }catch(err){
+    console.error('Smart alert notification error:',err);
+  }
+};
 function setSkill(studentId, key, val){
   const s = studentsData.find(x=>x.id===studentId); if(!s) return;
   const date = getSelectedSkillsDate();
