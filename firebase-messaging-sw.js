@@ -3,27 +3,28 @@
 // Do not create a second service worker: Firebase Cloud Messaging and the PWA
 // shell must share this root-scope worker.
 
-const PWA_CACHE = 'ss-dpt-pwa-v1';
+const PWA_CACHE = 'ss-dpt-pwa-v2';
 const APP_SHELL = [
   './',
   './index.html',
   './login.html',
   './english_dashboard-dynamic.html',
   './manifest.json',
-  './app-icon-192.svg',
-  './app-icon-512.svg',
+  './icon-192.svg',
+  './icon-512.svg',
+  './favicon.svg',
   './firebase-messaging-sw.js'
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(PWA_CACHE)
-      .then(cache => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
-      .catch(err => {
-        console.warn('PWA shell cache install warning:', err);
-      })
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(PWA_CACHE);
+    await Promise.all(APP_SHELL.map(async (asset) => {
+      try { await cache.add(asset); }
+      catch (err) { console.warn('PWA shell asset cache warning:', asset, err); }
+    }));
+    await self.skipWaiting();
+  })().catch(err => console.warn('PWA shell install warning:', err)));
 });
 
 self.addEventListener('activate', (event) => {
