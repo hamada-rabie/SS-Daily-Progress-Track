@@ -2830,7 +2830,7 @@ function applyDailyBulk(field,value){
     else if(field==='homework'){ if(value==='clear') delete rec.homeworkDone; else rec.homeworkDone=value==='done'; s.homeworkDone=latestDailyFieldValue(s.id,'homeworkDone',false); }
     else if(field==='attendance'){ if(value==='clear') delete rec.attendance; else rec.attendance=value; s.attendance=latestDailyFieldValue(s.id,'attendance','present'); }
   });
-  saveData(); renderDailyTable(); renderStudentsTable(); showToast('Bulk update applied / تم تطبيق الاختيار على الصف المحدد','success');
+  saveData(); renderDailyTable(); renderStudentsTable(); list.forEach(s=>evaluateStudentSmartAlerts(s.id,date)); showToast('Bulk update applied / تم تطبيق الاختيار على الصف المحدد','success');
 }
 function setParticipation(id, val){
   const s = studentsData.find(x=>x.id===id); if(!s) return;
