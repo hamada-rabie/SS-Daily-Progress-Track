@@ -5290,6 +5290,7 @@ document.addEventListener('click', function(e){
     case 'edit-profile-field': editProfileField(t.dataset.field); break;
     case 'delete-profile-field': deleteProfileField(t.dataset.field); break;
     case 'export-backup': exportBackup(); break;
+    case 'export-data-excel': exportDataToExcel(); break;
     case 'remove-logo': removeLogo(t.dataset.key); break;
     case 'set-theme': applyTheme(t.dataset.theme); saveData(); renderThemeSwatches(); showToast('Theme updated / تم تغيير اللون','success'); break;
     case 'set-theme-mode': applyThemeMode(t.dataset.mode); saveData(); showToast(t.dataset.mode==='dark'?'Dark Mode enabled / تم تفعيل الوضع الداكن':'Light Mode enabled / تم تفعيل الوضع الفاتح','success'); break;
