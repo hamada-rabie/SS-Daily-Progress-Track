@@ -1016,9 +1016,9 @@ main .card{border-radius:16px}
 .smart-insights-trigger{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);color:#fff;border-radius:14px;padding:9px 13px;font-size:11px;font-weight:800;backdrop-filter:blur(10px);box-shadow:0 7px 20px rgba(0,0,0,.12);cursor:pointer;transition:.18s ease}
 .smart-insights-trigger:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
 .smart-insights-trigger .si-badge{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:rgba(255,255,255,.92);color:var(--teal-dark);display:inline-flex;align-items:center;justify-content:center;font-size:10px}
-.smart-insights-popover{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);width:min(440px,calc(100vw - 28px));background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px rgba(15,55,51,.20);overflow:hidden;display:none;text-align:start}
+.smart-insights-popover{position:fixed;top:0;left:0;width:min(440px,calc(100vw - 28px));max-height:min(72vh,560px);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 60px rgba(15,55,51,.28);overflow:hidden;display:none;text-align:start;z-index:99999}
 .smart-insights-popover.open{display:block;animation:siIn .16s ease-out}
-@keyframes siIn{from{opacity:0;transform:translate(-50%,-5px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes siIn{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 .si-head{padding:13px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
 .si-title{font-weight:900;font-size:13px;color:var(--ink)}
 .si-summary{font-size:10px;color:#71807C}
@@ -1033,7 +1033,7 @@ main .card{border-radius:16px}
 .si-foot{padding:9px 12px;border-top:1px solid var(--line);display:flex;gap:7px;flex-wrap:wrap}
 .si-action{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}
 .si-action:hover{border-color:var(--teal-light);color:var(--teal-dark);background:color-mix(in srgb,var(--teal-light) 5%,var(--card))}
-@media(max-width:640px){.smart-insights-popover{position:fixed;top:76px;left:50%;transform:translateX(-50%);z-index:1000}.smart-insights-popover.open{animation:siMobileIn .16s ease-out}@keyframes siMobileIn{from{opacity:0;transform:translate(-50%,-5px)}to{opacity:1;transform:translate(-50%,0)}}}
+@media(max-width:640px){.smart-insights-popover{width:min(440px,calc(100vw - 20px));max-height:calc(100dvh - 92px);border-radius:16px}.smart-insights-popover.open{animation:siMobileIn .16s ease-out}@keyframes siMobileIn{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}}
 </style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
@@ -1066,7 +1066,7 @@ main .card{border-radius:16px}
         <a href="#" data-action="switch-tab" data-tab="journey" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="journey"><i class="fa-solid fa-route w-5 text-center" style="color:var(--teal);"></i><span class="bi-label"><span class="en">Progress Journey</span><span class="ar">رحلة التقدم</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="classpulse" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="classpulse"><i class="fa-solid fa-heart-pulse w-5 text-center" style="color:var(--leaf);"></i><span class="bi-label"><span class="en">Class Pulse</span><span class="ar">نبض الفصل</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="skill-explorer" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="skill-explorer"><i class="fa-solid fa-ranking-star w-5 text-center" style="color:var(--gold);"></i><span class="bi-label"><span class="en">Skill Explorer</span><span class="ar">مستكشف المهارات</span></span></a>
-        <a href="#" data-action="pr-open" data-pr-tab="parentreport" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="parentreport"><i class="fa-solid fa-user-group w-5 text-center"></i><span class="bi-label"><span class="en">Parent Report</span><span class="ar">تقرير ولي الأمر</span></span></a>
+        <a href="#" data-action="switch-tab" data-tab="parentreport" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="parentreport"><i class="fa-solid fa-user-group w-5 text-center"></i><span class="bi-label"><span class="en">Parent Report</span><span class="ar">تقرير ولي الأمر</span></span></a>
       </div>
 
       <button type="button" data-action="toggle-nav-group" data-group="achievement" aria-expanded="false" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
@@ -5599,6 +5599,8 @@ function refreshAllViews(){
   if(document.getElementById('s360-class-select')) renderS360Selectors();
   if(document.getElementById('cp-class-select')) renderClassPulseSelector();
   if(document.getElementById('skill-explorer-skill')) renderSkillExplorer();
+  if(document.getElementById('pr-class')){ renderClassOptions('pr-class'); renderStudentOptions(); }
+  if(document.getElementById('smart-insights-popover') && document.getElementById('smart-insights-popover').classList.contains('open')){ document.getElementById('smart-insights-popover').classList.remove('open'); }
 }
 
 function updateDateFormatUI(){
@@ -5759,7 +5761,7 @@ try{
     out.innerHTML='<div class="pr-report-paper"><header class="pr-report-header"><div>'+(settings.schoolLogo?'<img class="pr-logo" src="'+esc(settings.schoolLogo)+'" alt="">':'')+'</div><div class="pr-report-title"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+school+'</div><div style="font-size:11px;font-weight:800;margin-top:4px;">'+bi('English Language Department','قسم اللغة الإنجليزية')+'</div><div style="font-size:20px;font-weight:900;margin-top:8px;">'+bi('Parent Meeting Report','تقرير اجتماع ولي الأمر')+'</div><div style="font-size:9px;color:var(--teal-dark);margin-top:4px;">'+esc(term.en)+' / '+esc(term.ar)+' · '+esc(issue)+'</div></div><div style="display:flex;justify-content:flex-end;">'+(settings.ministryLogo?'<img class="pr-logo" src="'+esc(settings.ministryLogo)+'" alt="">':'')+'</div></header><section class="pr-section"><div style="font-size:10px;font-weight:800;color:var(--teal-dark);">'+bi('Student Information','بيانات الطالب')+'</div><div style="font-size:18px;font-weight:900;margin-top:5px;">'+esc(s.name)+'</div><div style="margin-top:4px;">'+bi('Class: ','الصف: ')+esc(shortClass(cls))+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Language Skills','مهارات اللغة')+'</div><div class="pr-skill-grid" style="margin-top:10px;">'+skillRows+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Commitment','الالتزام')+'</div><div class="pr-stat-grid" style="margin-top:10px;">'+stat(bi('Attendance','الحضور'),com?com.attendance:null)+stat(bi('Homework','الواجبات'),com?com.homework:null)+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Participation & Behaviour','المشاركة والسلوك')+'</div><div style="margin-top:8px;">'+bi('Latest recorded participation: ','آخر مشاركة مسجلة: ')+(lastLabel(s,'participationLevel',v=>participationLabel(v).en)||bi('No data','لا توجد بيانات كافية'))+'</div><div style="margin-top:5px;">'+bi('Latest recorded behaviour: ','آخر سلوك مسجل: ')+(lastLabel(s,'behaviourLevel',v=>behaviourLabel(v).en)||bi('No data','لا توجد بيانات كافية'))+'</div></section><section class="pr-section"><div class="pr-stat-grid"><div><div style="font-weight:900;color:var(--teal-dark);">'+bi('Strengths','نقاط القوة')+'</div>'+strengthHtml+'</div><div><div style="font-weight:900;color:var(--teal-dark);">'+bi('Focus Areas','مجالات التركيز')+'</div>'+focusHtml+'</div></div><div style="margin-top:12px;"><div style="font-weight:900;color:var(--teal-dark);">'+bi('Key Progress','أبرز تقدم')+'</div><div style="margin-top:5px;">'+momentHtml+'</div></div></section><section class="pr-section"><div style="font-size:9px;color:var(--teal-dark);font-weight:800;">'+bi('Data confidence','موثوقية البيانات')+'</div><div style="font-size:9px;color:var(--teal-dark);margin-top:3px;">'+(reportLang()==='ar'?esc(conf.ar):reportLang()==='en'?esc(conf.en):esc(conf.en)+' / '+esc(conf.ar))+' · '+esc(conf.desc_en)+' / '+esc(conf.desc_ar)+'</div></section><div style="margin-top:12px;line-height:1.5;">'+parentClosing(s,conf)+'</div>'+teacherNote+'<div class="pr-signatures"><div class="pr-signature"><div style="font-weight:900;">'+esc(settings.teacherName||'')+'</div><div style="font-size:10px;">'+bi('Teacher','المعلم')+'</div></div><div class="pr-signature"><div style="font-weight:900;">'+esc(settings.coordinatorName||'')+'</div><div style="font-size:10px;">'+bi('Coordinator','المنسق')+'</div></div></div></div>';
     if(typeof syncLanguageVisibility==='function')syncLanguageVisibility();
   }
-  function openParent(){switchTab('parentreport');renderClassOptions('pr-class');renderStudentOptions();}
+  function openParent(){switchTab('parentreport');renderClassOptions('pr-class');renderStudentOptions();renderParentReport();}
   document.addEventListener('click',e=>{const t=e.target.closest('[data-action="pr-open"]');if(!t)return;e.preventDefault();openParent();});
   document.addEventListener('change',e=>{const t=e.target;if(!t.id)return;if(t.id==='pr-class'){renderStudentOptions();}else if(t.id==='pr-student'||t.id==='pr-language'||t.id==='pr-note'){renderParentReport();}});
   document.addEventListener('click',e=>{const t=e.target.closest('[data-action="pr-preview"]');if(t)renderParentReport();if(e.target.closest('[data-action="pr-print"]'))window.print();});
@@ -5898,11 +5900,41 @@ try{
     hero.innerHTML='<div class="smart-insights-wrap"><button type="button" class="smart-insights-trigger" data-action="toggle-smart-insights"><i class="fa-solid fa-wand-magic-sparkles"></i><span class="en">Smart Insights</span><span class="ar">رؤى ذكية</span><span class="si-badge">'+items.length+'</span></button><div id="smart-insights-popover" class="smart-insights-popover" role="dialog" aria-label="Smart Insights"><div class="si-head"><div><div class="si-title"><span class="en">Smart Insight Center</span><span class="ar">مركز الرؤى الذكية</span></div><div class="si-summary"><span class="en">'+attention+' need attention · '+positive+' show progress</span><span class="ar">'+attention+' تحتاج متابعة · '+positive+' تشير إلى تحسن</span></div></div><button type="button" class="si-action" data-action="close-smart-insights" aria-label="Close">×</button></div><div class="si-list">'+rows+'</div><div class="si-foot"><button type="button" class="si-action" data-action="switch-tab" data-tab="students"><i class="fa-solid fa-users"></i> <span class="en">View Students</span><span class="ar">عرض الطلاب</span></button><button type="button" class="si-action" data-action="switch-tab" data-tab="skill-explorer"><i class="fa-solid fa-ranking-star"></i> <span class="en">Skill Explorer</span><span class="ar">مستكشف المهارات</span></button><button type="button" class="si-action" data-action="switch-tab" data-tab="daily"><i class="fa-solid fa-calendar-check"></i> <span class="en">Today</span><span class="ar">اليوم</span></button></div></div></div>';
     if(typeof syncLanguageVisibility==='function')syncLanguageVisibility();
   };
+  function positionSmartInsights(){
+    const p=document.getElementById('smart-insights-popover');
+    const trigger=document.querySelector('.smart-insights-trigger');
+    if(!p||!trigger)return;
+    const r=trigger.getBoundingClientRect();
+    const w=Math.min(440,Math.max(280,window.innerWidth-28));
+    p.style.width=w+'px';
+    let left=r.left+r.width/2-w/2;
+    left=Math.max(14,Math.min(left,window.innerWidth-w-14));
+    const mobile=window.innerWidth<=640;
+    let top=mobile?Math.max(62,r.bottom+10):r.bottom+12;
+    const h=p.getBoundingClientRect().height||360;
+    if(top+h>window.innerHeight-14) top=Math.max(14,r.top-h-12);
+    if(top<14)top=14;
+    p.style.left=left+'px';
+    p.style.top=top+'px';
+  }
+  function portalSmartInsights(){
+    const p=document.getElementById('smart-insights-popover');
+    if(p && p.parentElement!==document.body) document.body.appendChild(p);
+  }
   document.addEventListener('click',function(e){
     const t=e.target.closest('[data-action]');
     if(!t)return;
     if(t.dataset.action==='toggle-smart-insights'){
-      const p=document.getElementById('smart-insights-popover');if(p)p.classList.toggle('open');e.stopPropagation();return;
+      const p=document.getElementById('smart-insights-popover');
+      if(!p)return;
+      const opening=!p.classList.contains('open');
+      if(opening){
+        portalSmartInsights();
+        p.classList.add('open');
+        requestAnimationFrame(positionSmartInsights);
+      }else p.classList.remove('open');
+      e.stopPropagation();
+      return;
     }
     if(t.dataset.action==='close-smart-insights'){
       const p=document.getElementById('smart-insights-popover');if(p)p.classList.remove('open');return;
@@ -5910,6 +5942,8 @@ try{
     const p=document.getElementById('smart-insights-popover');
     if(p && p.classList.contains('open') && !e.target.closest('.smart-insights-popover') && !e.target.closest('.smart-insights-trigger'))p.classList.remove('open');
   },true);
+  window.addEventListener('resize',()=>{const p=document.getElementById('smart-insights-popover');if(p?.classList.contains('open'))positionSmartInsights();});
+  window.addEventListener('scroll',()=>{const p=document.getElementById('smart-insights-popover');if(p?.classList.contains('open'))positionSmartInsights();},true);
 }catch(err){console.error('Smart Insights feature failed safely:',err);}
 })();
 </script>
