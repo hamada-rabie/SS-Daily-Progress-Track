@@ -6351,5 +6351,29 @@ try{
 }catch(err){console.error('Premium header redesign failed safely:',err);}
 })();
 </script>
+<script id="premium-header-rollback-fix-2026-10-04">
+(function(){
+  window.restorePremiumHeaderLegacy=function(){
+    try{
+      var h=document.getElementById('app-topbar');
+      var s=document.getElementById('premium-header-shell');
+      var legacyEn=document.getElementById('current-page-title-en');
+      var legacyAr=document.getElementById('current-page-title-ar');
+      var originalRight=h ? h.querySelector('.header-right-identity') : null;
+      var titleSlot=s ? s.querySelector('.ph-page-title') : null;
+      if(titleSlot&&originalRight){
+        var originalTitleHost=originalRight.querySelector(':scope > div:last-child');
+        if(originalTitleHost){
+          if(legacyEn) originalTitleHost.appendChild(legacyEn);
+          if(legacyAr) originalTitleHost.appendChild(legacyAr);
+        }
+      }
+      if(s)s.remove();
+      if(h)h.classList.remove('premium-header-v2');
+      return true;
+    }catch(e){console.error('Premium header legacy restore failed:',e);return false;}
+  };
+})();
+</script>
 </body>
 </html>
