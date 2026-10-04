@@ -5687,13 +5687,13 @@ window.createTriggeredNotification = async function createTriggeredNotification(
     if(existing.exists()) return false;
     await setDoc(ref, item, {merge:false});
     // If this is the device that performed the action, show it immediately.
-    if(notifAppEnabled && Notification.permission === 'granted' && document.visibilityState === 'visible'){
+    if((localStorage.getItem('ss_notif_app_enabled') === '1') && Notification.permission === 'granted' && document.visibilityState === 'visible'){
       try{
         const reg = await navigator.serviceWorker.ready;
         await reg.showNotification(item.titleEn, {
           body:item.bodyEn,
-          icon:'icon-192.svg',
-          badge:'icon-192.svg',
+          icon:'app-icon-192.svg',
+          badge:'app-icon-192.svg',
           tag:id,
           data:item.data || {}
         });
@@ -5725,15 +5725,15 @@ function startNotificationsListener(uid){
     });
     // After the initial snapshot, any newly-created notification arriving from
     // another device is surfaced locally on this device when notifications are ON.
-    if(notifListenerReady && notifAppEnabled && Notification.permission === 'granted' && document.visibilityState !== 'hidden'){
+    if(notifListenerReady && (localStorage.getItem('ss_notif_app_enabled') === '1') && Notification.permission === 'granted' && document.visibilityState !== 'hidden'){
       items.filter(n=>!notifKnownIds.has(n.id)).forEach(async n=>{
         notifKnownIds.add(n.id);
         try{
           const reg = await navigator.serviceWorker.ready;
           await reg.showNotification(n.titleEn || 'SS\\' Daily Progress Track', {
             body:n.bodyEn || '',
-            icon:'icon-192.svg',
-            badge:'icon-192.svg',
+            icon:'app-icon-192.svg',
+            badge:'app-icon-192.svg',
             tag:n.id,
             data:n.data || {}
           });
