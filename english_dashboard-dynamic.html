@@ -2994,27 +2994,27 @@ window.persistSmartAlert = async function persistSmartAlert(item){
     console.error('Smart alert notification error:',err);
   }
 };
-function setSkill(studentId, key, val){
-  const s = studentsData.find(x=>x.id===studentId); if(!s) return;
-  const date = getSelectedSkillsDate();
-  if(!Array.isArray(s.skillHistory)) s.skillHistory = [];
-  let entry = s.skillHistory.find(h=>h.date===date);
-  const oldVal = entry && typeof entry[key]==='number' ? Number(entry[key]) : null;
-  if(val===''){
-    if(entry) delete entry[key];
-  } else {
-    if(!entry){ entry = {date}; s.skillHistory.push(entry); }
-    entry[key] = Number(val);
-  }
-  // "Current" skill level (used by Honor Score, Students table, Quick Profile, Student 360, WhatsApp)
-  // always reflects the most recently DATED assessment for this skill — not necessarily today's edit.
-  const dated = s.skillHistory.filter(h=>typeof h[key]==='number').sort((a,b)=>a.date<b.date?-1:1);
-  s.skills[key] = dated.length ? dated[dated.length-1][key] : 0;
-  saveData(); renderSkillsTable(); renderStudentsTable();
-  if(val!==''){ const newVal=Number(val); notifyPerfectSkill(studentId,key,date,oldVal,newVal); if(oldVal!==null && newVal-oldVal>=2) queueSmartAlert('student-improvement','student_'+studentId+'_improve_'+key+'_'+date,date,'Student improvement detected','تم رصد تحسن في الطالب',s.name+' improved in '+QP_SKILL_LABELS[key].en+' by '+(newVal-oldVal).toFixed(1)+' points.',s.name+' تحسن في '+QP_SKILL_LABELS[key].ar+' بمقدار '+(newVal-oldVal).toFixed(1)+' نقطة.',{studentId,key,date,delta:newVal-oldVal}); }
+function setSkill(studentId,key,val){
+  const s=studentsData.find(x=>x.id===studentId);if(!s)return;
+  const date=getSelectedSkillsDate();migrateSkillData(s);let entry=s.skillHistory.find(h=>h.date===date);
+  const oldVal=entry?skillLevelScore(entry[key]):null;
+  if(val===''){if(entry)delete entry[key];}else{const normalized=normalizeSkillLevel(val);if(!normalized)return;if(!entry){entry={date};s.skillHistory.push(entry);}entry[key]=normalized;}
+  const dated=s.skillHistory.filter(h=>skillLevelScore(h[key])!==null).sort((a,b)=>a.date<b.date?-1:1);s.skills[key]=dated.length?dated[dated.length-1][key]:null;
+  saveData();renderSkillsTable();renderStudentsTable();
+  if(val!==''){const newVal=skillLevelScore(val);notifyPerfectSkill(studentId,key,date,oldVal,newVal);if(oldVal!==null&&newVal-oldVal>=1)queueSmartAlert('student-improvement','student_'+studentId+'_improve_'+key+'_'+date,date,'Student improvement detected','تم رصد تحسن في الطالب',s.name+' improved in '+QP_SKILL_LABELS[key].en+'.',s.name+' تحسن في '+QP_SKILL_LABELS[key].ar+'.',{studentId,key,date,delta:newVal-oldVal});}
   evaluateStudentSmartAlerts(studentId,date);
 }
-
+function applySkillBulk(){
+  const classFilter=document.getElementById('skills-class-filter')?.value||'all';
+  const skill=document.getElementById('skills-bulk-skill')?.value||'reading';
+  const level=document.getElementById('skills-bulk-level')?.value||'average';
+  const date=getSelectedSkillsDate();
+  const list=classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter));
+  if(!list.length){showToast('No students in the selected class / لا يوجد طلاب في الصف المحدد','error');return;}
+  list.forEach(s=>{migrateSkillData(s);let entry=s.skillHistory.find(h=>h.date===date);if(!entry){entry={date};s.skillHistory.push(entry);}entry[skill]=level;s.skills[skill]=level;});
+  saveData();renderSkillsTable();renderStudentsTable();list.forEach(s=>evaluateStudentSmartAlerts(s.id,date));
+  showToast('Skill rating applied to the selected class / تم تطبيق تقييم المهارة على الصف المحدد','success');
+}
 /* ---------- honor board / English Excellence Board ---------- */
 /* Badges are derived ONLY from existing data/functions — no new scoring, no fabrication. */
 function getStudentBadges(s, rank){
