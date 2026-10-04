@@ -271,7 +271,7 @@ body.lang-ar .nav-link .bi-label .ar,body.lang-ar .nav-group-toggle .bi-label .a
 .daily-choice-btn.choice-warn{background:#FFF8F5;border-color:#F2D2C6;}.daily-choice-btn.choice-mid{background:#FFFBF1;border-color:#EADBAF;}.daily-choice-btn.choice-ok{background:#F4FBF6;border-color:#CBE7D1;}
 .daily-choice-menu{position:fixed;z-index:90;min-width:190px;max-width:min(310px,calc(100vw - 24px));padding:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 38px rgba(0,0,0,.18);direction:ltr;}
 .daily-choice-menu button{width:100%;display:flex;align-items:center;gap:8px;padding:8px 9px;border:0;background:transparent;border-radius:9px;cursor:pointer;text-align:left;color:var(--ink);font-size:11px;}.daily-choice-menu button:hover{background:#F1F7F5;}.daily-choice-menu .choice-dot{width:8px;height:8px;border-radius:999px;flex:0 0 auto;}.daily-choice-menu .choice-clear{border-top:1px solid var(--line);margin-top:4px;padding-top:9px;}
-.daily-bulk-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}.daily-bulk-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:6px 9px;font-size:10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}.daily-bulk-btn:hover{border-color:var(--teal-light);background:#F1F7F5;}
+.pj-timeline-track{position:relative;display:flex;flex-direction:column;gap:12px;padding:4px 4px 4px 12px;}.pj-timeline-track::before{content:'';position:absolute;left:23px;top:10px;bottom:10px;width:3px;border-radius:99px;background:linear-gradient(180deg,var(--gold),var(--violet),var(--teal));opacity:.28;}.pj-timeline-item{position:relative;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;opacity:0;transform:translateY(22px) scale(.97);filter:blur(2px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1),filter .55s ease;}.pj-timeline-item.is-visible{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}.pj-timeline-node{position:relative;z-index:2;width:28px;height:28px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,var(--violet),var(--teal));box-shadow:0 0 0 5px color-mix(in srgb,var(--teal-light) 12%,transparent),0 5px 12px rgba(0,0,0,.12);font-size:10px;}.pj-timeline-item:first-child .pj-timeline-node{background:var(--gold);}.pj-timeline-item:last-child .pj-timeline-node{background:var(--teal);}.pj-timeline-content{min-width:0;border-left:3px solid var(--line);}.pj-timeline-item.is-visible .pj-timeline-content{border-left-color:var(--teal-light);}.daily-bulk-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}.daily-bulk-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:6px 9px;font-size:10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}.daily-bulk-btn:hover{border-color:var(--teal-light);background:#F1F7F5;}
 @media(max-width:640px){.daily-choice-btn{min-width:104px;font-size:10px}.daily-choice-menu{min-width:175px}.daily-bulk-btn{font-size:9px;padding:6px 8px;}}
 .chk{width:20px;height:20px;border:2px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;color:#8A9A96;}
 .chk.unset{border-style:dashed;background:#F7FAF9;}
@@ -2247,6 +2247,8 @@ const TAB_TITLES = {
 function switchTab(name){
   const target = document.getElementById('tab-'+name);
   if(!target) return;
+  const mainScroller=document.querySelector('main');
+  if(mainScroller) mainScroller.scrollTo({top:0,behavior:'auto'});
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   target.classList.add('active');
   document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
@@ -2650,8 +2652,8 @@ function getTrackedDatesForStudent(studentId){return Object.keys(dailyArchives).
 function getStudentRepeatedAbsence(studentId){return getTrackedDatesForStudent(studentId).slice(-10).filter(d=>dailyArchives[d][studentId]?.attendance==='absent').length;}
 function getStudentHomeworkMisses(studentId){return getTrackedDatesForStudent(studentId).slice(-3).filter(d=>dailyArchives[d][studentId]?.homeworkDone===false).length;}
 function getSkillImprovement(s){const out=[],h=Array.isArray(s.skillHistory)?s.skillHistory:[];h.forEach(e=>Object.keys(QP_SKILL_LABELS).forEach(k=>{if(typeof e[k]!=='number'||!e.date)return;const p=h.filter(x=>x.date<e.date&&typeof x[k]==='number').sort((a,b)=>a.date<b.date?-1:1).pop();if(p&&e[k]-p[k]>=2)out.push({key:k,date:e.date,delta:e[k]-p[k]});}));return out.sort((a,b)=>a.date<b.date?-1:1);}
-function getStudentSmartAlerts(s){const a=[];Object.keys(QP_SKILL_LABELS).forEach(k=>{const v=getCurrentSkillValue(s,k);if(v!==null&&v<=3)a.push({type:'attention',icon:'fa-triangle-exclamation',en:'Needs attention: '+QP_SKILL_LABELS[k].en+' is '+v+'/10.',ar:'يحتاج متابعة: '+QP_SKILL_LABELS[k].ar+' بدرجة '+v+'/10.'});});if(s.behaviourLevel==='needs_improvement')a.push({type:'attention',icon:'fa-user-shield',en:'Behaviour needs attention.',ar:'السلوك يحتاج إلى متابعة.'});if(s.participationLevel==='sleepy'||s.participationLevel==='passive')a.push({type:'attention',icon:'fa-hand',en:'Participation needs attention.',ar:'المشاركة تحتاج إلى متابعة.'});const abs=getStudentRepeatedAbsence(s.id);if(abs>=3)a.push({type:'attention',icon:'fa-calendar-xmark',en:abs+' absences in the last 10 tracked days.',ar:'لديه '+abs+' حالات غياب خلال آخر 10 أيام متابعة.'});const hw=getStudentHomeworkMisses(s.id);if(hw>=2)a.push({type:'attention',icon:'fa-book-open',en:'Homework was missed '+hw+' times in the last 3 tracked days.',ar:'لم يُنجز الواجب '+hw+' مرات خلال آخر 3 أيام متابعة.'});const im=getSkillImprovement(s).filter(x=>x.date===todayStr()).pop();if(im)a.push({type:'positive',icon:'fa-arrow-trend-up',en:'Improvement detected: '+QP_SKILL_LABELS[im.key].en+' +'+im.delta+'.',ar:'تم رصد تحسن: '+QP_SKILL_LABELS[im.key].ar+' +'+im.delta+'.'});return a.slice(0,4);}
-function getClassSmartAlerts(classId){const a=[],students=studentsData.filter(s=>s.classId===classId);Object.keys(QP_SKILL_LABELS).forEach(k=>{const dates={};students.forEach(s=>(Array.isArray(s.skillHistory)?s.skillHistory:[]).forEach(h=>{if(h.date&&typeof h[k]==='number'){if(!dates[h.date])dates[h.date]=[];dates[h.date].push(h[k]);}}));const ds=Object.keys(dates).sort();if(ds.length>=2){const p=dates[ds[ds.length-2]].reduce((x,y)=>x+y,0)/dates[ds[ds.length-2]].length,n=dates[ds[ds.length-1]].reduce((x,y)=>x+y,0)/dates[ds[ds.length-1]].length;if(n-p>=1)a.push({type:'positive',icon:'fa-arrow-trend-up',en:QP_SKILL_LABELS[k].en+' average improved by '+(n-p).toFixed(1)+' points.',ar:'تحسن متوسط '+QP_SKILL_LABELS[k].ar+' بمقدار '+(n-p).toFixed(1)+' نقطة.'});}});const attention=students.filter(s=>getStudentSmartAlerts(s).some(x=>x.type==='attention')).length;if(attention>=2)a.push({type:'attention',icon:'fa-triangle-exclamation',en:attention+' students currently need attention.',ar:attention+' طلاب يحتاجون حاليًا إلى متابعة.'});return a.slice(0,2);}
+function getStudentSmartAlerts(s){const a=[];Object.keys(QP_SKILL_LABELS).forEach(k=>{const v=getCurrentSkillValue(s,k);if(v!==null&&v<=2){const lvl=skillLevelLabel(v);a.push({type:'attention',icon:'fa-triangle-exclamation',en:'Needs attention: '+QP_SKILL_LABELS[k].en+' is '+lvl.en+'.',ar:'يحتاج متابعة: '+QP_SKILL_LABELS[k].ar+' بمستوى '+lvl.ar+'.'});}});if(s.behaviourLevel==='needs_improvement')a.push({type:'attention',icon:'fa-user-shield',en:'Behaviour needs attention.',ar:'السلوك يحتاج إلى متابعة.'});if(s.participationLevel==='sleepy'||s.participationLevel==='passive')a.push({type:'attention',icon:'fa-hand',en:'Participation needs attention.',ar:'المشاركة تحتاج إلى متابعة.'});const abs=getStudentRepeatedAbsence(s.id);if(abs>=3)a.push({type:'attention',icon:'fa-calendar-xmark',en:abs+' absences in the last 10 tracked days.',ar:'لديه '+abs+' حالات غياب خلال آخر 10 أيام متابعة.'});const hw=getStudentHomeworkMisses(s.id);if(hw>=2)a.push({type:'attention',icon:'fa-book-open',en:'Homework was missed '+hw+' times in the last 3 tracked days.',ar:'لم يُنجز الواجب '+hw+' مرات خلال آخر 3 أيام متابعة.'});const im=getSkillImprovement(s).filter(x=>x.date===todayStr()).pop();if(im)a.push({type:'positive',icon:'fa-arrow-trend-up',en:'Improvement detected: '+QP_SKILL_LABELS[im.key].en+' +'+im.delta+'.',ar:'تم رصد تحسن: '+QP_SKILL_LABELS[im.key].ar+' +'+im.delta+'.'});return a.slice(0,4);}
+function getClassSmartAlerts(classId){const a=[],students=studentsData.filter(s=>s.classId===classId);Object.keys(QP_SKILL_LABELS).forEach(k=>{const dates={};students.forEach(s=>(Array.isArray(s.skillHistory)?s.skillHistory:[]).forEach(h=>{if(h.date&&skillLevelScore(h[k])!==null){if(!dates[h.date])dates[h.date]=[];dates[h.date].push(h[k]);}}));const ds=Object.keys(dates).sort();if(ds.length>=2){const p=dates[ds[ds.length-2]].reduce((x,y)=>x+y,0)/dates[ds[ds.length-2]].length,n=dates[ds[ds.length-1]].reduce((x,y)=>x+y,0)/dates[ds[ds.length-1]].length;if(n-p>=1)a.push({type:'positive',icon:'fa-arrow-trend-up',en:QP_SKILL_LABELS[k].en+' average improved by '+(n-p).toFixed(1)+' points.',ar:'تحسن متوسط '+QP_SKILL_LABELS[k].ar+' بمقدار '+(n-p).toFixed(1)+' نقطة.'});}});const attention=students.filter(s=>getStudentSmartAlerts(s).some(x=>x.type==='attention')).length;if(attention>=2)a.push({type:'attention',icon:'fa-triangle-exclamation',en:attention+' students currently need attention.',ar:attention+' طلاب يحتاجون حاليًا إلى متابعة.'});return a.slice(0,2);}
 function renderClassAlertMarkup(classId){const a=getClassSmartAlerts(classId)[0];if(!a)return '';return '<div class="mt-2 rounded-xl px-3 py-2 text-[10px] font-semibold flex items-center gap-2 '+(a.type==='positive'?'smart-alert-positive':'smart-alert-attention')+'"><i class="fa-solid '+a.icon+'"></i><span class="en">'+escapeHtml(a.en)+'</span><span class="ar">'+escapeHtml(a.ar)+'</span></div>';}
 function renderSmartAlerts(){const hero=document.getElementById('hero-smart-alerts');if(!hero)return;let attention=0,positive=0;studentsData.forEach(s=>getStudentSmartAlerts(s).forEach(a=>a.type==='attention'?attention++:positive++));classesData.forEach(c=>getClassSmartAlerts(c.id).forEach(a=>a.type==='attention'?attention++:positive++));if(!attention&&!positive){hero.innerHTML='';return;}hero.innerHTML='<div class="smart-hero-alert"><div class="flex items-center justify-center gap-2"><i class="fa-solid fa-bell"></i><span class="en font-bold">Smart Alerts</span><span class="ar font-bold">تنبيهات ذكية</span><span class="text-[9px]">'+(attention+positive)+'</span></div><div class="text-[10px] mt-1"><span class="en">'+attention+' attention alert(s) · '+positive+' progress alert(s)</span><span class="ar">'+attention+' تنبيه متابعة · '+positive+' تنبيه تحسن</span></div></div>';}
 function queueSmartAlert(type,id,date,titleEn,titleAr,bodyEn,bodyAr,data){if(typeof window.persistSmartAlert==='function')window.persistSmartAlert({id,titleEn,titleAr,bodyEn,bodyAr,createdAt:new Date().toISOString(),read:false,type,data});}
@@ -2949,7 +2951,7 @@ function renderSkillsTable(){
   }).join('');
 }
 async function notifyPerfectSkill(studentId, key, date, oldVal, newVal){
-  if(newVal!==10 || oldVal===10) return;
+  if(newVal!==6 || oldVal===6) return;
   const s=studentsData.find(x=>x.id===studentId);
   if(!s || !auth.currentUser) return;
   const label=QP_SKILL_LABELS[key] || {en:key,ar:key};
@@ -2959,17 +2961,17 @@ async function notifyPerfectSkill(studentId, key, date, oldVal, newVal){
     const existing=await getDoc(ref);
     if(existing.exists()) return;
     await setDoc(ref,{
-      titleEn:'Perfect Skill Score 🎉',
-      titleAr:'درجة كاملة في المهارة 🎉',
-      bodyEn:`${s.name} achieved 10/10 in ${label.en}.`,
-      bodyAr:`${s.name} حصل على 10/10 في مهارة ${label.ar}.`,
+      titleEn:'Excellent Skill Rating 🎉',
+      titleAr:'تقييم ممتاز في المهارة 🎉',
+      bodyEn:`${s.name} achieved an Excellent rating in ${label.en}.`,
+      bodyAr:`${s.name} حصل على تقييم ممتاز في مهارة ${label.ar}.`,
       createdAt:new Date().toISOString(),
       read:false,
       type:'skill-perfect',
       data:{studentId,key,date,score:10}
     });
     if('Notification' in window && Notification.permission==='granted'){
-      try{new Notification('Perfect Skill Score 🎉',{body:`${s.name} — ${label.en}: 10/10`,tag:notificationId});}catch(e){}
+      try{new Notification('Excellent Skill Rating 🎉',{body:`${s.name} — ${label.en}: Excellent`,tag:notificationId});}catch(e){}
     }
   }catch(err){
     console.error('Perfect skill notification error:',err);
@@ -3212,7 +3214,7 @@ function renderQuickProfileCard(){
     strengthBoxEn = strengthBoxAr = focusBoxEn = focusBoxAr = qpJoinNames(strengthKeys,'en') + ' (' + (maxVal*10) + '%)';
     strengthBoxAr = qpJoinNames(strengthKeys,'ar') + ' (' + (maxVal*10) + '%)';
     focusBoxEn = strengthBoxEn; focusBoxAr = strengthBoxAr;
-    summaryEn = `Skills are evenly balanced across all four areas (${maxVal*10}% each).`;
+    summaryEn = `Skills are evenly balanced across all four areas (${skillLevelPercentage(maxVal)}% each).`;
     summaryAr = `المهارات متوازنة تقريبًا في المجالات الأربعة (${maxVal*10}% لكل منها).`;
   } else {
     strengthBoxEn = qpJoinNames(strengthKeys,'en') + (strengthKeys.length>1?' (tied)':'');
@@ -3374,8 +3376,8 @@ function renderJourneyCard(){
   const firstSkill=skills[0]||null, lastSkill=skills[skills.length-1]||null;
   const avgSkill = obj => {
     if(!obj) return null;
-    const vals=Object.keys(QP_SKILL_LABELS).map(k=>typeof obj[k]==='number'?obj[k]:null).filter(v=>v!==null);
-    return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10) : null;
+    const vals=Object.keys(QP_SKILL_LABELS).map(k=>skillLevelScore(obj[k])!==null?obj[k]:null).filter(v=>v!==null);
+    return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length/6*100) : null;
   };
   const startAvg=avgSkill(firstSkill), currentAvg=avgSkill(lastSkill);
   const change=(startAvg!==null&&currentAvg!==null)?currentAvg-startAvg:null;
@@ -3459,43 +3461,24 @@ function renderJourneyCard(){
   document.getElementById('pj-journey-play-wrap').innerHTML='';
 }
 function playStudentJourney(id){
-  const s=studentsData.find(x=>x.id===id);
-  const wrap=document.getElementById('pj-journey-play-wrap');
-  if(!s||!wrap)return;
-  const daily=getStudentHistoricalRecords(s), skills=getStudentSkillHistory(s), events=[];
-  daily.forEach(r=>events.push({date:r.date,type:'daily',rec:r.rec}));
-  skills.forEach(h=>events.push({date:h.date,type:'skill',rec:h}));
+  const s=studentsData.find(x=>x.id===id);const wrap=document.getElementById('pj-journey-play-wrap');if(!s||!wrap)return;
+  const daily=getStudentHistoricalRecords(s),skills=getStudentSkillHistory(s),events=[];
+  daily.forEach(r=>events.push({date:r.date,type:'daily',rec:r.rec}));skills.forEach(h=>events.push({date:h.date,type:'skill',rec:h}));
   events.sort((a,b)=>a.date===b.date?(a.type==='skill'?1:-1):(a.date<b.date?-1:1));
-  if(!events.length){
-    wrap.innerHTML='<div class="card p-6 text-center text-gray-400 text-sm mt-3">Not enough historical data to play a meaningful journey.<br>لا توجد بيانات تاريخية كافية لعرض رحلة ذات معنى.</div>';
-    return;
-  }
-  const fmt=ds=>{const [yy,mm,dd]=ds.split('-');return `${dd}/${mm}/${yy}`;};
-  const grouped=[];
-  events.forEach(e=>{let g=grouped.find(x=>x.date===e.date);if(!g){g={date:e.date,items:[]};grouped.push(g);}g.items.push(e);});
-  const cards=grouped.map((g,i)=>{
-    const skill=g.items.find(e=>e.type==='skill');
-    const dailyRec=g.items.find(e=>e.type==='daily');
-    let detail='';
-    if(skill){
-      const parts=Object.keys(QP_SKILL_LABELS).filter(k=>typeof skill.rec[k]==='number').map(k=>`${QP_SKILL_LABELS[k].en}: ${Math.round(skill.rec[k]*10)}%`);
-      detail='Skill assessment · '+(parts.join(' · ')||'recorded');
-    }else if(dailyRec){
-      const bits=[];
-      if(dailyRec.rec.attendance)bits.push(attendanceLabel(dailyRec.rec.attendance).text.split(' / ')[0]);
-      if(typeof dailyRec.rec.homeworkDone==='boolean')bits.push(dailyRec.rec.homeworkDone?'Homework ✓':'Homework ✕');
-      if(dailyRec.rec.participationLevel)bits.push(participationLabel(dailyRec.rec.participationLevel).en);
-      detail='Daily tracking · '+(bits.join(' · ')||'recorded');
-    }
-    return `<div class="pj-play-card card p-3" data-play-step="${i}" style="opacity:.28;transform:scale(.98);transition:opacity .35s ease,transform .35s ease,border-color .35s ease;">
-      <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0" style="background:${i===0?'var(--gold)':(i===grouped.length-1?'var(--teal)':'var(--violet)')};"><i class="fa-solid ${i===0?'fa-flag-checkered':(i===grouped.length-1?'fa-location-dot':'fa-chart-line')}"></i></div><div class="min-w-0"><p class="text-[10px] text-gray-400 font-semibold">${fmt(g.date)}</p><p class="text-xs font-bold">${i===0?'Starting point / نقطة البداية':(i===grouped.length-1?'Current point / النقطة الحالية':'Growth point / نقطة تطور')}</p><p class="text-[10px] text-gray-500 mt-0.5">${detail}</p></div></div>
-    </div>`;
+  if(!events.length){wrap.innerHTML='<div class="card p-6 text-center text-gray-400 text-sm mt-3">Not enough historical data to play a meaningful journey.<br>لا توجد بيانات تاريخية كافية لعرض رحلة ذات معنى.</div>';return;}
+  const fmt=ds=>{const [yy,mm,dd]=ds.split('-');return dd+'/'+mm+'/'+yy;};
+  const grouped=[];events.forEach(e=>{let g=grouped.find(x=>x.date===e.date);if(!g){g={date:e.date,items:[]};grouped.push(g);}g.items.push(e);});
+  const items=grouped.map((g,i)=>{
+    const skill=g.items.find(e=>e.type==='skill'),dailyRec=g.items.find(e=>e.type==='daily');
+    const parts=skill?Object.keys(QP_SKILL_LABELS).filter(k=>skillLevelScore(skill.rec[k])!==null).map(k=>{const lvl=skillLevelLabel(skill.rec[k]);return QP_SKILL_LABELS[k].en+': '+lvl.en;}):[];
+    const bits=[];if(dailyRec){if(dailyRec.rec.attendance)bits.push(attendanceLabel(dailyRec.rec.attendance).text.split(' / ')[0]);if(typeof dailyRec.rec.homeworkDone==='boolean')bits.push(dailyRec.rec.homeworkDone?'Homework ✓':'Homework ✕');if(dailyRec.rec.participationLevel)bits.push(participationLabel(dailyRec.rec.participationLevel).en);if(dailyRec.rec.behaviourLevel)bits.push(behaviourLabel(dailyRec.rec.behaviourLevel).en);}
+    const detail=parts.length?'Skills · '+parts.join(' · '):(bits.length?'Daily · '+bits.join(' · '):'Progress recorded');
+    const first=i===0,last=i===grouped.length-1;
+    return '<div class="pj-timeline-item" data-play-step="'+i+'"><div class="pj-timeline-node"><i class="fa-solid '+(first?'fa-flag-checkered':(last?'fa-location-dot':'fa-chart-line'))+'"></i></div><div class="pj-timeline-content card p-3"><div class="flex items-center justify-between gap-3 mb-1"><p class="text-[10px] font-bold" style="color:var(--teal);">'+fmt(g.date)+'</p><span class="text-[9px] text-gray-400">'+(i+1)+' / '+grouped.length+'</span></div><p class="text-xs font-extrabold">'+(first?'Starting Point / نقطة البداية':(last?'Current Point / النقطة الحالية':'Growth Point / نقطة تطور'))+'</p><p class="text-[10px] text-gray-500 mt-1">'+escapeHtml(detail)+'</p></div></div>';
   }).join('');
-  wrap.innerHTML=`<div class="card p-4 mt-3 space-y-2"><div class="flex items-center justify-between gap-2 mb-2"><p class="text-xs font-bold">Journey Playback / عرض الرحلة</p><span class="text-[9px] text-gray-400">${grouped.length} stages / مراحل</span></div>${cards}</div>`;
-  const nodes=[...wrap.querySelectorAll('.pj-play-card')];
-  nodes.forEach((node,i)=>setTimeout(()=>{node.style.opacity='1';node.style.transform='scale(1)';node.style.borderColor=i===nodes.length-1?'var(--teal)':'var(--line)';node.scrollIntoView({behavior:'smooth',block:'nearest'});},i*420));
+  wrap.innerHTML='<div class="pj-timeline card p-4 mt-3"><div class="flex items-center justify-between gap-2 mb-4"><div><p class="text-sm font-extrabold">Journey Playback / تشغيل الرحلة</p><p class="text-[10px] text-gray-400">Watch the student\'s progress unfold over time / شاهد تطور الطالب عبر الزمن</p></div><span class="text-[9px] font-bold px-2 py-1 rounded-full" style="background:#EAF7F5;color:var(--teal-dark);">'+grouped.length+' stages / مراحل</span></div><div class="pj-timeline-track">'+items+'</div></div>';
+  const nodes=[...wrap.querySelectorAll('.pj-timeline-item')];nodes.forEach((node,i)=>setTimeout(()=>{node.classList.add('is-visible');node.scrollIntoView({behavior:'smooth',block:'nearest'});},i*650));
 }
-
 /* ================= PHASE 5A: Student Insights / Analytics Foundation ================= */
 /* Deterministic, local, no fabrication. Reuses existing data only (dailyArchives, skillHistory). */
 
@@ -3526,7 +3509,7 @@ function getStudentStrengths(s){
   if(max>0){
     const top = entries.filter(([k,v])=>v===max).map(([k])=>k);
     if(top.length===1){
-      out.push({en:`${QP_SKILL_LABELS[top[0]].en} — ${max*10}%`, ar:`${QP_SKILL_LABELS[top[0]].ar} — ${max*10}٪`});
+      out.push({en:`${QP_SKILL_LABELS[top[0]].en} — ${skillLevelPercentage(max)}%`, ar:`${QP_SKILL_LABELS[top[0]].ar} — ${max*10}٪`});
     }
   }
   const recs = getStudentHistoricalRecords(s);
@@ -3543,7 +3526,7 @@ function getStudentFocusAreas(s){
   const min = entries.length ? Math.min(...entries.map(e=>e[1])) : 0;
   if(max>0 && min<max){
     const bottom = entries.filter(([k,v])=>v===min).map(([k])=>k);
-    if(bottom.length===1 && min<=5){
+    if(bottom.length===1 && min<=2){
       out.push({en:`${QP_SKILL_LABELS[bottom[0]].en} — Needs Support`, ar:`${QP_SKILL_LABELS[bottom[0]].ar} — يحتاج إلى دعم`});
     }
   }
@@ -3559,10 +3542,10 @@ function getStudentProgressMoment(s){
   if(hist.length<2) return null;
   let best = null;
   Object.keys(QP_SKILL_LABELS).forEach(k=>{
-    const pts = hist.filter(h=>typeof h[k]==='number');
+    const pts = hist.filter(h=>skillLevelScore(h[k])!==null);
     if(pts.length<2) return;
     const diff = pts[pts.length-1][k] - pts[0][k];
-    if(diff>=2 && (!best || diff>best.diff)) best = {key:k, diff, from:pts[0][k]*10, to:pts[pts.length-1][k]*10, points:pts.length};
+    if(diff>=2 && (!best || diff>best.diff)) best = {key:k, diff, from:skillLevelPercentage(pts[0][k]), to:skillLevelPercentage(pts[pts.length-1][k]), points:pts.length};
   });
   return best;
 }
@@ -3624,7 +3607,7 @@ function getClassAcademicAverages(students){
     const vals = students.map(s=>getCurrentSkillValue(s,k)).filter(v=>v!==null);
     if(vals.length){
       assessedAny = true;
-      avg[k] = Math.round(vals.reduce((sum,v)=>sum+v,0)/vals.length*10);
+      avg[k] = Math.round(vals.reduce((sum,v)=>sum+v,0)/vals.length/6*100);
     }else{
       avg[k] = null;
     }
@@ -3786,7 +3769,7 @@ function renderS360Card(){
           ${skillItem('reading')}${skillItem('writing')}${skillItem('listening')}${skillItem('speaking')}
         </div>
         <div class="text-center mt-3 border-t pt-2" style="border-color:var(--line);">
-          <span class="font-bold" style="color:var(--coral);">${totalScore(s)} / ${assessedSkillCount(s)*10}</span>
+          <span class="font-bold" style="color:var(--coral);">${totalScore(s)} / ${assessedSkillCount(s)*6}</span>
           <span class="text-[10px] text-gray-400"> · ${assessedSkillCount(s)} of 4 skills assessed / ${assessedSkillCount(s)} من 4 مهارات تم تقييمها</span>
         </div>
       </div>
@@ -4002,7 +3985,7 @@ function reportSummaryText(s, date){
   const skillLines = [];
   [['reading','Reading'],['writing','Writing'],['listening','Listening'],['speaking','Speaking']].forEach(([key,label])=>{
     if(!F[key]) return;
-    if(skillEntry && typeof skillEntry[key]==='number') skillLines.push(`${label}: ${skillEntry[key]}/10`);
+    if(skillEntry && skillLevelScore(skillEntry[key])!==null){ const lvl=skillLevelLabel(skillEntry[key]); skillLines.push(`${label}: ${lvl.en} / ${lvl.ar}`); }
   });
   if(skillLines.length){
     lines.push('');
@@ -4157,7 +4140,7 @@ function exportReportDataToExcel(){
     if(F.participation) row['Participation / المشاركة']=rec&&rec.participationLevel ? participationLabel(rec.participationLevel).en : '';
     if(F.behaviour) row['Behaviour / السلوك']=rec&&rec.behaviourLevel ? behaviourLabel(rec.behaviourLevel).en : '';
     let total=0,count=0;
-    ['reading','writing','listening','speaking'].forEach(k=>{ if(F[k]){ const v=getSkill(s,date,k); row[skillLabel[k]]=v; if(v!=='' ){total+=Number(v);count++;} } });
+    ['reading','writing','listening','speaking'].forEach(k=>{ if(F[k]){ const v=getSkill(s,date,k); row[skillLabel[k]]=v!=='' && skillLevelScore(v)!==null ? skillLevelLabel(v).en+' / '+skillLevelLabel(v).ar : ''; if(v!=='' ){total+=Number(v);count++;} } });
     if(F.total) row['Total Score / المجموع']=count ? total+' / '+(count*10) : '';
     return !!rec;
   };
@@ -5435,6 +5418,7 @@ document.addEventListener('click', function(e){
     case 'close-notif-center': closeNotifCenter(); break;
     case 'open-daily-choice': openDailyChoiceMenu(t,t.dataset.choiceField,Number(t.dataset.id)); break;
     case 'open-daily-bulk': openDailyBulkMenu(t,t.dataset.bulkField); break;
+    case 'apply-skill-bulk': applySkillBulk(); break;
     case 'open-global-search': openGlobalSearch(); break;
     case 'close-global-search': closeGlobalSearch(); break;
     case 'select-search-result': selectGlobalSearchResult(Number(t.dataset.resultIndex)); break;
@@ -5538,7 +5522,7 @@ document.addEventListener('input', function(e){
 });
 
 /* ---------- Skill Explorer ---------- */
-function skillExplorerLevel(v){ if(v>=9)return {en:'Excellent',ar:'ممتاز'}; if(v>=7)return {en:'Good',ar:'جيد'}; if(v>=5)return {en:'Developing',ar:'في طور التطور'}; return {en:'Needs Support',ar:'يحتاج دعماً'}; }
+function skillExplorerLevel(v){ return skillLevelLabel(v) || {en:'Not Assessed',ar:'لم يُقيّم'}; }
 function renderSkillExplorer(){
   const skillSel=document.getElementById('skill-explorer-skill'), classSel=document.getElementById('skill-explorer-class'), results=document.getElementById('skill-explorer-results');
   if(!skillSel||!classSel||!results)return;
