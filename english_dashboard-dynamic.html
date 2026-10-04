@@ -1144,7 +1144,7 @@ main .card{border-radius:16px}
   <div class="p-5 sm:p-6 space-y-6 flex-1" style="min-height:0; background:color-mix(in srgb, var(--teal-light) 8%, var(--card));">
 
     <!-- DASHBOARD -->
-    <section id="tab-dashboard" class="tab-content active space-y-5" style="background:color-mix(in srgb, var(--teal-light) 9%, #FFFFFF); border-radius:20px; padding:2px;">
+    <section id="tab-dashboard" class="tab-content active space-y-5" style="background:color-mix(in srgb, var(--teal-light) 9%, var(--card)); border-radius:20px; padding:2px;">
       <div class="hero-band text-white rounded-2xl p-6 sm:p-9 overflow-hidden" style="position:relative;">
         <button type="button" id="global-search-trigger-btn" data-action="open-global-search" class="global-search-trigger-btn" title="Search / بحث" aria-label="Search / بحث">
           <i class="fa-solid fa-magnifying-glass"></i>
@@ -1747,7 +1747,7 @@ main .card{border-radius:16px}
     <div class="flex items-start justify-between gap-4"><div><p id="about-modal-title" class="font-display font-extrabold text-xl" style="color:var(--teal-dark);">SS' Daily Progress Track</p><p class="text-xs text-gray-500 mt-1"><span class="en">About the application</span><span class="ar">عن التطبيق</span></p></div>
       <button type="button" data-action="close-modal" data-modal="modal-about" class="w-9 h-9 rounded-xl flex items-center justify-center border shrink-0" style="border-color:var(--line);" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
     <div class="rounded-2xl p-4 sm:p-5" style="background:color-mix(in srgb,var(--teal-light) 8%,var(--card));border:1px solid var(--line);">
-      <p class="font-display font-extrabold text-base mb-3" style="color:var(--teal-dark);">Track → Understand → Act → Celebrate</p>
+      <p class="font-display font-extrabold text-base mb-3" style="color:var(--teal-dark);"><span class="en">Track → Understand → Act → Celebrate</span><span class="ar">تابع → افهم → تدخّل → احتفل بالإنجاز</span></p>
       <div class="space-y-4 text-sm leading-7">
         <div class="en"><p>A smart teacher-focused progress tracking system designed to turn everyday classroom observations into meaningful student insights.</p><p>Track attendance, participation, homework, language skills, progress, and individual development — all in one organized place.</p><p><strong>Why it matters:</strong> Less paperwork. Clearer insights. Faster decisions. Better support for every learner.</p><p class="font-bold">From daily tracking to meaningful progress — make every student’s journey visible.</p></div>
         <div class="ar"><p>نظام ذكي لمتابعة تقدم الطلاب، صُمم للمعلم ليحوّل الملاحظات والمتابعة اليومية داخل الفصل إلى مؤشرات واضحة تساعده على فهم مستوى كل طالب.</p><p>تابع الحضور، والمشاركة، والواجبات، ومهارات اللغة، والتقدم الفردي — كل ذلك في مكان واحد وبطريقة منظمة.</p><p><strong>لماذا يهمك؟</strong> أعمال ورقية أقل. رؤية أوضح. قرارات أسرع. دعم أفضل لكل طالب.</p><p class="font-bold">من المتابعة اليومية إلى تقدم حقيقي وملموس — اجعل رحلة كل طالب واضحة أمامك.</p></div>
@@ -5128,6 +5128,7 @@ document.addEventListener('click', function(e){
     case 'clear-note': clearNote(); break;
     case 'open-share-modal': openShareModal(); break;
     case 'open-about':
+      closeSidebar();
       document.getElementById('modal-about').classList.remove('hidden');
       document.getElementById('modal-about').classList.add('flex');
       document.getElementById('modal-about').setAttribute('aria-hidden','false');
