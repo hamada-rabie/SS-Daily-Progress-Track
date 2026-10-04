@@ -1012,28 +1012,29 @@ main .card{border-radius:16px}
 }
 </style>
 <style id="smart-insights-redesign">
-.smart-insights-wrap{position:relative;display:flex;justify-content:center;margin-top:12px;z-index:8}
-.smart-insights-trigger{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);color:#fff;border-radius:14px;padding:9px 13px;font-size:11px;font-weight:800;backdrop-filter:blur(10px);box-shadow:0 7px 20px rgba(0,0,0,.12);cursor:pointer;transition:.18s ease}
-.smart-insights-trigger:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
-.smart-insights-trigger .si-badge{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:rgba(255,255,255,.92);color:var(--teal-dark);display:inline-flex;align-items:center;justify-content:center;font-size:10px}
-.smart-insights-popover{position:fixed;top:0;left:0;width:min(440px,calc(100vw - 28px));max-height:min(72vh,560px);background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;box-shadow:0 22px 60px rgba(15,55,51,.28);overflow:hidden;display:none;text-align:start;z-index:99999}
-.smart-insights-popover.open{display:block;animation:siIn .16s ease-out}
-@keyframes siIn{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
-.si-head{padding:13px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
-.si-title{font-weight:900;font-size:13px;color:var(--ink)}
-.si-summary{font-size:10px;color:#71807C}
-.si-list{max-height:300px;overflow:auto;padding:8px}
-.si-item{display:grid;grid-template-columns:30px 1fr;gap:9px;padding:10px;border-radius:12px;margin:3px 0}
-.si-item:hover{background:color-mix(in srgb,var(--teal-light) 6%,transparent)}
-.si-icon{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px}
-.si-item.attention .si-icon{background:#FFF1EC;color:#B85439}
-.si-item.positive .si-icon{background:#EDF8F0;color:#2E8A45}
-.si-item-title{font-size:11px;font-weight:800;line-height:1.45}
-.si-item-body{font-size:10px;color:#71807C;line-height:1.5;margin-top:2px}
-.si-foot{padding:9px 12px;border-top:1px solid var(--line);display:flex;gap:7px;flex-wrap:wrap}
-.si-action{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}
-.si-action:hover{border-color:var(--teal-light);color:var(--teal-dark);background:color-mix(in srgb,var(--teal-light) 5%,var(--card))}
-@media(max-width:640px){.smart-insights-popover{width:min(440px,calc(100vw - 20px));max-height:calc(100dvh - 92px);border-radius:16px}.smart-insights-popover.open{animation:siMobileIn .16s ease-out}@keyframes siMobileIn{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}}
+.smart-insights-wrap{position:relative;display:flex;justify-content:center;margin-top:10px;z-index:8}
+.smart-insights-trigger{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.30);background:rgba(255,255,255,.12);color:#fff;border-radius:999px;padding:8px 13px;font-size:11px;font-weight:800;backdrop-filter:blur(10px);box-shadow:0 7px 20px rgba(0,0,0,.12);cursor:pointer;transition:.18s ease}
+.smart-insights-trigger:hover{background:rgba(255,255,255,.20);transform:translateY(-1px)}
+.smart-insights-trigger .si-badge{min-width:21px;height:21px;padding:0 6px;border-radius:999px;background:#fff;color:var(--teal-dark);display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+.smart-insights-popover{position:fixed;top:0;left:0;width:min(460px,calc(100vw - 28px));max-height:min(66vh,540px);background:var(--card);color:var(--ink);border:1px solid rgba(15,55,51,.12);border-radius:26px;box-shadow:0 24px 70px rgba(15,55,51,.25);overflow:hidden;display:none;text-align:start;z-index:99999}
+.smart-insights-popover:before{content:"";position:absolute;top:-7px;left:var(--si-arrow,50%);width:14px;height:14px;background:var(--card);border-left:1px solid rgba(15,55,51,.12);border-top:1px solid rgba(15,55,51,.12);transform:translateX(-50%) rotate(45deg);z-index:-1}
+.smart-insights-popover.open{display:block;animation:siIn .18s ease-out}
+@keyframes siIn{from{opacity:0;transform:translateY(-7px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.si-head{padding:16px 18px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.si-title{font-weight:900;font-size:14px;line-height:1.35;color:var(--ink)}
+.si-summary{font-size:11px;color:#687873;line-height:1.6;margin-top:3px}
+.si-list{max-height:330px;overflow:auto;padding:9px 10px}
+.si-item{display:grid;grid-template-columns:36px 1fr;gap:11px;padding:11px 10px;border-radius:15px;margin:4px 0}
+.si-item:hover{background:color-mix(in srgb,var(--teal-light) 8%,transparent)}
+.si-icon{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.si-item.attention{background:#FFF9F6}.si-item.attention .si-icon{background:#FFE9E0;color:#B85439}
+.si-item.positive{background:#F5FBF6}.si-item.positive .si-icon{background:#E2F4E7;color:#2E8A45}
+.si-item-title{font-size:12px;font-weight:900;line-height:1.5}
+.si-item-body{font-size:11px;color:#687873;line-height:1.55;margin-top:3px}
+.si-foot{padding:10px 13px;border-top:1px solid var(--line);display:flex;gap:7px;flex-wrap:wrap;background:color-mix(in srgb,var(--teal-light) 3%,var(--card))}
+.si-action{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 11px;font-size:10px;font-weight:800;cursor:pointer}
+.si-action:hover{border-color:var(--teal-light);color:var(--teal-dark);background:color-mix(in srgb,var(--teal-light) 7%,var(--card))}
+@media(max-width:640px){.smart-insights-popover{width:min(460px,calc(100vw - 20px));max-height:calc(100dvh - 110px);border-radius:22px}.smart-insights-popover.open{animation:siMobileIn .16s ease-out}@keyframes siMobileIn{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}}
 </style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
@@ -1378,7 +1379,7 @@ main .card{border-radius:16px}
           <select id="daily-class-filter" data-action="filter-daily" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
           <input id="daily-date" type="date" data-action="filter-daily" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
-        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick apply to the selected class</span><span class="ar">تطبيق سريع على الصف المحدد</span></p><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="behaviour"><i class="fa-solid fa-user-check" style="color:#5C6BC0;"></i><span class="en">Behaviour: Select All</span><span class="ar">السلوك: تحديد الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="participation"><i class="fa-solid fa-hand" style="color:var(--violet);"></i><span class="en">Participation: Select All</span><span class="ar">المشاركة: تحديد الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="homework"><i class="fa-solid fa-book-open" style="color:#B5850C;"></i><span class="en">Homework: Select All</span><span class="ar">الواجب: تحديد الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="attendance"><i class="fa-solid fa-calendar-check" style="color:var(--sky);"></i><span class="en">Attendance: Select All</span><span class="ar">الحضور: تحديد الكل</span></button></div></div>
+        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick apply to the selected class</span><span class="ar">تطبيق سريع على الصف المحدد</span></p><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="behaviour"><i class="fa-solid fa-user-check" style="color:#5C6BC0;"></i><span class="en">Behaviour: Apply to All</span><span class="ar">السلوك: تطبيق على الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="participation"><i class="fa-solid fa-hand" style="color:var(--violet);"></i><span class="en">Participation: Apply to All</span><span class="ar">المشاركة: تطبيق على الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="homework"><i class="fa-solid fa-book-open" style="color:#B5850C;"></i><span class="en">Homework: Apply to All</span><span class="ar">الواجب: تطبيق على الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="attendance"><i class="fa-solid fa-calendar-check" style="color:var(--sky);"></i><span class="en">Attendance: Apply to All</span><span class="ar">الحضور: تطبيق على الكل</span></button></div></div>
       </div>
       <div class="card table-scroll-x">
         <table class="w-full text-sm text-right">
@@ -2677,8 +2678,8 @@ function renderDashboard(){
 function getTrackedDatesForStudent(studentId){return Object.keys(dailyArchives).filter(d=>dailyArchives[d]&&dailyArchives[d][studentId]).sort();}
 function getStudentRepeatedAbsence(studentId){return getTrackedDatesForStudent(studentId).slice(-10).filter(d=>dailyArchives[d][studentId]?.attendance==='absent').length;}
 function getStudentHomeworkMisses(studentId){return getTrackedDatesForStudent(studentId).slice(-3).filter(d=>dailyArchives[d][studentId]?.homeworkDone===false).length;}
-function getSkillImprovement(s){const out=[],h=Array.isArray(s.skillHistory)?s.skillHistory:[];h.forEach(e=>Object.keys(QP_SKILL_LABELS).forEach(k=>{if(typeof e[k]!=='number'||!e.date)return;const p=h.filter(x=>x.date<e.date&&typeof x[k]==='number').sort((a,b)=>a.date<b.date?-1:1).pop();if(p&&e[k]-p[k]>=2)out.push({key:k,date:e.date,delta:e[k]-p[k]});}));return out.sort((a,b)=>a.date<b.date?-1:1);}
-function getStudentSmartAlerts(s){const a=[];Object.keys(QP_SKILL_LABELS).forEach(k=>{const v=getCurrentSkillValue(s,k);if(v!==null&&v<=2){const lvl=skillLevelLabel(v);a.push({type:'attention',icon:'fa-triangle-exclamation',en:'Needs attention: '+QP_SKILL_LABELS[k].en+' is '+lvl.en+'.',ar:'يحتاج متابعة: '+QP_SKILL_LABELS[k].ar+' بمستوى '+lvl.ar+'.'});}});if(s.behaviourLevel==='needs_improvement')a.push({type:'attention',icon:'fa-user-shield',en:'Behaviour needs attention.',ar:'السلوك يحتاج إلى متابعة.'});if(s.participationLevel==='sleepy'||s.participationLevel==='passive')a.push({type:'attention',icon:'fa-hand',en:'Participation needs attention.',ar:'المشاركة تحتاج إلى متابعة.'});const abs=getStudentRepeatedAbsence(s.id);if(abs>=3)a.push({type:'attention',icon:'fa-calendar-xmark',en:abs+' absences in the last 10 tracked days.',ar:'لديه '+abs+' حالات غياب خلال آخر 10 أيام متابعة.'});const hw=getStudentHomeworkMisses(s.id);if(hw>=2)a.push({type:'attention',icon:'fa-book-open',en:'Homework was missed '+hw+' times in the last 3 tracked days.',ar:'لم يُنجز الواجب '+hw+' مرات خلال آخر 3 أيام متابعة.'});const im=getSkillImprovement(s).filter(x=>x.date===todayStr()).pop();if(im)a.push({type:'positive',icon:'fa-arrow-trend-up',en:'Improvement detected: '+QP_SKILL_LABELS[im.key].en+' +'+im.delta+'.',ar:'تم رصد تحسن: '+QP_SKILL_LABELS[im.key].ar+' +'+im.delta+'.'});return a.slice(0,4);}
+function getSkillImprovement(s){const out=[],h=Array.isArray(s.skillHistory)?s.skillHistory:[];h.forEach(e=>Object.keys(QP_SKILL_LABELS).forEach(k=>{const ev=skillLevelScore(e[k]);if(ev===null||!e.date)return;const p=h.filter(x=>x.date<e.date&&skillLevelScore(x[k])!==null).sort((a,b)=>a.date<b.date?-1:1).pop();if(p){const pv=skillLevelScore(p[k]),delta=ev-pv;if(delta>=2)out.push({key:k,date:e.date,delta});}}));return out.sort((a,b)=>a.date<b.date?-1:1);}
+function getStudentSmartAlerts(s){const a=[];Object.keys(QP_SKILL_LABELS).forEach(k=>{const v=getCurrentSkillValue(s,k);const score=skillLevelScore(v);if(score!==null&&score<=2){const lvl=skillLevelLabel(v);a.push({type:'attention',icon:'fa-triangle-exclamation',en:'Needs attention: '+QP_SKILL_LABELS[k].en+' is '+lvl.en+'.',ar:'يحتاج متابعة: '+QP_SKILL_LABELS[k].ar+' بمستوى '+lvl.ar+'.'});}});if(s.behaviourLevel==='needs_improvement')a.push({type:'attention',icon:'fa-user-shield',en:'Behaviour needs attention.',ar:'السلوك يحتاج إلى متابعة.'});if(s.participationLevel==='sleepy'||s.participationLevel==='passive')a.push({type:'attention',icon:'fa-hand',en:'Participation needs attention.',ar:'المشاركة تحتاج إلى متابعة.'});const abs=getStudentRepeatedAbsence(s.id);if(abs>=3)a.push({type:'attention',icon:'fa-calendar-xmark',en:abs+' absences in the last 10 tracked days.',ar:'لديه '+abs+' حالات غياب خلال آخر 10 أيام متابعة.'});const hw=getStudentHomeworkMisses(s.id);if(hw>=2)a.push({type:'attention',icon:'fa-book-open',en:'Homework was missed '+hw+' times in the last 3 tracked days.',ar:'لم يُنجز الواجب '+hw+' مرات خلال آخر 3 أيام متابعة.'});const im=getSkillImprovement(s).filter(x=>x.date===todayStr()).pop();if(im)a.push({type:'positive',icon:'fa-arrow-trend-up',en:'Improvement detected: '+QP_SKILL_LABELS[im.key].en+' +'+im.delta+'.',ar:'تم رصد تحسن: '+QP_SKILL_LABELS[im.key].ar+' +'+im.delta+'.'});return a.slice(0,4);}
 function getClassSmartAlerts(classId){const a=[],students=studentsData.filter(s=>s.classId===classId);Object.keys(QP_SKILL_LABELS).forEach(k=>{const dates={};students.forEach(s=>(Array.isArray(s.skillHistory)?s.skillHistory:[]).forEach(h=>{if(h.date&&skillLevelScore(h[k])!==null){if(!dates[h.date])dates[h.date]=[];dates[h.date].push(h[k]);}}));const ds=Object.keys(dates).sort();if(ds.length>=2){const p=dates[ds[ds.length-2]].reduce((x,y)=>x+y,0)/dates[ds[ds.length-2]].length,n=dates[ds[ds.length-1]].reduce((x,y)=>x+y,0)/dates[ds[ds.length-1]].length;if(n-p>=1)a.push({type:'positive',icon:'fa-arrow-trend-up',en:QP_SKILL_LABELS[k].en+' average improved by '+(n-p).toFixed(1)+' points.',ar:'تحسن متوسط '+QP_SKILL_LABELS[k].ar+' بمقدار '+(n-p).toFixed(1)+' نقطة.'});}});const attention=students.filter(s=>getStudentSmartAlerts(s).some(x=>x.type==='attention')).length;if(attention>=2)a.push({type:'attention',icon:'fa-triangle-exclamation',en:attention+' students currently need attention.',ar:attention+' طلاب يحتاجون حاليًا إلى متابعة.'});return a.slice(0,2);}
 function renderClassAlertMarkup(classId){const a=getClassSmartAlerts(classId)[0];if(!a)return '';return '<div class="mt-2 rounded-xl px-3 py-2 text-[10px] font-semibold flex items-center gap-2 '+(a.type==='positive'?'smart-alert-positive':'smart-alert-attention')+'"><i class="fa-solid '+a.icon+'"></i><span class="en">'+escapeHtml(a.en)+'</span><span class="ar">'+escapeHtml(a.ar)+'</span></div>';}
 function renderSmartAlerts(){const hero=document.getElementById('hero-smart-alerts');if(!hero)return;let attention=0,positive=0;studentsData.forEach(s=>getStudentSmartAlerts(s).forEach(a=>a.type==='attention'?attention++:positive++));classesData.forEach(c=>getClassSmartAlerts(c.id).forEach(a=>a.type==='attention'?attention++:positive++));if(!attention&&!positive){hero.innerHTML='';return;}hero.innerHTML='<div class="smart-hero-alert"><div class="flex items-center justify-center gap-2"><i class="fa-solid fa-bell"></i><span class="en font-bold">Smart Alerts</span><span class="ar font-bold">تنبيهات ذكية</span><span class="text-[9px]">'+(attention+positive)+'</span></div><div class="text-[10px] mt-1"><span class="en">'+attention+' attention alert(s) · '+positive+' progress alert(s)</span><span class="ar">'+attention+' تنبيه متابعة · '+positive+' تنبيه تحسن</span></div></div>';}
@@ -2962,12 +2963,12 @@ function renderSkillsTable(){
     const entry = getSkillEntry(s, date);
     const rows = Object.keys(SKILL_META).map(key=>{
       const meta = SKILL_META[key];
-      const val = entry && typeof entry[key]==='number' ? entry[key] : null;
+      const val = entry && skillLevelScore(entry[key])!==null ? entry[key] : null;
       let opts = `<option value="" ${val===null?'selected':''}>— Not Assessed / لم يُقيَّم —</option>`;
       SKILL_LEVELS.forEach(level=>{ const selected=val!==null && skillLevelScore(val)===level.score; opts += `<option value="${level.key}" ${selected?'selected':''}>${level.en} / ${level.ar}</option>`; });
       return `<div class="flex items-center justify-between gap-3 py-1.5">
         <span class="skill-chip ${meta.chip} w-32 justify-center"><i class="fa-solid ${meta.icon}"></i> ${meta.label}</span>
-        <select data-action="set-skill" data-id="${s.id}" data-skill="${key}" class="border rounded-lg px-2 py-1 text-xs font-bold" style="border-color:var(--line); ${val!==null?scoreColor(val):''}">${opts}</select>
+        <select data-action="set-skill" data-id="${s.id}" data-skill="${key}" class="skill-level-select border rounded-lg px-2 py-1 text-xs font-bold" data-level="${val||''}" style="border-color:var(--line); ${val!==null?scoreColor(val):''}">${opts}</select>
       </div>`;
     }).join('');
     return `<div class="card p-4">
@@ -3402,7 +3403,7 @@ function renderJourneyCard(){
   const firstSkill=skills[0]||null, lastSkill=skills[skills.length-1]||null;
   const avgSkill = obj => {
     if(!obj) return null;
-    const vals=Object.keys(QP_SKILL_LABELS).map(k=>skillLevelScore(obj[k])!==null?obj[k]:null).filter(v=>v!==null);
+    const vals=Object.keys(QP_SKILL_LABELS).map(k=>skillLevelScore(obj[k])).filter(v=>v!==null);
     return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length/6*100) : null;
   };
   const startAvg=avgSkill(firstSkill), currentAvg=avgSkill(lastSkill);
@@ -3479,7 +3480,7 @@ function renderJourneyCard(){
       <div class="rounded-2xl p-4" style="background:color-mix(in srgb,var(--teal-light) 6%,var(--card));border:1px solid var(--line);">
         <div class="flex items-center gap-2 mb-3"><i class="fa-solid fa-route" style="color:var(--violet);"></i><p class="text-xs font-bold">Start → Growth → Current / البداية → التطور → الآن</p></div>
         <div class="space-y-0">${rows}</div>
-        <p class="text-[10px] text-gray-400 mt-2 pt-2" style="border-top:1px solid var(--line);">${journeyNote}</p>
+        <p class="text-[10px] text-gray-400 mt-1 pt-1.5" style="border-top:1px solid var(--line);">${journeyNote}</p>
       </div>
 
       <button data-action="play-journey" data-id="${s.id}" class="w-full text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2" style="background:linear-gradient(120deg,var(--teal),var(--violet));"><i class="fa-solid fa-play"></i><span class="en">Play Journey</span><span class="ar">تشغيل رحلة الطالب</span></button>
@@ -3519,8 +3520,8 @@ function getStudentDataConfidence(s){
   const skillPts = getStudentSkillHistory(s).length;
   let level, en, ar;
   if(daily===0 && skillPts===0){ level='insufficient'; en='Insufficient'; ar='بيانات غير كافية'; }
-  else if(daily>=10 || skillPts>=5){ level='high'; en='High'; ar='موثوقية عالية'; }
-  else { level='limited'; en='Limited'; ar='موثوقية محدودة'; }
+  else if(daily>=10 || skillPts>=5){ level='high'; en='Good Coverage'; ar='تغطية جيدة'; }
+  else { level='limited'; en='Building'; ar='قيد البناء'; }
   return {
     level, en, ar, daily, skillPts,
     desc_en: `Based on ${daily} daily record${daily===1?'':'s'} and ${skillPts} skill-history point${skillPts===1?'':'s'}.`,
@@ -3605,7 +3606,7 @@ function getStudentBestPeriod(s){
     if(behVals.length){ parts.push({w:0.2, v:(behVals.reduce((a,b)=>a+b,0)/behVals.length)*10}); }
     if(data.skills.length){
       const avgSkill = data.skills.reduce((sum,h)=>{
-        const vals = Object.keys(QP_SKILL_LABELS).map(k=>h[k]).filter(v=>typeof v==='number');
+        const vals = Object.keys(QP_SKILL_LABELS).map(k=>skillLevelScore(h[k])).filter(v=>v!==null);
         return sum + (vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length*10 : 0);
       },0)/data.skills.length;
       parts.push({w:0.25, v:avgSkill});
@@ -3781,12 +3782,12 @@ function renderS360Card(){
             <p class="font-extrabold text-sm" style="color:var(--violet);">${hScore}% ${medal? medal : ''} <span class="text-gray-400 font-semibold">#${rank}</span></p>
           </div>
           <div class="text-center px-3 py-2 rounded-xl" style="background:${confColor.bg};">
-            <p class="text-[9px] font-semibold" style="color:${confColor.c};">Data Confidence / موثوقية البيانات</p>
+            <p class="text-[9px] font-semibold" style="color:${confColor.c};">Data Coverage / تغطية البيانات</p>
             <p class="font-bold text-xs" style="color:${confColor.c};">${conf.en} / ${conf.ar}</p>
           </div>
         </div>
       </div>
-      <p class="text-[10px] text-gray-400 -mt-4">${conf.desc_en}<br>${conf.desc_ar}</p>
+      <p class="text-[10px] text-gray-400 -mt-1">${conf.desc_en}<br>${conf.desc_ar}</p>
 
       <!-- Academic Performance -->
       <div>
@@ -5389,6 +5390,10 @@ window.addEventListener('resize',scheduleFrozenTableHeaders);
 setTimeout(scheduleFrozenTableHeaders,200);
 
 /* ---------- global event delegation (avoids inline handlers) ---------- */
+document.addEventListener('change', function(e){
+  const t=e.target.closest('.skill-level-select');
+  if(t){ t.dataset.level=t.value||''; t.style.cssText='border-color:var(--line); '+(t.value?scoreColor(t.value):''); }
+});
 document.addEventListener('input', function(e){
   const t=e.target.closest('[data-action="set-accessibility-zoom"]');
   if(t) applyAccessibilityZoom(t.value);
@@ -5767,7 +5772,7 @@ try{
   document.addEventListener('change',e=>{const t=e.target;if(!t.id)return;if(t.id==='pr-class'){renderStudentOptions();}else if(t.id==='pr-student'||t.id==='pr-language'||t.id==='pr-note'){renderParentReport();}});
   document.addEventListener('click',e=>{const t=e.target.closest('[data-action="pr-preview"]');if(t)renderParentReport();if(e.target.closest('[data-action="pr-print"]'))window.print();});
   const section='<section id="tab-parentreport" class="tab-content space-y-4"><div class="card p-4 pr-no-print"><div class="pr-controls"><div class="pr-control"><label class="text-xs font-bold">'+bi('Class','الصف')+'</label><select id="pr-class" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="pr-control"><label class="text-xs font-bold">'+bi('Student','الطالب')+'</label><select id="pr-student" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="pr-control"><label class="text-xs font-bold">'+bi('Report Language','لغة التقرير')+'</label><select id="pr-language" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="bilingual">Bilingual / ثنائي</option><option value="en">English</option><option value="ar">العربية</option></select></div><label class="pr-control flex items-center gap-2 text-xs font-bold" style="align-items:center;"><input id="pr-note" type="checkbox"> '+bi('Include Teacher Note','تضمين ملاحظة المعلم')+'</label></div><div class="flex gap-2 flex-wrap mt-3"><button type="button" data-action="pr-preview" class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal);color:#fff;">'+bi('Preview','معاينة')+'</button><button type="button" data-action="pr-print" class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal-dark);color:#fff;">'+bi('Print / Save PDF','طباعة / حفظ PDF')+'</button></div></div><div id="pr-output" class="printable-area"></div></section>';
-  const prAnchor=document.querySelector('script[type="module"]'); if(!document.getElementById('tab-parentreport'))prAnchor.insertAdjacentHTML('beforebegin',section);
+  const prMain=document.querySelector('main'); if(prMain && !document.getElementById('tab-parentreport'))prMain.insertAdjacentHTML('beforeend',section);
   renderClassOptions('pr-class');
 }catch(err){console.error('Parent Report feature failed safely:',err);}
 })();
@@ -5903,20 +5908,23 @@ try{
   };
   function positionSmartInsights(){
     const p=document.getElementById('smart-insights-popover');
-    const trigger=document.querySelector('.smart-insights-trigger');
-    if(!p||!trigger)return;
-    const r=trigger.getBoundingClientRect();
-    const w=Math.min(440,Math.max(280,window.innerWidth-28));
+    const hero=document.querySelector('#tab-dashboard .hero-band');
+    if(!p||!hero)return;
+    const r=hero.getBoundingClientRect();
+    const w=Math.min(460,Math.max(300,window.innerWidth-28));
     p.style.width=w+'px';
     let left=r.left+r.width/2-w/2;
     left=Math.max(14,Math.min(left,window.innerWidth-w-14));
-    const mobile=window.innerWidth<=640;
-    let top=mobile?Math.max(62,r.bottom+10):r.bottom+12;
+    let top=Math.max(14,r.bottom+12);
     const h=p.getBoundingClientRect().height||360;
-    if(top+h>window.innerHeight-14) top=Math.max(14,r.top-h-12);
-    if(top<14)top=14;
+    if(top+h>window.innerHeight-14) top=Math.max(14,window.innerHeight-h-14);
     p.style.left=left+'px';
     p.style.top=top+'px';
+    const trigger=document.querySelector('.smart-insights-trigger');
+    if(trigger){
+      const tr=trigger.getBoundingClientRect();
+      p.style.setProperty('--si-arrow',Math.max(24,Math.min(w-24,tr.left+tr.width/2-left))+'px');
+    }
   }
   function portalSmartInsights(){
     const p=document.getElementById('smart-insights-popover');
