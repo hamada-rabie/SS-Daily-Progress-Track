@@ -1092,7 +1092,7 @@ main .card{border-radius:16px}
         <span class="cloud-status-text"><span class="cloud-status-en">Cloud synced</span><span class="cloud-status-ar">تمت المزامنة سحابياً</span></span>
       </div>
       <p class="text-[9px] text-gray-300 mt-0.5"><span class="en">App Version: 2.1.0</span><span class="ar">إصدار التطبيق: 2.1.0</span></p>
-      <button type="button" data-action="logout" class="w-full mt-2 text-xs font-bold px-3 py-2 rounded-xl flex items-center justify-center gap-2 transition" style="background:#fff1f2; color:#dc2626; border:1px solid #fecdd3;">
+      <button type="button" data-action="logout" class="w-full mt-2 text-[11px] font-bold px-2 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition" style="background:#fff1f2; color:#dc2626; border:1px solid #fecdd3;">
         <i class="fa-solid fa-right-from-bracket"></i>
         <span class="sidebar-bilingual"><span class="en">Log Out</span><span class="ar">تسجيل الخروج</span></span>
       </button>
@@ -1476,6 +1476,7 @@ main .card{border-radius:16px}
           <div class="flex gap-2 items-center flex-wrap">
             <button data-action="generate-report" class="text-white text-xs font-semibold px-4 py-2 rounded-xl bilingual-inline" style="background:var(--teal);">Preview / معاينة</button>
             <button data-action="send-whatsapp-report" class="text-xs font-semibold px-4 py-2 rounded-xl text-white flex items-center gap-2" style="background:#25D366;"><i class="fa-brands fa-whatsapp"></i> Send / إرسال واتساب</button>
+            <button data-action="export-report-excel" class="text-xs font-semibold px-4 py-2 rounded-xl border flex items-center gap-2" style="border-color:var(--leaf); color:#2C8C46;"><i class="fa-solid fa-file-excel"></i> Export Report Data / تصدير بيانات التقرير</button>
             <button data-action="print-report" class="text-xs font-semibold px-4 py-2 rounded-xl border flex items-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-print"></i> Print / Save as PDF / طباعة أو حفظ PDF</button>
           </div>
         </div>
@@ -1887,6 +1888,10 @@ main .card{border-radius:16px}
   <div class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3">
     <span class="bi-label"><span class="en font-display font-bold">Share the App</span><span class="ar">مشاركة التطبيق</span></span>
     <p class="text-[11px] text-gray-500">Choose what to include. This creates a new file — your own data here stays exactly as it is.<br>اختر ما تريد مشاركته. سيُنشأ ملف جديد، وستظل بياناتك الحالية دون أي تغيير.</p>
+    <div class="rounded-xl p-3 text-[11px]" style="background:#F6FBFA;border:1px solid var(--line);">
+      <b>For a colleague:</b> use a separate account so your student data and your colleague's data remain completely separate.<br>
+      <span dir="rtl">للزميل: يستخدم حسابًا منفصلًا، وبذلك تظل بيانات طلابك منفصلة تمامًا عن بياناته.</span>
+    </div>
 
     <button data-action="share-full" class="w-full text-right border rounded-xl p-3 flex items-center gap-3 hover:bg-gray-50" style="border-color:var(--teal);">
       <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white shrink-0" style="background:var(--teal);"><i class="fa-solid fa-database"></i></div>
@@ -3104,6 +3109,7 @@ const REPORT_FIELDS = [
   {key:'attendance', en:'Attendance', ar:'الحضور'},
   {key:'homework', en:'Homework', ar:'الواجب'},
   {key:'participation', en:'Participation', ar:'المشاركة'},
+  {key:'behaviour', en:'Behaviour', ar:'السلوك'},
   {key:'reading', en:'Reading', ar:'القراءة'},
   {key:'writing', en:'Writing', ar:'الكتابة'},
   {key:'listening', en:'Listening', ar:'الاستماع'},
@@ -4061,7 +4067,7 @@ function renderDailyReport(s, dateStr, out){
   if(F.attendance) topRow += `<div class="border rounded-xl p-2" style="border-color:var(--line);"><p class="text-[11px] text-gray-500">Attendance / الحضور</p><p class="font-bold text-sm">${attendanceLabel(rec.attendance).text}</p></div>`;
   if(F.homework) topRow += `<div class="border rounded-xl p-2" style="border-color:var(--line);"><p class="text-[11px] text-gray-500">Homework / الواجب</p><p class="font-bold text-sm">${rec.homeworkDone?'Done / تم':'Not done / لم يتم'}</p></div>`;
   if(F.participation) topRow += `<div class="border rounded-xl p-2" style="border-color:var(--line);"><p class="text-[11px] text-gray-500">Participation / المشاركة</p><p class="font-bold text-sm">${participationLabel(rec.participationLevel).en}</p></div>`;
-  const behRow = rec.behaviourLevel ? `<div class="border rounded-xl p-2" style="border-color:var(--line);"><p class="text-[11px] text-gray-500">Behaviour / السلوك</p><p class="font-bold text-sm">${behaviourLabel(rec.behaviourLevel).en}</p></div>` : '';
+  const behRow = F.behaviour && rec.behaviourLevel ? `<div class="border rounded-xl p-2" style="border-color:var(--line);"><p class="text-[11px] text-gray-500">Behaviour / السلوك</p><p class="font-bold text-sm">${behaviourLabel(rec.behaviourLevel).en}</p></div>` : '';
   let skillRows = '';
   Object.keys(SKILL_META).forEach(k=>{
     if(!F[k]) return;
@@ -4116,6 +4122,60 @@ function renderWeeklyReport(s, anyDateInWeek, out){
       <p class="text-xs text-gray-400 pt-2 border-t" style="border-color:var(--line);">👨‍🏫 ${settings.teacherName}</p>
     </div>`;
 }
+function exportReportDataToExcel(){
+  if(!window.XLSX){ showToast('Excel library not loaded — check your connection / مكتبة الإكسل غير محمّلة، تأكد من الاتصال','error'); return; }
+  const classSel=document.getElementById('report-class-select');
+  const periodSel=document.getElementById('report-period-select');
+  const dateInput=document.getElementById('report-period-date');
+  const classValue=classSel ? classSel.value : 'all';
+  const period=periodSel ? periodSel.value : 'daily';
+  const dateVal=(dateInput && dateInput.value) ? dateInput.value : todayStr();
+  let list=studentsData.slice();
+  if(classValue && classValue!=='all') list=list.filter(s=>String(s.classId)===String(classValue));
+  if(!list.length){ showToast('No students match the selected class / لا يوجد طلاب في الصف المحدد','error'); return; }
+  const classMap=Object.fromEntries(classesData.map(c=>[c.id,shortClass(c)]));
+  const F=reportFieldSelection;
+  const skillLabel={reading:'Reading / القراءة',writing:'Writing / الكتابة',listening:'Listening / الاستماع',speaking:'Speaking / المحادثة'};
+  const getSkill=(s,date,key)=>{ const h=Array.isArray(s.skillHistory)?s.skillHistory.find(x=>x.date===date):null; return h && typeof h[key]==='number' ? h[key] : ''; };
+  const addCommon=(row,s,date)=>{
+    row['Date / التاريخ']=date;
+    row['Student Name / اسم الطالب']=s.name;
+    row['Class / الصف']=classMap[s.classId]||'';
+    const rec=(dailyArchives[date]&&dailyArchives[date][s.id])||null;
+    if(F.attendance) row['Attendance / الحضور']=rec&&rec.attendance ? attendanceLabel(rec.attendance).text : '';
+    if(F.homework) row['Homework / الواجب']=rec ? (rec.homeworkDone===true?'Done / تم':rec.homeworkDone===false?'Not Done / لم يتم':'') : '';
+    if(F.participation) row['Participation / المشاركة']=rec&&rec.participationLevel ? participationLabel(rec.participationLevel).en : '';
+    if(F.behaviour) row['Behaviour / السلوك']=rec&&rec.behaviourLevel ? behaviourLabel(rec.behaviourLevel).en : '';
+    let total=0,count=0;
+    ['reading','writing','listening','speaking'].forEach(k=>{ if(F[k]){ const v=getSkill(s,date,k); row[skillLabel[k]]=v; if(v!=='' ){total+=Number(v);count++;} } });
+    if(F.total) row['Total Score / المجموع']=count ? total+' / '+(count*10) : '';
+    return !!rec;
+  };
+  const wb=XLSX.utils.book_new();
+  if(period==='daily'){
+    const rows=[]; list.forEach(s=>{ const row={}; addCommon(row,s,dateVal); rows.push(row); });
+    const ws=XLSX.utils.json_to_sheet(rows);
+    ws['!cols']=Object.keys(rows[0]||{'Data':''}).map(()=>({wch:22}));
+    XLSX.utils.book_append_sheet(wb,ws,'Daily Report');
+    XLSX.writeFile(wb,'SS_Daily_Report_Data_'+dateVal+'.xlsx');
+    showToast('Daily report data exported / تم تصدير بيانات التقرير اليومي','success');
+    return;
+  }
+  const wr=getWeekRange(dateVal), detailRows=[], summaryRows=[];
+  list.forEach(s=>{
+    let recorded=0;
+    wr.dates.forEach(d=>{ const row={}; if(addCommon(row,s,d)) recorded++; detailRows.push(row); });
+    summaryRows.push({'Student Name / اسم الطالب':s.name,'Class / الصف':classMap[s.classId]||'','Week / الأسبوع':wr.startStr+' – '+wr.endStr,'Days Recorded / أيام مسجلة':recorded,'Missing Days / أيام مفقودة':7-recorded});
+  });
+  const detailWs=XLSX.utils.json_to_sheet(detailRows), summaryWs=XLSX.utils.json_to_sheet(summaryRows);
+  detailWs['!cols']=Object.keys(detailRows[0]||{'Data':''}).map(()=>({wch:22}));
+  summaryWs['!cols']=Object.keys(summaryRows[0]||{'Data':''}).map(()=>({wch:24}));
+  XLSX.utils.book_append_sheet(wb,summaryWs,'Weekly Summary');
+  XLSX.utils.book_append_sheet(wb,detailWs,'Weekly Details');
+  XLSX.writeFile(wb,'SS_Weekly_Report_Data_'+wr.startStr.replaceAll('/','-')+'.xlsx');
+  showToast('Weekly report data exported / تم تصدير بيانات التقرير الأسبوعي','success');
+}
+
 function sendReportWhatsAppFor(id, phoneIndex, date){
   const s = studentsData.find(x=>x.id===id);
   if(!s) return;
@@ -5348,6 +5408,7 @@ document.addEventListener('click', function(e){
     case 'toggle-homework': toggleHomework(id); break;
     case 'generate-report': generateReport(); break;
     case 'send-whatsapp-report': sendReportWhatsApp(); break;
+    case 'export-report-excel': exportReportDataToExcel(); break;
     case 'send-whatsapp': sendReportWhatsAppFor(id, t.dataset.phoneIndex!==undefined ? Number(t.dataset.phoneIndex) : 0); break;
     case 'cert-change': renderCertificatePreview(); break;
     case 'download-cert': downloadCertificate(); break;
