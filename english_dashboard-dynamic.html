@@ -5783,12 +5783,17 @@ try{
   }
   function renderStarCard(){
     const out=document.getElementById('sw-output');if(!out)return;
-    const mode=document.getElementById('sw-mode')?.value||'honor',lang=document.getElementById('sw-language')?.value||'bilingual',first=document.getElementById('sw-first')?.checked||false,sid=document.getElementById('sw-student')?.value,s=studentsData.find(x=>String(x.id)===String(sid));
-    const eligible=candidates(mode).length;
-    if(!s){out.innerHTML='<div class="sw-card-wrap"><div class="sw-card-canvas sw-empty"><div class="sw-star">★</div><div style="font-size:20px;font-weight:900;margin-top:12px;">'+bi(mode==='honor'?'Star of the Week':'Most Improved',mode==='honor'?'نجم الأسبوع':'الأكثر تحسنًا',lang)+'</div><div style="margin-top:8px;">'+bi('Not enough data to select a student yet.','لا توجد بيانات كافية لاختيار طالب حتى الآن.',lang)+'</div></div></div>';return;}
-    const cls=classesData.find(c=>String(c.id)===String(s.classId)),name=first?String(s.name).trim().split(/\s+/)[0]:s.name;
-    const enTitle=mode==='honor'?'Star of the Week':'Most Improved',arTitle=mode==='honor'?'نجم الأسبوع':'الأكثر تحسنًا';
-    out.innerHTML='<div class="sw-card-wrap"><div id="sw-card-canvas" class="sw-card-canvas"><div class="sw-star">★</div><div style="font-size:24px;font-weight:900;color:var(--teal-dark);">'+bi(enTitle,arTitle,lang)+'</div><div class="sw-name">'+esc(name)+'</div><div style="font-size:16px;color:var(--teal-dark);">'+bi('Class: ','الصف: ',lang)+esc(shortClass(cls))+'</div><div class="sw-reason">'+bi(reason(s,mode),arReason(s,mode),lang)+'</div>'+(settings.schoolLogo?'<img class="sw-school-logo" src="'+esc(settings.schoolLogo)+'" alt="">':'')+'<div class="sw-teacher">'+bi('Teacher: ','المعلم: ',lang)+esc(settings.teacherName||'')+'</div></div></div>';
+    const mode=document.getElementById('sw-mode')?.value||'honor',lang=document.getElementById('sw-language')?.value||'bilingual',first=document.getElementById('sw-first')?.checked||false,sid=document.getElementById('sw-student')?.value,selected=studentsData.find(x=>String(x.id)===String(sid));
+    const ranked=candidates(mode).sort((a,b)=>b.score-a.score);
+    if(!ranked.length){out.innerHTML='<div class="sw-card-wrap"><div class="sw-card-canvas sw-empty"><div class="sw-star">★</div><div style="font-size:20px;font-weight:900;margin-top:12px;">'+bi(mode==='honor'?'Star of the Week':'Most Improved',mode==='honor'?'نجم الأسبوع':'الأكثر تحسنًا',lang)+'</div><div style="margin-top:8px;">'+bi('Not enough data to select a student yet.','لا توجد بيانات كافية لاختيار a طالب حتى الآن.',lang)+'</div></div></div>';return;}
+    const countMode=document.getElementById('sw-count')?.value||'auto';
+    const topScore=ranked[0].score;
+    let winners=countMode==='auto'?ranked.filter((x,i)=>i<3&&topScore-x.score<=5):ranked.slice(0,Math.max(1,Math.min(3,Number(countMode))));
+    if(selected&&!winners.some(x=>String(x.s.id)===String(selected.id))){const idx=ranked.findIndex(x=>String(x.s.id)===String(selected.id));if(idx>=0)winners=countMode==='auto'&&idx<3&&topScore-ranked[idx].score<=5?[ranked[idx]]:winners;}
+    const clsFor=s=>classesData.find(c=>String(c.id)===String(s.classId));
+    const namesHtml=winners.map((x,i)=>{const s=x.s,n=first?String(s.name).trim().split(/\s+/)[0]:s.name;return '<div class="sw-name" style="font-size:'+(winners.length===1?'42px':'30px')+';margin-top:'+(i?'10px':'18px');">'+esc(n)+'</div><div style="font-size:13px;color:var(--teal-dark);">'+bi('Class: ','الصف: ',lang)+esc(shortClass(clsFor(s)))+'</div><div class="sw-reason">'+bi(reason(s,mode),arReason(s,mode),lang)+'</div>';}).join('');
+    const titleEn=mode==='honor'?'Star of the Week':'Most Improved',titleAr=mode==='honor'?'نجم الأسبوع':'الأكثر تحسنًا';
+    out.innerHTML='<div class="sw-card-wrap"><div id="sw-card-canvas" class="sw-card-canvas"><div class="sw-star">★</div><div style="font-size:24px;font-weight:900;color:var(--teal-dark);">'+bi(titleEn,titleAr,lang)+'</div>'+namesHtml+(settings.schoolLogo?'<img class="sw-school-logo" src="'+esc(settings.schoolLogo)+'" alt="">':'')+'<div class="sw-teacher">'+bi('Teacher: ','المعلم: ',lang)+esc(settings.teacherName||'')+'</div></div></div>';
   }
   async function downloadStar(){
     const card=document.getElementById('sw-card-canvas');if(!card||!studentsData.length){alert('Star Card: no card is available / بطاقة النجم: لا توجد بطاقة متاحة');return;}
@@ -5801,15 +5806,41 @@ try{
   }
   function openSw(){switchTab('starcard');renderSwClasses();renderSwStudents();}
   document.addEventListener('click',e=>{const t=e.target.closest('[data-action="sw-open"]');if(!t)return;e.preventDefault();openSw();});
-  document.addEventListener('change',e=>{const t=e.target;if(!t.id)return;if(t.id==='sw-class'||t.id==='sw-mode'){renderSwStudents();}else if(t.id==='sw-student'||t.id==='sw-language'||t.id==='sw-first'){renderStarCard();}});
+  document.addEventListener('change',e=>{const t=e.target;if(!t.id)return;if(t.id==='sw-class'||t.id==='sw-mode'){renderSwStudents();}else if(t.id==='sw-student'||t.id==='sw-language'||t.id==='sw-first'||t.id==='sw-count'){renderStarCard();}});
   document.addEventListener('click',e=>{if(e.target.closest('[data-action="sw-download"]'))downloadStar();});
-  const section='<section id="tab-starcard" class="tab-content space-y-4"><div class="card p-4 sw-controls"><div class="sw-control"><label class="text-xs font-bold">'+bi('Class','الصف','bilingual')+'</label><select id="sw-class" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Selection Type','نوع الاختيار','bilingual')+'</label><select id="sw-mode" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="honor">Highest Honor Score / أعلى درجة تميز</option><option value="improved">Most Improved / الأكثر تحسنًا</option></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Student','الطالب','bilingual')+'</label><select id="sw-student" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Card Language','لغة البطاقة','bilingual')+'</label><select id="sw-language" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="bilingual">Bilingual / ثنائي</option><option value="en">English</option><option value="ar">العربية</option></select></div><label class="sw-control flex items-center gap-2 text-xs font-bold" style="align-items:center;"><input id="sw-first" type="checkbox"> '+bi('Show first name only','عرض الاسم الأول فقط','bilingual')+'</label><div class="sw-control flex items-end"><button type="button" data-action="sw-download" class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal);color:#fff;">'+bi('Download PNG','تنزيل PNG','bilingual')+'</button></div></div><div id="sw-output"></div></section>';
+  const section='<section id="tab-starcard" class="tab-content space-y-4"><div class="card p-4 sw-controls"><div class="sw-control"><label class="text-xs font-bold">'+bi('Class','الصف','bilingual')+'</label><select id="sw-class" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Selection Type','نوع الاختيار','bilingual')+'</label><select id="sw-mode" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="honor">Highest Honor Score / أعلى درجة تميز</option><option value="improved">Most Improved / الأكثر تحسنًا</option></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Student','الطالب','bilingual')+'</label><select id="sw-student" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Card Language','لغة البطاقة','bilingual')+'</label><select id="sw-language" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="bilingual">Bilingual / ثنائي</option><option value="en">English</option><option value="ar">العربية</option></select></div><div class="sw-control"><label class="text-xs font-bold"><span class="en">Number of Stars</span><span class="ar">عدد النجوم</span></label><select id="sw-count" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="auto">Auto — up to 3 / تلقائي — حتى 3</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div><label class="sw-control flex items-center gap-2 text-xs font-bold" style="align-items:center;"><input id="sw-first" type="checkbox"> '+bi('Show first name only','عرض الاسم الأول فقط','bilingual')+'</label><div class="sw-control flex items-end"><button type="button" data-action="sw-download" class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal);color:#fff;">'+bi('Download PNG','تنزيل PNG','bilingual')+'</button></div></div><div id="sw-output"></div></section>';
   const swAnchor=document.querySelector('script[type="module"]');if(!document.getElementById('tab-starcard'))swAnchor.insertAdjacentHTML('beforebegin',section);
   renderSwClasses();
 }catch(err){console.error('Star Card feature failed safely:',err);}
 })();
 </script>
 
+<script>
+(function(){
+'use strict';
+try{
+  const pairs={
+    'qp-student-select':'qp-class-select',
+    'pj-student-select':'pj-class-select',
+    's360-student-select':'s360-class-select',
+    'report-student-select':'report-class-select',
+    'cert-student-select':'cert-class-select',
+    'pr-student':'pr-class',
+    'sw-student':'sw-class'
+  };
+  document.addEventListener('change',e=>{
+    const student=e.target;
+    const classId=pairs[student?.id];
+    if(!classId)return;
+    const selected=studentsData.find(s=>String(s.id)===String(student.value));
+    const cls=document.getElementById(classId);
+    if(!selected||!cls)return;
+    const value=String(selected.classId);
+    if([...cls.options].some(o=>String(o.value)===value))cls.value=value;
+  },true);
+}catch(err){console.error('Student-to-class sync feature failed safely:',err);}
+})();
+</script>
 <script type="module">
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
