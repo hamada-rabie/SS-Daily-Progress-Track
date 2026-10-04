@@ -6224,5 +6224,132 @@ setPersistence(auth, browserLocalPersistence)
 @media(max-width:640px){#app-topbar.premium-header-v2{min-height:82px!important;height:82px!important;padding:7px 9px!important}#premium-header-shell{grid-template-columns:minmax(132px,42%) minmax(150px,1fr);gap:8px}.ph-left{gap:6px}.ph-profile{width:38px;height:38px;flex-basis:38px;border-radius:12px}.ph-dept-icon{width:30px;height:30px;flex-basis:30px;border-radius:10px;font-size:13px}.ph-dept{gap:6px}.ph-dept-copy .en{font-size:10px}.ph-dept-copy .ar{font-size:8px}.ph-right{grid-template-columns:48px minmax(0,1fr);column-gap:6px;row-gap:4px}.ph-ministry img{height:42px!important;max-width:46px!important;padding:4px!important;border-radius:10px!important}.ph-topline{gap:5px}.ph-page-title .en{font-size:10px;max-width:105px}.ph-page-title .ar{font-size:7.5px;max-width:105px}.ph-utilities{gap:3px}.ph-pill-clock,.ph-pill-term{display:none!important}.ph-pill{height:24px;padding:0 6px;font-size:8px}.ph-pill-select{height:24px!important;max-width:74px!important;font-size:8px!important;padding:0 5px!important}.ph-bell{width:25px;height:24px}.ph-nav{gap:3px;overflow-x:auto;scrollbar-width:none}.ph-nav::-webkit-scrollbar{display:none}.ph-nav-btn{height:23px;padding:0 6px;font-size:7.5px;gap:3px}.ph-nav-btn i{font-size:7.5px}}
 @media(max-width:380px){#premium-header-shell{grid-template-columns:122px minmax(140px,1fr)}.ph-dept-icon,.ph-page-title{display:none}.ph-right{grid-template-columns:44px minmax(0,1fr)}.ph-nav-btn{padding:0 5px;font-size:7px}}
 </style>
+<script id="premium-header-redesign-controller-2026-10-04">
+(function(){
+'use strict';
+try{
+  const header=document.getElementById('app-topbar');
+  if(!header || document.getElementById('premium-header-shell')) return;
+
+  const shell=document.createElement('div');
+  shell.id='premium-header-shell';
+  shell.innerHTML=[
+    '<div class="ph-left">',
+      '<div class="ph-profile" aria-label="Teacher profile / ملف المعلم"></div>',
+      '<div class="ph-dept"><div class="ph-dept-icon" aria-hidden="true"><i class="fa-solid fa-book-open-reader"></i></div><div class="ph-dept-copy"><span class="en">English Language Department</span><span class="ar">قسم اللغة الإنجليزية</span></div></div>',
+    '</div>',
+    '<div class="ph-right">',
+      '<div class="ph-ministry" aria-label="Ministry logo / شعار الوزارة"></div>',
+      '<div class="ph-topline"><div class="ph-page-title"></div><div class="ph-utilities">',
+        '<div class="ph-pill ph-pill-clock"><i class="fa-regular fa-clock"></i><span id="premium-clock-text">--</span></div>',
+        '<select id="premium-term-select" class="ph-pill-select" aria-label="Term / الفصل الدراسي"></select>',
+        '<select id="premium-language-select" class="ph-pill-select" aria-label="Language / اللغة"></select>',
+        '<button type="button" class="ph-bell" id="premium-bell" aria-label="Notifications / الإشعارات"><i class="fa-regular fa-bell"></i><span class="ph-badge" id="premium-badge">0</span></button>',
+      '</div></div>',
+      '<nav class="ph-nav" aria-label="Quick navigation">',
+        '<button type="button" class="ph-nav-btn" data-premium-tab="dashboard"><i class="fa-solid fa-house"></i><span class="en">Home</span><span class="ar">الرئيسية</span></button>',
+        '<button type="button" class="ph-nav-btn" data-premium-tab="students"><i class="fa-solid fa-users"></i><span class="en">Students</span><span class="ar">الطلاب</span></button>',
+        '<button type="button" class="ph-nav-btn" data-premium-tab="daily"><i class="fa-solid fa-calendar-check"></i><span class="en">Daily</span><span class="ar">اليومي</span></button>',
+        '<button type="button" class="ph-nav-btn" data-premium-tab="reports"><i class="fa-solid fa-file-lines"></i><span class="en">Reports</span><span class="ar">التقارير</span></button>',
+        '<button type="button" class="ph-nav-btn" data-premium-tab="journey"><i class="fa-solid fa-route"></i><span class="en">Journey</span><span class="ar">الرحلة</span></button>',
+        '<button type="button" class="ph-nav-btn" data-premium-tab="stars"><i class="fa-solid fa-trophy"></i><span class="en">Recognition</span><span class="ar">التميز</span></button>',
+        '<button type="button" class="ph-nav-btn" data-premium-tab="settings"><i class="fa-solid fa-sliders"></i><span class="en">Settings</span><span class="ar">الإعدادات</span></button>',
+      '</nav>',
+    '</div>'
+  ].join('');
+
+  header.classList.add('premium-header-v2');
+  header.appendChild(shell);
+
+  const copyMarkup=function(sourceId,target,selector){
+    const source=document.getElementById(sourceId);
+    if(!source||!target)return;
+    const paint=function(){target.innerHTML=selector?source.querySelector(selector)?.outerHTML||'':source.innerHTML;};
+    paint();
+    new MutationObserver(paint).observe(source,{childList:true,subtree:true,characterData:true,attributes:true});
+  };
+
+  copyMarkup('header-teacher-photo',shell.querySelector('.ph-profile'));
+  copyMarkup('header-ministry-logo',shell.querySelector('.ph-ministry'));
+
+  const oldClock=document.getElementById('top-date-span');
+  const newClock=document.getElementById('premium-clock-text');
+  if(oldClock&&newClock){
+    const paintClock=()=>{newClock.textContent=oldClock.textContent||'--';};
+    paintClock();
+    new MutationObserver(paintClock).observe(oldClock,{childList:true,subtree:true,characterData:true});
+  }
+
+  const oldTerm=document.getElementById('header-term-select');
+  const newTerm=document.getElementById('premium-term-select');
+  if(oldTerm&&newTerm){
+    newTerm.innerHTML=oldTerm.innerHTML;
+    newTerm.value=oldTerm.value;
+    newTerm.addEventListener('change',function(){oldTerm.value=newTerm.value;oldTerm.dispatchEvent(new Event('change',{bubbles:true}));});
+    new MutationObserver(function(){newTerm.innerHTML=oldTerm.innerHTML;newTerm.value=oldTerm.value;}).observe(oldTerm,{childList:true,subtree:true,attributes:true});
+  }
+
+  const oldLang=document.getElementById('header-language-select');
+  const newLang=document.getElementById('premium-language-select');
+  if(oldLang&&newLang){
+    newLang.innerHTML=oldLang.innerHTML;
+    newLang.value=oldLang.value;
+    newLang.addEventListener('change',function(){oldLang.value=newLang.value;oldLang.dispatchEvent(new Event('change',{bubbles:true}));});
+    new MutationObserver(function(){newLang.innerHTML=oldLang.innerHTML;newLang.value=oldLang.value;}).observe(oldLang,{childList:true,subtree:true,attributes:true});
+  }
+
+  const oldBell=document.getElementById('notif-bell-btn');
+  const oldBadge=document.getElementById('notif-badge');
+  const newBell=document.getElementById('premium-bell');
+  const newBadge=document.getElementById('premium-badge');
+  if(oldBell&&newBell){
+    newBell.addEventListener('click',function(){oldBell.click();});
+    const syncBell=function(){
+      if(oldBadge){
+        newBadge.textContent=oldBadge.textContent||'0';
+        newBadge.classList.toggle('hidden',oldBadge.classList.contains('hidden'));
+      }
+    };
+    syncBell();
+    if(oldBadge)new MutationObserver(syncBell).observe(oldBadge,{attributes:true,childList:true,characterData:true});
+  }
+
+  const oldEn=document.getElementById('current-page-title-en');
+  const oldAr=document.getElementById('current-page-title-ar');
+  const titleSlot=shell.querySelector('.ph-page-title');
+  if(oldEn)titleSlot.appendChild(oldEn);
+  if(oldAr)titleSlot.appendChild(oldAr);
+
+  const syncActive=function(){
+    const active=document.querySelector('.tab-content.active');
+    const key=active&&active.id?active.id.replace(/^tab-/,''):'dashboard';
+    shell.querySelectorAll('.ph-nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.premiumTab===key);});
+  };
+  shell.querySelectorAll('[data-premium-tab]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      const target=document.querySelector('[data-action="switch-tab"][data-tab="'+btn.dataset.premiumTab+'"]');
+      if(target)target.click();
+      else if(typeof window.switchTab==='function')window.switchTab(btn.dataset.premiumTab);
+      setTimeout(syncActive,0);
+    });
+  });
+  new MutationObserver(syncActive).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
+  syncActive();
+
+  if(typeof syncLanguageVisibility==='function')syncLanguageVisibility();
+
+  /* One-call rollback: removes only this redesign and reveals the untouched
+     original header children. No Firebase, data, storage, or app features are touched. */
+  window.restorePremiumHeaderLegacy=function(){
+    const s=document.getElementById('premium-header-shell');
+    const h=document.getElementById('app-topbar');
+    if(!s||!h)return false;
+    s.remove();
+    h.classList.remove('premium-header-v2');
+    return true;
+  };
+}catch(err){console.error('Premium header redesign failed safely:',err);}
+})();
+</script>
 </body>
 </html>
