@@ -5776,6 +5776,9 @@ try{
     const list=candidates(mode).sort((a,b)=>b.score-a.score);const prev=ss.value;
     ss.innerHTML=list.length?list.map(x=>'<option value="'+esc(x.s.id)+'">'+esc(x.s.name)+'</option>').join(''):'<option value="">No eligible student / لا يوجد طالب مستوفٍ للبيانات</option>';
     if([...ss.options].some(o=>o.value===prev))ss.value=prev;else if(list.length)ss.value=String(list[0].s.id);
+    const chosen=studentsData.find(x=>String(x.id)===String(ss.value));
+    const cls=document.getElementById('sw-class');
+    if(chosen&&cls){const cid=String(chosen.classId);if([...cls.options].some(o=>o.value===cid))cls.value=cid;}
     renderStarCard();
   }
   function renderStarCard(){
