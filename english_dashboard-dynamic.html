@@ -2970,7 +2970,7 @@ window.persistSmartAlert = async function persistSmartAlert(item){
     const existing=await getDoc(ref);
     if(existing.exists()) return;
     await setDoc(ref,item);
-    if('Notification' in window && Notification.permission==='granted' && notifAppEnabled){
+    if('Notification' in window && Notification.permission==='granted' && localStorage.getItem('ss_notif_app_enabled')==='1'){
       try{new Notification(item.titleEn || 'Smart Alert',{body:item.bodyEn || '',tag:item.id});}catch(e){}
     }
   }catch(err){
