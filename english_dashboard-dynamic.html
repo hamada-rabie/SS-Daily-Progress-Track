@@ -1042,6 +1042,7 @@ main .card{border-radius:16px}
         <a href="#" data-action="switch-tab" data-tab="journey" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="journey"><i class="fa-solid fa-route w-5 text-center" style="color:var(--teal);"></i><span class="bi-label"><span class="en">Progress Journey</span><span class="ar">رحلة التقدم</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="classpulse" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="classpulse"><i class="fa-solid fa-heart-pulse w-5 text-center" style="color:var(--leaf);"></i><span class="bi-label"><span class="en">Class Pulse</span><span class="ar">نبض الفصل</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="skill-explorer" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="skill-explorer"><i class="fa-solid fa-ranking-star w-5 text-center" style="color:var(--gold);"></i><span class="bi-label"><span class="en">Skill Explorer</span><span class="ar">مستكشف المهارات</span></span></a>
+        <a href="#" data-action="pr-open" data-pr-tab="parentreport" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="parentreport"><i class="fa-solid fa-user-group w-5 text-center"></i><span class="bi-label"><span class="en">Parent Report</span><span class="ar">تقرير ولي الأمر</span></span></a>
       </div>
 
       <button type="button" data-action="toggle-nav-group" data-group="achievement" aria-expanded="false" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
@@ -1051,6 +1052,7 @@ main .card{border-radius:16px}
       <div id="nav-group-achievement" class="space-y-1">
         <a href="#" data-action="switch-tab" data-tab="stars" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="stars"><i class="fa-solid fa-trophy w-5 text-center text-amber-500"></i><span class="bi-label"><span class="en">Honor Board</span><span class="ar">لوحة التميز</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="certificates" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="certificates"><i class="fa-solid fa-award w-5 text-center"></i><span class="bi-label"><span class="en">Certificates</span><span class="ar">الشهادات</span></span></a>
+        <a href="#" data-action="sw-open" data-sw-tab="starcard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="starcard"><i class="fa-solid fa-star w-5 text-center"></i><span class="bi-label"><span class="en">Star Card</span><span class="ar">بطاقة النجم</span></span></a>
       </div>
 
       <button type="button" data-action="toggle-nav-group" data-group="management" aria-expanded="false" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
@@ -5634,6 +5636,177 @@ window.addEventListener('DOMContentLoaded', ()=>{
 });
 </script>
   
+<style id="pr-star-feature-styles">
+#tab-parentreport .pr-report-paper,#tab-starcard .sw-card-canvas{background:var(--card);color:var(--ink);border:1px solid var(--line);}
+#tab-parentreport .pr-report-paper{max-width:210mm;margin:0 auto;min-height:297mm;padding:14mm;direction:ltr;}
+.pr-controls,.sw-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.pr-control,.sw-control{min-width:0;}
+.pr-report-header{display:grid;grid-template-columns:72px 1fr 72px;align-items:center;gap:12px;padding-bottom:12px;border-bottom:2px solid var(--teal);}
+.pr-logo{width:64px;height:64px;object-fit:contain;border:1px solid var(--line);background:var(--card);border-radius:8px;}
+.pr-report-title{text-align:center;}
+.pr-section{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px;}
+.pr-skill-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.pr-skill-row{min-width:0;}
+.pr-skill-bar{height:9px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:5px;}
+.pr-skill-fill{height:100%;background:var(--teal);border-radius:999px;}
+.pr-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.pr-list{margin:5px 0 0;padding-inline-start:18px;}
+.pr-signatures{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:24px;}
+.pr-signature{border-top:1px solid var(--line);padding-top:7px;text-align:center;}
+.sw-card-wrap{display:flex;justify-content:center;overflow-x:auto;padding:8px;}
+#tab-starcard .sw-card-canvas{width:min(100%,720px);aspect-ratio:1/1;padding:9%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;}
+.sw-card-canvas::before{content:'';position:absolute;inset:5%;border:2px solid var(--teal);border-radius:24px;pointer-events:none;}
+.sw-star{font-size:58px;line-height:1;color:var(--teal);}
+.sw-name{font-size:42px;font-weight:900;margin-top:18px;line-height:1.15;}
+.sw-reason{max-width:82%;margin-top:18px;padding:14px;border:1px solid var(--line);border-radius:14px;font-size:17px;line-height:1.5;}
+.sw-school-logo{width:90px;height:90px;object-fit:contain;margin-top:22px;border:1px solid var(--line);border-radius:10px;background:var(--card);}
+.sw-teacher{font-size:14px;margin-top:10px;}
+.sw-empty{width:100%;padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px;}
+@media(max-width:640px){.pr-controls,.sw-controls,.pr-skill-grid,.pr-stat-grid,.pr-signatures{grid-template-columns:1fr;}#tab-parentreport .pr-report-paper{padding:7mm;min-height:auto}.pr-report-header{grid-template-columns:48px 1fr 48px}.pr-logo{width:44px;height:44px}.sw-card-canvas{width:100%!important}.sw-name{font-size:30px}.sw-reason{font-size:13px;max-width:90%;}}
+@media print{
+  #tab-parentreport{page-break-inside:avoid;break-inside:avoid;}
+  #tab-parentreport .pr-report-paper{width:210mm;min-height:297mm;max-width:none;margin:0;padding:14mm;border:0;box-shadow:none;page-break-inside:avoid;break-inside:avoid;}
+  #tab-parentreport .pr-section{page-break-inside:avoid;break-inside:avoid;}
+  #tab-parentreport .pr-no-print{display:none!important;}
+}
+</style>
+<style id="sw-feature-print-style">
+@media print{#tab-starcard{page-break-inside:avoid;break-inside:avoid;}#tab-starcard .sw-card-canvas{box-shadow:none;}}
+</style>
+
+<script>
+(function(){
+'use strict';
+try{
+  if(typeof TAB_TITLES!=='object') throw new Error('TAB_TITLES unavailable');
+  TAB_TITLES.parentreport=['Parent Report','تقرير ولي الأمر'];
+
+  const esc=v=>typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const classFor=s=>classesData.find(c=>String(c.id)===String(s.classId));
+  const reportLang=()=>document.getElementById('pr-language')?.value||'bilingual';
+  const bi=(en,ar,lang=reportLang())=>lang==='ar'?esc(ar):lang==='en'?esc(en):'<span class="en">'+esc(en)+'</span><span class="ar">'+esc(ar)+'</span>';
+  const pct=v=>v===null||v===undefined?'':Math.max(0,Math.min(100,Number(v)));
+  const latestDaily=s=>{const ds=getStudentHistoricalRecords(s);return ds.length?ds[ds.length-1].rec:null;};
+  const commitment=s=>{
+    const rs=getStudentHistoricalRecords(s);
+    if(!rs.length)return null;
+    const att=rs.filter(x=>x.rec&&x.rec.attendance).length?Math.round(rs.filter(x=>x.rec&&x.rec.attendance==='present').length/rs.filter(x=>x.rec&&x.rec.attendance).length*100):null;
+    const hw=rs.filter(x=>x.rec&&typeof x.rec.homeworkDone==='boolean');
+    return {attendance:att,homework:hw.length?Math.round(hw.filter(x=>x.rec.homeworkDone).length/hw.length*100):null};
+  };
+  const lastLabel=(s,key,fn)=>{
+    const rs=getStudentHistoricalRecords(s);
+    for(let i=rs.length-1;i>=0;i--){const v=rs[i].rec&&rs[i].rec[key];if(v)return fn(v);}
+    return null;
+  };
+  const renderClassOptions=(id,all=true)=>{
+    const el=document.getElementById(id);if(!el)return;
+    const prev=el.value;
+    el.innerHTML=(all?'<option value="all">All Classes / كل الصفوف</option>':'')+classesData.map(c=>'<option value="'+esc(c.id)+'">'+esc(shortClass(c))+'</option>').join('');
+    if([...el.options].some(o=>o.value===prev))el.value=prev;
+  };
+  const renderStudentOptions=()=>{
+    const cs=document.getElementById('pr-class'),ss=document.getElementById('pr-student');if(!cs||!ss)return;
+    const prev=ss.value;let list=studentsData.slice();if(cs.value!=='all')list=list.filter(s=>String(s.classId)===String(cs.value));
+    ss.innerHTML=list.length?list.map(s=>'<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>').join(''):'<option value="">No students / لا يوجد طلاب</option>';
+    if([...ss.options].some(o=>o.value===prev))ss.value=prev;
+    renderParentReport();
+  };
+  const parentClosing=(s,conf)=>{
+    if(!s)return bi('There is not enough recorded information yet for a meaningful progress summary.','لا توجد بيانات مسجلة كافية حتى الآن لتقديم ملخص دقيق عن التقدم.');
+    if(conf.daily===0&&conf.skillPts===0)return bi('Current records are limited; continue recording daily progress to build a clearer picture.','البيانات الحالية محدودة؛ استمر في تسجيل التقدم اليومي لبناء صورة أوضح عن مستوى الطالب.');
+    const m=getStudentProgressMoment(s);
+    if(m){const l=QP_SKILL_LABELS[m.key];return bi(l.en+' improved from '+m.from+'% to '+m.to+'%, based on recorded skill history.',l.ar+' تحسنت من '+m.from+'% إلى '+m.to+'% وفقًا لسجل المهارات المسجل.');}
+    return bi('This report reflects the progress records available for the selected student.', 'يعكس هذا التقرير سجلات التقدم المتاحة للطالب المحدد.');
+  };
+  function renderParentReport(){
+    const out=document.getElementById('pr-output');if(!out)return;
+    const sid=document.getElementById('pr-student')?.value;const s=studentsData.find(x=>String(x.id)===String(sid));
+    if(!s){out.innerHTML='<div class="pr-report-paper"><div class="pr-empty">'+bi('No student selected.','لم يتم اختيار طالب.')+'</div></div>';return;}
+    const cls=classFor(s), skills=Object.keys(QP_SKILL_LABELS), conf=getStudentDataConfidence(s), com=commitment(s), last=latestDaily(s);
+    const strength=getStudentStrengths(s)||[], focus=getStudentFocusAreas(s)||[], moment=getStudentProgressMoment(s);
+    const skillRows=skills.map(k=>{const v=getCurrentSkillValue(s,k), name=QP_SKILL_LABELS[k];return '<div class="pr-skill-row"><div style="display:flex;justify-content:space-between;gap:8px;font-weight:800;"><span>'+bi(name.en,name.ar)+'</span><span>'+ (v===null?bi('Not assessed yet','لم تُقيَّم بعد'):skillLevelLabel(v)[reportLang()==='ar'?'ar':'en']) +'</span></div><div class="pr-skill-bar"><div class="pr-skill-fill" style="width:'+pct(v===null?0:skillLevelPercentage(v))+'%;"></div></div></div>';}).join('');
+    const stat=(title,val)=>'<div class="pr-section" style="margin-top:0;"><div style="font-size:10px;color:var(--teal-dark);font-weight:800;">'+title+'</div><div style="font-size:22px;font-weight:900;margin-top:4px;">'+(val===null?bi('No data','لا توجد بيانات كافية'):val+'%')+'</div></div>';
+    const strengthHtml=strength.length?'<ul class="pr-list">'+strength.map(x=>'<li>'+bi(x.en,x.ar)+'</li>').join('')+'</ul>':bi('No recorded strengths identified yet.','لم يتم تحديد نقاط قوة مسجلة بعد.');
+    const focusHtml=focus.length?'<ul class="pr-list">'+focus.map(x=>'<li>'+bi(x.en,x.ar)+'</li>').join('')+'</ul>':bi('No specific focus area identified from the available records.','لم يتم تحديد مجال تركيز محدد من السجلات المتاحة.');
+    const momentHtml=moment?bi(QP_SKILL_LABELS[moment.key].en+' improved from '+moment.from+'% to '+moment.to+'%.',QP_SKILL_LABELS[moment.key].ar+' تحسنت من '+moment.from+'% إلى '+moment.to+'%.'):bi('No clear improvement point can be established from the available skill history.','لا يمكن تحديد نقطة تحسن واضحة من سجل المهارات المتاح.');
+    const teacherNote=document.getElementById('pr-note')?.checked&&s.notes?'<div class="pr-section"><div style="font-weight:900;color:var(--teal-dark);">'+bi('Teacher Note','ملاحظة المعلم')+'</div><div style="margin-top:6px;white-space:pre-wrap;">'+esc(s.notes)+'</div></div>':'';
+    const school=esc(settings.schoolName||'');const term=termLabel();const issue=new Date().toLocaleDateString(document.body.classList.contains('lang-ar')?'ar-QA':'en-GB');
+    out.innerHTML='<div class="pr-report-paper"><header class="pr-report-header"><div>'+(settings.schoolLogo?'<img class="pr-logo" src="'+esc(settings.schoolLogo)+'" alt="">':'')+'</div><div class="pr-report-title"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+school+'</div><div style="font-size:11px;font-weight:800;margin-top:4px;">'+bi('English Language Department','قسم اللغة الإنجليزية')+'</div><div style="font-size:20px;font-weight:900;margin-top:8px;">'+bi('Parent Meeting Report','تقرير اجتماع ولي الأمر')+'</div><div style="font-size:9px;color:var(--teal-dark);margin-top:4px;">'+esc(term.en)+' / '+esc(term.ar)+' · '+esc(issue)+'</div></div><div style="display:flex;justify-content:flex-end;">'+(settings.ministryLogo?'<img class="pr-logo" src="'+esc(settings.ministryLogo)+'" alt="">':'')+'</div></header><section class="pr-section"><div style="font-size:10px;font-weight:800;color:var(--teal-dark);">'+bi('Student Information','بيانات الطالب')+'</div><div style="font-size:18px;font-weight:900;margin-top:5px;">'+esc(s.name)+'</div><div style="margin-top:4px;">'+bi('Class: ','الصف: ')+esc(shortClass(cls))+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Language Skills','مهارات اللغة')+'</div><div class="pr-skill-grid" style="margin-top:10px;">'+skillRows+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Commitment','الالتزام')+'</div><div class="pr-stat-grid" style="margin-top:10px;">'+stat(bi('Attendance','الحضور'),com?com.attendance:null)+stat(bi('Homework','الواجبات'),com?com.homework:null)+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Participation & Behaviour','المشاركة والسلوك')+'</div><div style="margin-top:8px;">'+bi('Latest recorded participation: ','آخر مشاركة مسجلة: ')+(lastLabel(s,'participationLevel',v=>participationLabel(v).en)||bi('No data','لا توجد بيانات كافية'))+'</div><div style="margin-top:5px;">'+bi('Latest recorded behaviour: ','آخر سلوك مسجل: ')+(lastLabel(s,'behaviourLevel',v=>behaviourLabel(v).en)||bi('No data','لا توجد بيانات كافية'))+'</div></section><section class="pr-section"><div class="pr-stat-grid"><div><div style="font-weight:900;color:var(--teal-dark);">'+bi('Strengths','نقاط القوة')+'</div>'+strengthHtml+'</div><div><div style="font-weight:900;color:var(--teal-dark);">'+bi('Focus Areas','مجالات التركيز')+'</div>'+focusHtml+'</div></div><div style="margin-top:12px;"><div style="font-weight:900;color:var(--teal-dark);">'+bi('Key Progress','أبرز تقدم')+'</div><div style="margin-top:5px;">'+momentHtml+'</div></div></section><section class="pr-section"><div style="font-size:9px;color:var(--teal-dark);font-weight:800;">'+bi('Data confidence','موثوقية البيانات')+'</div><div style="font-size:9px;color:var(--teal-dark);margin-top:3px;">'+(reportLang()==='ar'?esc(conf.ar):reportLang()==='en'?esc(conf.en):esc(conf.en)+' / '+esc(conf.ar))+' · '+esc(conf.desc_en)+' / '+esc(conf.desc_ar)+'</div></section><div style="margin-top:12px;line-height:1.5;">'+parentClosing(s,conf)+'</div>'+teacherNote+'<div class="pr-signatures"><div class="pr-signature"><div style="font-weight:900;">'+esc(settings.teacherName||'')+'</div><div style="font-size:10px;">'+bi('Teacher','المعلم')+'</div></div><div class="pr-signature"><div style="font-weight:900;">'+esc(settings.coordinatorName||'')+'</div><div style="font-size:10px;">'+bi('Coordinator','المنسق')+'</div></div></div></div>';
+    if(typeof syncLanguageVisibility==='function')syncLanguageVisibility();
+  }
+  function openParent(){switchTab('parentreport');renderClassOptions('pr-class');renderStudentOptions();}
+  document.addEventListener('click',e=>{const t=e.target.closest('[data-action="pr-open"]');if(!t)return;e.preventDefault();openParent();});
+  document.addEventListener('change',e=>{const t=e.target;if(!t.id)return;if(t.id==='pr-class'){renderStudentOptions();}else if(t.id==='pr-student'||t.id==='pr-language'||t.id==='pr-note'){renderParentReport();}});
+  document.addEventListener('click',e=>{const t=e.target.closest('[data-action="pr-preview"]');if(t)renderParentReport();if(e.target.closest('[data-action="pr-print"]'))window.print();});
+  const section='<section id="tab-parentreport" class="tab-content space-y-4"><div class="card p-4 pr-no-print"><div class="pr-controls"><div class="pr-control"><label class="text-xs font-bold">'+bi('Class','الصف')+'</label><select id="pr-class" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="pr-control"><label class="text-xs font-bold">'+bi('Student','الطالب')+'</label><select id="pr-student" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="pr-control"><label class="text-xs font-bold">'+bi('Report Language','لغة التقرير')+'</label><select id="pr-language" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="bilingual">Bilingual / ثنائي</option><option value="en">English</option><option value="ar">العربية</option></select></div><label class="pr-control flex items-center gap-2 text-xs font-bold" style="align-items:center;"><input id="pr-note" type="checkbox"> '+bi('Include Teacher Note','تضمين ملاحظة المعلم')+'</label></div><div class="flex gap-2 flex-wrap mt-3"><button type="button" data-action="pr-preview" class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal);color:#fff;">'+bi('Preview','معاينة')+'</button><button type="button" data-action="pr-print" class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal-dark);color:#fff;">'+bi('Print / Save PDF','طباعة / حفظ PDF')+'</button></div></div><div id="pr-output" class="printable-area"></div></section>';
+  const prAnchor=document.querySelector('script[type="module"]'); if(!document.getElementById('tab-parentreport'))prAnchor.insertAdjacentHTML('beforebegin',section);
+  renderClassOptions('pr-class');
+}catch(err){console.error('Parent Report feature failed safely:',err);}
+})();
+</script>
+
+<script>
+(function(){
+'use strict';
+try{
+  if(typeof TAB_TITLES!=='object') throw new Error('TAB_TITLES unavailable');
+  TAB_TITLES.starcard=['Star Card','بطاقة النجم'];
+  const esc=v=>typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const bi=(en,ar,lang)=>lang==='ar'?esc(ar):lang==='en'?esc(en):'<span class="en">'+esc(en)+'</span><span class="ar">'+esc(ar)+'</span>';
+  const listFor=()=>{const sel=document.getElementById('sw-class');let a=studentsData.slice();if(sel&&sel.value!=='all')a=a.filter(s=>String(s.classId)===String(sel.value));return a;};
+  const progressScore=s=>{const m=getStudentProgressMoment(s);return m?m.diff:null;};
+  const candidates=(mode)=>listFor().map(s=>({s,score:mode==='honor'?honorScore(s):progressScore(s)})).filter(x=>x.score!==null&&(mode==='honor'?getAssessedSkillEntries(safeStudent(x.s)).length>0:true));
+  function safeStudent(s){return s;}
+  const reason=(s,mode)=>{
+    if(mode==='improved'){const m=getStudentProgressMoment(s);return m?QP_SKILL_LABELS[m.key].en+' improved from '+m.from+'% to '+m.to+'%.':'Progress improvement is not sufficiently established.';}
+    const hs=honorScore(s);return 'Honor Score: '+hs+'% based on the recorded skill and participation data.';
+  };
+  const arReason=(s,mode)=>{
+    if(mode==='improved'){const m=getStudentProgressMoment(s);return m?QP_SKILL_LABELS[m.key].ar+' تحسنت من '+m.from+'% إلى '+m.to+'%.':'لا توجد بيانات كافية لإثبات تحسن واضح.';}
+    return 'درجة التميز: '+honorScore(s)+'% بناءً على بيانات المهارات والمشاركة المسجلة.';
+  };
+  function renderSwClasses(){
+    const el=document.getElementById('sw-class');if(!el)return;const prev=el.value;
+    el.innerHTML='<option value="all">All Classes / كل الصفوف</option>'+classesData.map(c=>'<option value="'+esc(c.id)+'">'+esc(shortClass(c))+'</option>').join('');
+    if([...el.options].some(o=>o.value===prev))el.value=prev;
+  }
+  function renderSwStudents(){
+    const ss=document.getElementById('sw-student'),mode=document.getElementById('sw-mode')?.value||'honor';if(!ss)return;
+    const list=candidates(mode).sort((a,b)=>b.score-a.score);const prev=ss.value;
+    ss.innerHTML=list.length?list.map(x=>'<option value="'+esc(x.s.id)+'">'+esc(x.s.name)+'</option>').join(''):'<option value="">No eligible student / لا يوجد طالب مستوفٍ للبيانات</option>';
+    if([...ss.options].some(o=>o.value===prev))ss.value=prev;else if(list.length)ss.value=String(list[0].s.id);
+    renderStarCard();
+  }
+  function renderStarCard(){
+    const out=document.getElementById('sw-output');if(!out)return;
+    const mode=document.getElementById('sw-mode')?.value||'honor',lang=document.getElementById('sw-language')?.value||'bilingual',first=document.getElementById('sw-first')?.checked||false,sid=document.getElementById('sw-student')?.value,s=studentsData.find(x=>String(x.id)===String(sid));
+    const eligible=candidates(mode).length;
+    if(!s){out.innerHTML='<div class="sw-card-wrap"><div class="sw-card-canvas sw-empty"><div class="sw-star">★</div><div style="font-size:20px;font-weight:900;margin-top:12px;">'+bi(mode==='honor'?'Star of the Week':'Most Improved',mode==='honor'?'نجم الأسبوع':'الأكثر تحسنًا',lang)+'</div><div style="margin-top:8px;">'+bi('Not enough data to select a student yet.','لا توجد بيانات كافية لاختيار طالب حتى الآن.',lang)+'</div></div></div>';return;}
+    const cls=classesData.find(c=>String(c.id)===String(s.classId)),name=first?String(s.name).trim().split(/\s+/)[0]:s.name;
+    const enTitle=mode==='honor'?'Star of the Week':'Most Improved',arTitle=mode==='honor'?'نجم الأسبوع':'الأكثر تحسنًا';
+    out.innerHTML='<div class="sw-card-wrap"><div id="sw-card-canvas" class="sw-card-canvas"><div class="sw-star">★</div><div style="font-size:24px;font-weight:900;color:var(--teal-dark);">'+bi(enTitle,arTitle,lang)+'</div><div class="sw-name">'+esc(name)+'</div><div style="font-size:16px;color:var(--teal-dark);">'+bi('Class: ','الصف: ',lang)+esc(shortClass(cls))+'</div><div class="sw-reason">'+bi(reason(s,mode),arReason(s,mode),lang)+'</div>'+(settings.schoolLogo?'<img class="sw-school-logo" src="'+esc(settings.schoolLogo)+'" alt="">':'')+'<div class="sw-teacher">'+bi('Teacher: ','المعلم: ',lang)+esc(settings.teacherName||'')+'</div></div></div>';
+  }
+  async function downloadStar(){
+    const card=document.getElementById('sw-card-canvas');if(!card||!studentsData.length){alert('Star Card: no card is available / بطاقة النجم: لا توجد بطاقة متاحة');return;}
+    try{
+      if(!window.html2canvas)throw new Error('html2canvas is not available');
+      if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+      const canvas=await html2canvas(card,{backgroundColor:getComputedStyle(card).getPropertyValue('background-color')||null,scale:2,useCORS:true,logging:false});
+      const a=document.createElement('a');const s=studentsData.find(x=>String(x.id)===String(document.getElementById('sw-student')?.value));a.download='Star_Card_'+String(s?.name||'student').trim().replace(/\s+/g,'_')+'.png';a.href=canvas.toDataURL('image/png');a.click();
+    }catch(err){console.error('Star Card PNG export failed:',err);alert('Star Card PNG export failed. Please try again / تعذر تصدير بطاقة النجم كصورة PNG. حاول مرة أخرى.');}
+  }
+  function openSw(){switchTab('starcard');renderSwClasses();renderSwStudents();}
+  document.addEventListener('click',e=>{const t=e.target.closest('[data-action="sw-open"]');if(!t)return;e.preventDefault();openSw();});
+  document.addEventListener('change',e=>{const t=e.target;if(!t.id)return;if(t.id==='sw-class'||t.id==='sw-mode'){renderSwStudents();}else if(t.id==='sw-student'||t.id==='sw-language'||t.id==='sw-first'){renderStarCard();}});
+  document.addEventListener('click',e=>{if(e.target.closest('[data-action="sw-download"]'))downloadStar();});
+  const section='<section id="tab-starcard" class="tab-content space-y-4"><div class="card p-4 sw-controls"><div class="sw-control"><label class="text-xs font-bold">'+bi('Class','الصف','bilingual')+'</label><select id="sw-class" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Selection Type','نوع الاختيار','bilingual')+'</label><select id="sw-mode" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="honor">Highest Honor Score / أعلى درجة تميز</option><option value="improved">Most Improved / الأكثر تحسنًا</option></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Student','الطالب','bilingual')+'</label><select id="sw-student" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Card Language','لغة البطاقة','bilingual')+'</label><select id="sw-language" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="bilingual">Bilingual / ثنائي</option><option value="en">English</option><option value="ar">العربية</option></select></div><label class="sw-control flex items-center gap-2 text-xs font-bold" style="align-items:center;"><input id="sw-first" type="checkbox"> '+bi('Show first name only','عرض الاسم الأول فقط','bilingual')+'</label><div class="sw-control flex items-end"><button type="button" data-action="sw-download" class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal);color:#fff;">'+bi('Download PNG','تنزيل PNG','bilingual')+'</button></div></div><div id="sw-output"></div></section>';
+  const swAnchor=document.querySelector('script[type="module"]');if(!document.getElementById('tab-starcard'))swAnchor.insertAdjacentHTML('beforebegin',section);
+  renderSwClasses();
+}catch(err){console.error('Star Card feature failed safely:',err);}
+})();
+</script>
+
 <script type="module">
   import { initializeApp }
     from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
