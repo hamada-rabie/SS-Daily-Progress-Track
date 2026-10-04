@@ -2878,7 +2878,7 @@ const SKILL_LEVELS = [
   {key:'excellent', en:'Excellent', ar:'ممتاز', score:6}
 ];
 const SKILL_LEVEL_MAP = Object.fromEntries(SKILL_LEVELS.map(x=>[x.key,x]));
-function legacySkillToLevel(v){ const n=Number(v); if(!Number.isFinite(n)) return null; if(n<=2)return 'very_weak'; if(n<=3)return 'weak'; if(n<=4)return 'acceptable'; if(n<=6)return 'average'; if(n<=8)return 'very_good'; return 'excellent'; }
+function legacySkillToLevel(v){ const n=Number(v); if(!Number.isFinite(n)||n<=0) return null; if(n<=2)return 'very_weak'; if(n<=3)return 'weak'; if(n<=4)return 'acceptable'; if(n<=6)return 'average'; if(n<=8)return 'very_good'; return 'excellent'; }
 function normalizeSkillLevel(v){ if(typeof v==='string' && SKILL_LEVEL_MAP[v]) return v; if(typeof v==='number') return legacySkillToLevel(v); return null; }
 function skillLevelScore(v){ const key=normalizeSkillLevel(v); return key&&SKILL_LEVEL_MAP[key]?SKILL_LEVEL_MAP[key].score:null; }
 function skillLevelLabel(v){ const key=normalizeSkillLevel(v); return key&&SKILL_LEVEL_MAP[key]?SKILL_LEVEL_MAP[key]:null; }
