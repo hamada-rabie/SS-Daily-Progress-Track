@@ -2976,7 +2976,7 @@ async function notifyPerfectSkill(studentId, key, date, oldVal, newVal){
   }catch(err){
     console.error('Perfect skill notification error:',err);
     if('Notification' in window && Notification.permission==='granted'){
-      try{new Notification('Perfect Skill Score 🎉',{body:`${s.name} — ${label.en}: 10/10`,tag:notificationId});}catch(e){}
+      try{new Notification('Excellent Skill Rating 🎉',{body:`${s.name} — ${label.en}: Excellent`,tag:notificationId});}catch(e){}
     }
   }
 }
@@ -3509,7 +3509,7 @@ function getStudentStrengths(s){
   if(max>0){
     const top = entries.filter(([k,v])=>v===max).map(([k])=>k);
     if(top.length===1){
-      out.push({en:`${QP_SKILL_LABELS[top[0]].en} — ${skillLevelPercentage(max)}%`, ar:`${QP_SKILL_LABELS[top[0]].ar} — ${max*10}٪`});
+      const lvl=skillLevelLabel(max); out.push({en:`${QP_SKILL_LABELS[top[0]].en} — ${lvl.en}`, ar:`${QP_SKILL_LABELS[top[0]].ar} — ${lvl.ar}`});
     }
   }
   const recs = getStudentHistoricalRecords(s);
@@ -3544,7 +3544,7 @@ function getStudentProgressMoment(s){
   Object.keys(QP_SKILL_LABELS).forEach(k=>{
     const pts = hist.filter(h=>skillLevelScore(h[k])!==null);
     if(pts.length<2) return;
-    const diff = pts[pts.length-1][k] - pts[0][k];
+    const diff = skillLevelScore(pts[pts.length-1][k]) - skillLevelScore(pts[0][k]);
     if(diff>=2 && (!best || diff>best.diff)) best = {key:k, diff, from:skillLevelPercentage(pts[0][k]), to:skillLevelPercentage(pts[pts.length-1][k]), points:pts.length};
   });
   return best;
@@ -5537,7 +5537,7 @@ function renderSkillExplorer(){
   if(!assessed.length){results.innerHTML=`<div class="card p-8 text-center text-gray-400 text-sm lg:col-span-2"><i class="fa-solid fa-chart-column text-3xl mb-2"></i><p><span class="en">No assessed students for this skill in the selected class.</span><span class="ar">لا يوجد طلاب مُقيّمون في هذه المهارة للصف المحدد.</span></p></div>`;return;}
   const max=Math.max(...assessed.map(x=>x.score)), min=Math.min(...assessed.map(x=>x.score));
   const highest=assessed.filter(x=>x.score===max), lowest=assessed.filter(x=>x.score===min);
-  const group=(en,ar,items,icon,bg)=>`<div class="card p-5 space-y-3"><div class="flex items-center justify-between gap-3"><div class="flex items-center gap-2"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:${bg};color:var(--teal-dark);"><i class="fa-solid ${icon}"></i></div><div><p class="font-bold text-sm"><span class="en">${en}</span><span class="ar">${ar}</span></p><p class="text-[10px] text-gray-400">${label.en} / ${label.ar}</p></div></div><span class="score-badge" style="${scoreColor(items[0].score)}">${items[0].score}/10</span></div><div class="space-y-2">${items.map(x=>{const lvl=skillExplorerLevel(x.score),cls=x.classObj;return `<div class="flex items-center justify-between gap-3 rounded-xl px-3 py-2" style="background:color-mix(in srgb,var(--teal-light) 5%,var(--card));border:1px solid var(--line);"><div class="min-w-0"><p class="font-semibold text-sm truncate">${escapeHtml(x.student.name)}</p><p class="text-[10px] text-gray-400">${cls?shortClass(cls):'—'}</p></div><span class="text-[10px] font-bold text-right shrink-0"><span class="en">${lvl.en}</span><span class="ar">${lvl.ar}</span></span></div>`;}).join('')}</div></div>`;
+  const group=(en,ar,items,icon,bg)=>`<div class="card p-5 space-y-3"><div class="flex items-center justify-between gap-3"><div class="flex items-center gap-2"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:${bg};color:var(--teal-dark);"><i class="fa-solid ${icon}"></i></div><div><p class="font-bold text-sm"><span class="en">${en}</span><span class="ar">${ar}</span></p><p class="text-[10px] text-gray-400">${label.en} / ${label.ar}</p></div></div><span class="score-badge" style="${scoreColor(items[0].score)}">${skillLevelLabel(items[0].score)?.en || '—'}</span></div><div class="space-y-2">${items.map(x=>{const lvl=skillExplorerLevel(x.score),cls=x.classObj;return `<div class="flex items-center justify-between gap-3 rounded-xl px-3 py-2" style="background:color-mix(in srgb,var(--teal-light) 5%,var(--card));border:1px solid var(--line);"><div class="min-w-0"><p class="font-semibold text-sm truncate">${escapeHtml(x.student.name)}</p><p class="text-[10px] text-gray-400">${cls?shortClass(cls):'—'}</p></div><span class="text-[10px] font-bold text-right shrink-0"><span class="en">${lvl.en}</span><span class="ar">${lvl.ar}</span></span></div>`;}).join('')}</div></div>`;
   results.innerHTML=group('Highest','الأعلى',highest,'fa-arrow-up','#E7F6EB')+group('Lowest','الأقل',lowest,'fa-arrow-down','#FDECE3');
 }
 
