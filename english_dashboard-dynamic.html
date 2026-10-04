@@ -250,6 +250,7 @@ body.lang-ar .nav-link .bi-label .ar,body.lang-ar .nav-group-toggle .bi-label .a
 @media (prefers-reduced-motion: reduce){
   *, *::before, *::after{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
 }
+.smart-hero-alert{background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(242,169,59,.20));border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:9px 12px;text-align:center;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.10);}.smart-alert-attention{background:#FFF4EF;border:1px solid #F2C8B8;color:#A64A32;}.smart-alert-positive{background:#F0FAF3;border:1px solid #C7E6CE;color:#287A3E;}
 .card-interactive{ transition:transform .15s ease, box-shadow .15s ease; cursor:pointer; }
 .card-interactive:hover{ transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,0.09); }
 .card-interactive:active{ transform:translateY(0) scale(0.97); }
@@ -1188,6 +1189,7 @@ main .card{border-radius:16px}
         </div>
 
         <div id="hero-daily-status" class="max-w-md mx-auto mt-4"></div>
+        <div id="hero-smart-alerts" class="max-w-2xl mx-auto mt-3"></div>
 
         <div class="flex flex-wrap justify-center gap-2 mt-5">
           <a href="#" data-action="switch-tab" data-tab="daily" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors bilingual-inline"><i class="fa-solid fa-calendar-check"></i><span class="en">Daily Tracking</span><span class="ar">المتابعة اليومية</span></a>
@@ -2606,6 +2608,7 @@ function renderDashboard(){
     }
   }
   renderHeroDailyStatus();
+  renderSmartAlerts();
   // large home-page logo block removed — logos stay in the top header only
   const grid = document.getElementById('dashboard-classes-grid');
   if(classesData.length===0){
@@ -2632,9 +2635,20 @@ function renderDashboard(){
           <button data-action="delete-class" data-id="${c.id}" class="text-gray-300 hover:text-red-500 text-xs" title="Delete / حذف"><i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
+      ${renderClassAlertMarkup(c.id)}
     </div>`;
   }).join('');
 }
+function getTrackedDatesForStudent(studentId){return Object.keys(dailyArchives).filter(d=>dailyArchives[d]&&dailyArchives[d][studentId]).sort();}
+function getStudentRepeatedAbsence(studentId){return getTrackedDatesForStudent(studentId).slice(-10).filter(d=>dailyArchives[d][studentId]?.attendance==='absent').length;}
+function getStudentHomeworkMisses(studentId){return getTrackedDatesForStudent(studentId).slice(-3).filter(d=>dailyArchives[d][studentId]?.homeworkDone===false).length;}
+function getSkillImprovement(s){const out=[],h=Array.isArray(s.skillHistory)?s.skillHistory:[];h.forEach(e=>Object.keys(QP_SKILL_LABELS).forEach(k=>{if(typeof e[k]!=='number'||!e.date)return;const p=h.filter(x=>x.date<e.date&&typeof x[k]==='number').sort((a,b)=>a.date<b.date?-1:1).pop();if(p&&e[k]-p[k]>=2)out.push({key:k,date:e.date,delta:e[k]-p[k]});}));return out.sort((a,b)=>a.date<b.date?-1:1);}
+function getStudentSmartAlerts(s){const a=[];Object.keys(QP_SKILL_LABELS).forEach(k=>{const v=getCurrentSkillValue(s,k);if(v!==null&&v<=3)a.push({type:'attention',icon:'fa-triangle-exclamation',en:'Needs attention: '+QP_SKILL_LABELS[k].en+' is '+v+'/10.',ar:'يحتاج متابعة: '+QP_SKILL_LABELS[k].ar+' بدرجة '+v+'/10.'});});if(s.behaviourLevel==='needs_improvement')a.push({type:'attention',icon:'fa-user-shield',en:'Behaviour needs attention.',ar:'السلوك يحتاج إلى متابعة.'});if(s.participationLevel==='sleepy'||s.participationLevel==='passive')a.push({type:'attention',icon:'fa-hand',en:'Participation needs attention.',ar:'المشاركة تحتاج إلى متابعة.'});const abs=getStudentRepeatedAbsence(s.id);if(abs>=3)a.push({type:'attention',icon:'fa-calendar-xmark',en:abs+' absences in the last 10 tracked days.',ar:'لديه '+abs+' حالات غياب خلال آخر 10 أيام متابعة.'});const hw=getStudentHomeworkMisses(s.id);if(hw>=2)a.push({type:'attention',icon:'fa-book-open',en:'Homework was missed '+hw+' times in the last 3 tracked days.',ar:'لم يُنجز الواجب '+hw+' مرات خلال آخر 3 أيام متابعة.'});const im=getSkillImprovement(s).filter(x=>x.date===todayStr()).pop();if(im)a.push({type:'positive',icon:'fa-arrow-trend-up',en:'Improvement detected: '+QP_SKILL_LABELS[im.key].en+' +'+im.delta+'.',ar:'تم رصد تحسن: '+QP_SKILL_LABELS[im.key].ar+' +'+im.delta+'.'});return a.slice(0,4);}
+function getClassSmartAlerts(classId){const a=[],students=studentsData.filter(s=>s.classId===classId);Object.keys(QP_SKILL_LABELS).forEach(k=>{const dates={};students.forEach(s=>(Array.isArray(s.skillHistory)?s.skillHistory:[]).forEach(h=>{if(h.date&&typeof h[k]==='number'){if(!dates[h.date])dates[h.date]=[];dates[h.date].push(h[k]);}}));const ds=Object.keys(dates).sort();if(ds.length>=2){const p=dates[ds[ds.length-2]].reduce((x,y)=>x+y,0)/dates[ds[ds.length-2]].length,n=dates[ds[ds.length-1]].reduce((x,y)=>x+y,0)/dates[ds[ds.length-1]].length;if(n-p>=1)a.push({type:'positive',icon:'fa-arrow-trend-up',en:QP_SKILL_LABELS[k].en+' average improved by '+(n-p).toFixed(1)+' points.',ar:'تحسن متوسط '+QP_SKILL_LABELS[k].ar+' بمقدار '+(n-p).toFixed(1)+' نقطة.'});}});const attention=students.filter(s=>getStudentSmartAlerts(s).some(x=>x.type==='attention')).length;if(attention>=2)a.push({type:'attention',icon:'fa-triangle-exclamation',en:attention+' students currently need attention.',ar:attention+' طلاب يحتاجون حاليًا إلى متابعة.'});return a.slice(0,2);}
+function renderClassAlertMarkup(classId){const a=getClassSmartAlerts(classId)[0];if(!a)return '';return '<div class="mt-2 rounded-xl px-3 py-2 text-[10px] font-semibold flex items-center gap-2 '+(a.type==='positive'?'smart-alert-positive':'smart-alert-attention')+'"><i class="fa-solid '+a.icon+'"></i><span class="en">'+escapeHtml(a.en)+'</span><span class="ar">'+escapeHtml(a.ar)+'</span></div>';}
+function renderSmartAlerts(){const hero=document.getElementById('hero-smart-alerts');if(!hero)return;let attention=0,positive=0;studentsData.forEach(s=>getStudentSmartAlerts(s).forEach(a=>a.type==='attention'?attention++:positive++));classesData.forEach(c=>getClassSmartAlerts(c.id).forEach(a=>a.type==='attention'?attention++:positive++));if(!attention&&!positive){hero.innerHTML='';return;}hero.innerHTML='<div class="smart-hero-alert"><div class="flex items-center justify-center gap-2"><i class="fa-solid fa-bell"></i><span class="en font-bold">Smart Alerts</span><span class="ar font-bold">تنبيهات ذكية</span><span class="text-[9px]">'+(attention+positive)+'</span></div><div class="text-[10px] mt-1"><span class="en">'+attention+' attention alert(s) · '+positive+' progress alert(s)</span><span class="ar">'+attention+' تنبيه متابعة · '+positive+' تنبيه تحسن</span></div></div>';}
+function queueSmartAlert(type,id,date,titleEn,titleAr,bodyEn,bodyAr,data){if(typeof window.persistSmartAlert==='function')window.persistSmartAlert({id,titleEn,titleAr,bodyEn,bodyAr,createdAt:new Date().toISOString(),read:false,type,data});}
+function evaluateStudentSmartAlerts(studentId,date){const s=studentsData.find(x=>x.id===studentId);if(!s)return;const abs=getStudentRepeatedAbsence(studentId),hw=getStudentHomeworkMisses(studentId);if(abs>=3)queueSmartAlert('attendance-repeat','student_'+studentId+'_absence_'+date,date,'Repeated absence','غياب متكرر',s.name+' has '+abs+' absences in the last 10 tracked days.',s.name+' لديه '+abs+' حالات غياب خلال آخر 10 أيام متابعة.',{studentId,date,count:abs});if(hw>=2)queueSmartAlert('attention-homework','student_'+studentId+'_homework_'+date,date,'Homework needs attention','الواجب يحتاج متابعة',s.name+' missed homework '+hw+' times in the last 3 tracked days.',s.name+' لم ينجز الواجب '+hw+' مرات خلال آخر 3 أيام متابعة.',{studentId,date,count:hw});if(s.behaviourLevel==='needs_improvement')queueSmartAlert('attention-behaviour','student_'+studentId+'_behaviour_'+date,date,'Behaviour needs attention','السلوك يحتاج متابعة',s.name+' currently needs behaviour support.',s.name+' يحتاج حاليًا إلى متابعة في السلوك.',{studentId,date});if(s.participationLevel==='sleepy'||s.participationLevel==='passive')queueSmartAlert('attention-participation','student_'+studentId+'_participation_'+date,date,'Participation needs attention','المشاركة تحتاج متابعة',s.name+' currently needs participation support.',s.name+' يحتاج حاليًا إلى دعم في المشاركة.',{studentId,date});renderSmartAlerts();}
 function classOptionsHTML(includeAll){
   let html = includeAll ? '<option value="all">All Classes / كل الصفوف</option>' : '';
   html += classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
