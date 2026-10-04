@@ -263,6 +263,15 @@ body.lang-ar .nav-link .bi-label .ar,body.lang-ar .nav-group-toggle .bi-label .a
 .badge-unset{background:#F1F5F4;color:#8A9A96;}
 .score-badge{font-size:12px;font-weight:800;padding:4px 8px;border-radius:8px;min-width:34px;text-align:center;display:inline-block;}
 
+.daily-choice-btn{min-width:118px;max-width:100%;display:inline-flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:11px;font-weight:700;color:var(--ink);cursor:pointer;text-align:start;transition:all .15s ease;}
+.daily-choice-btn:hover{border-color:var(--teal-light);box-shadow:0 4px 12px rgba(14,124,116,.10);transform:translateY(-1px);}
+.daily-choice-btn .choice-main{display:flex;align-items:center;gap:6px;min-width:0;}
+.daily-choice-btn .choice-dot{width:7px;height:7px;border-radius:999px;flex:0 0 auto;background:#B7C5C1;}
+.daily-choice-btn.choice-warn{background:#FFF8F5;border-color:#F2D2C6;}.daily-choice-btn.choice-mid{background:#FFFBF1;border-color:#EADBAF;}.daily-choice-btn.choice-ok{background:#F4FBF6;border-color:#CBE7D1;}
+.daily-choice-menu{position:fixed;z-index:90;min-width:190px;max-width:min(310px,calc(100vw - 24px));padding:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 38px rgba(0,0,0,.18);direction:ltr;}
+.daily-choice-menu button{width:100%;display:flex;align-items:center;gap:8px;padding:8px 9px;border:0;background:transparent;border-radius:9px;cursor:pointer;text-align:left;color:var(--ink);font-size:11px;}.daily-choice-menu button:hover{background:#F1F7F5;}.daily-choice-menu .choice-dot{width:8px;height:8px;border-radius:999px;flex:0 0 auto;}.daily-choice-menu .choice-clear{border-top:1px solid var(--line);margin-top:4px;padding-top:9px;}
+.daily-bulk-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}.daily-bulk-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:6px 9px;font-size:10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}.daily-bulk-btn:hover{border-color:var(--teal-light);background:#F1F7F5;}
+@media(max-width:640px){.daily-choice-btn{min-width:104px;font-size:10px}.daily-choice-menu{min-width:175px}.daily-bulk-btn{font-size:9px;padding:6px 8px;}}
 .chk{width:20px;height:20px;border:2px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;color:#8A9A96;}
 .chk.unset{border-style:dashed;background:#F7FAF9;}
 @keyframes pjFadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
@@ -1341,7 +1350,7 @@ main .card{border-radius:16px}
           <select id="daily-class-filter" data-action="filter-daily" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
           <input id="daily-date" type="date" data-action="filter-daily" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
-        <p class="text-[11px] text-gray-500">Behaviour & Participation: dropdown · Homework: checkbox · Attendance: tap to cycle<br>السلوك والمشاركة: قائمة منسدلة · الواجب: مربع اختيار · الحضور: اضغط للتبديل</p>
+        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick apply to the selected class</span><span class="ar">تطبيق سريع على الصف المحدد</span></p><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="behaviour"><i class="fa-solid fa-user-check" style="color:#5C6BC0;"></i><span class="en">Behaviour: All</span><span class="ar">السلوك: الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="participation"><i class="fa-solid fa-hand" style="color:var(--violet);"></i><span class="en">Participation: All</span><span class="ar">المشاركة: الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="homework"><i class="fa-solid fa-book-open" style="color:#B5850C;"></i><span class="en">Homework: All</span><span class="ar">الواجب: الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="attendance"><i class="fa-solid fa-calendar-check" style="color:var(--sky);"></i><span class="en">Attendance: All</span><span class="ar">الحضور: الكل</span></button></div></div>
       </div>
       <div class="card table-scroll-x">
         <table class="w-full text-sm text-right">
@@ -2734,10 +2743,16 @@ function renderDailyTable(){
     const hwState = rec.homeworkDone===true ? 'done' : (rec.homeworkDone===false ? 'notdone' : 'unset');
     const hwHtml = hwState==='done' ? '<i class="fa-solid fa-check text-xs"></i>' : (hwState==='unset' ? '<i class="fa-solid fa-minus text-[9px]"></i>' : '');
     const hwClass = hwState==='done' ? 'checked' : (hwState==='unset' ? 'unset' : '');
+    const part = rec.participationLevel ? participationLabel(rec.participationLevel) : null;
+    const beh = rec.behaviourLevel ? behaviourLabel(rec.behaviourLevel) : null;
+    const partClass = part ? (part.cls==='badge-ok'?'choice-ok':part.cls==='badge-warn'?'choice-warn':'choice-mid') : '';
+    const behClass = beh ? (beh.cls==='badge-ok'?'choice-ok':beh.cls==='badge-warn'?'choice-warn':'choice-mid') : '';
+    const partDot = part ? (part.cls==='badge-ok'?'#2C8C46':part.cls==='badge-warn'?'#C85A2E':'#B5850C') : '#B7C5C1';
+    const behDot = beh ? (beh.cls==='badge-ok'?'#2C8C46':beh.cls==='badge-warn'?'#C85A2E':'#B5850C') : '#B7C5C1';
     return `<tr class="border-b text-sm" style="border-color:var(--line);">
       <td class="p-3 font-semibold">${s.name}</td>
-      <td class="p-3"><select data-action="set-behaviour" data-id="${s.id}" class="border rounded-lg px-2 py-1 text-xs" style="border-color:var(--line);">${behOptions}</select></td>
-      <td class="p-3"><select data-action="set-participation" data-id="${s.id}" class="border rounded-lg px-2 py-1 text-xs" style="border-color:var(--line);">${partOptions}</select></td>
+      <td class="p-3"><button type="button" class="daily-choice-btn ${behClass}" data-action="open-daily-choice" data-choice-field="behaviour" data-id="${s.id}"><span class="choice-main"><span class="choice-dot" style="background:${behDot};"></span><span class="en">${beh ? beh.en : "Not Assessed"}</span><span class="ar">${beh ? beh.ar : "لم يُقيَّم"}</span></span><i class="fa-solid fa-chevron-down text-[9px] text-gray-400"></i></button></td>
+      <td class="p-3"><button type="button" class="daily-choice-btn ${partClass}" data-action="open-daily-choice" data-choice-field="participation" data-id="${s.id}"><span class="choice-main"><span class="choice-dot" style="background:${partDot};"></span><span class="en">${part ? part.en : "Not Assessed"}</span><span class="ar">${part ? part.ar : "لم يُقيَّم"}</span></span><i class="fa-solid fa-chevron-down text-[9px] text-gray-400"></i></button></td>
       <td class="p-3"><span class="chk ${hwClass}" data-action="toggle-homework" data-id="${s.id}" title="${hwState==='unset'?'Not recorded / لم يُسجَّل':''}">${hwHtml}</span></td>
       <td class="p-3"><button data-action="cycle-attendance" data-id="${s.id}" class="badge ${attLabel.cls}">${attLabel.text}</button></td>
     </tr>`;
@@ -2767,6 +2782,41 @@ function toggleHomework(id){
   rec.homeworkDone = rec.homeworkDone===undefined ? true : !rec.homeworkDone;
   s.homeworkDone = latestDailyFieldValue(id, 'homeworkDone', false);
   saveData(); renderDailyTable(); renderStudentsTable();
+}
+let activeDailyChoiceMenu = null;
+function closeDailyChoiceMenu(){ if(activeDailyChoiceMenu){ activeDailyChoiceMenu.remove(); activeDailyChoiceMenu=null; } }
+function positionDailyMenu(menu,anchor){ const r=anchor.getBoundingClientRect(); menu.style.left=Math.max(8,Math.min(r.left,window.innerWidth-menu.offsetWidth-8))+'px'; menu.style.top=(r.bottom+6)+'px'; if(r.bottom+menu.offsetHeight+8>window.innerHeight) menu.style.top=Math.max(8,r.top-menu.offsetHeight-6)+'px'; }
+function openDailyChoiceMenu(anchor,field,studentId){
+  closeDailyChoiceMenu(); const rec=getDailyRecord(studentId,getSelectedDailyDate())||{}; const options=field==='behaviour'?BEHAVIOUR_OPTIONS:PARTICIPATION_OPTIONS; const current=field==='behaviour'?rec.behaviourLevel:rec.participationLevel;
+  const menu=document.createElement('div'); menu.className='daily-choice-menu';
+  menu.innerHTML=options.map(o=>'<button type="button" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':'#B5850C')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span>'+(current===o.key?' <i class="fa-solid fa-check ml-auto" style="color:var(--teal);"></i>':'')+'</button>').join('')+'<button type="button" class="choice-clear" data-value=""><span class="choice-dot" style="background:#B7C5C1"></span><span class="en">Not Assessed</span><span class="ar">لم يُقيَّم</span></button>';
+  document.body.appendChild(menu); activeDailyChoiceMenu=menu; positionDailyMenu(menu,anchor);
+  menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); setDailyChoice(studentId,field,btn.dataset.value); closeDailyChoiceMenu(); }));
+  setTimeout(()=>document.addEventListener('click',closeDailyChoiceMenu,{once:true}),0);
+}
+function setDailyChoice(studentId,field,value){ if(field==='behaviour') setBehaviour(studentId,value); else setParticipation(studentId,value); }
+function dailyBulkOptions(field){
+  if(field==='behaviour') return BEHAVIOUR_OPTIONS.map(o=>({key:o.key,en:o.en,ar:o.ar,cls:o.cls})).concat([{key:'',en:'Clear All',ar:'مسح الكل',cls:'clear'}]);
+  if(field==='participation') return PARTICIPATION_OPTIONS.map(o=>({key:o.key,en:o.en,ar:o.ar,cls:o.cls})).concat([{key:'',en:'Clear All',ar:'مسح الكل',cls:'clear'}]);
+  if(field==='homework') return [{key:'done',en:'Mark All Done',ar:'تحديد الكل تم',cls:'badge-ok'},{key:'notdone',en:'Mark All Not Done',ar:'تحديد الكل لم يتم',cls:'badge-warn'},{key:'clear',en:'Clear All',ar:'مسح الكل',cls:'clear'}];
+  return [{key:'present',en:'Mark All Present',ar:'تسجيل الكل حاضر',cls:'badge-ok'},{key:'late',en:'Mark All Late',ar:'تسجيل الكل متأخر',cls:'badge-mid'},{key:'absent',en:'Mark All Absent',ar:'تسجيل الكل غائب',cls:'badge-warn'},{key:'clear',en:'Clear All',ar:'مسح الكل',cls:'clear'}];
+}
+function openDailyBulkMenu(anchor,field){
+  closeDailyChoiceMenu(); const menu=document.createElement('div'); menu.className='daily-choice-menu';
+  menu.innerHTML=dailyBulkOptions(field).map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
+  document.body.appendChild(menu); activeDailyChoiceMenu=menu; positionDailyMenu(menu,anchor);
+  menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applyDailyBulk(field,btn.dataset.value); closeDailyChoiceMenu(); }));
+  setTimeout(()=>document.addEventListener('click',closeDailyChoiceMenu,{once:true}),0);
+}
+function applyDailyBulk(field,value){
+  const date=getSelectedDailyDate(); const classFilter=document.getElementById('daily-class-filter')?.value||'all'; const list=classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter));
+  list.forEach(s=>{ const rec=ensureDailyRecord(date,s.id);
+    if(field==='behaviour'){ if(value==='') delete rec.behaviourLevel; else rec.behaviourLevel=value; s.behaviourLevel=latestDailyFieldValue(s.id,'behaviourLevel','disciplined'); }
+    else if(field==='participation'){ if(value==='') delete rec.participationLevel; else rec.participationLevel=value; s.participationLevel=latestDailyFieldValue(s.id,'participationLevel','active'); }
+    else if(field==='homework'){ if(value==='clear') delete rec.homeworkDone; else rec.homeworkDone=value==='done'; s.homeworkDone=latestDailyFieldValue(s.id,'homeworkDone',false); }
+    else if(field==='attendance'){ if(value==='clear') delete rec.attendance; else rec.attendance=value; s.attendance=latestDailyFieldValue(s.id,'attendance','present'); }
+  });
+  saveData(); renderDailyTable(); renderStudentsTable(); showToast('Bulk update applied / تم تطبيق الاختيار على الصف المحدد','success');
 }
 function setParticipation(id, val){
   const s = studentsData.find(x=>x.id===id); if(!s) return;
@@ -5282,6 +5332,8 @@ document.addEventListener('click', function(e){
     case 'show-notif-help': showNotifHelp(); break;
     case 'toggle-notif-center': toggleNotifCenter(); break;
     case 'close-notif-center': closeNotifCenter(); break;
+    case 'open-daily-choice': openDailyChoiceMenu(t,t.dataset.choiceField,Number(t.dataset.id)); break;
+    case 'open-daily-bulk': openDailyBulkMenu(t,t.dataset.bulkField); break;
     case 'open-global-search': openGlobalSearch(); break;
     case 'close-global-search': closeGlobalSearch(); break;
     case 'select-search-result': selectGlobalSearchResult(Number(t.dataset.resultIndex)); break;
