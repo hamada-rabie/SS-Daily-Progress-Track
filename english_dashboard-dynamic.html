@@ -2905,7 +2905,7 @@ function shortClass(cls){
 const PARTICIPATION_WEIGHTS = { excellent:10, active:6, passive:3, sleepy:0 };
 function honorScore(s){
   const count = assessedSkillCount(s);
-  const academicPct = count ? (totalScore(s)/(count*10))*100 : 0;
+  const academicPct = count ? (totalScore(s)/(count*6))*100 : 0;
   const partPct = (PARTICIPATION_WEIGHTS[s.participationLevel] !== undefined ? PARTICIPATION_WEIGHTS[s.participationLevel] : 6) / 10 * 100;
   const pWeight = (settings.honorParticipationWeight !== undefined ? settings.honorParticipationWeight : 20) / 100;
   const aWeight = 1 - pWeight;
