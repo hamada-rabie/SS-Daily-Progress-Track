@@ -1377,7 +1377,7 @@ main .card{border-radius:16px}
           <select id="skills-class-filter" data-action="filter-skills" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
           <input id="skills-date" type="date" data-action="filter-skills-date" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
-        <p class="text-[11px] text-gray-500">Score each skill from 1 (needs support) to 10 (excellent) for the selected date<br>قيّم كل مهارة من ١ (يحتاج دعم) إلى ١٠ (ممتاز) لليوم المحدد</p>
+        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Rate skills using six levels for the selected date</span><span class="ar">قيّم المهارات باستخدام ٦ مستويات لليوم المحدد</span></p><div class="daily-bulk-row"><select id="skills-bulk-skill" class="daily-bulk-btn" style="min-width:135px;"><option value="reading">Reading / القراءة</option><option value="writing">Writing / الكتابة</option><option value="listening">Listening / الاستماع</option><option value="speaking">Speaking / المحادثة</option></select><select id="skills-bulk-level" class="daily-bulk-btn" style="min-width:165px;"><option value="very_weak">Very Weak / ضعيف جدًا</option><option value="weak">Weak / ضعيف</option><option value="acceptable">Acceptable / مقبول</option><option value="average">Average / متوسط</option><option value="very_good">Very Good / جيد جدًا</option><option value="excellent">Excellent / ممتاز</option></select><button type="button" class="daily-bulk-btn" data-action="apply-skill-bulk"><i class="fa-solid fa-users" style="color:var(--teal);"></i><span class="en">Apply to All in Class</span><span class="ar">تطبيق على كل طلاب الصف</span></button></div></div>
       </div>
       <div id="skills-list" class="space-y-3"></div>
     </section>
@@ -2020,6 +2020,7 @@ function loadData(){
 
       if(!s.behaviourLevel)
         s.behaviourLevel = 'disciplined';
+      migrateSkillData(s);
     });
 
   }catch(e){
@@ -2065,6 +2066,7 @@ async function loadCloudData(){
       classesData = cloudClasses;
       studentsData = cloudStudents;
       dailyArchives = cloudDaily;
+      studentsData.forEach(migrateSkillData);
 
       if(data.settings){
         settings = Object.assign({}, settings, data.settings);
@@ -2864,21 +2866,34 @@ const SKILL_META = {
   listening:{label:'Listening / الاستماع', icon:'fa-headphones', chip:'chip-listening', color:SKILL_COLORS.listening},
   speaking:{label:'Speaking / المحادثة', icon:'fa-comments', chip:'chip-speaking', color:SKILL_COLORS.speaking}
 };
+/* ---------- Skill rating model: six teacher-friendly levels ---------- */
+const SKILL_LEVELS = [
+  {key:'very_weak', en:'Very Weak', ar:'ضعيف جدًا', score:1},
+  {key:'weak', en:'Weak', ar:'ضعيف', score:2},
+  {key:'acceptable', en:'Acceptable', ar:'مقبول', score:3},
+  {key:'average', en:'Average', ar:'متوسط', score:4},
+  {key:'very_good', en:'Very Good', ar:'جيد جدًا', score:5},
+  {key:'excellent', en:'Excellent', ar:'ممتاز', score:6}
+];
+const SKILL_LEVEL_MAP = Object.fromEntries(SKILL_LEVELS.map(x=>[x.key,x]));
+function legacySkillToLevel(v){ const n=Number(v); if(!Number.isFinite(n)) return null; if(n<=2)return 'very_weak'; if(n<=3)return 'weak'; if(n<=4)return 'acceptable'; if(n<=6)return 'average'; if(n<=8)return 'very_good'; return 'excellent'; }
+function normalizeSkillLevel(v){ if(typeof v==='string' && SKILL_LEVEL_MAP[v]) return v; if(typeof v==='number') return legacySkillToLevel(v); return null; }
+function skillLevelScore(v){ const key=normalizeSkillLevel(v); return key&&SKILL_LEVEL_MAP[key]?SKILL_LEVEL_MAP[key].score:null; }
+function skillLevelLabel(v){ const key=normalizeSkillLevel(v); return key&&SKILL_LEVEL_MAP[key]?SKILL_LEVEL_MAP[key]:null; }
+function skillLevelPercentage(v){ const score=skillLevelScore(v); return score===null?null:Math.round(score/6*100); }
+function migrateSkillData(s){ if(!Array.isArray(s.skillHistory))s.skillHistory=[]; s.skillHistory.forEach(h=>{Object.keys(QP_SKILL_LABELS).forEach(k=>{if(h[k]!==undefined){const normalized=normalizeSkillLevel(h[k]);if(normalized)h[k]=normalized;}});}); Object.keys(QP_SKILL_LABELS).forEach(k=>{const dated=s.skillHistory.filter(h=>skillLevelScore(h[k])!==null).sort((a,b)=>a.date<b.date?-1:(a.date>b.date?1:0));s.skills[k]=dated.length?dated[dated.length-1][k]:null;}); }
 /* ---------- Skill scoring rules: only actually assessed skills count ---------- */
 function getCurrentSkillValue(s, key){
-  const history = Array.isArray(s.skillHistory) ? s.skillHistory : [];
-  const dated = history.filter(h=>typeof h[key]==='number' && h.date).sort((a,b)=>a.date<b.date?-1:(a.date>b.date?1:0));
-  return dated.length ? dated[dated.length-1][key] : null;
+  const history=Array.isArray(s.skillHistory)?s.skillHistory:[];
+  const dated=history.filter(h=>skillLevelScore(h[key])!==null&&h.date).sort((a,b)=>a.date<b.date?-1:(a.date>b.date?1:0));
+  return dated.length?skillLevelScore(dated[dated.length-1][key]):null;
 }
 function getAssessedSkillEntries(s){
   return Object.keys(QP_SKILL_LABELS).map(k=>[k,getCurrentSkillValue(s,k)]).filter(([,v])=>v!==null);
 }
 function totalScore(s){ return getAssessedSkillEntries(s).reduce((sum,[,v])=>sum+v,0); }
 function assessedSkillCount(s){ return getAssessedSkillEntries(s).length; }
-function skillPercentage(s,key){
-  const v = getCurrentSkillValue(s,key);
-  return v===null ? null : v*10;
-}
+function skillPercentage(s,key){ return skillLevelPercentage(getCurrentSkillValue(s,key)); }
 /* Short class display (e.g. "G.9 / A") — display-only, never touches the stored class name/section. */
 function shortClass(cls){
   if(!cls) return '-';
@@ -2894,12 +2909,7 @@ function honorScore(s){
   const aWeight = 1 - pWeight;
   return Math.round(academicPct*aWeight + partPct*pWeight);
 }
-function scoreColor(v){
-  if(v>=8) return 'background:#E7F6EB;color:#2C8C46;';
-  if(v>=5) return 'background:#FFF6E0;color:#B5850C;';
-  if(v>0) return 'background:#FDECE3;color:#C85A2E;';
-  return 'background:#F1F5F4;color:#9AA8A5;';
-}
+function scoreColor(v){const n=skillLevelScore(v);if(n>=5)return 'background:#E7F6EB;color:#2C8C46;';if(n>=3)return 'background:#FFF6E0;color:#B5850C;';if(n>0)return 'background:#FDECE3;color:#C85A2E;';return 'background:#F1F5F4;color:#9AA8A5;';}
 function getSelectedSkillsDate(){
   const dateInput = document.getElementById('skills-date');
   if(!dateInput) return todayStr();
@@ -2926,7 +2936,7 @@ function renderSkillsTable(){
       const meta = SKILL_META[key];
       const val = entry && typeof entry[key]==='number' ? entry[key] : null;
       let opts = `<option value="" ${val===null?'selected':''}>— Not Assessed / لم يُقيَّم —</option>`;
-      for(let i=1;i<=10;i++) opts += `<option value="${i}" ${val===i?'selected':''}>${i}</option>`;
+      SKILL_LEVELS.forEach(level=>{ const selected=val!==null && skillLevelScore(val)===level.score; opts += `<option value="${level.key}" ${selected?'selected':''}>${level.en} / ${level.ar}</option>`; });
       return `<div class="flex items-center justify-between gap-3 py-1.5">
         <span class="skill-chip ${meta.chip} w-32 justify-center"><i class="fa-solid ${meta.icon}"></i> ${meta.label}</span>
         <select data-action="set-skill" data-id="${s.id}" data-skill="${key}" class="border rounded-lg px-2 py-1 text-xs font-bold" style="border-color:var(--line); ${val!==null?scoreColor(val):''}">${opts}</select>
