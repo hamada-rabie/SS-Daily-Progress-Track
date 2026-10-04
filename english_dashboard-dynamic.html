@@ -955,12 +955,12 @@ body.lang-bilingual #app-topbar .header-right-identity #header-teacher-photo{
 </style>
 <style id="premium-ui-redesign">
 :root{--premium-teal:#0E7C74;--premium-teal-dark:#084F4A;--premium-line:#DDEAE6;--premium-shadow:0 10px 30px rgba(15,55,51,.07);--premium-shadow-hover:0 16px 38px rgba(15,55,51,.12)}
-main .p-5.sm\\:p-6{background:radial-gradient(circle at 88% 2%,rgba(56,167,156,.07),transparent 24%),linear-gradient(180deg,#F8FCFB 0%,#F5FAF8 100%)}
-body.theme-dark main .p-5.sm\\:p-6{background:radial-gradient(circle at 88% 2%,rgba(56,167,156,.08),transparent 25%),#0B1120}
+main .p-5.sm\\:p-6{background:radial-gradient(circle at 88% 2%,color-mix(in srgb,var(--teal-light) 12%,transparent),transparent 24%),linear-gradient(180deg,color-mix(in srgb,var(--teal-light) 6%,#FFFFFF) 0%,color-mix(in srgb,var(--teal-light) 10%,#FFFFFF) 100%)}
+body.theme-dark main .p-5.sm\\:p-6{background:radial-gradient(circle at 88% 2%,color-mix(in srgb,var(--teal-light) 14%,transparent),transparent 25%),#0B1120}
 main .card{border:1px solid var(--premium-line);border-radius:18px;box-shadow:var(--premium-shadow);transition:box-shadow .2s ease,transform .2s ease,border-color .2s ease}
 main .card:hover{border-color:#C9E1DC;box-shadow:var(--premium-shadow-hover)}
 main .card-interactive:hover{transform:translateY(-2px)}
-#tab-dashboard .hero-band{min-height:370px;border:1px solid rgba(255,255,255,.18);border-radius:24px!important;padding:42px 30px 28px!important;background:radial-gradient(circle at 86% 20%,rgba(255,255,255,.18),transparent 22%),radial-gradient(circle at 12% 82%,rgba(56,167,156,.28),transparent 28%),linear-gradient(135deg,#0A5A54 0%,#0E7C74 48%,#146F69 100%)!important;box-shadow:0 18px 44px rgba(8,79,74,.18)}
+#tab-dashboard .hero-band{min-height:370px;border:1px solid rgba(255,255,255,.18);border-radius:24px!important;padding:42px 30px 28px!important;background:radial-gradient(circle at 86% 20%,rgba(255,255,255,.18),transparent 22%),radial-gradient(circle at 12% 82%,color-mix(in srgb,var(--teal-light) 28%,transparent),transparent 28%),linear-gradient(135deg,var(--teal-dark) 0%,var(--teal) 48%,color-mix(in srgb,var(--teal) 82%,var(--teal-light)) 100%)!important;box-shadow:0 18px 44px color-mix(in srgb,var(--teal-dark) 18%,transparent)}
 #tab-dashboard .hero-band::before{content:"";position:absolute;width:180px;height:180px;border:1px solid rgba(255,255,255,.10);border-radius:50%;top:-95px;right:-45px;box-shadow:0 0 0 28px rgba(255,255,255,.025),0 0 0 56px rgba(255,255,255,.018);pointer-events:none}
 #tab-dashboard .hero-band::after{content:"";position:absolute;width:110px;height:110px;border-radius:28px;border:1px solid rgba(255,255,255,.07);bottom:-48px;left:8%;transform:rotate(18deg);pointer-events:none}
 #tab-dashboard .hero-band>*{position:relative;z-index:1}
@@ -1029,6 +1029,7 @@ main .card{border-radius:16px}
         <a href="#" data-action="switch-tab" data-tab="student360" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="student360"><i class="fa-solid fa-chart-simple w-5 text-center" style="color:var(--coral);"></i><span class="bi-label"><span class="en">Student 360°</span><span class="ar">ملف الطالب المتكامل</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="journey" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="journey"><i class="fa-solid fa-route w-5 text-center" style="color:var(--teal);"></i><span class="bi-label"><span class="en">Progress Journey</span><span class="ar">رحلة التقدم</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="classpulse" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="classpulse"><i class="fa-solid fa-heart-pulse w-5 text-center" style="color:var(--leaf);"></i><span class="bi-label"><span class="en">Class Pulse</span><span class="ar">نبض الفصل</span></span></a>
+        <a href="#" data-action="switch-tab" data-tab="skill-explorer" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="skill-explorer"><i class="fa-solid fa-ranking-star w-5 text-center" style="color:var(--gold);"></i><span class="bi-label"><span class="en">Skill Explorer</span><span class="ar">مستكشف المهارات</span></span></a>
       </div>
 
       <button type="button" data-action="toggle-nav-group" data-group="achievement" aria-expanded="false" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
@@ -1067,6 +1068,7 @@ main .card{border-radius:16px}
         </div>
 
         <a href="#" data-action="switch-tab" data-tab="settings" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="settings"><i class="fa-solid fa-sliders w-5 text-center"></i><span class="bi-label"><span class="en">Settings</span><span class="ar">الإعدادات</span></span></a>
+        <button type="button" data-action="open-about" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 text-left"><i class="fa-solid fa-circle-info w-5 text-center" style="color:var(--sky);"></i><span class="bi-label"><span class="en">About</span><span class="ar">عن التطبيق</span></span></button>
       </div>
     </nav>
   <div class="p-3 border-t space-y-2 shrink-0" style="border-color:var(--line); padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px));">
@@ -1417,6 +1419,22 @@ main .card{border-radius:16px}
       <div id="cp-card-wrap"></div>
     </section>
 
+    <!-- SKILL EXPLORER -->
+    <section id="tab-skill-explorer" class="tab-content space-y-4">
+      <div class="card p-5 space-y-4">
+        <div class="flex items-start justify-between gap-3 flex-wrap">
+          <div><p class="font-display font-extrabold text-lg" style="color:var(--teal-dark);"><span class="en">Skill Explorer</span><span class="ar">مستكشف المهارات</span></p>
+          <p class="text-xs text-gray-500"><span class="en">Find the highest and lowest assessed students for a selected skill.</span><span class="ar">اعرض أعلى وأقل الطلاب المُقيّمين في مهارة محددة.</span></p></div>
+          <div class="text-[10px] font-semibold px-3 py-1.5 rounded-full" style="background:color-mix(in srgb,var(--teal-light) 12%,transparent);color:var(--teal-dark);"><span class="en">Read-only insight</span><span class="ar">تحليل للعرض فقط</span></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="bi-label mb-1"><span class="en">Skill</span><span class="ar">المهارة</span></label><select id="skill-explorer-skill" data-action="skill-explorer-change" class="w-full text-sm border rounded-xl px-3 py-2.5" style="border-color:var(--line);"></select></div>
+          <div><label class="bi-label mb-1"><span class="en">Class</span><span class="ar">الصف</span></label><select id="skill-explorer-class" data-action="skill-explorer-change" class="w-full text-sm border rounded-xl px-3 py-2.5" style="border-color:var(--line);"></select></div>
+        </div>
+      </div>
+      <div id="skill-explorer-results" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+    </section>
+
     <!-- REPORTS -->
     <section id="tab-reports" class="tab-content space-y-4">
       <div class="card p-5 space-y-4">
@@ -1722,6 +1740,23 @@ main .card{border-radius:16px}
 
   </div>
 </main>
+
+<!-- About Modal -->
+<div id="modal-about" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4" aria-hidden="true">
+  <div class="rounded-2xl p-5 sm:p-6 w-full max-w-2xl space-y-5 shadow-2xl" style="background:var(--card);color:var(--ink);border:1px solid var(--line);" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
+    <div class="flex items-start justify-between gap-4"><div><p id="about-modal-title" class="font-display font-extrabold text-xl" style="color:var(--teal-dark);">SS' Daily Progress Track</p><p class="text-xs text-gray-500 mt-1"><span class="en">About the application</span><span class="ar">عن التطبيق</span></p></div>
+      <button type="button" data-action="close-modal" data-modal="modal-about" class="w-9 h-9 rounded-xl flex items-center justify-center border shrink-0" style="border-color:var(--line);" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="rounded-2xl p-4 sm:p-5" style="background:color-mix(in srgb,var(--teal-light) 8%,var(--card));border:1px solid var(--line);">
+      <p class="font-display font-extrabold text-base mb-3" style="color:var(--teal-dark);">Track → Understand → Act → Celebrate</p>
+      <div class="space-y-4 text-sm leading-7">
+        <div class="en"><p>A smart teacher-focused progress tracking system designed to turn everyday classroom observations into meaningful student insights.</p><p>Track attendance, participation, homework, language skills, progress, and individual development — all in one organized place.</p><p><strong>Why it matters:</strong> Less paperwork. Clearer insights. Faster decisions. Better support for every learner.</p><p class="font-bold">From daily tracking to meaningful progress — make every student’s journey visible.</p></div>
+        <div class="ar"><p>نظام ذكي لمتابعة تقدم الطلاب، صُمم للمعلم ليحوّل الملاحظات والمتابعة اليومية داخل الفصل إلى مؤشرات واضحة تساعده على فهم مستوى كل طالب.</p><p>تابع الحضور، والمشاركة، والواجبات، ومهارات اللغة، والتقدم الفردي — كل ذلك في مكان واحد وبطريقة منظمة.</p><p><strong>لماذا يهمك؟</strong> أعمال ورقية أقل. رؤية أوضح. قرارات أسرع. دعم أفضل لكل طالب.</p><p class="font-bold">من المتابعة اليومية إلى تقدم حقيقي وملموس — اجعل رحلة كل طالب واضحة أمامك.</p></div>
+        <div class="bilingual-inline text-xs leading-6"><span class="en font-semibold">Track → Understand → Act → Celebrate</span><span class="ar font-semibold">تابع → افهم → تدخّل → احتفل بالإنجاز</span></div>
+      </div>
+    </div>
+    <div class="flex justify-end"><button type="button" data-action="close-modal" data-modal="modal-about" class="text-xs font-bold px-4 py-2.5 rounded-xl text-white" style="background:var(--teal);">Close / إغلاق</button></div>
+  </div>
+</div>
 
 <!-- Add Class Modal -->
 <div id="modal-class" class="fixed inset-0 bg-black/40 z-40 hidden items-center justify-center p-4">
@@ -2159,7 +2194,7 @@ function showBilingualToast(en, ar, type){
 /* ---------- nav ---------- */
 const TAB_TITLES = {
   dashboard:['Home','الرئيسية'], students:['Students','الطلاب'], daily:['Daily Tracking','المتابعة اليومية'],
-  skills:['Language Skills','مهارات اللغة'], stars:['Honor Board','لوحة الشرف'], quickprofile:['Quick Profile','ملف الطالب السريع'], journey:['Progress Journey','رحلة التقدم'], student360:['Student 360°','ملف الطالب المتكامل'], classpulse:['Class Pulse','نبض الفصل'], reports:['Reports','التقارير'],
+  skills:['Language Skills','مهارات اللغة'], stars:['Honor Board','لوحة الشرف'], quickprofile:['Quick Profile','ملف الطالب السريع'], journey:['Progress Journey','رحلة التقدم'], student360:['Student 360°','ملف الطالب المتكامل'], classpulse:['Class Pulse','نبض الفصل'], 'skill-explorer':['Skill Explorer','مستكشف المهارات'], reports:['Reports','التقارير'],
   certificates:['Certificates','شهادات التقدير'], settings:['Settings','الإعدادات']
 };
 function switchTab(name){
@@ -2249,7 +2284,7 @@ function openEditStudentModal(id){
   document.getElementById('modal-student').classList.remove('hidden');
   document.getElementById('modal-student').classList.add('flex');
 }
-function closeModal(id){ document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+function closeModal(id){ const el=document.getElementById(id); if(!el)return; el.classList.add('hidden'); el.classList.remove('flex'); if(id==='modal-about')el.setAttribute('aria-hidden','true'); }
 
 function addClass(){
   const name = document.getElementById('new-class-name').value.trim();
@@ -5092,6 +5127,11 @@ document.addEventListener('click', function(e){
     case 'save-note': saveNote(); break;
     case 'clear-note': clearNote(); break;
     case 'open-share-modal': openShareModal(); break;
+    case 'open-about':
+      document.getElementById('modal-about').classList.remove('hidden');
+      document.getElementById('modal-about').classList.add('flex');
+      document.getElementById('modal-about').setAttribute('aria-hidden','false');
+      break;
     case 'share-full': shareFull(); break;
     case 'share-clean': shareClean(); break;
     case 'close-modal': closeModal(t.dataset.modal); break;
@@ -5196,6 +5236,7 @@ document.addEventListener('change', function(e){
     case 's360-class-change': renderS360StudentOptions(); break;
     case 's360-student-change': renderS360Card(); break;
     case 'cp-class-change': renderClassPulseCard(); break;
+    case 'skill-explorer-change': renderSkillExplorer(); break;
     case 'pick-class-color-custom': pickClassColor(t.value); break;
     case 'note-student-change': loadNoteForSelectedStudent(); break;
     case 'report-select-change': generateReport(); break;
@@ -5218,6 +5259,30 @@ document.addEventListener('input', function(e){
   if(e.target.id === 'report-student-search') renderReportSelect();
   if(e.target.id === 'global-search-input') renderGlobalSearchResults(e.target.value);
 });
+
+/* ---------- Skill Explorer ---------- */
+function skillExplorerLevel(v){ if(v>=9)return {en:'Excellent',ar:'ممتاز'}; if(v>=7)return {en:'Good',ar:'جيد'}; if(v>=5)return {en:'Developing',ar:'في طور التطور'}; return {en:'Needs Support',ar:'يحتاج دعماً'}; }
+function renderSkillExplorer(){
+  const skillSel=document.getElementById('skill-explorer-skill'), classSel=document.getElementById('skill-explorer-class'), results=document.getElementById('skill-explorer-results');
+  if(!skillSel||!classSel||!results)return;
+  const prevSkill=skillSel.value||'reading', prevClass=classSel.value||'all';
+  skillSel.innerHTML=Object.keys(QP_SKILL_LABELS).map(k=>`<option value="${k}">${QP_SKILL_LABELS[k].en} / ${QP_SKILL_LABELS[k].ar}</option>`).join('');
+  skillSel.value=Object.prototype.hasOwnProperty.call(QP_SKILL_LABELS,prevSkill)?prevSkill:'reading';
+  classSel.innerHTML='<option value="all">All Classes / كل الصفوف</option>'+classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
+  classSel.value=(prevClass==='all'||classesData.some(c=>String(c.id)===String(prevClass)))?prevClass:'all';
+  let list=studentsData.slice(); if(classSel.value!=='all')list=list.filter(s=>String(s.classId)===String(classSel.value));
+  const skill=skillSel.value, assessed=list.map(s=>{const score=getCurrentSkillValue(s,skill);return score===null?null:{student:s,score,classObj:classesData.find(c=>c.id===s.classId)};}).filter(Boolean);
+  const label=QP_SKILL_LABELS[skill];
+  if(!assessed.length){results.innerHTML=`<div class="card p-8 text-center text-gray-400 text-sm lg:col-span-2"><i class="fa-solid fa-chart-column text-3xl mb-2"></i><p><span class="en">No assessed students for this skill in the selected class.</span><span class="ar">لا يوجد طلاب مُقيّمون في هذه المهارة للصف المحدد.</span></p></div>`;return;}
+  const max=Math.max(...assessed.map(x=>x.score)), min=Math.min(...assessed.map(x=>x.score));
+  const highest=assessed.filter(x=>x.score===max), lowest=assessed.filter(x=>x.score===min);
+  const group=(en,ar,items,icon,bg)=>`<div class="card p-5 space-y-3"><div class="flex items-center justify-between gap-3"><div class="flex items-center gap-2"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:${bg};color:var(--teal-dark);"><i class="fa-solid ${icon}"></i></div><div><p class="font-bold text-sm"><span class="en">${en}</span><span class="ar">${ar}</span></p><p class="text-[10px] text-gray-400">${label.en} / ${label.ar}</p></div></div><span class="score-badge" style="${scoreColor(items[0].score)}">${items[0].score}/10</span></div><div class="space-y-2">${items.map(x=>{const lvl=skillExplorerLevel(x.score),cls=x.classObj;return `<div class="flex items-center justify-between gap-3 rounded-xl px-3 py-2" style="background:color-mix(in srgb,var(--teal-light) 5%,var(--card));border:1px solid var(--line);"><div class="min-w-0"><p class="font-semibold text-sm truncate">${escapeHtml(x.student.name)}</p><p class="text-[10px] text-gray-400">${cls?shortClass(cls):'—'}</p></div><span class="text-[10px] font-bold text-right shrink-0"><span class="en">${lvl.en}</span><span class="ar">${lvl.ar}</span></span></div>`;}).join('')}</div></div>`;
+  results.innerHTML=group('Highest','الأعلى',highest,'fa-arrow-up','#E7F6EB')+group('Lowest','الأقل',lowest,'fa-arrow-down','#FDECE3');
+}
+
+/* About modal: Escape or backdrop closes it. */
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){const m=document.getElementById('modal-about');if(m&&m.classList.contains('flex'))closeModal('modal-about');}});
+document.addEventListener('click',function(e){if(e.target&&e.target.id==='modal-about')closeModal('modal-about');});
 
 /* ---------- refresh ---------- */
 function syncCurrentPageHeader(){
@@ -5246,6 +5311,7 @@ function refreshAllViews(){
   if(document.getElementById('pj-class-select')) renderJourneySelectors();
   if(document.getElementById('s360-class-select')) renderS360Selectors();
   if(document.getElementById('cp-class-select')) renderClassPulseSelector();
+  if(document.getElementById('skill-explorer-skill')) renderSkillExplorer();
 }
 
 function updateDateFormatUI(){
