@@ -1011,6 +1011,30 @@ main button[style*="background:var(--teal)"]:hover{filter:brightness(1.03);trans
 main .card{border-radius:16px}
 }
 </style>
+<style id="smart-insights-redesign">
+.smart-insights-wrap{position:relative;display:flex;justify-content:center;margin-top:12px;z-index:8}
+.smart-insights-trigger{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);color:#fff;border-radius:14px;padding:9px 13px;font-size:11px;font-weight:800;backdrop-filter:blur(10px);box-shadow:0 7px 20px rgba(0,0,0,.12);cursor:pointer;transition:.18s ease}
+.smart-insights-trigger:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
+.smart-insights-trigger .si-badge{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:rgba(255,255,255,.92);color:var(--teal-dark);display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+.smart-insights-popover{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);width:min(440px,calc(100vw - 28px));background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px rgba(15,55,51,.20);overflow:hidden;display:none;text-align:start}
+.smart-insights-popover.open{display:block;animation:siIn .16s ease-out}
+@keyframes siIn{from{opacity:0;transform:translate(-50%,-5px)}to{opacity:1;transform:translate(-50%,0)}}
+.si-head{padding:13px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.si-title{font-weight:900;font-size:13px;color:var(--ink)}
+.si-summary{font-size:10px;color:#71807C}
+.si-list{max-height:300px;overflow:auto;padding:8px}
+.si-item{display:grid;grid-template-columns:30px 1fr;gap:9px;padding:10px;border-radius:12px;margin:3px 0}
+.si-item:hover{background:color-mix(in srgb,var(--teal-light) 6%,transparent)}
+.si-icon{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.si-item.attention .si-icon{background:#FFF1EC;color:#B85439}
+.si-item.positive .si-icon{background:#EDF8F0;color:#2E8A45}
+.si-item-title{font-size:11px;font-weight:800;line-height:1.45}
+.si-item-body{font-size:10px;color:#71807C;line-height:1.5;margin-top:2px}
+.si-foot{padding:9px 12px;border-top:1px solid var(--line);display:flex;gap:7px;flex-wrap:wrap}
+.si-action{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}
+.si-action:hover{border-color:var(--teal-light);color:var(--teal-dark);background:color-mix(in srgb,var(--teal-light) 5%,var(--card))}
+@media(max-width:640px){.smart-insights-popover{position:fixed;top:76px;left:50%;transform:translateX(-50%);z-index:1000}.smart-insights-popover.open{animation:siMobileIn .16s ease-out}@keyframes siMobileIn{from{opacity:0;transform:translate(-50%,-5px)}to{opacity:1;transform:translate(-50%,0)}}}
+</style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
@@ -1354,7 +1378,7 @@ main .card{border-radius:16px}
           <select id="daily-class-filter" data-action="filter-daily" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
           <input id="daily-date" type="date" data-action="filter-daily" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
-        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick apply to the selected class</span><span class="ar">تطبيق سريع على الصف المحدد</span></p><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="behaviour"><i class="fa-solid fa-user-check" style="color:#5C6BC0;"></i><span class="en">Behaviour: All</span><span class="ar">السلوك: الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="participation"><i class="fa-solid fa-hand" style="color:var(--violet);"></i><span class="en">Participation: All</span><span class="ar">المشاركة: الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="homework"><i class="fa-solid fa-book-open" style="color:#B5850C;"></i><span class="en">Homework: All</span><span class="ar">الواجب: الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="attendance"><i class="fa-solid fa-calendar-check" style="color:var(--sky);"></i><span class="en">Attendance: All</span><span class="ar">الحضور: الكل</span></button></div></div>
+        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick apply to the selected class</span><span class="ar">تطبيق سريع على الصف المحدد</span></p><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="behaviour"><i class="fa-solid fa-user-check" style="color:#5C6BC0;"></i><span class="en">Behaviour: Select All</span><span class="ar">السلوك: تحديد الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="participation"><i class="fa-solid fa-hand" style="color:var(--violet);"></i><span class="en">Participation: Select All</span><span class="ar">المشاركة: تحديد الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="homework"><i class="fa-solid fa-book-open" style="color:#B5850C;"></i><span class="en">Homework: Select All</span><span class="ar">الواجب: تحديد الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="attendance"><i class="fa-solid fa-calendar-check" style="color:var(--sky);"></i><span class="en">Attendance: Select All</span><span class="ar">الحضور: تحديد الكل</span></button></div></div>
       </div>
       <div class="card table-scroll-x">
         <table class="w-full text-sm text-right">
@@ -5839,6 +5863,54 @@ try{
     if([...cls.options].some(o=>String(o.value)===value))cls.value=value;
   },true);
 }catch(err){console.error('Student-to-class sync feature failed safely:',err);}
+})();
+</script>
+<script id="smart-insights-controller">
+(function(){
+'use strict';
+try{
+  const esc = v => (typeof escapeHtml==='function' ? escapeHtml(v) : String(v ?? ''));
+  function collect(){
+    const out=[];
+    (studentsData||[]).forEach(s=>{
+      const arr=typeof getStudentSmartAlerts==='function'?getStudentSmartAlerts(s):[];
+      arr.forEach(a=>out.push({...a,scope:'student',studentId:s.id,studentName:s.name||''}));
+    });
+    (classesData||[]).forEach(c=>{
+      const arr=typeof getClassSmartAlerts==='function'?getClassSmartAlerts(c.id):[];
+      arr.forEach(a=>out.push({...a,scope:'class',classId:c.id,className:typeof shortClass==='function'?shortClass(c):''}));
+    });
+    const seen=new Set();
+    return out.filter(a=>{const k=[a.type,a.en,a.studentId||'',a.classId||''].join('|');if(seen.has(k))return false;seen.add(k);return true;}).slice(0,8);
+  }
+  window.renderSmartAlerts=function(){
+    const hero=document.getElementById('hero-smart-alerts');
+    if(!hero)return;
+    const items=collect();
+    if(!items.length){hero.innerHTML='';return;}
+    const attention=items.filter(x=>x.type==='attention').length;
+    const positive=items.filter(x=>x.type==='positive').length;
+    const rows=items.map(a=>{
+      const title=a.scope==='student' ? (a.en||'') : (a.en||'');
+      const body=a.scope==='student' ? (a.studentName ? a.studentName+' — '+(a.ar||'') : (a.ar||'')) : (a.className ? a.className+' — '+(a.ar||'') : (a.ar||''));
+      return '<div class="si-item '+(a.type==='positive'?'positive':'attention')+'"><div class="si-icon"><i class="fa-solid '+esc(a.icon||'fa-lightbulb')+'"></i></div><div><div class="si-item-title"><span class="en">'+esc(title)+'</span><span class="ar">'+esc(a.ar||title)+'</span></div><div class="si-item-body"><span class="en">'+esc(a.scope==='student'?(a.studentName||''):'Class '+(a.className||''))+'</span><span class="ar">'+esc(body)+'</span></div></div></div>';
+    }).join('');
+    hero.innerHTML='<div class="smart-insights-wrap"><button type="button" class="smart-insights-trigger" data-action="toggle-smart-insights"><i class="fa-solid fa-wand-magic-sparkles"></i><span class="en">Smart Insights</span><span class="ar">رؤى ذكية</span><span class="si-badge">'+items.length+'</span></button><div id="smart-insights-popover" class="smart-insights-popover" role="dialog" aria-label="Smart Insights"><div class="si-head"><div><div class="si-title"><span class="en">Smart Insight Center</span><span class="ar">مركز الرؤى الذكية</span></div><div class="si-summary"><span class="en">'+attention+' need attention · '+positive+' show progress</span><span class="ar">'+attention+' تحتاج متابعة · '+positive+' تشير إلى تحسن</span></div></div><button type="button" class="si-action" data-action="close-smart-insights" aria-label="Close">×</button></div><div class="si-list">'+rows+'</div><div class="si-foot"><button type="button" class="si-action" data-action="switch-tab" data-tab="students"><i class="fa-solid fa-users"></i> <span class="en">View Students</span><span class="ar">عرض الطلاب</span></button><button type="button" class="si-action" data-action="switch-tab" data-tab="skill-explorer"><i class="fa-solid fa-ranking-star"></i> <span class="en">Skill Explorer</span><span class="ar">مستكشف المهارات</span></button><button type="button" class="si-action" data-action="switch-tab" data-tab="daily"><i class="fa-solid fa-calendar-check"></i> <span class="en">Today</span><span class="ar">اليوم</span></button></div></div></div>';
+    if(typeof syncLanguageVisibility==='function')syncLanguageVisibility();
+  };
+  document.addEventListener('click',function(e){
+    const t=e.target.closest('[data-action]');
+    if(!t)return;
+    if(t.dataset.action==='toggle-smart-insights'){
+      const p=document.getElementById('smart-insights-popover');if(p)p.classList.toggle('open');e.stopPropagation();return;
+    }
+    if(t.dataset.action==='close-smart-insights'){
+      const p=document.getElementById('smart-insights-popover');if(p)p.classList.remove('open');return;
+    }
+    const p=document.getElementById('smart-insights-popover');
+    if(p && p.classList.contains('open') && !e.target.closest('.smart-insights-popover') && !e.target.closest('.smart-insights-trigger'))p.classList.remove('open');
+  },true);
+}catch(err){console.error('Smart Insights feature failed safely:',err);}
 })();
 </script>
 <script type="module">
