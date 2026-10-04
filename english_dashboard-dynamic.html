@@ -1315,7 +1315,7 @@ main .card{border-radius:16px}
           <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#EAF7F5;color:var(--teal);"><i class="fa-solid fa-ranking-star"></i></div>
           <div>
             <p class="font-display font-extrabold text-sm" style="color:var(--teal-dark);">Skill Explorer / مستكشف المهارات</p>
-            <p class="text-[10px] text-gray-500">Find students by skill level across a class / ابحث عن الطلاب حسب مستوى المهارة داخل الصف</p>
+            <p class="text-[10px] text-gray-500">Find students by skill level across a class or all classes / ابحث عن الطلاب حسب مستوى المهارة داخل صف أو كل الصفوف</p>
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
@@ -2606,7 +2606,7 @@ function renderDashboard(){
   }).join('');
 }
 function classOptionsHTML(includeAll){
-  let html = includeAll ? '<option value="all">All Classes / كل الصفوف</option>' : '';
+  let html = includeAll ? '<option value="all">All / كل الصفوف</option>' : '';
   html += classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
   return html;
 }
