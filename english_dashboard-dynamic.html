@@ -5792,7 +5792,7 @@ try{
     try{
       if(!window.html2canvas)throw new Error('html2canvas is not available');
       if(document.fonts&&document.fonts.ready)await document.fonts.ready;
-      const canvas=await html2canvas(card,{backgroundColor:getComputedStyle(card).getPropertyValue('background-color')||null,scale:2,useCORS:true,logging:false});
+      const rect=card.getBoundingClientRect();if(!rect.width||!rect.height)throw new Error('Star Card has no renderable size');const scale=1080/rect.width;const canvas=await html2canvas(card,{backgroundColor:getComputedStyle(card).getPropertyValue('background-color')||null,scale:scale,useCORS:true,logging:false});if(canvas.width!==1080||canvas.height!==1080)throw new Error('PNG size check failed: '+canvas.width+'x'+canvas.height);
       const a=document.createElement('a');const s=studentsData.find(x=>String(x.id)===String(document.getElementById('sw-student')?.value));a.download='Star_Card_'+String(s?.name||'student').trim().replace(/\s+/g,'_')+'.png';a.href=canvas.toDataURL('image/png');a.click();
     }catch(err){console.error('Star Card PNG export failed:',err);alert('Star Card PNG export failed. Please try again / تعذر تصدير بطاقة النجم كصورة PNG. حاول مرة أخرى.');}
   }
