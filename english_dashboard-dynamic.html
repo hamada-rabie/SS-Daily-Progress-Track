@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+<link rel="icon" href="icon-192.svg" type="image/svg+xml">
 <script>
   // PWA shell registration — deliberately separate from Firebase Messaging token registration.
   if('serviceWorker' in navigator){
@@ -1310,30 +1310,6 @@ main .card{border-radius:16px}
           </div>
         </div>
       </div>
-      <div class="card p-4 space-y-3" style="background:linear-gradient(135deg,#F7FCFB,#FFFFFF); border-color:#CFE6E1;">
-        <div class="flex items-center gap-3 flex-wrap">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#EAF7F5;color:var(--teal);"><i class="fa-solid fa-ranking-star"></i></div>
-          <div>
-            <p class="font-display font-extrabold text-sm" style="color:var(--teal-dark);">Skill Explorer / مستكشف المهارات</p>
-            <p class="text-[10px] text-gray-500">Find students by skill level across a class or all classes / ابحث عن الطلاب حسب مستوى المهارة داخل صف أو كل الصفوف</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-          <select id="skill-explorer-class" data-action="skill-explorer-change" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
-          <select id="skill-explorer-skill" data-action="skill-explorer-change" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
-            <option value="reading">Reading / القراءة</option>
-            <option value="writing">Writing / الكتابة</option>
-            <option value="listening">Listening / الاستماع</option>
-            <option value="speaking">Speaking / المحادثة</option>
-          </select>
-          <select id="skill-explorer-order" data-action="skill-explorer-change" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
-            <option value="high">Highest first / الأعلى أولًا</option>
-            <option value="low">Lowest first / الأقل أولًا</option>
-          </select>
-          <input id="skill-explorer-search" type="text" placeholder="Student name / اسم الطالب" data-action="skill-explorer-input" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
-        </div>
-        <div id="skill-explorer-results"></div>
-      </div>
       <div class="card table-scroll-x">
         <table class="w-full text-sm text-right">
           <thead>
@@ -1435,17 +1411,8 @@ main .card{border-radius:16px}
 
     <!-- CLASS PULSE -->
     <section id="tab-classpulse" class="tab-content space-y-4">
-      <div class="card p-4 space-y-3">
-        <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
-          <select id="cp-class-select" data-action="cp-class-change" class="text-sm border rounded-lg px-3 py-2 flex-1" style="border-color:var(--line);"></select>
-          <div class="flex items-center gap-2 flex-wrap">
-            <label class="text-[10px] font-semibold text-gray-500">From / من</label>
-            <input id="cp-date-from" type="date" data-action="cp-period-change" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
-            <label class="text-[10px] font-semibold text-gray-500">To / إلى</label>
-            <input id="cp-date-to" type="date" data-action="cp-period-change" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
-          </div>
-        </div>
-        <p id="cp-period-label" class="text-[10px] text-gray-400"></p>
+      <div class="card p-4">
+        <select id="cp-class-select" data-action="cp-class-change" class="text-sm border rounded-lg px-3 py-2 w-full sm:w-auto" style="border-color:var(--line);"></select>
       </div>
       <div id="cp-card-wrap"></div>
     </section>
@@ -2414,16 +2381,6 @@ function saveStudent(){
     showToast('Student added / تمت إضافة الطالب بنجاح','success');
   }
   saveData(); closeModal('modal-student'); refreshAllViews();
-  if(!editingStudentId){
-    const added=studentsData[studentsData.length-1];
-    triggerSmartNotification({
-      key:'student-added-'+added.id,type:'workflow',
-      titleEn:'New student added',titleAr:'تمت إضافة طالب جديد',
-      bodyEn:name+' was added to '+getStudentClassLabel(added.id)+'.',
-      bodyAr:'تمت إضافة '+name+' إلى '+getStudentClassLabel(added.id)+'.',
-      data:{studentId:added.id,classId}
-    });
-  }
 }
 function deleteStudent(id){
   if(!confirm('Delete this student? / حذف هذا الطالب؟')) return;
@@ -2606,55 +2563,12 @@ function renderDashboard(){
   }).join('');
 }
 function classOptionsHTML(includeAll){
-  let html = includeAll ? '<option value="all">All / كل الصفوف</option>' : '';
+  let html = includeAll ? '<option value="all">All Classes / كل الصفوف</option>' : '';
   html += classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
   return html;
 }
 
 /* ---------- students table ---------- */
-function renderSkillExplorerSelectors(){
-  const sel=document.getElementById('skill-explorer-class');
-  if(!sel)return;
-  const prev=sel.value;
-  sel.innerHTML=classOptionsHTML(true);
-  sel.value=prev&&[...sel.options].some(o=>o.value===prev)?prev:'all';
-  renderSkillExplorer();
-}
-function renderSkillExplorer(){
-  const wrap=document.getElementById('skill-explorer-results');
-  if(!wrap)return;
-  const classId=document.getElementById('skill-explorer-class').value||'all';
-  const key=document.getElementById('skill-explorer-skill').value;
-  const order=document.getElementById('skill-explorer-order').value;
-  const q=(document.getElementById('skill-explorer-search').value||'').trim().toLowerCase();
-  let list=studentsData.filter(s=>classId==='all'||String(s.classId)===String(classId));
-  if(q)list=list.filter(s=>s.name.toLowerCase().includes(q));
-  list=list.map(s=>({s,val:getCurrentSkillValue(s,key)})).filter(x=>x.val!==null);
-  list.sort((a,b)=>order==='low'?a.val-b.val:b.val-a.val);
-  if(!list.length){
-    wrap.innerHTML='<div class="text-xs text-gray-400 py-3">No assessed students match these filters. / لا يوجد طلاب مقيمون يطابقون هذه الفلاتر.</div>';
-    return;
-  }
-  const top=list.slice(0,10);
-  wrap.innerHTML=`
-    <div class="flex items-center justify-between mb-2">
-      <p class="text-[10px] font-semibold text-gray-500">Results / النتائج</p>
-      <p class="text-[10px] text-gray-400">${list.length} assessed student(s) / طالب مُقيَّم</p>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-      ${top.map((x,i)=>{
-        const cls=classesData.find(c=>c.id===x.s.classId);
-        const pct=x.val*10;
-        return `<div class="border rounded-xl p-3 flex items-center gap-3" style="border-color:var(--line);">
-          <div class="w-8 h-8 rounded-lg flex items-center justify-center font-extrabold text-xs" style="background:${SKILL_COLORS[key]}20;color:${SKILL_COLORS[key]};">${i+1}</div>
-          <div class="min-w-0 flex-1"><p class="text-xs font-bold truncate">${escapeHtml(x.s.name)}</p><p class="text-[9px] text-gray-400">${cls?shortClass(cls):'-'}</p></div>
-          <div class="text-sm font-extrabold" style="color:${SKILL_COLORS[key]};">${pct}%</div>
-        </div>`;
-      }).join('')}
-    </div>
-    ${list.length>10?'<p class="text-[9px] text-gray-400 mt-2">Showing the first 10 results. / يتم عرض أول 10 نتائج.</p>':''}`;
-}
-
 function renderStudentsTable(){
   const filterSel = document.getElementById('students-class-filter');
   const prevVal = filterSel.value || 'all';
@@ -2781,19 +2695,6 @@ function cycleAttendance(id){
   rec.attendance = rec.attendance ? order[(order.indexOf(rec.attendance)+1)%order.length] : 'present';
   s.attendance = latestDailyFieldValue(id, 'attendance', 'present');
   saveData(); renderDailyTable(); renderStudentsTable();
-  if(rec.attendance==='absent'){
-    const recent=countRecentAbsences(id,date,5);
-    if(recent>=2){
-      triggerSmartNotification({
-        key:'attendance-concern-'+id+'-'+date,type:'attention',
-        titleEn:'Attendance needs attention',titleAr:'الحضور يحتاج متابعة',
-        bodyEn:s.name+' has been absent '+recent+' times in the recent records.',
-        bodyAr:'الطالب '+s.name+' تغيب '+recent+' مرات في السجلات الأخيرة.',
-        data:{studentId:id,date,absences:recent}
-      });
-    }
-  }
-  checkDailyClassCompletion(date,s.classId);
 }
 function toggleHomework(id){
   const s = studentsData.find(x=>x.id===id); if(!s) return;
@@ -2919,33 +2820,6 @@ function setSkill(studentId, key, val){
   const dated = s.skillHistory.filter(h=>typeof h[key]==='number').sort((a,b)=>a.date<b.date?-1:1);
   s.skills[key] = dated.length ? dated[dated.length-1][key] : 0;
   saveData(); renderSkillsTable(); renderStudentsTable();
-  if(val!==''){
-    const score=Number(val);
-    const skillName=SKILL_META[key].label.split(' / ')[0];
-    const skillNameAr=SKILL_META[key].label.split(' / ')[1];
-    if(score<=3){
-      triggerSmartNotification({
-        key:'skill-attention-'+s.id+'-'+date+'-'+key,type:'attention',
-        titleEn:'Student needs skill support',titleAr:'الطالب يحتاج دعماً في مهارة',
-        bodyEn:s.name+' scored '+score+'/10 in '+skillName+'.',
-        bodyAr:'حصل '+s.name+' على '+score+'/10 في مهارة '+skillNameAr+'.',
-        data:{studentId:s.id,date,skill:key,score}
-      });
-    }
-    if(score>=8){
-      const previous=s.skillHistory.filter(h=>h.date<date&&typeof h[key]==='number').sort((a,b)=>a.date<b.date?-1:1).pop();
-      if(!previous||previous[key]<8){
-        triggerSmartNotification({
-          key:'skill-milestone-'+s.id+'-'+date+'-'+key,type:'milestone',
-          titleEn:'Progress milestone',titleAr:'محطة تقدم جديدة',
-          bodyEn:s.name+' reached '+score+'/10 in '+skillName+'.',
-          bodyAr:'وصل '+s.name+' إلى '+score+'/10 في مهارة '+skillNameAr+'.',
-          data:{studentId:s.id,date,skill:key,score}
-        });
-      }
-    }
-    checkDailyClassCompletion(date,s.classId);
-  }
 }
 
 /* ---------- honor board / English Excellence Board ---------- */
@@ -3157,14 +3031,11 @@ function renderQuickProfileCard(){
     summaryAr = `أداء قوي في ${qpJoinNames(strengthKeys,'ar')}، بينما ${qpJoinNames(focusKeys,'ar')} هي مجال التركيز الأساسي.`;
   }
 
-  const skillBar = (label,val,color)=>{
-    const pct = typeof val === 'number' ? Math.max(0,Math.min(100,val)) : null;
-    return `
+  const skillBar = (label,val,color)=>`
     <div>
-      <div class="flex justify-between text-xs font-bold mb-1"><span style="color:${color};">${label}</span><span class="text-gray-500 font-semibold">${pct===null?'—':pct+'%'}</span></div>
-      <div class="w-full h-2.5 rounded-full bg-gray-100"><div class="h-2.5 rounded-full" style="width:${pct===null?0:pct}%; background:${color};"></div></div>
+      <div class="flex justify-between text-xs font-bold mb-1"><span style="color:${color};">${label}</span><span class="text-gray-500 font-semibold">${val*10}%</span></div>
+      <div class="w-full h-2.5 rounded-full bg-gray-100"><div class="h-2.5 rounded-full" style="width:${val*10}%; background:${color};"></div></div>
     </div>`;
-  };
 
   wrap.innerHTML = `
     <div class="card p-6 space-y-6">
@@ -3520,69 +3391,36 @@ function monthLabel(ym){
 }
 
 /* ---- Class Pulse: class-level analytics (reuses per-student foundation functions) ---- */
-function getClassPulseDates(){
-  const fromEl=document.getElementById('cp-date-from');
-  const toEl=document.getElementById('cp-date-to');
-  const allDates=Object.keys(dailyArchives).concat(...studentsData.map(s=>(Array.isArray(s.skillHistory)?s.skillHistory:[]).map(h=>h.date))).filter(Boolean).sort();
-  const fallbackFrom=allDates[0]||todayStr();
-  const fallbackTo=allDates[allDates.length-1]||todayStr();
-  if(fromEl&&!fromEl.value)fromEl.value=fallbackFrom;
-  if(toEl&&!toEl.value)toEl.value=fallbackTo;
-  let from=fromEl&&fromEl.value?fromEl.value:fallbackFrom;
-  let to=toEl&&toEl.value?toEl.value:fallbackTo;
-  if(from>to){const t=from;from=to;to=t;if(fromEl)fromEl.value=from;if(toEl)toEl.value=to;}
-  return {from,to};
-}
-function getClassPulseSkillAverage(students,key,from,to){
-  const vals=[];
-  students.forEach(s=>(Array.isArray(s.skillHistory)?s.skillHistory:[]).forEach(h=>{
-    if(h.date>=from&&h.date<=to&&typeof h[key]==='number')vals.push(h[key]);
-  }));
-  return vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10):null;
-}
-function getClassPulseDailyRecords(students,from,to){
-  const out=[];
-  students.forEach(s=>getStudentHistoricalRecords(s).forEach(r=>{
-    if(r.date>=from&&r.date<=to)out.push(r);
-  }));
-  return out;
-}
-
 function getClassStudents(classId){ return studentsData.filter(s=>String(s.classId)===String(classId)); }
-function getClassAcademicAverages(students,from=null,to=null){
+function getClassAcademicAverages(students){
   const avg = {};
   let assessedAny = false;
   Object.keys(QP_SKILL_LABELS).forEach(k=>{
-    const vals=(from&&to)
-      ? students.flatMap(s=>(Array.isArray(s.skillHistory)?s.skillHistory:[]).filter(h=>h.date>=from&&h.date<=to&&typeof h[k]==='number').map(h=>h[k]))
-      : students.map(s=>getCurrentSkillValue(s,k)).filter(v=>v!==null);
-    if(vals.length){assessedAny=true;avg[k]=Math.round(vals.reduce((sum,v)=>sum+v,0)/vals.length*10);}
-    else avg[k]=null;
+    const vals = students.map(s=>getCurrentSkillValue(s,k)).filter(v=>v!==null);
+    if(vals.length){
+      assessedAny = true;
+      avg[k] = Math.round(vals.reduce((sum,v)=>sum+v,0)/vals.length*10);
+    }else{
+      avg[k] = null;
+    }
   });
-  if(!assessedAny)return null;
-  const count=(from&&to)
-    ? students.filter(s=>Object.keys(QP_SKILL_LABELS).some(k=>(Array.isArray(s.skillHistory)?s.skillHistory:[]).some(h=>h.date>=from&&h.date<=to&&typeof h[k]==='number'))).length
-    : students.filter(s=>assessedSkillCount(s)>0).length;
-  return {avg,count,total:students.length};
+  if(!assessedAny) return null;
+  return {avg, count:students.filter(s=>assessedSkillCount(s)>0).length, total:students.length};
 }
-function getClassHomeworkAverage(students,from=null,to=null){
-  let done=0,total=0;
-  students.forEach(s=>getStudentHistoricalRecords(s).forEach(r=>{
-    if((!from||r.date>=from)&&(!to||r.date<=to)){total++;if(r.rec.homeworkDone)done++;}
-  }));
-  if(total===0)return null;
-  return {pct:Math.round(done/total*100),records:total};
+function getClassHomeworkAverage(students){
+  let done=0, total=0;
+  students.forEach(s=>{ getStudentHistoricalRecords(s).forEach(r=>{ total++; if(r.rec.homeworkDone) done++; }); });
+  if(total===0) return null;
+  return {pct: Math.round(done/total*100), records: total};
 }
 function getClassDistribution(students, field, OPTIONS){
   const counts = {}; OPTIONS.forEach(o=>counts[o.key]=0);
   students.forEach(s=>{ if(counts[s[field]]!==undefined) counts[s[field]]++; });
   return counts;
 }
-function getClassTrend(students,from=null,to=null){
+function getClassTrend(students){
   let allRecs = [];
-  students.forEach(s=>getStudentHistoricalRecords(s).forEach(r=>{
-    if((!from||r.date>=from)&&(!to||r.date<=to))allRecs.push(r);
-  }));
+  students.forEach(s=>getStudentHistoricalRecords(s).forEach(r=>allRecs.push(r)));
   allRecs.sort((a,b)=>a.date<b.date?-1:1);
   if(allRecs.length<6) return {status:'insufficient'};
   const half = Math.floor(allRecs.length/2);
@@ -3804,22 +3642,15 @@ function renderClassPulseCard(){
   }
   const cls = classesData.find(c=>String(c.id)===classId);
   const students = getClassStudents(classId);
-  const period=getClassPulseDates();
-  const {from,to}=period;
-  const fromEl=document.getElementById('cp-date-from');
-  const toEl=document.getElementById('cp-date-to');
-  if(fromEl&&toEl&&from>to){ wrap.innerHTML='<div class="card p-6 text-center text-xs text-gray-400">Please choose a valid date range. / اختر فترة زمنية صحيحة.</div>'; return; }
-  const periodLabel=document.getElementById('cp-period-label');
-  if(periodLabel)periodLabel.textContent='Analysis period: '+from+' → '+to+' / فترة التحليل: '+from+' → '+to;
   if(students.length===0){
     wrap.innerHTML = `<div class="card p-10 text-center text-gray-400"><p class="text-sm">No students in this class yet. / لا يوجد طلاب في هذا الصف بعد.</p></div>`;
     return;
   }
-  const acad = getClassAcademicAverages(students,from,to);
-  const hw = getClassHomeworkAverage(students,from,to);
+  const acad = getClassAcademicAverages(students);
+  const hw = getClassHomeworkAverage(students);
   const partDist = getClassDistribution(students, 'participationLevel', PARTICIPATION_OPTIONS);
   const behDist = getClassDistribution(students, 'behaviourLevel', BEHAVIOUR_OPTIONS);
-  const trend = getClassTrend(students,from,to);
+  const trend = getClassTrend(students);
   const insights = getClassInsights(students, acad, hw);
 
   const TREND_LABEL = {
@@ -4481,38 +4312,6 @@ function markAllNotifsRead(){
   renderNotifBadge();
   renderNotifList();
   if(typeof window.markAllNotificationsReadRemote === 'function') window.markAllNotificationsReadRemote();
-}
-
-/* ---------- Smart Notification Triggers ---------- */
-function triggerSmartNotification(payload){
-  if(typeof window.createTriggeredNotification === 'function') window.createTriggeredNotification(payload);
-}
-function getStudentClassLabel(studentId){
-  const s=studentsData.find(x=>x.id===studentId);
-  const cls=s?classesData.find(c=>c.id===s.classId):null;
-  return cls?shortClass(cls):'';
-}
-function countRecentAbsences(studentId,throughDate,limitDays=5){
-  const dates=Object.keys(dailyArchives).filter(d=>d<=throughDate).sort().slice(-limitDays);
-  return dates.reduce((n,d)=>{
-    const rec=dailyArchives[d]&&dailyArchives[d][studentId];
-    return n+(rec&&rec.attendance==='absent'?1:0);
-  },0);
-}
-function checkDailyClassCompletion(date,classId){
-  const clsStudents=studentsData.filter(s=>s.classId===classId);
-  if(!clsStudents.length)return;
-  const recs=dailyArchives[date]||{};
-  if(clsStudents.every(s=>recs[s.id])){
-    const cls=classesData.find(c=>c.id===classId);
-    triggerSmartNotification({
-      key:'class-complete-'+date+'-'+classId,type:'workflow',
-      titleEn:'Daily tracking complete',titleAr:'اكتملت متابعة اليوم',
-      bodyEn:(cls?shortClass(cls):'Class')+' — all students have a record for '+date+'.',
-      bodyAr:(cls?shortClass(cls):'الفصل')+' — تم تسجيل بيانات جميع الطلاب ليوم '+date+'.',
-      data:{date,classId}
-    });
-  }
 }
 
 /* ---------- Global Search ---------- */
@@ -5397,9 +5196,6 @@ document.addEventListener('change', function(e){
     case 's360-class-change': renderS360StudentOptions(); break;
     case 's360-student-change': renderS360Card(); break;
     case 'cp-class-change': renderClassPulseCard(); break;
-    case 'cp-period-change': renderClassPulseCard(); break;
-    case 'skill-explorer-change': renderSkillExplorer(); break;
-    case 'skill-explorer-input': renderSkillExplorer(); break;
     case 'pick-class-color-custom': pickClassColor(t.value); break;
     case 'note-student-change': loadNoteForSelectedStudent(); break;
     case 'report-select-change': generateReport(); break;
@@ -5421,7 +5217,6 @@ document.addEventListener('input', function(e){
   if(e.target.id === 'students-search') renderStudentsTable();
   if(e.target.id === 'report-student-search') renderReportSelect();
   if(e.target.id === 'global-search-input') renderGlobalSearchResults(e.target.value);
-  if(e.target.id === 'skill-explorer-search') renderSkillExplorer();
 });
 
 /* ---------- refresh ---------- */
@@ -5442,7 +5237,6 @@ function refreshAllViews(){
   syncCurrentPageHeader();
   normalizeBilingualText(document.body);
   renderStudentsTable();
-  renderSkillExplorerSelectors();
   renderDailyTable();
   renderSkillsTable();
   renderStarsBoard();
@@ -5659,52 +5453,6 @@ window.deactivatePushToken = async function deactivatePushToken(){
 // Kept in its own subcollection, separate from users/{uid}/appData/main, so it
 // never touches existing classes/students/daily-records data.
 let notifUnsubscribe = null;
-
-// Create one smart notification record and, when this device is active, surface it
-// immediately as a real browser notification. Cross-device/background delivery
-// still requires a server-side FCM sender; this client-side trigger must never
-// pretend that Firestore alone can wake a closed phone.
-let notifKnownIds = new Set();
-let notifListenerReady = false;
-window.createTriggeredNotification = async function createTriggeredNotification(payload){
-  if(!auth.currentUser || !payload || !payload.key) return false;
-  const uid = auth.currentUser.uid;
-  const id = 'trigger_' + String(payload.key).replace(/[^a-zA-Z0-9_-]/g,'_');
-  const ref = doc(db, 'users', uid, 'notifications', id);
-  const item = {
-    titleEn: payload.titleEn || 'Notification',
-    titleAr: payload.titleAr || 'إشعار',
-    bodyEn: payload.bodyEn || '',
-    bodyAr: payload.bodyAr || '',
-    createdAt: new Date().toISOString(),
-    read: false,
-    type: payload.type || 'workflow',
-    data: payload.data || null,
-    triggerKey: String(payload.key)
-  };
-  try{
-    const existing = await getDoc(ref);
-    if(existing.exists()) return false;
-    await setDoc(ref, item, {merge:false});
-    // If this is the device that performed the action, show it immediately.
-    if((localStorage.getItem('ss_notif_app_enabled') === '1') && Notification.permission === 'granted' && document.visibilityState === 'visible'){
-      try{
-        const reg = await navigator.serviceWorker.ready;
-        await reg.showNotification(item.titleEn, {
-          body:item.bodyEn,
-          icon:'app-icon-192.svg',
-          badge:'app-icon-192.svg',
-          tag:id,
-          data:item.data || {}
-        });
-      }catch(pushErr){ console.warn('Active-device notification display failed:',pushErr); }
-    }
-    return true;
-  }catch(err){
-    console.error('Triggered notification write failed:',err);
-    return false;
-  }
-};
 function startNotificationsListener(uid){
   if(notifUnsubscribe){ notifUnsubscribe(); notifUnsubscribe = null; } // guard against duplicate listeners
   const notifQuery = query(collection(db, 'users', uid, 'notifications'), orderBy('createdAt', 'desc'), limit(50));
@@ -5723,26 +5471,6 @@ function startNotificationsListener(uid){
         data: data.data || null
       };
     });
-    // After the initial snapshot, any newly-created notification arriving from
-    // another device is surfaced locally on this device when notifications are ON.
-    if(notifListenerReady && (localStorage.getItem('ss_notif_app_enabled') === '1') && Notification.permission === 'granted' && document.visibilityState !== 'hidden'){
-      items.filter(n=>!notifKnownIds.has(n.id)).forEach(async n=>{
-        notifKnownIds.add(n.id);
-        try{
-          const reg = await navigator.serviceWorker.ready;
-          await reg.showNotification(n.titleEn || 'SS\\' Daily Progress Track', {
-            body:n.bodyEn || '',
-            icon:'app-icon-192.svg',
-            badge:'app-icon-192.svg',
-            tag:n.id,
-            data:n.data || {}
-          });
-        }catch(pushErr){ console.warn('Cross-device notification display failed:',pushErr); }
-      });
-    }else{
-      items.forEach(n=>notifKnownIds.add(n.id));
-    }
-    notifListenerReady = true;
     if(typeof window.onNotificationsSynced === 'function') window.onNotificationsSynced(items);
   }, (err) => {
     console.error('Notifications listener error:', err);
