@@ -3334,9 +3334,9 @@ const PJ_STATUS = {
   insufficient:{en:'', ar:'', label:'Not enough data / بيانات غير كافية', color:'#8A9A96', bg:'#F1F5F4'}
 };
 function pjSkillTrend(s, key){
-  const pts = (Array.isArray(s.skillHistory) ? s.skillHistory : []).filter(h=>typeof h[key]==='number').sort((a,b)=>a.date<b.date?-1:1);
+  const pts = (Array.isArray(s.skillHistory) ? s.skillHistory : []).filter(h=>skillLevelScore(h[key])!==null).sort((a,b)=>a.date<b.date?-1:1);
   if(pts.length < 2) return {status:'insufficient', pts};
-  const diff = pts[pts.length-1][key] - pts[0][key];
+  const diff = skillLevelScore(pts[pts.length-1][key]) - skillLevelScore(pts[0][key]);
   return {status: diff>=1 ? 'improving' : (diff<=-1 ? 'needs_support' : 'stable'), pts};
 }
 function pjEngagementTrend(records, isGood){
