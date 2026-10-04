@@ -147,6 +147,40 @@
       cursor: pointer;
     }
 
+     .secondary-button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 11px 13px;
+      border: 1px solid #0f766e;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #0f766e;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .secondary-button:hover {
+      background: #effaf8;
+    }
+
+    .account-panel {
+      display: none;
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid #d7ebe7;
+      border-radius: 12px;
+      background: #f8fcfb;
+    }
+
+    .account-panel.show { display: block; }
+
+    .account-panel h2 { margin: 0 0 10px; font-size: 17px; color: #134e4a; text-align: center; }
+
+    .account-panel input { margin-top: 8px; }
+
+    .account-panel button { width: 100%; margin-top: 10px; }
+
     .login-button:hover {
       background: #115e59;
     }
@@ -238,7 +272,18 @@
         Sign In
       </button>
 
+      <button type="button" id="createAccountButton" class="secondary-button">Create New Account / إنشاء حساب جديد</button>
+
       <div id="message"></div>
+
+      <div id="accountPanel" class="account-panel">
+        <h2>Create a new teacher account / إنشاء حساب معلم جديد</h2>
+        <input id="newEmail" type="email" placeholder="Email / البريد الإلكتروني" autocomplete="email">
+        <input id="newPassword" type="password" placeholder="Password (6+ characters) / كلمة المرور (6 أحرف فأكثر)" autocomplete="new-password">
+        <input id="newPasswordConfirm" type="password" placeholder="Confirm password / تأكيد كلمة المرور" autocomplete="new-password">
+        <button type="button" class="login-button" id="registerButton">Create Account / إنشاء الحساب</button>
+        <button type="button" class="secondary-button" id="cancelRegisterButton">Cancel / إلغاء</button>
+      </div>
 
     </form>
 
@@ -252,6 +297,7 @@
     import {
       getAuth,
       signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
       sendPasswordResetEmail,
       setPersistence,
       browserLocalPersistence
@@ -276,6 +322,13 @@
     const message = document.getElementById("message");
     const togglePassword = document.getElementById("togglePassword");
     const forgotPassword = document.getElementById("forgotPassword");
+    const createAccountButton = document.getElementById("createAccountButton");
+    const accountPanel = document.getElementById("accountPanel");
+    const registerButton = document.getElementById("registerButton");
+    const cancelRegisterButton = document.getElementById("cancelRegisterButton");
+    const newEmail = document.getElementById("newEmail");
+    const newPassword = document.getElementById("newPassword");
+    const newPasswordConfirm = document.getElementById("newPasswordConfirm");
 
     /* Show / Hide Password */
 
@@ -302,6 +355,50 @@
 
     });
 
+
+    createAccountButton.addEventListener("click", () => {
+      accountPanel.classList.add("show");
+      createAccountButton.style.display = "none";
+      newEmail.value = emailInput.value.trim();
+      newEmail.focus();
+      message.className = "";
+      message.textContent = "";
+    });
+
+    cancelRegisterButton.addEventListener("click", () => {
+      accountPanel.classList.remove("show");
+      createAccountButton.style.display = "block";
+      newPassword.value = "";
+      newPasswordConfirm.value = "";
+      message.className = "";
+      message.textContent = "";
+    });
+
+    registerButton.addEventListener("click", async () => {
+      const email = newEmail.value.trim();
+      const password = newPassword.value;
+      const confirm = newPasswordConfirm.value;
+      if(!email || !password){ message.className="error"; message.textContent="Please enter email and password."; return; }
+      if(password.length < 6){ message.className="error"; message.textContent="Password must be at least 6 characters."; return; }
+      if(password !== confirm){ message.className="error"; message.textContent="Passwords do not match."; return; }
+      message.className = "";
+      message.textContent = "Creating account...";
+      registerButton.disabled = true;
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        await createUserWithEmailAndPassword(auth, email, password);
+        message.className = "success";
+        message.textContent = "Account created. Opening your clean app...";
+        window.location.href = "english_dashboard-dynamic.html";
+      } catch(error) {
+        console.error(error);
+        message.className = "error";
+        if(error.code === "auth/email-already-in-use") message.textContent = "This email already has an account. Please sign in instead.";
+        else if(error.code === "auth/invalid-email") message.textContent = "Please enter a valid email address.";
+        else if(error.code === "auth/weak-password") message.textContent = "Password is too weak. Use at least 6 characters.";
+        else message.textContent = "Account creation failed. Please try again.";
+      } finally { registerButton.disabled = false; }
+    });
 
     /* Sign In */
 
