@@ -2787,7 +2787,7 @@ function cycleAttendance(id){
   const order = ['present','late','absent'];
   rec.attendance = rec.attendance ? order[(order.indexOf(rec.attendance)+1)%order.length] : 'present';
   s.attendance = latestDailyFieldValue(id, 'attendance', 'present');
-  saveData(); renderDailyTable(); renderStudentsTable();
+  saveData(); renderDailyTable(); renderStudentsTable(); evaluateStudentSmartAlerts(id,date);
 }
 function toggleHomework(id){
   const s = studentsData.find(x=>x.id===id); if(!s) return;
@@ -2795,7 +2795,7 @@ function toggleHomework(id){
   const rec = ensureDailyRecord(date, id);
   rec.homeworkDone = rec.homeworkDone===undefined ? true : !rec.homeworkDone;
   s.homeworkDone = latestDailyFieldValue(id, 'homeworkDone', false);
-  saveData(); renderDailyTable(); renderStudentsTable();
+  saveData(); renderDailyTable(); renderStudentsTable(); evaluateStudentSmartAlerts(id,date);
 }
 let activeDailyChoiceMenu = null;
 function closeDailyChoiceMenu(){ if(activeDailyChoiceMenu){ activeDailyChoiceMenu.remove(); activeDailyChoiceMenu=null; } }
@@ -2846,7 +2846,7 @@ function setBehaviour(id, val){
   const rec = ensureDailyRecord(date, id);
   if(val===''){ delete rec.behaviourLevel; } else { rec.behaviourLevel = val; }
   s.behaviourLevel = latestDailyFieldValue(id, 'behaviourLevel', 'disciplined');
-  saveData(); renderDailyTable();
+  saveData(); renderDailyTable(); evaluateStudentSmartAlerts(id,date);
 }
 
 /* ---------- skills ---------- */
@@ -2979,7 +2979,8 @@ function setSkill(studentId, key, val){
   const dated = s.skillHistory.filter(h=>typeof h[key]==='number').sort((a,b)=>a.date<b.date?-1:1);
   s.skills[key] = dated.length ? dated[dated.length-1][key] : 0;
   saveData(); renderSkillsTable(); renderStudentsTable();
-  if(val!=='') notifyPerfectSkill(studentId,key,date,oldVal,Number(val));
+  if(val!==''){ const newVal=Number(val); notifyPerfectSkill(studentId,key,date,oldVal,newVal); if(oldVal!==null && newVal-oldVal>=2) queueSmartAlert('student-improvement','student_'+studentId+'_improve_'+key+'_'+date,date,'Student improvement detected','تم رصد تحسن في الطالب',s.name+' improved in '+QP_SKILL_LABELS[key].en+' by '+(newVal-oldVal).toFixed(1)+' points.',s.name+' تحسن في '+QP_SKILL_LABELS[key].ar+' بمقدار '+(newVal-oldVal).toFixed(1)+' نقطة.',{studentId,key,date,delta:newVal-oldVal}); }
+  evaluateStudentSmartAlerts(studentId,date);
 }
 
 /* ---------- honor board / English Excellence Board ---------- */
