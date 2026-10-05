@@ -6314,11 +6314,27 @@ try{
     if(oldBadge)new MutationObserver(syncBell).observe(oldBadge,{attributes:true,childList:true,characterData:true});
   }
 
+  /* Mirror the legacy page title into the new header.
+     IMPORTANT: never move the original nodes. This keeps rollback truly safe. */
   const oldEn=document.getElementById('current-page-title-en');
   const oldAr=document.getElementById('current-page-title-ar');
   const titleSlot=shell.querySelector('.ph-page-title');
-  if(oldEn)titleSlot.appendChild(oldEn);
-  if(oldAr)titleSlot.appendChild(oldAr);
+  const mirrorTitle=function(source,cls){
+    const span=document.createElement('span');
+    span.className=cls;
+    if(source){
+      const paint=function(){
+        span.textContent=source.textContent||'';
+        span.style.display=getComputedStyle(source).display;
+      };
+      paint();
+      new MutationObserver(paint).observe(source,{childList:true,subtree:true,characterData:true,attributes:true});
+    }
+    titleSlot.appendChild(span);
+    return span;
+  };
+  mirrorTitle(oldEn,'en');
+  mirrorTitle(oldAr,'ar');
 
   const syncActive=function(){
     const active=document.querySelector('.tab-content.active');
@@ -6341,39 +6357,23 @@ try{
   /* One-call rollback: removes only this redesign and reveals the untouched
      original header children. No Firebase, data, storage, or app features are touched. */
   window.restorePremiumHeaderLegacy=function(){
-    const s=document.getElementById('premium-header-shell');
-    const h=document.getElementById('app-topbar');
-    if(!s||!h)return false;
-    s.remove();
-    h.classList.remove('premium-header-v2');
-    return true;
+    try{
+      const s=document.getElementById('premium-header-shell');
+      const h=document.getElementById('app-topbar');
+      if(!s||!h)return false;
+      /* The legacy header was never moved or rewritten; removing only our
+         isolated shell and class restores the original header immediately. */
+      s.remove();
+      h.classList.remove('premium-header-v2');
+      return true;
+    }catch(err){
+      console.error('Premium header legacy restore failed safely:',err);
+      return false;
+    }
   };
 }catch(err){console.error('Premium header redesign failed safely:',err);}
 })();
 </script>
-<script id="premium-header-rollback-fix-2026-10-04">
-(function(){
-  window.restorePremiumHeaderLegacy=function(){
-    try{
-      var h=document.getElementById('app-topbar');
-      var s=document.getElementById('premium-header-shell');
-      var legacyEn=document.getElementById('current-page-title-en');
-      var legacyAr=document.getElementById('current-page-title-ar');
-      var originalRight=h ? h.querySelector('.header-right-identity') : null;
-      var titleSlot=s ? s.querySelector('.ph-page-title') : null;
-      if(titleSlot&&originalRight){
-        var originalTitleHost=originalRight.querySelector(':scope > div:last-child');
-        if(originalTitleHost){
-          if(legacyEn) originalTitleHost.appendChild(legacyEn);
-          if(legacyAr) originalTitleHost.appendChild(legacyAr);
-        }
-      }
-      if(s)s.remove();
-      if(h)h.classList.remove('premium-header-v2');
-      return true;
-    }catch(e){console.error('Premium header legacy restore failed:',e);return false;}
-  };
-})();
-</script>
+
 </body>
 </html>
