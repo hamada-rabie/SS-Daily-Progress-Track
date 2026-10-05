@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
+<script id="fresh-session-home-guard-2026-10-05">
+  // Clear the previous page before the dashboard UI can restore it.
+  // This runs immediately, before DOMContentLoaded and before navigation code.
+  try{
+    localStorage.removeItem('ss_active_tab');
+    if(location.hash) history.replaceState(null,'',location.pathname+location.search);
+  }catch(e){}
+</script>
 <meta name="theme-color" content="#0E7C74">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
