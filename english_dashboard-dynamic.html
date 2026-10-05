@@ -5,12 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
 <script id="fresh-session-home-guard-2026-10-05">
-  // Clear the previous page before the dashboard UI can restore it.
-  // This runs immediately, before DOMContentLoaded and before navigation code.
+  // Session-aware navigation:
+  // - Browser refresh: keep the page the teacher was on.
+  // - Closing/reopening the app: start clean on Home.
+  // sessionStorage survives refreshes but is cleared when the browser/app session ends.
   try{
-    localStorage.removeItem('ss_active_tab');
-    if(location.hash) history.replaceState(null,'',location.pathname+location.search);
-  }catch(e){}
+    const freshAppSession = sessionStorage.getItem('ss_app_session_active') !== '1';
+    window.__SS_FRESH_APP_SESSION = freshAppSession;
+    sessionStorage.setItem('ss_app_session_active','1');
+    if(freshAppSession){
+      localStorage.removeItem('ss_active_tab');
+      if(location.hash) history.replaceState(null,'',location.pathname+location.search);
+    }
+  }catch(e){
+    // If sessionStorage is unavailable, preserve normal navigation rather than
+    // risking a forced Home or losing the teacher's current page.
+    window.__SS_FRESH_APP_SESSION = false;
+  }
 </script>
 <meta name="theme-color" content="#0E7C74">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1112,7 +1123,7 @@ main .card{border-radius:16px}
       <div id="nav-group-achievement" class="space-y-1">
         <a href="#" data-action="switch-tab" data-tab="stars" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="stars"><i class="fa-solid fa-trophy w-5 text-center text-amber-500"></i><span class="bi-label"><span class="en">Honor Board</span><span class="ar">لوحة التميز</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="certificates" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="certificates"><i class="fa-solid fa-award w-5 text-center"></i><span class="bi-label"><span class="en">Certificates</span><span class="ar">الشهادات</span></span></a>
-        <a href="#" data-action="switch-tab" data-tab="starcard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="starcard"><i class="fa-solid fa-star w-5 text-center"></i><span class="bi-label"><span class="en">Star Card</span><span class="ar">بطاقة النجم</span></span></a>
+        <a href="#" data-action="switch-tab" data-tab="starcard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="starcard" id="nav-starcard"><i class="fa-solid fa-star w-5 text-center"></i><span class="bi-label"><span class="en">Star Card</span><span class="ar">بطاقة النجم</span></span></a>
       </div>
 
       <button type="button" data-action="toggle-nav-group" data-group="management" aria-expanded="false" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
@@ -2315,7 +2326,13 @@ const TAB_TITLES = {
   certificates:['Certificates','شهادات التقدير'], settings:['Settings','الإعدادات']
 };
 function switchTab(name){
-  const target = document.getElementById('tab-'+name);
+  let target = document.getElementById('tab-'+name);
+  // Star Card is injected dynamically; if navigation fires before its section
+  // is available, give its feature controller one chance to finish mounting it.
+  if(!target && name==='starcard' && typeof window.__ensureStarCardMounted==='function'){
+    try{ window.__ensureStarCardMounted(); }catch(e){}
+    target = document.getElementById('tab-'+name);
+  }
   if(!target) return;
   const mainScroller=document.querySelector('main');
   if(mainScroller) mainScroller.scrollTo({top:0,behavior:'auto'});
@@ -5705,14 +5722,16 @@ window.addEventListener('DOMContentLoaded', ()=>{
   setInterval(updateClock, 1000);
   refreshAllViews();
   updateNotificationStatusUI();
-  // Always start a fresh app session on Home.
-  // The last open tab may remain in the URL hash/localStorage when the PWA is closed,
-  // so clear both before opening the dashboard. Navigation during the current
-  // session still works normally.
+  // New app session -> Home.
+  // Browser refresh -> restore the exact page from the current URL/local state.
   try{
-    localStorage.removeItem('ss_active_tab');
-    if(location.hash) history.replaceState(null, '', location.pathname + location.search);
-    switchTab('dashboard');
+    if(window.__SS_FRESH_APP_SESSION){
+      switchTab('dashboard');
+    }else{
+      const hashTab = (location.hash || '').replace(/^#/, '');
+      const savedTab = hashTab || localStorage.getItem('ss_active_tab');
+      switchTab(savedTab && document.getElementById('tab-'+savedTab) ? savedTab : 'dashboard');
+    }
   }catch(e){
     try{ switchTab('dashboard'); }catch(_e){}
   }
@@ -5893,7 +5912,20 @@ try{
   document.addEventListener('change',e=>{const t=e.target;if(!t.id)return;if(t.id==='sw-class'||t.id==='sw-mode'){renderSwStudents();}else if(t.id==='sw-student'||t.id==='sw-language'||t.id==='sw-first'||t.id==='sw-count'){renderStarCard();}});
   document.addEventListener('click',e=>{if(e.target.closest('[data-action="sw-download"]'))downloadStar();});
   const section='<section id="tab-starcard" class="tab-content space-y-4"><div class="card p-4 sw-controls"><div class="sw-control"><label class="text-xs font-bold">'+bi('Class','الصف','bilingual')+'</label><select id="sw-class" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Selection Type','نوع الاختيار','bilingual')+'</label><select id="sw-mode" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="honor">Highest Honor Score / أعلى درجة تميز</option><option value="improved">Most Improved / الأكثر تحسنًا</option></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Student','الطالب','bilingual')+'</label><select id="sw-student" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"></select></div><div class="sw-control"><label class="text-xs font-bold">'+bi('Card Language','لغة البطاقة','bilingual')+'</label><select id="sw-language" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="bilingual">Bilingual / ثنائي</option><option value="en">English</option><option value="ar">العربية</option></select></div><div class="sw-control"><label class="text-xs font-bold"><span class="en">Number of Stars</span><span class="ar">عدد النجوم</span></label><select id="sw-count" class="w-full text-xs border rounded-lg px-3 py-2" style="border-color:var(--line);margin-top:4px;"><option value="auto">Auto — up to 3 / تلقائي — حتى 3</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div><label class="sw-control flex items-center gap-2 text-xs font-bold" style="align-items:center;"><input id="sw-first" type="checkbox"> '+bi('Show first name only','عرض الاسم الأول فقط','bilingual')+'</label><div class="sw-control flex items-end"><button type="button" data-action="sw-download" class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal);color:#fff;">'+bi('Download PNG','تنزيل PNG','bilingual')+'</button></div></div><div id="sw-output"></div></section>';
-  const swAnchor=document.querySelector('script[type="module"]');if(!document.getElementById('tab-starcard'))swAnchor.insertAdjacentHTML('beforebegin',section);
+  const swAnchor=document.querySelector('script[type="module"]');
+  const swMount = document.querySelector('main');
+  if(!document.getElementById('tab-starcard')){
+    if(swAnchor) swAnchor.insertAdjacentHTML('beforebegin',section);
+    else if(swMount) swMount.insertAdjacentHTML('beforeend',section);
+  }
+  window.__ensureStarCardMounted=function(){
+    if(document.getElementById('tab-starcard')) return true;
+    const anchor=document.querySelector('script[type="module"]');
+    const mount=document.querySelector('main');
+    if(anchor) anchor.insertAdjacentHTML('beforebegin',section);
+    else if(mount) mount.insertAdjacentHTML('beforeend',section);
+    return !!document.getElementById('tab-starcard');
+  };
   renderSwClasses();
 }catch(err){console.error('Star Card feature failed safely:',err);}
 })();
