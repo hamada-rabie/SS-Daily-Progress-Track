@@ -1285,17 +1285,12 @@ main .card{border-radius:16px}
         </div>
       </div>
 
-      <!-- Daily Tracking → Evidence → Progress → Achievement -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <!-- Daily Tracking → Progress → Achievement -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div data-action="switch-tab" data-tab="daily" class="card card-interactive p-3 flex flex-col items-center text-center gap-0.5" style="border-top:3px solid #0D9488;">
           <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white mb-1" style="background:#0D9488;"><i class="fa-solid fa-calendar-check"></i></div>
           <p class="text-xs font-bold"><span class="en">Daily Tracking</span><span class="ar">المتابعة اليومية</span></p>
           <p class="text-[10px] text-gray-400">المتابعة اليومية</p>
-        </div>
-        <div data-action="switch-tab" data-tab="reports" class="card card-interactive p-3 flex flex-col items-center text-center gap-0.5" style="border-top:3px solid #2563EB;">
-          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white mb-1" style="background:#2563EB;"><i class="fa-solid fa-file-lines"></i></div>
-          <p class="text-xs font-bold"><span class="en">Evidence</span><span class="ar">الدليل</span></p>
-          <p class="text-[10px] text-gray-400">الدليل</p>
         </div>
         <div data-action="switch-tab" data-tab="journey" class="card card-interactive p-3 flex flex-col items-center text-center gap-0.5" style="border-top:3px solid #9333EA;">
           <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white mb-1" style="background:#9333EA;"><i class="fa-solid fa-route"></i></div>
@@ -2750,18 +2745,31 @@ function getSkillImprovement(s){const out=[],h=Array.isArray(s.skillHistory)?s.s
 function getStudentSmartAlerts(s){const a=[];Object.keys(QP_SKILL_LABELS).forEach(k=>{const v=getCurrentSkillValue(s,k);const score=skillLevelScore(v);if(score!==null&&score<=2){const lvl=skillLevelLabel(v);a.push({type:'attention',icon:'fa-triangle-exclamation',en:'Needs attention: '+QP_SKILL_LABELS[k].en+' is '+lvl.en+'.',ar:'يحتاج متابعة: '+QP_SKILL_LABELS[k].ar+' بمستوى '+lvl.ar+'.'});}});if(s.behaviourLevel==='needs_improvement')a.push({type:'attention',icon:'fa-user-shield',en:'Behaviour needs attention.',ar:'السلوك يحتاج إلى متابعة.'});if(s.participationLevel==='sleepy'||s.participationLevel==='passive')a.push({type:'attention',icon:'fa-hand',en:'Participation needs attention.',ar:'المشاركة تحتاج إلى متابعة.'});const abs=getStudentRepeatedAbsence(s.id);if(abs>=3)a.push({type:'attention',icon:'fa-calendar-xmark',en:abs+' absences in the last 10 tracked days.',ar:'لديه '+abs+' حالات غياب خلال آخر 10 أيام متابعة.'});const hw=getStudentHomeworkMisses(s.id);if(hw>=2)a.push({type:'attention',icon:'fa-book-open',en:'Homework was missed '+hw+' times in the last 3 tracked days.',ar:'لم يُنجز الواجب '+hw+' مرات خلال آخر 3 أيام متابعة.'});const im=getSkillImprovement(s).filter(x=>x.date===todayStr()).pop();if(im)a.push({type:'positive',icon:'fa-arrow-trend-up',en:'Improvement detected: '+QP_SKILL_LABELS[im.key].en+' +'+im.delta+'.',ar:'تم رصد تحسن: '+QP_SKILL_LABELS[im.key].ar+' +'+im.delta+'.'});return a.slice(0,4);}
 function getClassSmartAlerts(classId){const a=[],students=studentsData.filter(s=>s.classId===classId);Object.keys(QP_SKILL_LABELS).forEach(k=>{const dates={};students.forEach(s=>(Array.isArray(s.skillHistory)?s.skillHistory:[]).forEach(h=>{if(h.date&&skillLevelScore(h[k])!==null){if(!dates[h.date])dates[h.date]=[];dates[h.date].push(skillLevelScore(h[k]));}}));const ds=Object.keys(dates).sort();if(ds.length>=2){const pVals=dates[ds[ds.length-2]],nVals=dates[ds[ds.length-1]];const p=pVals.reduce((x,y)=>x+y,0)/pVals.length,n=nVals.reduce((x,y)=>x+y,0)/nVals.length;if(n-p>=1)a.push({type:'positive',icon:'fa-arrow-trend-up',en:QP_SKILL_LABELS[k].en+' average improved by '+(n-p).toFixed(1)+' points.',ar:'تحسن متوسط '+QP_SKILL_LABELS[k].ar+' بمقدار '+(n-p).toFixed(1)+' نقطة.'});}});const attention=students.filter(s=>getStudentSmartAlerts(s).some(x=>x.type==='attention')).length;if(attention>=2)a.push({type:'attention',icon:'fa-triangle-exclamation',en:attention+' students currently need attention.',ar:attention+' طلاب يحتاجون حاليًا إلى متابعة.'});return a.slice(0,2);}
 function getClassEvaluationSnapshot(classId){
-  const list=studentsData.filter(s=>s.classId===classId);
+  const list=studentsData.filter(s=>String(s.classId)===String(classId));
   const today=todayStr();
   const todayDay=dailyArchives[today]||{};
   const evaluatedToday=list.filter(s=>todayDay[s.id]&&Object.keys(todayDay[s.id]).length>0).length;
-  const historicalDates=Object.keys(dailyArchives||{}).filter(d=>d<today&&dailyArchives[d]&&list.some(s=>dailyArchives[d][s.id]&&Object.keys(dailyArchives[d][s.id]).length>0)).sort();
-  const historicalDate=historicalDates.length?historicalDates[historicalDates.length-1]:null;
-  let incompleteHistorical=0;
-  if(historicalDate){
-    const day=dailyArchives[historicalDate]||{};
-    incompleteHistorical=list.filter(s=>!(day[s.id]&&Object.keys(day[s.id]).length>0)).length;
-  }
-  return {total:list.length,evaluatedToday,historicalDate,incompleteHistorical,today};
+  // Historical alert date must be tied to an actual incomplete evaluation day
+  // for this class, not merely the latest date on which anyone was evaluated.
+  // This keeps the date beside the alert consistent across every class.
+  const historicalDates=Object.keys(dailyArchives||{})
+    .filter(d=>d<today&&dailyArchives[d])
+    .map(d=>{
+      const day=dailyArchives[d]||{};
+      const evaluated=list.filter(s=>day[s.id]&&Object.keys(day[s.id]).length>0).length;
+      const incomplete=list.length-evaluated;
+      return {date:d,evaluated,incomplete};
+    })
+    .filter(x=>x.evaluated>0&&x.incomplete>0)
+    .sort((a,b)=>a.date<b.date?-1:1);
+  const historical=historicalDates.length?historicalDates[historicalDates.length-1]:null;
+  return {
+    total:list.length,
+    evaluatedToday,
+    historicalDate:historical?historical.date:null,
+    incompleteHistorical:historical?historical.incomplete:0,
+    today
+  };
 }
 function formatDashboardDate(date){
   if(!date) return '';
