@@ -1104,7 +1104,7 @@ main .card{border-radius:16px}
       <div id="nav-group-achievement" class="space-y-1">
         <a href="#" data-action="switch-tab" data-tab="stars" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="stars"><i class="fa-solid fa-trophy w-5 text-center text-amber-500"></i><span class="bi-label"><span class="en">Honor Board</span><span class="ar">لوحة التميز</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="certificates" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="certificates"><i class="fa-solid fa-award w-5 text-center"></i><span class="bi-label"><span class="en">Certificates</span><span class="ar">الشهادات</span></span></a>
-        <a href="#" data-action="sw-open" data-sw-tab="starcard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="starcard"><i class="fa-solid fa-star w-5 text-center"></i><span class="bi-label"><span class="en">Star Card</span><span class="ar">بطاقة النجم</span></span></a>
+        <a href="#" data-action="switch-tab" data-tab="starcard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="starcard"><i class="fa-solid fa-star w-5 text-center"></i><span class="bi-label"><span class="en">Star Card</span><span class="ar">بطاقة النجم</span></span></a>
       </div>
 
       <button type="button" data-action="toggle-nav-group" data-group="management" aria-expanded="false" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
@@ -2313,6 +2313,10 @@ function switchTab(name){
   if(mainScroller) mainScroller.scrollTo({top:0,behavior:'auto'});
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   target.classList.add('active');
+  if(name==='starcard'){
+    if(typeof renderSwClasses==='function') renderSwClasses();
+    if(typeof renderSwStudents==='function') renderSwStudents();
+  }
   document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
   const activeNav = document.querySelector('.nav-link[data-target="'+name+'"]');
   if(activeNav) activeNav.classList.add('active');
