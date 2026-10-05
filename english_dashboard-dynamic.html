@@ -2716,7 +2716,37 @@ function getStudentHomeworkMisses(studentId){return getTrackedDatesForStudent(st
 function getSkillImprovement(s){const out=[],h=Array.isArray(s.skillHistory)?s.skillHistory:[];h.forEach(e=>Object.keys(QP_SKILL_LABELS).forEach(k=>{const ev=skillLevelScore(e[k]);if(ev===null||!e.date)return;const p=h.filter(x=>x.date<e.date&&skillLevelScore(x[k])!==null).sort((a,b)=>a.date<b.date?-1:1).pop();if(p){const pv=skillLevelScore(p[k]),delta=ev-pv;if(delta>=2)out.push({key:k,date:e.date,delta});}}));return out.sort((a,b)=>a.date<b.date?-1:1);}
 function getStudentSmartAlerts(s){const a=[];Object.keys(QP_SKILL_LABELS).forEach(k=>{const v=getCurrentSkillValue(s,k);const score=skillLevelScore(v);if(score!==null&&score<=2){const lvl=skillLevelLabel(v);a.push({type:'attention',icon:'fa-triangle-exclamation',en:'Needs attention: '+QP_SKILL_LABELS[k].en+' is '+lvl.en+'.',ar:'يحتاج متابعة: '+QP_SKILL_LABELS[k].ar+' بمستوى '+lvl.ar+'.'});}});if(s.behaviourLevel==='needs_improvement')a.push({type:'attention',icon:'fa-user-shield',en:'Behaviour needs attention.',ar:'السلوك يحتاج إلى متابعة.'});if(s.participationLevel==='sleepy'||s.participationLevel==='passive')a.push({type:'attention',icon:'fa-hand',en:'Participation needs attention.',ar:'المشاركة تحتاج إلى متابعة.'});const abs=getStudentRepeatedAbsence(s.id);if(abs>=3)a.push({type:'attention',icon:'fa-calendar-xmark',en:abs+' absences in the last 10 tracked days.',ar:'لديه '+abs+' حالات غياب خلال آخر 10 أيام متابعة.'});const hw=getStudentHomeworkMisses(s.id);if(hw>=2)a.push({type:'attention',icon:'fa-book-open',en:'Homework was missed '+hw+' times in the last 3 tracked days.',ar:'لم يُنجز الواجب '+hw+' مرات خلال آخر 3 أيام متابعة.'});const im=getSkillImprovement(s).filter(x=>x.date===todayStr()).pop();if(im)a.push({type:'positive',icon:'fa-arrow-trend-up',en:'Improvement detected: '+QP_SKILL_LABELS[im.key].en+' +'+im.delta+'.',ar:'تم رصد تحسن: '+QP_SKILL_LABELS[im.key].ar+' +'+im.delta+'.'});return a.slice(0,4);}
 function getClassSmartAlerts(classId){const a=[],students=studentsData.filter(s=>s.classId===classId);Object.keys(QP_SKILL_LABELS).forEach(k=>{const dates={};students.forEach(s=>(Array.isArray(s.skillHistory)?s.skillHistory:[]).forEach(h=>{if(h.date&&skillLevelScore(h[k])!==null){if(!dates[h.date])dates[h.date]=[];dates[h.date].push(skillLevelScore(h[k]));}}));const ds=Object.keys(dates).sort();if(ds.length>=2){const pVals=dates[ds[ds.length-2]],nVals=dates[ds[ds.length-1]];const p=pVals.reduce((x,y)=>x+y,0)/pVals.length,n=nVals.reduce((x,y)=>x+y,0)/nVals.length;if(n-p>=1)a.push({type:'positive',icon:'fa-arrow-trend-up',en:QP_SKILL_LABELS[k].en+' average improved by '+(n-p).toFixed(1)+' points.',ar:'تحسن متوسط '+QP_SKILL_LABELS[k].ar+' بمقدار '+(n-p).toFixed(1)+' نقطة.'});}});const attention=students.filter(s=>getStudentSmartAlerts(s).some(x=>x.type==='attention')).length;if(attention>=2)a.push({type:'attention',icon:'fa-triangle-exclamation',en:attention+' students currently need attention.',ar:attention+' طلاب يحتاجون حاليًا إلى متابعة.'});return a.slice(0,2);}
-function renderClassAlertMarkup(classId){const a=getClassSmartAlerts(classId)[0];if(!a)return '';return '<div class="mt-2 rounded-xl px-3 py-2 text-[10px] font-semibold flex items-center gap-2 '+(a.type==='positive'?'smart-alert-positive':'smart-alert-attention')+'"><i class="fa-solid '+a.icon+'"></i><span class="en">'+escapeHtml(a.en)+'</span><span class="ar">'+escapeHtml(a.ar)+'</span></div>';}
+function getClassEvaluationSnapshot(classId){
+  const list=studentsData.filter(s=>s.classId===classId);
+  const today=todayStr();
+  const todayDay=dailyArchives[today]||{};
+  const evaluatedToday=list.filter(s=>todayDay[s.id]&&Object.keys(todayDay[s.id]).length>0).length;
+  const historicalDates=Object.keys(dailyArchives||{}).filter(d=>d<today&&dailyArchives[d]&&list.some(s=>dailyArchives[d][s.id]&&Object.keys(dailyArchives[d][s.id]).length>0)).sort();
+  const historicalDate=historicalDates.length?historicalDates[historicalDates.length-1]:null;
+  let incompleteHistorical=0;
+  if(historicalDate){
+    const day=dailyArchives[historicalDate]||{};
+    incompleteHistorical=list.filter(s=>!(day[s.id]&&Object.keys(day[s.id]).length>0)).length;
+  }
+  return {total:list.length,evaluatedToday,historicalDate,incompleteHistorical,today};
+}
+function formatDashboardDate(date){
+  if(!date) return '';
+  const p=String(date).split('-');
+  return p.length===3 ? p[2]+'/'+p[1]+'/'+p[0] : date;
+}
+function renderClassAlertMarkup(classId){
+  const a=getClassSmartAlerts(classId)[0];
+  const snap=getClassEvaluationSnapshot(classId);
+  if(!snap.total) return '';
+  const rows=[];
+  if(snap.historicalDate&&snap.incompleteHistorical>0){
+    rows.push('<div class="class-eval-history mt-2 rounded-xl px-3 py-2 flex items-start gap-2"><i class="fa-solid fa-clock-rotate-left mt-0.5"></i><div><div class="en"><strong>'+snap.incompleteHistorical+'</strong> student'+(snap.incompleteHistorical===1?'':'s')+' were not evaluated — '+formatDashboardDate(snap.historicalDate)+'</div><div class="ar"><strong>'+snap.incompleteHistorical+'</strong> طالب لم يتم الانتهاء من تقييمهم — بتاريخ '+formatDashboardDate(snap.historicalDate)+'</div></div></div>');
+  }
+  rows.push('<div class="class-eval-today mt-2 rounded-xl px-3 py-2 flex items-start gap-2"><i class="fa-solid fa-calendar-day mt-0.5"></i><div><div class="en"><strong>'+snap.evaluatedToday+'</strong> student'+(snap.evaluatedToday===1?'':'s')+' evaluated today — '+formatDashboardDate(snap.today)+'</div><div class="ar"><strong>'+snap.evaluatedToday+'</strong> طالب تم تقييمهم اليوم — '+formatDashboardDate(snap.today)+'</div></div></div>');
+  if(a) rows.push('<div class="mt-2 rounded-xl px-3 py-2 text-[10px] font-semibold flex items-center gap-2 '+(a.type==='positive'?'smart-alert-positive':'smart-alert-attention')+'"><i class="fa-solid '+a.icon+'"></i><span class="en">'+escapeHtml(a.en)+'</span><span class="ar">'+escapeHtml(a.ar)+'</span></div>');
+  return rows.join('');
+}
 function renderSmartAlerts(){const hero=document.getElementById('hero-smart-alerts');if(!hero)return;let attention=0,positive=0;studentsData.forEach(s=>getStudentSmartAlerts(s).forEach(a=>a.type==='attention'?attention++:positive++));classesData.forEach(c=>getClassSmartAlerts(c.id).forEach(a=>a.type==='attention'?attention++:positive++));if(!attention&&!positive){hero.innerHTML='';return;}hero.innerHTML='<div class="smart-hero-alert"><div class="flex items-center justify-center gap-2"><i class="fa-solid fa-bell"></i><span class="en font-bold">Smart Alerts</span><span class="ar font-bold">تنبيهات ذكية</span><span class="text-[9px]">'+(attention+positive)+'</span></div><div class="text-[10px] mt-1"><span class="en">'+attention+' attention alert(s) · '+positive+' progress alert(s)</span><span class="ar">'+attention+' تنبيه متابعة · '+positive+' تنبيه تحسن</span></div></div>';}
 function queueSmartAlert(type,id,date,titleEn,titleAr,bodyEn,bodyAr,data){if(typeof window.persistSmartAlert==='function')window.persistSmartAlert({id,titleEn,titleAr,bodyEn,bodyAr,createdAt:new Date().toISOString(),read:false,type,data});}
 function getClassDailyCompletion(classId,date){const list=studentsData.filter(s=>s.classId===classId);if(!list.length)return 0;const done=list.filter(s=>dailyArchives[date]&&dailyArchives[date][s.id]&&Object.keys(dailyArchives[date][s.id]).length>0).length;return Math.round(done/list.length*100);}
@@ -6502,4 +6532,16 @@ try{
 }
 </style>
 </body>
-</html>
+</html><style id="class-evaluation-status-premium-2026-10-05">
+.class-eval-history,.class-eval-today{font-size:10.5px;line-height:1.55;font-weight:700}
+.class-eval-history{background:rgba(242,169,59,.13);border:1px solid rgba(242,169,59,.28);color:#8A6100}
+.class-eval-history>i{color:#B5850C}
+.class-eval-today{background:rgba(56,167,156,.10);border:1px solid rgba(56,167,156,.22);color:var(--teal-dark)}
+.class-eval-today>i{color:var(--teal)}
+.class-eval-history strong,.class-eval-today strong{font-size:12px}
+.class-eval-history .ar,.class-eval-today .ar{font-size:11px;line-height:1.7}
+@media(max-width:640px){
+  .class-eval-history,.class-eval-today{font-size:10px}
+  .class-eval-history .ar,.class-eval-today .ar{font-size:10.5px}
+}
+</style>
