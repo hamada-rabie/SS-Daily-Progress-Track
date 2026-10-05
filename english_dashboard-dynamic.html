@@ -2168,6 +2168,10 @@ async function loadCloudData(){
       if(typeof renderDailyTable === 'function')
         renderDailyTable();
 
+      // Star Card must re-read the authenticated cloud dataset after it arrives.
+      if(typeof window.__refreshStarCard === 'function')
+        window.__refreshStarCard();
+
     }else{
       console.log('☁️ No cloud data found. Migrating local data...');
       await saveCloudData();
