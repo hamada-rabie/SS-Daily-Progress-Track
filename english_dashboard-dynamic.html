@@ -4292,7 +4292,10 @@ function certificateTypeConfig(type,lang,s){const base=CERT_TEXT[type]?CERT_TEXT
 function buildCertificateInnerHTML(s,type,lang){
   const name=s?s.name:(lang==='ar'?'اسم الطالب':'Student Name'),school=settings.schoolName,term=termLabel().en,cfg=certificateTypeConfig(type,lang,s),evidence=getCertificateEvidence(s,type),isAr=lang==='ar';
   const d=new Date(),certDateStr=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
-  const typeLabel=isAr?evidence.badgeAr:evidence.badgeEn,metric=isAr?evidence.metricAr:evidence.metricEn,evidenceText=isAr?evidence.evidenceAr:evidence.evidenceEn;
+  const standardType = !!CERT_TEXT[type];
+  const typeLabel = standardType ? cfg.sub : (isAr?evidence.badgeAr:evidence.badgeEn);
+  const metric = standardType ? '' : (isAr?evidence.metricAr:evidence.metricEn);
+  const evidenceText = standardType ? cfg.closingMain : (isAr?evidence.evidenceAr:evidence.evidenceEn);
   return '<div class="ss-cert-shell" data-cert-type="'+type+'">'+
     '<div class="ss-cert-glow"></div><div class="ss-cert-orbit orbit-a"></div><div class="ss-cert-orbit orbit-b"></div><div class="ss-cert-accent accent-a"></div><div class="ss-cert-accent accent-b"></div>'+
     '<div class="ss-cert-brand-row"><div class="ss-cert-logo-slot">'+(settings.ministryLogo?'<img src="'+settings.ministryLogo+'" alt="Ministry">':'')+'</div><div class="ss-cert-brand-center"><span>SS\'</span><small>Daily Progress Track</small></div><div class="ss-cert-logo-slot">'+(settings.schoolLogo?'<img src="'+settings.schoolLogo+'" alt="School">':'')+'</div></div>'+
