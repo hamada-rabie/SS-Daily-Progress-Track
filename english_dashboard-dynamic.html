@@ -5786,9 +5786,22 @@ window.addEventListener('DOMContentLoaded', ()=>{
   width:72px;height:72px;margin-top:18px;border:4px solid #fff;border-radius:18px;
   background:#fff;box-shadow:0 6px 16px rgba(23,50,77,.12);
 }
-#tab-starcard .sw-teacher{
-  color:rgba(23,50,77,.68);font-weight:700;font-size:13px;margin-top:8px;
+#tab-starcard .sw-department{
+  margin-top:16px;font-family:'Baloo 2','Cairo',sans-serif;font-size:15px;font-weight:900;
+  letter-spacing:.03em;line-height:1.15;
+  background:linear-gradient(90deg,#087F78,#F28C5B,#F6C453,#087F78);
+  background-size:220% 100%;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:#087F78;
+  filter:drop-shadow(0 2px 3px rgba(23,50,77,.10));
+  animation:swDeptShimmer 5s ease-in-out infinite;
 }
+#tab-starcard .sw-teacher{
+  margin-top:2px;font-family:'Baloo 2','Cairo',sans-serif;font-size:18px;font-weight:800;
+  color:#17324D;line-height:1.2;text-shadow:0 2px 0 rgba(255,255,255,.75);
+}
+#tab-starcard .sw-department .ar,#tab-starcard .sw-teacher .ar{font-family:'Baloo 2','Cairo',sans-serif;}
+@keyframes swDeptShimmer{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+@media(prefers-reduced-motion:reduce){#tab-starcard .sw-department{animation:none;}}
 #tab-parentreport .pr-report-paper{max-width:210mm;margin:0 auto;min-height:297mm;padding:14mm;direction:ltr;}
 .pr-controls,.sw-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
 .pr-control,.sw-control{min-width:0;}
@@ -5946,7 +5959,7 @@ try{
     const namesHtml=winners.map((x,i)=>{const s=x.s,n=first?String(s.name).trim().split(/\s+/)[0]:s.name;return '<div class="sw-name" style="font-size:'+(winners.length===1?'42px':'30px')+';margin-top:'+(i?'10px':'18px')+';">'+esc(n)+'</div><div style="font-size:13px;color:var(--teal-dark);">'+bi('Class: ','الصف: ',lang)+esc(shortClass(clsFor(s)))+'</div><div class="sw-reason">'+bi(reason(s,mode),arReason(s,mode),lang)+'</div>';}).join('');
     const titleEn=mode==='honor'?'Star of the Week':'Most Improved',titleAr=mode==='honor'?'نجم الأسبوع':'الأكثر تحسنًا';
     const subtitle=mode==='honor'?'Celebrating excellence':'Celebrating progress',subtitleAr=mode==='honor'?'نحتفل بالتميز':'نحتفل بالتقدم';
-    out.innerHTML='<div class="sw-card-wrap"><div id="sw-card-canvas" class="sw-card-canvas"><div class="sw-card-kicker">'+bi('★ STUDENT SPOTLIGHT ★','★ نجم الطلاب ★',lang)+'</div><div class="sw-star">★</div><div class="sw-title">'+bi(titleEn,titleAr,lang)+'</div><div class="sw-subtitle">'+bi(subtitle,subtitleAr,lang)+'</div>'+namesHtml+(settings.schoolLogo?'<img class="sw-school-logo" src="'+esc(settings.schoolLogo)+'" alt="">':'')+'<div class="sw-teacher">'+bi('Teacher: ','المعلم: ',lang)+esc(settings.teacherName||'')+'</div></div></div>';
+    out.innerHTML='<div class="sw-card-wrap"><div id="sw-card-canvas" class="sw-card-canvas"><div class="sw-card-kicker">'+bi('★ STUDENT SPOTLIGHT ★','★ نجم الطلاب ★',lang)+'</div><div class="sw-star">★</div><div class="sw-title">'+bi(titleEn,titleAr,lang)+'</div><div class="sw-subtitle">'+bi(subtitle,subtitleAr,lang)+'</div>'+namesHtml+'<div class="sw-department">'+bi('English Language Department','قسم اللغة الإنجليزية',lang)+'</div><div class="sw-teacher">'+bi('Teacher: ','المعلم: ',lang)+esc(settings.teacherName||'')+'</div></div></div>';
   }
   async function downloadStar(){
     const card=document.getElementById('sw-card-canvas');if(!card||!studentsData.length){alert('Star Card: no card is available / بطاقة النجم: لا توجد بطاقة متاحة');return;}
