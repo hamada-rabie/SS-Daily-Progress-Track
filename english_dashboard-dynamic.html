@@ -5922,6 +5922,13 @@ try{
     if(swAnchor) swAnchor.insertAdjacentHTML('beforebegin',section);
     else if(swMount) swMount.insertAdjacentHTML('beforeend',section);
   }
+  window.__refreshStarCard=function(){
+    try{
+      if(!document.getElementById('tab-starcard') && typeof window.__ensureStarCardMounted==='function') window.__ensureStarCardMounted();
+      renderSwClasses();
+      renderSwStudents();
+    }catch(e){ console.error('Star Card data refresh failed:',e); }
+  };
   window.__ensureStarCardMounted=function(){
     if(document.getElementById('tab-starcard')) return true;
     const anchor=document.querySelector('script[type="module"]');
