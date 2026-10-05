@@ -5772,10 +5772,11 @@ window.addEventListener('DOMContentLoaded', ()=>{
   box-shadow:0 10px 25px rgba(242,140,91,.30),inset 0 2px 0 rgba(255,255,255,.55);
   border:6px solid rgba(255,255,255,.82);
 }
-#tab-starcard .sw-name{
-  color:var(--star-navy)!important;font-weight:900;letter-spacing:.01em;
-  text-shadow:0 2px 0 rgba(255,255,255,.8);
-}
+#tab-starcard .sw-card-kicker{font-size:11px;font-weight:900;letter-spacing:3px;color:var(--star-orange);margin-bottom:4px;}
+#tab-starcard .sw-title{font-size:24px;font-weight:900;color:var(--star-teal);margin-top:2px;}
+#tab-starcard .sw-subtitle{font-size:11px;font-weight:700;color:rgba(23,50,77,.58);margin-top:2px;}
+#tab-starcard .sw-name{color:var(--star-navy)!important;font-weight:900;letter-spacing:.01em;text-shadow:0 2px 0 rgba(255,255,255,.8);}
+#tab-starcard .sw-class-badge{display:inline-flex;align-items:center;justify-content:center;margin-top:7px;padding:5px 13px;border-radius:999px;background:rgba(8,127,120,.10);border:1px solid rgba(8,127,120,.20);color:var(--star-teal);font-size:12px;font-weight:800;}
 #tab-starcard .sw-reason{
   max-width:78%;margin-top:16px;padding:14px 20px;
   background:rgba(255,255,255,.72);border:2px solid rgba(8,127,120,.16);
@@ -5944,7 +5945,8 @@ try{
     const clsFor=s=>classesData.find(c=>String(c.id)===String(s.classId));
     const namesHtml=winners.map((x,i)=>{const s=x.s,n=first?String(s.name).trim().split(/\s+/)[0]:s.name;return '<div class="sw-name" style="font-size:'+(winners.length===1?'42px':'30px')+';margin-top:'+(i?'10px':'18px')+';">'+esc(n)+'</div><div style="font-size:13px;color:var(--teal-dark);">'+bi('Class: ','الصف: ',lang)+esc(shortClass(clsFor(s)))+'</div><div class="sw-reason">'+bi(reason(s,mode),arReason(s,mode),lang)+'</div>';}).join('');
     const titleEn=mode==='honor'?'Star of the Week':'Most Improved',titleAr=mode==='honor'?'نجم الأسبوع':'الأكثر تحسنًا';
-    out.innerHTML='<div class="sw-card-wrap"><div id="sw-card-canvas" class="sw-card-canvas"><div class="sw-star">★</div><div style="font-size:24px;font-weight:900;color:var(--teal-dark);">'+bi(titleEn,titleAr,lang)+'</div>'+namesHtml+(settings.schoolLogo?'<img class="sw-school-logo" src="'+esc(settings.schoolLogo)+'" alt="">':'')+'<div class="sw-teacher">'+bi('Teacher: ','المعلم: ',lang)+esc(settings.teacherName||'')+'</div></div></div>';
+    const subtitle=mode==='honor'?'Celebrating excellence':'Celebrating progress',subtitleAr=mode==='honor'?'نحتفل بالتميز':'نحتفل بالتقدم';
+    out.innerHTML='<div class="sw-card-wrap"><div id="sw-card-canvas" class="sw-card-canvas"><div class="sw-card-kicker">'+bi('★ STUDENT SPOTLIGHT ★','★ نجم الطلاب ★',lang)+'</div><div class="sw-star">★</div><div class="sw-title">'+bi(titleEn,titleAr,lang)+'</div><div class="sw-subtitle">'+bi(subtitle,subtitleAr,lang)+'</div>'+namesHtml+(settings.schoolLogo?'<img class="sw-school-logo" src="'+esc(settings.schoolLogo)+'" alt="">':'')+'<div class="sw-teacher">'+bi('Teacher: ','المعلم: ',lang)+esc(settings.teacherName||'')+'</div></div></div>';
   }
   async function downloadStar(){
     const card=document.getElementById('sw-card-canvas');if(!card||!studentsData.length){alert('Star Card: no card is available / بطاقة النجم: لا توجد بطاقة متاحة');return;}
