@@ -5697,15 +5697,14 @@ window.addEventListener('DOMContentLoaded', ()=>{
   setInterval(updateClock, 1000);
   refreshAllViews();
   updateNotificationStatusUI();
-  // Restore the exact page the teacher was viewing after a browser refresh.
+  // Always start a fresh app session on Home.
+  // The last open tab may remain in the URL hash/localStorage when the PWA is closed,
+  // so clear both before opening the dashboard. Navigation during the current
+  // session still works normally.
   try{
-    const hashTab = (location.hash || '').replace(/^#/, '');
-    const savedTab = hashTab || localStorage.getItem('ss_active_tab');
-    if(savedTab && document.getElementById('tab-'+savedTab)){
-      switchTab(savedTab);
-    }else{
-      switchTab('dashboard');
-    }
+    localStorage.removeItem('ss_active_tab');
+    if(location.hash) history.replaceState(null, '', location.pathname + location.search);
+    switchTab('dashboard');
   }catch(e){
     try{ switchTab('dashboard'); }catch(_e){}
   }
