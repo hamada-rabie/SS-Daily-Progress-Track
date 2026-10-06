@@ -56,6 +56,14 @@ service cloud.firestore {
       allow delete: if isAdmin();
 
       // All private teacher data lives below this user's UID.
+      match /appData/{docId} {
+        // Read-only one-time migration path for legacy accounts created before
+        // access profiles existed. Pending accounts cannot write legacy data.
+        allow get: if signedIn() && request.auth.uid == userId
+          && !exists(/databases/$(database)/documents/users/$(userId));
+        allow read, write: if isAdmin() || isApprovedUser(userId);
+      }
+
       match /{subcollection=**} {
         allow read, write: if isAdmin() || isApprovedUser(userId);
       }
