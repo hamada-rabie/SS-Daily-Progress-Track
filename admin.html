@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SS' Daily Progress Track — Admin</title>
+<style>body{margin:0;font-family:Arial,sans-serif;background:#f3faf8;color:#123c38;padding:24px}.wrap{max-width:900px;margin:auto}.card{background:#fff;border:1px solid #dcebe7;border-radius:18px;padding:20px;box-shadow:0 10px 30px #0000000d;margin-bottom:16px}h1{margin:0 0 6px}.muted{color:#6b7c78;font-size:13px}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid #e4efec;border-radius:14px;margin-top:10px;flex-wrap:wrap}button{border:0;border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer}.ok{background:#0e7c74;color:#fff}.deny{background:#fff1ee;color:#b94a35;border:1px solid #f1c6bb}.logout{background:#eef5f3;color:#245b55}.status{padding:8px 12px;border-radius:10px;background:#fff8e8;color:#9a7200;font-weight:700;font-size:12px}</style></head>
+<body><div class="wrap"><div class="card"><h1>App Access Administration</h1><div class="muted">Pending teacher accounts / طلبات دخول المعلمين</div><div id="adminStatus" class="status" style="margin-top:14px">Checking administrator access…</div></div><div class="card"><h2>Pending Requests / الطلبات المعلقة</h2><div id="requests"><div class="muted">Loading…</div></div></div><div class="card"><button class="logout" id="logout">Sign out / تسجيل الخروج</button></div></div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,collection,query,where,onSnapshot,updateDoc,setDoc}from"https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyAlrLU20zWisISrmZKAMBNoAxclSA8B9iY",authDomain:"ss-daily-progress-track.firebaseapp.com",projectId:"ss-daily-progress-track",storageBucket:"ss-daily-progress-track.firebasestorage.app",messagingSenderId:"946203049271",appId:"1:946203049271:web:7534618a40b304ac722eb2",measurementId:"G-MH3X8WZW37"});
+const auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+async function boot(user){
+ const a=await getDoc(doc(db,"admins",user.uid));
+ if(!a.exists()||a.data().active!==true){$("adminStatus").textContent="Not authorized / غير مصرح لك";$("requests").innerHTML='<div class="muted">Administrator access is required.</div>';return;}
+ $("adminStatus").textContent="Administrator access confirmed / تم التحقق من صلاحيات المسؤول";
+ const q=query(collection(db,"accessRequests"),where("status","==","pending"));
+ onSnapshot(q,snap=>{
+  if(snap.empty){$("requests").innerHTML='<div class="muted">No pending requests / لا توجد طلبات معلقة</div>';return;}
+  $("requests").innerHTML=snap.docs.map(d=>{const x=d.data();return '<div class="row"><div><strong>'+esc(x.email||x.uid)+'</strong><div class="muted">'+esc(x.uid)+'</div></div><div><button class="ok" data-a="'+esc(d.id)+'">Accept / قبول</button> <button class="deny" data-d="'+esc(d.id)+'">Deny / رفض</button></div></div>';}).join("");
+ });
+}
+$("requests").addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;const uid=b.dataset.a||b.dataset.d,ok=!!b.dataset.a;if(!uid)return;b.disabled=true;try{const now=new Date().toISOString();await updateDoc(doc(db,"users",uid),{status:ok?"approved":"denied",updatedAt:now});await updateDoc(doc(db,"accessRequests",uid),{status:ok?"approved":"denied",updatedAt:now,reviewedBy:auth.currentUser.uid});await setDoc(doc(db,"users",uid,"notifications","access-"+Date.now()),{titleEn:ok?"Access approved":"Access request denied",titleAr:ok?"تمت الموافقة على الوصول":"تم رفض طلب الوصول",bodyEn:ok?"Your account is now approved. You can sign in and use your private workspace.":"Your request was denied by the application administrator.",bodyAr:ok?"تمت الموافقة على حسابك. يمكنك تسجيل الدخول واستخدام مساحة العمل الخاصة بك.":"تم رفض طلبك من مسؤول التطبيق.",createdAt:now,read:false,type:"access"});}catch(err){console.error(err);alert("Action failed. Check Firestore Rules.");}finally{b.disabled=false}});
+$("logout").onclick=()=>signOut(auth).then(()=>location.href="login.html");
+onAuthStateChanged(auth,u=>{if(!u){location.href="login.html";return}boot(u).catch(e=>{console.error(e);$("adminStatus").textContent="Admin check failed / تعذر التحقق من المسؤول"});});
+</script></body></html>
