@@ -3178,7 +3178,22 @@ function toggleHomework(id){
   saveData(); renderDailyTable(); renderStudentsTable(); evaluateStudentSmartAlerts(id,date);
 }
 let activeDailyChoiceMenu = null;
-function closeDailyChoiceMenu(){ if(activeDailyChoiceMenu){ activeDailyChoiceMenu.remove(); activeDailyChoiceMenu=null; } }
+let activeDailyOutsideHandler = null;
+function closeDailyChoiceMenu(){
+  if(activeDailyOutsideHandler){
+    document.removeEventListener('click',activeDailyOutsideHandler);
+    activeDailyOutsideHandler=null;
+  }
+  if(activeDailyChoiceMenu){ activeDailyChoiceMenu.remove(); activeDailyChoiceMenu=null; }
+}
+function bindDailyChoiceOutsideClose(menu){
+  if(activeDailyOutsideHandler) document.removeEventListener('click',activeDailyOutsideHandler);
+  activeDailyOutsideHandler=(e)=>{
+    if(menu.contains(e.target)) return;
+    closeDailyChoiceMenu();
+  };
+  setTimeout(()=>document.addEventListener('click',activeDailyOutsideHandler),0);
+}
 function positionDailyMenu(menu,anchor){ const r=anchor.getBoundingClientRect(); menu.style.left=Math.max(8,Math.min(r.left,window.innerWidth-menu.offsetWidth-8))+'px'; menu.style.top=(r.bottom+6)+'px'; if(r.bottom+menu.offsetHeight+8>window.innerHeight) menu.style.top=Math.max(8,r.top-menu.offsetHeight-6)+'px'; }
 function openDailyChoiceMenu(anchor,field,studentId){
   closeDailyChoiceMenu(); const rec=getDailyRecord(studentId,getSelectedDailyDate())||{}; const options=field==='behaviour'?BEHAVIOUR_OPTIONS:PARTICIPATION_OPTIONS; const current=field==='behaviour'?rec.behaviourLevel:rec.participationLevel;
@@ -3186,7 +3201,7 @@ function openDailyChoiceMenu(anchor,field,studentId){
   menu.innerHTML=options.map(o=>'<button type="button" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':'#B5850C')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span>'+(current===o.key?' <i class="fa-solid fa-check ml-auto" style="color:var(--teal);"></i>':'')+'</button>').join('')+'<button type="button" class="choice-clear" data-value=""><span class="choice-dot" style="background:#B7C5C1"></span><span class="en">Not Assessed</span><span class="ar">لم يُقيَّم</span></button>';
   document.body.appendChild(menu); activeDailyChoiceMenu=menu; positionDailyMenu(menu,anchor);
   menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); setDailyChoice(studentId,field,btn.dataset.value); closeDailyChoiceMenu(); }));
-  setTimeout(()=>document.addEventListener('click',closeDailyChoiceMenu,{once:true}),0);
+  bindDailyChoiceOutsideClose(menu);
 }
 function setDailyChoice(studentId,field,value){ if(field==='behaviour') setBehaviour(studentId,value); else setParticipation(studentId,value); }
 function dailyBulkOptions(field){
@@ -7514,6 +7529,16 @@ body.admin-ready #sidebar .compact-admin-stats{visibility:visible!important;opac
   font-weight:700!important;
   letter-spacing:.15px!important;
 }
+</style>
+
+<style id="about-bilingual-spacing-2026-10-06">
+/* Keep every English/Arabic pair in the About view clearly separated vertically. */
+.about-modal-card .en{display:block;}
+.about-modal-card .ar{display:block!important;margin-top:4px!important;}
+.about-modal-card .about-flow .en,
+.about-modal-card .about-flow .ar{width:auto!important;text-align:center!important;}
+.about-modal-card .about-kicker .en,
+.about-modal-card .about-kicker .ar{width:auto!important;text-align:center!important;}
 </style>
 </body>
 </html>
