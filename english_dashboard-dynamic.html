@@ -1863,7 +1863,6 @@ main .card{border-radius:16px}
         <p class="text-[11px] sm:text-xs leading-6 font-extrabold" style="color:var(--ink);">التطبيق مش بس بيسجل بيانات الطلاب — يقدر كمان يكتشف بذكاء الأحداث المهمة وينبّه المعلم لما يكون الاهتمام، أو متابعة التقدم، أو الحضور، أو إتمام المتابعة اليومية محتاج متابعة.</p>
       </div>
     </div>
-    <div class="flex justify-end pt-1"><button type="button" data-action="close-modal" data-modal="modal-about" class="text-[10px] font-bold px-3 py-2 rounded-lg text-white" style="background:var(--teal);">Close / إغلاق</button></div>
   </div>
 </div>
 
@@ -5667,10 +5666,7 @@ function renderSkillExplorer(){
   results.innerHTML=group('Highest','الأعلى',highest,'fa-arrow-up','#E7F6EB')+group('Lowest','الأقل',lowest,'fa-arrow-down','#FDECE3');
 }
 
-/* About modal: Escape or backdrop closes it. */
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){const m=document.getElementById('modal-about');if(m&&m.classList.contains('flex'))closeModal('modal-about');}});
-document.addEventListener('click',function(e){if(e.target&&e.target.id==='modal-about')closeModal('modal-about');});
-
+/* About modal: it closes ONLY through its explicit X button. */
 /* ---------- refresh ---------- */
 function syncCurrentPageHeader(){
   const active=document.querySelector('.tab-content.active');
@@ -5747,15 +5743,19 @@ window.addEventListener('DOMContentLoaded', ()=>{
   setInterval(updateClock, 1000);
   refreshAllViews();
   updateNotificationStatusUI();
-  // New app session -> Home.
-  // Browser refresh -> restore the exact page from the current URL/local state.
+  // Session-aware navigation:
+  // - Refresh: stay on the exact tab (hash/localStorage).
+  // - New app/browser session: start clean on Home.
   try{
-    // Every app entry starts clean: Home is shown and every sidebar group is collapsed.
-    // This deliberately avoids restoring a previous tab/menu after leaving and reopening the app.
     resetSidebarNavState();
-    localStorage.removeItem('ss_active_tab');
-    if(location.hash) history.replaceState(null,'',location.pathname+location.search);
-    switchTab('dashboard');
+    if(window.__SS_FRESH_APP_SESSION){
+      localStorage.removeItem('ss_active_tab');
+      if(location.hash) history.replaceState(null,'',location.pathname+location.search);
+      switchTab('dashboard');
+    }else{
+      const savedTab=(location.hash||'').replace(/^#/,'') || localStorage.getItem('ss_active_tab') || 'dashboard';
+      switchTab(document.getElementById('tab-'+savedTab) ? savedTab : 'dashboard');
+    }
   }catch(e){
     try{ resetSidebarNavState(); switchTab('dashboard'); }catch(_e){}
   }
@@ -6349,12 +6349,9 @@ setPersistence(auth, browserLocalPersistence)
       }
 
       console.log("✅ User authenticated:", user.email);
-      // Every fresh login starts at Home, never at the last tab used before logout/exit.
-      try{
-        localStorage.removeItem('ss_active_tab');
-        sessionStorage.setItem('ss_app_session_active','1');
-        if(location.hash) history.replaceState(null,'',location.pathname+location.search);
-      }catch(e){}
+      // Navigation state is managed by the session-aware entry guard above.
+      // Do not clear the active tab here: Auth can re-fire during a browser refresh.
+      try{ sessionStorage.setItem('ss_app_session_active','1'); }catch(e){}
       document.body.classList.remove("auth-pending");
       if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
 
