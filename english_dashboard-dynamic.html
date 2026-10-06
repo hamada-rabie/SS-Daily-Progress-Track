@@ -32,7 +32,7 @@
   // PWA shell registration — deliberately separate from Firebase Messaging token registration.
   if('serviceWorker' in navigator){
     window.addEventListener('load',()=>{
-      navigator.serviceWorker.register('firebase-messaging-sw.js?v=20261006-r3',{scope:'./'})
+      navigator.serviceWorker.register('firebase-messaging-sw.js?v=20261006-r4',{scope:'./'})
         .then(reg=>console.log('📦 PWA service worker ready:',reg.scope))
         .catch(err=>console.warn('PWA service worker registration failed:',err));
     });
