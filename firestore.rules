@@ -19,15 +19,8 @@ service cloud.firestore {
     }
 
     function isApprovedUser(userId) {
-      return signedIn()
-        && request.auth.uid == userId
-        && (
-          isAdmin()
-          || (
-            exists(/databases/$(database)/documents/users/$(userId))
-            && get(/databases/$(database)/documents/users/$(userId)).data.status == "approved"
-          )
-        );
+      // Access is self-service: every authenticated account can use its own private app data.
+      return signedIn() && request.auth.uid == userId;
     }
 
     // Admin identity is intentionally separate from each teacher's private data.
@@ -42,17 +35,18 @@ service cloud.firestore {
     match /users/{userId} {
       allow create: if signedIn()
         && request.auth.uid == userId
-        && request.resource.data.status == "pending"
+        && request.resource.data.status == "approved"
         && request.resource.data.uid == userId;
 
       allow get: if signedIn()
         && (request.auth.uid == userId || isAdmin());
 
+      allow list: if isAdmin();
+
       allow update: if isAdmin()
         || (
           signedIn()
           && request.auth.uid == userId
-          && resource.data.status == "approved"
           && request.resource.data.status == resource.data.status
           && request.resource.data.role == resource.data.role
           && request.resource.data.uid == resource.data.uid
