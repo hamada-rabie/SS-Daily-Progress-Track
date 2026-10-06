@@ -1842,61 +1842,178 @@ main .card{border-radius:16px}
 </main>
 
 <!-- About Modal -->
-<div id="modal-about" class="fixed inset-0 bg-black/55 z-50 hidden items-center justify-center p-3 sm:p-4" aria-hidden="true">
-  <div class="about-modal-card w-full max-w-lg overflow-hidden rounded-[24px] shadow-2xl" style="background:var(--card);color:var(--ink);border:1px solid var(--line);" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
-    <div class="px-5 sm:px-6 py-5" style="background:linear-gradient(135deg,color-mix(in srgb,var(--teal-dark) 96%,#fff 4%),color-mix(in srgb,var(--teal) 82%,#fff 18%));color:#fff;">
-      <div class="flex items-start justify-between gap-4">
-        <div class="min-w-0">
-          <div class="inline-flex items-center gap-2 mb-2 px-2.5 py-1 rounded-full text-[9px] font-extrabold tracking-wide" style="background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);">
-            <i class="fa-solid fa-sparkles"></i><span class="en">SMART TEACHER TOOL</span><span class="ar">أداة ذكية للمعلم</span>
-          </div>
-          <p id="about-modal-title" class="font-display font-extrabold text-xl sm:text-2xl leading-tight">SS' Daily Progress Track</p>
-          <p class="text-[10px] sm:text-[11px] mt-1 opacity-85"><span class="en">About the application</span><span class="ar">عن التطبيق</span></p>
-        </div>
-        <button type="button" data-action="close-modal" data-modal="modal-about" class="about-modal-close shrink-0 !w-9 !h-9 !min-w-9 !min-h-9 rounded-full flex items-center justify-center cursor-pointer" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.30);color:#fff;" aria-label="Close About / إغلاق" title="Close / إغلاق"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+<div id="modal-about" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-5 about-modal-backdrop" aria-hidden="true">
+  <div class="about-modal-card" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
+    <section class="about-hero">
+      <div class="about-hero-glow about-hero-glow-a"></div>
+      <div class="about-hero-glow about-hero-glow-b"></div>
+      <div class="about-hero-top">
+        <div class="about-brand-mark"><i class="fa-solid fa-chart-line"></i></div>
+        <button type="button" data-action="close-modal" data-modal="modal-about" class="about-modal-close" aria-label="Close About / إغلاق" title="Close / إغلاق"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
       </div>
-      <div class="mt-4 flex items-center gap-2 text-[11px] sm:text-xs font-bold">
-        <span class="h-px flex-1" style="background:rgba(255,255,255,.28);"></span>
-        <span><span class="en">Track → Understand → Act → Celebrate</span><span class="ar">تابع → افهم → تدخّل → احتفل بالإنجاز</span></span>
-        <span class="h-px flex-1" style="background:rgba(255,255,255,.28);"></span>
+      <div class="about-kicker"><i class="fa-solid fa-sparkles"></i><span class="en">TEACHER PROGRESS COMMAND CENTER</span><span class="ar">مركز متابعة تقدم المعلم</span></div>
+      <h2 id="about-modal-title" class="about-title">SS' Daily Progress Track</h2>
+      <p class="about-subtitle"><span class="en">A smarter way to see progress, understand needs, and act at the right time.</span><span class="ar">طريقة أكثر ذكاءً لمتابعة التقدم، وفهم الاحتياجات، واتخاذ الإجراء المناسب في الوقت المناسب.</span></p>
+      <div class="about-flow">
+        <span><span class="en">Track</span><span class="ar">تابع</span></span><i class="fa-solid fa-arrow-left"></i>
+        <span><span class="en">Understand</span><span class="ar">افهم</span></span><i class="fa-solid fa-arrow-left"></i>
+        <span><span class="en">Act</span><span class="ar">تدخّل</span></span><i class="fa-solid fa-arrow-left"></i>
+        <span><span class="en">Celebrate</span><span class="ar">احتفِ بالإنجاز</span></span>
       </div>
-    </div>
-    <div class="p-4 sm:p-5 space-y-3">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-        <div class="rounded-2xl p-3.5" style="background:color-mix(in srgb,var(--teal-light) 11%,var(--card));border:1px solid var(--line);">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center mb-2" style="background:color-mix(in srgb,var(--teal) 14%,var(--card));color:var(--teal-dark);"><i class="fa-solid fa-chart-line"></i></div>
-          <p class="text-[10px] font-extrabold uppercase tracking-wide" style="color:var(--teal-dark);"><span class="en">What it does</span><span class="ar">ماذا يفعل؟</span></p>
-          <p class="mt-1.5 text-[11px] leading-5 text-gray-600"><span class="en">A smart teacher-focused progress tracking system that turns everyday classroom observations into meaningful student insights.</span><span class="ar">نظام ذكي لمتابعة تقدم الطلاب يحوّل ملاحظات المعلم اليومية إلى رؤى مفيدة وقابلة للتنفيذ.</span></p>
-        </div>
-        <div class="rounded-2xl p-3.5" style="background:color-mix(in srgb,var(--violet) 7%,var(--card));border:1px solid var(--line);">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center mb-2" style="background:color-mix(in srgb,var(--violet) 12%,var(--card));color:var(--violet);"><i class="fa-solid fa-layer-group"></i></div>
-          <p class="text-[10px] font-extrabold uppercase tracking-wide" style="color:var(--violet);"><span class="en">All in one place</span><span class="ar">كل شيء في مكان واحد</span></p>
-          <p class="mt-1.5 text-[11px] leading-5 text-gray-600"><span class="en">Attendance, participation, homework, language skills, progress, reports, certificates, and student development.</span><span class="ar">الحضور، والمشاركة، والواجب، ومهارات اللغة، والتقدم، والتقارير، والشهادات، وتطور الطالب.</span></p>
+    </section>
+
+    <section class="about-body">
+      <div class="about-intro">
+        <div class="about-section-label"><span class="en">BUILT FOR THE TEACHER</span><span class="ar">صُمّم من أجل المعلم</span></div>
+        <p><span class="en">One focused workspace for turning daily classroom evidence into a clear picture of student progress.</span><span class="ar">مساحة عمل متكاملة لتحويل بيانات المتابعة اليومية داخل الصف إلى صورة واضحة لتقدم الطلاب.</span></p>
+      </div>
+
+      <div class="about-feature-grid">
+        <article class="about-feature about-feature-teal">
+          <div class="about-feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <div><h3><span class="en">Track Progress</span><span class="ar">متابعة التقدم</span></h3><p><span class="en">Monitor student growth over time with meaningful progress indicators.</span><span class="ar">تابع نمو الطالب بمرور الوقت من خلال مؤشرات واضحة وذات معنى.</span></p></div>
+        </article>
+        <article class="about-feature about-feature-gold">
+          <div class="about-feature-icon"><i class="fa-solid fa-calendar-check"></i></div>
+          <div><h3><span class="en">Daily Monitoring</span><span class="ar">المتابعة اليومية</span></h3><p><span class="en">Keep attendance, homework, participation, behaviour and daily completion in one place.</span><span class="ar">اجمع الحضور والواجب والمشاركة والسلوك وإتمام المتابعة اليومية في مكان واحد.</span></p></div>
+        </article>
+        <article class="about-feature about-feature-violet">
+          <div class="about-feature-icon"><i class="fa-solid fa-brain"></i></div>
+          <div><h3><span class="en">Smart Insights</span><span class="ar">رؤى ذكية</span></h3><p><span class="en">Turn classroom records into useful signals that help reveal what needs attention.</span><span class="ar">حوّل سجلات المتابعة إلى مؤشرات مفيدة تساعد على اكتشاف ما يحتاج إلى اهتمام.</span></p></div>
+        </article>
+        <article class="about-feature about-feature-coral">
+          <div class="about-feature-icon"><i class="fa-solid fa-bell"></i></div>
+          <div><h3><span class="en">Intelligent Alerts</span><span class="ar">تنبيهات ذكية</span></h3><p><span class="en">Surface important events related to progress, attendance and daily follow-up.</span><span class="ar">أظهر الأحداث المهمة المرتبطة بالتقدم والحضور والمتابعة اليومية.</span></p></div>
+        </article>
+        <article class="about-feature about-feature-sky">
+          <div class="about-feature-icon"><i class="fa-solid fa-file-lines"></i></div>
+          <div><h3><span class="en">Reports & Analytics</span><span class="ar">التقارير والتحليلات</span></h3><p><span class="en">Create clear reports that make student development easier to review and communicate.</span><span class="ar">أنشئ تقارير واضحة تجعل مراجعة تطور الطالب وعرضه أكثر سهولة.</span></p></div>
+        </article>
+        <article class="about-feature about-feature-leaf">
+          <div class="about-feature-icon"><i class="fa-solid fa-route"></i></div>
+          <div><h3><span class="en">Student Journey</span><span class="ar">رحلة الطالب</span></h3><p><span class="en">Follow the journey from the first evaluation to the student's current progress.</span><span class="ar">تابع رحلة الطالب منذ أول تقييم وحتى مستوى تقدمه الحالي.</span></p></div>
+        </article>
+      </div>
+
+      <div class="about-alert">
+        <div class="about-alert-icon"><i class="fa-solid fa-bell"></i></div>
+        <div>
+          <div class="about-alert-label"><span class="en">THE DIFFERENCE</span><span class="ar">ما يميّز التطبيق</span></div>
+          <p><span class="en">The app doesn't just record student data — it can intelligently detect important events and alert the teacher when attention, progress, attendance, or daily completion requires it.</span><span class="ar">لا يكتفي التطبيق بتسجيل بيانات الطلاب، بل يستطيع اكتشاف الأحداث المهمة بذكاء وتنبيه المعلم عندما يتطلب الأمر اهتمامًا بالتقدم أو الحضور أو المتابعة اليومية أو أي حالة تستدعي الانتباه.</span></p>
         </div>
       </div>
-      <div class="rounded-2xl px-4 py-3.5" style="background:var(--card);border:1px solid var(--line);box-shadow:0 5px 18px rgba(0,0,0,.035);">
-        <div class="flex items-center gap-2 mb-2">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:color-mix(in srgb,#F6C453 18%,var(--card));color:#B5850C;"><i class="fa-solid fa-lightbulb"></i></div>
-          <p class="text-[10px] font-extrabold uppercase tracking-wide" style="color:#B5850C;"><span class="en">Why it matters</span><span class="ar">لماذا هو مهم؟</span></p>
+
+      <div class="about-why">
+        <div class="about-why-heading"><i class="fa-solid fa-lightbulb"></i><span class="en">Why it matters</span><span class="ar">لماذا يهم ذلك؟</span></div>
+        <div class="about-why-grid">
+          <div><strong><span class="en">One Place</span><span class="ar">مكان واحد</span></strong><span><span class="en">Less routine work.</span><span class="ar">جهد روتيني أقل.</span></span></div>
+          <div><strong><span class="en">Clear Insight</span><span class="ar">رؤية أوضح</span></strong><span><span class="en">Better visibility of progress.</span><span class="ar">رؤية أفضل للتقدم.</span></span></div>
+          <div><strong><span class="en">Better Decisions</span><span class="ar">قرارات أفضل</span></strong><span><span class="en">Act at the right time.</span><span class="ar">اتخذ الإجراء في الوقت المناسب.</span></span></div>
         </div>
-        <p class="text-[11px] sm:text-xs leading-6 text-gray-600"><span class="en">Less routine work. More visibility. Better decisions. The app helps the teacher see what is happening, understand what needs attention, and act at the right time.</span><span class="ar">عمل روتيني أقل، ورؤية أوضح، وقرارات أفضل. يساعد التطبيق المعلم على معرفة ما يحدث، وفهم ما يحتاج إلى اهتمام، والتدخل في الوقت المناسب.</span></p>
       </div>
-      <div class="rounded-2xl p-3.5" style="background:linear-gradient(135deg,color-mix(in srgb,var(--teal-light) 14%,var(--card)),color-mix(in srgb,var(--violet) 7%,var(--card)));border:1px solid var(--line);">
-        <div class="flex items-center gap-2 mb-2">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:rgba(255,255,255,.72);color:var(--teal-dark);"><i class="fa-solid fa-bullseye"></i></div>
-          <p class="text-[10px] font-extrabold uppercase tracking-wide" style="color:var(--teal-dark);"><span class="en">Core idea</span><span class="ar">الفكرة الأساسية</span></p>
-        </div>
-        <p class="text-[11px] sm:text-xs leading-6 text-gray-700"><span class="en">The app doesn't just record student data — it can intelligently detect important events and alert the teacher when attention, progress, attendance, or daily completion requires it.</span><span class="ar">التطبيق مش بس بيسجل بيانات الطلاب — يقدر كمان يكتشف بذكاء الأحداث المهمة وينبّه المعلم لما يكون الاهتمام، أو متابعة التقدم، أو الحضور، أو إتمام المتابعة اليومية محتاج متابعة.</span></p>
+
+      <div class="about-footer-line">
+        <span><i class="fa-solid fa-shield-halved"></i><span class="en">Teacher-focused · Clear · Practical</span><span class="ar">موجّه للمعلم · واضح · عملي</span></span>
+        <span class="about-footer-dot">•</span>
+        <span><span class="en">Designed for everyday teaching</span><span class="ar">مصمم للاستخدام اليومي في التعليم</span></span>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 
 <style id="about-modal-premium-2026-10-06">
-.about-modal-card{max-height:82vh;overflow-y:auto;box-sizing:border-box;}\n.about-modal-card .text-gray-600,.about-modal-card .text-gray-700{font-weight:600!important;}
-.about-modal-card .about-modal-close{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;}
-.about-modal-card .about-modal-close i{display:block!important;visibility:visible!important;}
-@media(max-width:640px){.about-modal-card{max-width:calc(100vw - 24px);max-height:86vh;}}
+.about-modal-backdrop{background:rgba(7,28,25,.62);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);}
+.about-modal-card{width:min(760px,96vw);max-height:91vh;overflow-y:auto;overflow-x:hidden;background:var(--card);color:var(--ink);border:1px solid rgba(255,255,255,.55);border-radius:28px;box-shadow:0 30px 90px rgba(0,0,0,.30),0 8px 24px rgba(10,90,84,.12);scrollbar-width:thin;}
+.about-modal-card *{box-sizing:border-box;}
+.about-hero{position:relative;overflow:hidden;padding:22px 24px 20px;background:linear-gradient(135deg,#0A5A54 0%,#0E7C74 52%,#176F7A 100%);color:#fff;}
+.about-hero-glow{position:absolute;border-radius:999px;pointer-events:none;filter:blur(1px);}
+.about-hero-glow-a{width:220px;height:220px;right:-90px;top:-105px;background:rgba(242,169,59,.18);}
+.about-hero-glow-b{width:180px;height:180px;left:-80px;bottom:-110px;background:rgba(139,107,199,.18);}
+.about-hero-top{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;}
+.about-brand-mark{width:44px;height:44px;border-radius:15px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);box-shadow:0 7px 18px rgba(0,0,0,.12);font-size:19px;}
+.about-modal-close{width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;border:1px solid rgba(255,255,255,.28);border-radius:11px;background:rgba(255,255,255,.12);color:#fff;display:flex!important;align-items:center;justify-content:center;padding:0;cursor:pointer;transition:.16s ease;}
+.about-modal-close:hover{background:rgba(255,255,255,.24);transform:scale(1.04);}
+.about-kicker{position:relative;z-index:1;display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.18);font:800 8px/1 'Cairo',sans-serif;letter-spacing:.65px;}
+.about-kicker i{color:#F8C45D;}
+.about-title{position:relative;z-index:1;margin:9px 0 0;font:800 clamp(25px,4vw,34px)/1.05 'Baloo 2','Cairo',sans-serif;letter-spacing:-.3px;}
+.about-subtitle{position:relative;z-index:1;max-width:650px;margin:8px 0 0;color:rgba(255,255,255,.88);font:500 11px/1.7 'Cairo',sans-serif;}
+.about-flow{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:17px;padding-top:13px;border-top:1px solid rgba(255,255,255,.16);font:800 9px/1.2 'Cairo',sans-serif;}
+.about-flow>span{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:58px;}
+.about-flow i{font-size:8px;color:#F5C65E;transform:rotate(180deg);}
+.about-body{padding:20px 22px 16px;background:var(--card);}
+.about-intro{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:14px;padding:0 2px;}
+.about-section-label{font:800 9px/1 'Cairo',sans-serif;letter-spacing:.7px;color:var(--teal);}
+.about-intro p{margin:0;max-width:520px;text-align:right;font:600 10.5px/1.7 'Cairo',sans-serif;color:#71817D;}
+.about-feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.about-feature{min-height:116px;display:flex;gap:10px;padding:13px;border-radius:17px;border:1px solid var(--line);background:linear-gradient(145deg,var(--card),#F8FBFA);box-shadow:0 5px 16px rgba(15,55,51,.045);}
+.about-feature-icon{width:36px;height:36px;min-width:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.about-feature h3{margin:0;font:800 11px/1.25 'Cairo',sans-serif;color:var(--ink);}
+.about-feature p{margin:5px 0 0;font:500 9.2px/1.65 'Cairo',sans-serif;color:#71817D;}
+.about-feature-teal .about-feature-icon{background:#E8F6F3;color:#0E7C74;}
+.about-feature-gold .about-feature-icon{background:#FFF4DF;color:#B8790A;}
+.about-feature-violet .about-feature-icon{background:#F1ECFA;color:#7859B5;}
+.about-feature-coral .about-feature-icon{background:#FDEDE8;color:#C65D43;}
+.about-feature-sky .about-feature-icon{background:#EAF2FB;color:#3979BA;}
+.about-feature-leaf .about-feature-icon{background:#EAF6EC;color:#4D9459;}
+.about-alert{display:grid;grid-template-columns:46px 1fr;gap:12px;align-items:center;margin-top:13px;padding:14px 15px;border-radius:18px;background:linear-gradient(135deg,#F2FAF8 0%,#F9F5FF 100%);border:1px solid rgba(14,124,116,.18);box-shadow:0 7px 20px rgba(15,55,51,.06);}
+.about-alert-icon{width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--teal),var(--violet));color:#fff;font-size:17px;box-shadow:0 7px 15px rgba(14,124,116,.18);}
+.about-alert-label{font:800 8px/1 'Cairo',sans-serif;letter-spacing:.65px;color:var(--teal-dark);}
+.about-alert p{margin:5px 0 0;font:700 10.2px/1.75 'Cairo',sans-serif;color:var(--ink);}
+.about-why{margin-top:13px;padding:13px 14px;border-radius:17px;background:#FBFDFC;border:1px solid var(--line);}
+.about-why-heading{display:flex;align-items:center;gap:7px;font:800 10px/1.2 'Cairo',sans-serif;color:#9A6C08;}
+.about-why-heading i{font-size:12px;color:#C18A12;}
+.about-why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+.about-why-grid>div{padding:9px 10px;border-radius:12px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;gap:3px;}
+.about-why-grid strong{font:800 10px/1.2 'Cairo',sans-serif;color:var(--teal-dark);}
+.about-why-grid span{font:500 8.5px/1.45 'Cairo',sans-serif;color:#81908C;}
+.about-footer-line{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:12px;padding-top:11px;border-top:1px solid var(--line);font:600 8px/1.4 'Cairo',sans-serif;color:#899793;text-align:center;}
+.about-footer-line i{color:var(--teal);margin-inline-end:3px;}
+.about-footer-dot{color:#C2CECA;}
+body.theme-dark .about-modal-card{border-color:#374151;}
+body.theme-dark .about-body{background:#1F2937;}
+body.theme-dark .about-feature{background:linear-gradient(145deg,#1F2937,#18222F);border-color:#374151;}
+body.theme-dark .about-feature p,body.theme-dark .about-intro p,body.theme-dark .about-why-grid span{color:#AAB5B2;}
+body.theme-dark .about-why{background:#18222F;border-color:#374151;}
+body.theme-dark .about-why-grid>div{background:#1F2937;border-color:#374151;}
+body.theme-dark .about-alert{background:linear-gradient(135deg,#173A37,#2A2540);border-color:#315C57;}
+@media(max-width:760px){
+  .about-modal-card{width:min(680px,calc(100vw - 20px));max-height:92vh;border-radius:23px;}
+  .about-hero{padding:19px 17px 17px;}
+  .about-title{font-size:28px;}
+  .about-body{padding:17px 15px 13px;}
+  .about-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .about-intro{display:block;}
+  .about-intro p{margin-top:7px;text-align:start;}
+}
+@media(max-width:480px){
+  .about-modal-card{width:calc(100vw - 14px);max-height:94vh;border-radius:20px;}
+  .about-hero{padding:16px 14px 14px;}
+  .about-brand-mark{width:39px;height:39px;border-radius:13px;font-size:16px;}
+  .about-modal-close{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;}
+  .about-kicker{margin-top:12px;font-size:7px;padding:5px 8px;}
+  .about-title{font-size:24px;}
+  .about-subtitle{font-size:9.5px;line-height:1.65;}
+  .about-flow{gap:5px;margin-top:13px;padding-top:10px;font-size:7.5px;}
+  .about-flow>span{min-width:48px;}
+  .about-body{padding:14px 11px 11px;}
+  .about-section-label{font-size:8px;}
+  .about-intro p{font-size:9.2px;line-height:1.65;}
+  .about-feature-grid{gap:7px;}
+  .about-feature{min-height:104px;padding:10px;gap:8px;border-radius:14px;}
+  .about-feature-icon{width:31px;height:31px;min-width:31px;border-radius:10px;font-size:12px;}
+  .about-feature h3{font-size:9.5px;}
+  .about-feature p{font-size:8px;line-height:1.55;}
+  .about-alert{grid-template-columns:38px 1fr;gap:9px;padding:11px 10px;border-radius:15px;}
+  .about-alert-icon{width:38px;height:38px;border-radius:12px;font-size:14px;}
+  .about-alert-label{font-size:7px;}
+  .about-alert p{font-size:8.7px;line-height:1.65;}
+  .about-why{padding:10px;border-radius:14px;}
+  .about-why-grid{gap:5px;}
+  .about-why-grid>div{padding:7px 6px;border-radius:10px;}
+  .about-why-grid strong{font-size:8.5px;}
+  .about-why-grid span{font-size:7.5px;}
+  .about-footer-line{font-size:7px;gap:5px;margin-top:9px;padding-top:9px;}
+}
 </style>
 <!-- Add Class Modal -->
 <div id="modal-class" class="fixed inset-0 bg-black/40 z-40 hidden items-center justify-center p-4">
