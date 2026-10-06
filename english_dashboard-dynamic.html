@@ -7279,13 +7279,13 @@ document.getElementById('admin-release-send')?.addEventListener('click',async()=
 </style>
 
 <style id="sidebar-final-verified-2026-10-06">
-/* Final sidebar layout: keep the teacher info lower without moving the action buttons. */
+/* Stable sidebar layout: reserve the admin slot, reveal it only after auth is ready. */
 #sidebar > div:last-of-type{
   margin-top:auto!important;
   position:relative!important;
   padding-bottom:58px!important;
 }
-/* Move only the teacher identity/status/version visually — never the buttons. */
+/* Move only the teacher identity/status/version visually. */
 #sidebar #sidebar-teacher-name,
 #sidebar #cloud-status,
 #sidebar #cloud-status + p{
@@ -7294,17 +7294,17 @@ document.getElementById('admin-release-send')?.addEventListener('click',async()=
 }
 #sidebar .compact-admin-stats{
   display:flex!important;
-  visibility:visible!important;
-  opacity:1!important;
+  visibility:hidden!important;
+  opacity:0!important;
   height:26px!important;
   min-height:26px!important;
-  margin-top:24px!important;
+  margin-top:34px!important;
   margin-bottom:0!important;
 }
 #sidebar button[data-action="logout"]{
   height:30px!important;
   min-height:30px!important;
-  margin-top:8px!important;
+  margin-top:14px!important;
   padding:4px 8px!important;
 }
 #sidebar button[data-action="open-share-modal"]{
@@ -7326,7 +7326,8 @@ document.getElementById('admin-release-send')?.addEventListener('click',async()=
   #sidebar #sidebar-teacher-name,
   #sidebar #cloud-status,
   #sidebar #cloud-status + p{top:9px!important;}
-  #sidebar .compact-admin-stats{margin-top:22px!important;}
+  #sidebar .compact-admin-stats{margin-top:30px!important;}
+  #sidebar button[data-action="logout"]{margin-top:12px!important;}
   #sidebar button[data-action="open-share-modal"]{
     bottom:10px!important;
     width:156px!important;
@@ -7336,13 +7337,12 @@ document.getElementById('admin-release-send')?.addEventListener('click',async()=
 </style>
 
 <style id="sidebar-teacher-name-accent-2026-10-06">
-/* Subtle personal accent: clearly distinct from navigation, but not loud. */
 #sidebar #sidebar-teacher-name{
   color:#9A4F5A!important;
-  font-family:Georgia,"Times New Roman",serif!important;
+  font-family:"Palatino Linotype",Palatino,Georgia,serif!important;
   font-size:12px!important;
   font-weight:700!important;
-  letter-spacing:.15px!important;
+  letter-spacing:.1px!important;
 }
 </style>
 </body>
