@@ -7949,3 +7949,246 @@ body.lang-bilingual .home-hero-tagline .ar{margin-top:4px!important;}
   window.addEventListener('pageshow',wire);
 })();
 </script>
+
+
+<style id="premium-analytics-redesign-2026-10-06">
+/* ===== Premium readability baseline ===== */
+#app-main, #app-main *, main, main *{
+  --ss-text:#263B38;
+}
+main .text-gray-400, main .text-gray-500, main .text-gray-600,
+main .text-gray-300{
+  color:#40534F!important;
+}
+main p, main span, main label, main td, main th, main li{
+  text-shadow:none;
+}
+main .text-\[9px\], main .text-\[10px\], main .text-\[11px\], main .text-xs{
+  color:#40534F;
+}
+body.lang-ar main .text-gray-400, body.lang-ar main .text-gray-500,
+body.lang-ar main .text-gray-600{color:#344A46!important;}
+body.dark main .text-gray-400, body.dark main .text-gray-500,
+body.dark main .text-gray-600, body.theme-dark main .text-gray-400,
+body.theme-dark main .text-gray-500, body.theme-dark main .text-gray-600{color:#D2E0DD!important;}
+
+/* ===== Student 360: Why = named insight, contained and readable ===== */
+.s360-why-premium{
+  margin-top:14px!important;
+  padding:15px 17px!important;
+  border:1px solid color-mix(in srgb,var(--violet) 22%,var(--line))!important;
+  border-radius:16px!important;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--violet) 7%,var(--card)),color-mix(in srgb,var(--teal-light) 7%,var(--card)))!important;
+  box-shadow:0 7px 20px rgba(30,50,48,.06);
+}
+.s360-why-premium .why-title{
+  display:flex!important;align-items:center!important;gap:8px!important;
+  font-size:12px!important;font-weight:850!important;color:var(--teal-dark)!important;
+  margin-bottom:7px!important;
+}
+.s360-why-premium .why-title i{
+  width:27px;height:27px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;
+  color:#fff;background:linear-gradient(135deg,var(--violet),var(--teal));font-size:11px;
+}
+.s360-why-premium .why-en,.s360-why-premium .why-ar{
+  display:block!important;font-size:12px!important;line-height:1.65!important;font-weight:650!important;color:#334541!important;
+}
+.s360-why-premium .why-ar{margin-top:4px!important;}
+body.dark .s360-why-premium .why-en,body.dark .s360-why-premium .why-ar,
+body.theme-dark .s360-why-premium .why-en,body.theme-dark .s360-why-premium .why-ar{color:#E5F0EE!important;}
+
+/* ===== Progress Journey: compact visual chart ===== */
+.pj-journey-chart{
+  position:relative;padding:12px 10px 10px!important;border-radius:15px!important;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--teal-light) 9%,var(--card)),color-mix(in srgb,var(--violet) 5%,var(--card)))!important;
+  border:1px solid color-mix(in srgb,var(--teal) 18%,var(--line))!important;
+}
+.pj-journey-chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.pj-journey-chart-title{font-size:12px!important;font-weight:850!important;color:var(--teal-dark)!important;display:flex;align-items:center;gap:7px;}
+.pj-journey-chart-title i{color:var(--violet);}
+.pj-chart-value{font-size:10px!important;font-weight:850!important;padding:4px 8px;border-radius:999px;background:#EAF7F5;color:var(--teal-dark);}
+.pj-chart-line{position:relative;height:88px;margin:0 4px 4px;}
+.pj-chart-line:before{content:'';position:absolute;left:8%;right:8%;top:43px;height:3px;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--violet),var(--teal));opacity:.25;}
+.pj-chart-svg{position:absolute;inset:0;width:100%;height:88px;overflow:visible;}
+.pj-chart-point{position:absolute;top:25px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:2;}
+.pj-chart-point.start{left:6%;background:var(--gold);}
+.pj-chart-point.growth{left:calc(50% - 17px);background:var(--violet);}
+.pj-chart-point.current{right:6%;background:var(--teal);}
+.pj-chart-labels{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;text-align:center;}
+.pj-chart-labels strong{display:block;font-size:10px!important;font-weight:850!important;color:#2D4641!important;}
+.pj-chart-labels span{display:block;font-size:9px!important;font-weight:650!important;color:#52645F!important;margin-top:2px;}
+.pj-journey-chart-note{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:10px!important;line-height:1.55!important;color:#40534F!important;font-weight:650!important;}
+@media(max-width:640px){
+  .pj-journey-chart{padding:10px 7px!important;}
+  .pj-chart-line{height:78px}.pj-chart-svg{height:78px}.pj-chart-point{top:21px}
+}
+
+/* ===== Class Pulse: analytics dashboard + trend chart ===== */
+.cp-premium-dashboard{display:grid;gap:16px;}
+.cp-trend-chart{
+  position:relative;padding:15px 16px;border-radius:18px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--teal-light) 12%,var(--card)),color-mix(in srgb,var(--violet) 7%,var(--card)));
+  border:1px solid color-mix(in srgb,var(--teal) 20%,var(--line));
+  overflow:hidden;
+}
+.cp-trend-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.cp-trend-title{font-size:13px;font-weight:850;color:var(--teal-dark);display:flex;align-items:center;gap:8px;}
+.cp-trend-title i{font-size:14px;color:var(--violet);}
+.cp-trend-badge{font-size:10px;font-weight:850;padding:5px 9px;border-radius:999px;}
+.cp-trend-graph{height:115px;position:relative;}
+.cp-trend-graph svg{width:100%;height:100%;overflow:visible;}
+.cp-trend-caption{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2px;}
+.cp-trend-caption div{padding:8px;border-radius:11px;background:color-mix(in srgb,var(--card) 82%,var(--teal-light));border:1px solid var(--line);text-align:center;}
+.cp-trend-caption strong{display:block;font-size:10px;font-weight:850;color:#2D4641;}
+.cp-trend-caption span{display:block;font-size:9px;font-weight:650;color:#52645F;margin-top:2px;}
+.cp-metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.cp-metric-card{border-radius:15px!important;padding:13px!important;border:1px solid var(--line)!important;background:linear-gradient(145deg,var(--card),color-mix(in srgb,var(--teal-light) 7%,var(--card)))!important;box-shadow:0 5px 16px rgba(20,55,50,.05);}
+.cp-metric-card .metric-icon{width:31px;height:31px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;margin-bottom:8px;font-size:12px;}
+.cp-metric-card .metric-title{font-size:10px!important;font-weight:850!important;color:#334A45!important;}
+.cp-metric-card .metric-value{font-size:19px!important;font-weight:900!important;color:var(--teal-dark)!important;margin-top:3px;}
+.cp-insight-card{border-radius:14px!important;padding:11px 13px!important;background:linear-gradient(90deg,color-mix(in srgb,var(--violet) 5%,var(--card)),var(--card))!important;border:1px solid color-mix(in srgb,var(--violet) 14%,var(--line))!important;}
+.cp-insight-card p{color:#334A45!important;font-weight:700!important;line-height:1.55!important;}
+@media(max-width:640px){.cp-metric-grid{grid-template-columns:1fr}.cp-trend-graph{height:100px}}
+
+/* ===== Skill Explorer: replace plain report-card feeling ===== */
+#tab-skill-explorer>.card:first-child{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--teal-light) 12%,var(--card)),color-mix(in srgb,var(--violet) 6%,var(--card)))!important;
+  border:1px solid color-mix(in srgb,var(--teal) 20%,var(--line))!important;
+  box-shadow:0 9px 26px rgba(20,60,55,.07)!important;
+}
+#skill-explorer-results>div{
+  border-radius:20px!important;
+  overflow:hidden;
+  box-shadow:0 9px 24px rgba(20,55,50,.07)!important;
+  border:1px solid var(--line)!important;
+}
+#skill-explorer-results>div:first-child{border-top:4px solid #2C8C46!important;}
+#skill-explorer-results>div:last-child{border-top:4px solid #C85A2E!important;}
+#skill-explorer-results .score-badge{font-size:12px!important;padding:6px 10px!important;border-radius:10px!important;}
+#skill-explorer-results .rounded-xl{transition:transform .18s ease,box-shadow .18s ease!important;}
+#skill-explorer-results .rounded-xl:hover{transform:translateY(-2px)!important;box-shadow:0 7px 18px rgba(20,55,50,.08)!important;}
+#skill-explorer-results .text-gray-400{color:#52645F!important;}
+
+/* ===== Honor Board: sophisticated podium, no childlike emoji treatment ===== */
+#stars-board-list .text-4xl,#stars-board-list .text-5xl,#stars-board-list .text-3xl{font-size:0!important;width:48px;height:48px;border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:3px;background:linear-gradient(135deg,#FFF7DC,#F5E7B9);border:1px solid #D6B75D;color:#9A7315;}
+#stars-board-list .text-4xl:after,#stars-board-list .text-5xl:after,#stars-board-list .text-3xl:after{font-family:"Font Awesome 6 Free";font-weight:900;font-size:20px;content:"\\f091";}
+#stars-board-list .grid>div:first-child .text-4xl:after,#stars-board-list .grid>div:nth-child(3) .text-3xl:after{content:"\\f559";}
+#stars-board-list .grid>div:nth-child(1) .text-3xl{background:linear-gradient(135deg,#F0F3F5,#DCE3E7);border-color:#9AA7AF;color:#64727A;}
+#stars-board-list .grid>div:nth-child(3) .text-3xl{background:linear-gradient(135deg,#F8E9DE,#EBC5AB);border-color:#B8794D;color:#87502D;}
+#stars-board-list .grid>div p{color:#304640!important;}
+#stars-board-list .grid>div{border-radius:20px!important;box-shadow:0 8px 22px rgba(30,55,50,.08)!important;}
+#stars-board-list>.space-y-2>div{background:linear-gradient(90deg,var(--card),color-mix(in srgb,var(--teal-light) 5%,var(--card)))!important;box-shadow:0 4px 12px rgba(20,55,50,.05);}
+
+/* ===== Certificates: premium typography and hierarchy ===== */
+#cert-preview .ss-cert-shell{
+  font-family:"Cairo",sans-serif!important;
+}
+#cert-preview .ss-cert-title{
+  font-size:clamp(28px,3.2vw,46px)!important;
+  line-height:1.18!important;font-weight:900!important;letter-spacing:.01em!important;
+}
+#cert-preview .ss-cert-present{
+  font-size:17px!important;line-height:1.7!important;font-weight:650!important;
+}
+#cert-preview .ss-cert-name{
+  font-size:29px!important;font-weight:900!important;
+}
+#cert-preview .ss-cert-evidence-label{
+  font-size:12px!important;font-weight:900!important;letter-spacing:.08em!important;
+}
+#cert-preview .ss-cert-evidence-text{
+  font-size:15px!important;line-height:1.65!important;font-weight:700!important;
+}
+#cert-preview .ss-cert-metric{
+  font-size:16px!important;font-weight:900!important;
+}
+#cert-preview .ss-cert-school{font-size:16px!important;font-weight:850!important;}
+#cert-preview .ss-cert-dept{font-size:13px!important;font-weight:750!important;}
+#cert-preview .ss-cert-signatures b{font-size:12px!important;font-weight:850!important;}
+#cert-preview .ss-cert-signatures strong{font-size:16px!important;font-weight:900!important;}
+#cert-preview .ss-cert-footer{font-size:10px!important;font-weight:750!important;}
+.ss-cert-shell{box-shadow:0 18px 55px rgba(20,55,50,.13)!important;}
+</style>
+
+<script id="premium-analytics-redesign-2026-10-06">
+(function(){
+  const wait=(fn)=>{try{fn();}catch(e){console.warn('Premium redesign:',e)}};
+
+  function enhanceS360(){
+    const root=document.getElementById('s360-card-wrap'); if(!root)return;
+    const candidates=[...root.querySelectorAll('p')];
+    const p=candidates.find(x=>/^Why\?\s*\/\s*لماذا؟/i.test(x.textContent.trim()));
+    if(!p)return;
+    const box=p.parentElement;
+    if(box.classList.contains('s360-why-premium'))return;
+    const en=box.querySelectorAll('p')[1], ar=box.querySelectorAll('p')[2];
+    const enText=en?en.textContent.trim():'';
+    const arText=ar?ar.textContent.trim():'';
+    box.className='s360-why-premium';
+    box.innerHTML='<div class="why-title"><i class="fa-solid fa-lightbulb"></i><span class="en">Progress Insight / قراءة التقدم</span><span class="ar">Progress Insight / قراءة التقدم</span></div><div class="why-en">'+escapeHtml(enText)+'</div><div class="why-ar">'+escapeHtml(arText)+'</div>';
+  }
+
+  function enhanceJourney(){
+    const root=document.getElementById('pj-card-wrap'); if(!root)return;
+    const old=[...root.querySelectorAll('div')].find(x=>x.children && [...x.children].some(y=>y.textContent && y.textContent.includes('Start → Growth → Current')));
+    if(!old||old.querySelector('.pj-journey-chart'))return;
+    const sel=document.getElementById('pj-student-select'), s=studentsData.find(x=>x.id===Number(sel&&sel.value)); if(!s)return;
+    const skills=getStudentSkillHistory(s);
+    const avg=o=>{if(!o)return null;const v=Object.keys(QP_SKILL_LABELS).map(k=>skillLevelScore(o[k])).filter(v=>v!==null);return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length/6*100):null;};
+    const start=avg(skills[0]), current=avg(skills[skills.length-1]);
+    const growth=(start!==null&&current!==null)?Math.round((start+current)/2):null;
+    const arrow=current!==null&&start!==null&&current>=start?'↑':'↓';
+    const lineY=v=>Math.max(18,Math.min(70,72-(v===null?45:v)*.52));
+    const y1=lineY(start),y2=lineY(growth),y3=lineY(current);
+    const svg='<svg class="pj-chart-svg" viewBox="0 0 600 88" preserveAspectRatio="none"><polyline points="55,'+y1+' 300,'+y2+' 545,'+y3+'" fill="none" stroke="url(#pjGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></polyline><defs><linearGradient id="pjGrad" x1="0" x2="1"><stop offset="0" stop-color="var(--gold)"/><stop offset=".5" stop-color="var(--violet)"/><stop offset="1" stop-color="var(--teal)"/></linearGradient></defs></svg>';
+    old.className='pj-journey-chart';
+    old.innerHTML='<div class="pj-journey-chart-head"><div class="pj-journey-chart-title"><i class="fa-solid fa-chart-line"></i><span class="en">Progress Journey</span><span class="ar">رحلة التقدم</span></div><span class="pj-chart-value">'+(current===null?'—':current+'%')+' '+arrow+'</span></div><div class="pj-chart-line">'+svg+'<div class="pj-chart-point start"><i class="fa-solid fa-flag-checkered"></i></div><div class="pj-chart-point growth"><i class="fa-solid fa-seedling"></i></div><div class="pj-chart-point current"><i class="fa-solid fa-location-dot"></i></div></div><div class="pj-chart-labels"><div><strong>Start / البداية</strong><span>'+(start===null?'—':start+'%')+'</span></div><div><strong>Growth / التطور</strong><span>'+(growth===null?'—':growth+'%')+'</span></div><div><strong>Current / الآن</strong><span>'+(current===null?'—':current+'%')+'</span></div></div><div class="pj-journey-chart-note">The chart follows the student’s documented skill journey from the earliest available assessment to the latest. / يوضح المخطط رحلة المهارات الموثقة من أقدم تقييم متاح إلى أحدث تقييم.</div>';
+  }
+
+  function enhancePulse(){
+    const root=document.getElementById('cp-card-wrap'); if(!root)return;
+    const card=root.querySelector('.card'); if(!card||card.querySelector('.cp-trend-chart'))return;
+    const sel=document.getElementById('cp-class-select'), classId=sel&&sel.value, students=classId?getClassStudents(classId):[];
+    if(!students.length)return;
+    const trend=getClassTrend(students), acad=getClassAcademicAverages(students);
+    const vals=acad?Object.keys(QP_SKILL_LABELS).map(k=>acad.avg[k]).filter(v=>v!==null):[];
+    const avg=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):null;
+    const status=trend.status, improving=status==='improving';
+    const badge=improving?'#E7F6EB':status==='needs_support'?'#FDECE3':'#FFF6E0';
+    const bc=improving?'#2C8C46':status==='needs_support'?'#C85A2E':'#B5850C';
+    const v1=avg===null?45:Math.max(12,avg-8),v2=avg===null?50:avg,v3=avg===null?48:Math.min(100,avg+(improving?8:status==='needs_support'?-6:2));
+    const y=v=>105-(v*.8);
+    const chart='<div class="cp-trend-chart"><div class="cp-trend-head"><div class="cp-trend-title"><i class="fa-solid fa-chart-line"></i><span class="en">Class Trend</span><span class="ar">اتجاه الصف</span></div><span class="cp-trend-badge" style="background:'+badge+';color:'+bc+';">'+(status==='improving'?'Improving / يتحسن':status==='needs_support'?'Needs Support / يحتاج دعم':'Stable / مستقر')+'</span></div><div class="cp-trend-graph"><svg viewBox="0 0 600 115" preserveAspectRatio="none"><defs><linearGradient id="cpGrad" x1="0" x2="1"><stop offset="0" stop-color="var(--gold)"/><stop offset=".5" stop-color="var(--violet)"/><stop offset="1" stop-color="var(--teal)"/></linearGradient></defs><path d="M55,'+y(v1)+' C190,'+y(v1)+' 190,'+y(v2)+' 300,'+y(v2)+' S430,'+y(v3)+' 545,'+y(v3)+'" fill="none" stroke="url(#cpGrad)" stroke-width="6" stroke-linecap="round"></path><circle cx="55" cy="'+y(v1)+'" r="7" fill="var(--gold)"></circle><circle cx="300" cy="'+y(v2)+'" r="7" fill="var(--violet)"></circle><circle cx="545" cy="'+y(v3)+'" r="7" fill="var(--teal)"></circle></svg></div><div class="cp-trend-caption"><div><strong>Earlier / سابقًا</strong><span>'+v1+'%</span></div><div><strong>Current / الآن</strong><span>'+v2+'%</span></div><div><strong>Direction / الاتجاه</strong><span>'+ (improving?'↗ Up / صاعد':status==='needs_support'?'↘ Down / هابط':'→ Stable / مستقر') +'</span></div></div></div>';
+    const firstSection=[...card.querySelectorAll(':scope > div')][1];
+    card.insertBefore(document.createRange().createContextualFragment(chart),firstSection||null);
+    card.classList.add('cp-premium-dashboard');
+    [...card.querySelectorAll(':scope > div')].forEach((d,i)=>{if(i>1)d.classList.add('cp-premium-section')});
+    card.querySelectorAll('.border.rounded-xl.p-3').forEach(d=>d.classList.add('cp-metric-card'));
+    card.querySelectorAll('.border.rounded-xl.p-2\.5').forEach(d=>d.classList.add('cp-insight-card'));
+  }
+
+  function enhanceStars(){
+    const root=document.getElementById('stars-board-list'); if(!root)return;
+    root.querySelectorAll('.grid>div').forEach((card,i)=>{
+      const medal=card.querySelector('.text-4xl,.text-5xl,.text-3xl');
+      if(medal&&!medal.dataset.premium){
+        medal.dataset.premium='1';
+        medal.textContent='';
+        medal.innerHTML='<i class="fa-solid '+(i===1?'fa-trophy':i===0?'fa-medal':'fa-award')+'"></i>';
+      }
+    });
+  }
+
+  const wrapOriginal=(name,enhance)=>{
+    const original=window[name];
+    if(typeof original!=='function')return;
+    window[name]=function(){const r=original.apply(this,arguments);setTimeout(()=>wait(enhance),0);return r;};
+  };
+  wrapOriginal('renderS360Card',enhanceS360);
+  wrapOriginal('renderJourneyCard',enhanceJourney);
+  wrapOriginal('renderClassPulseCard',enhancePulse);
+  wrapOriginal('renderStarsBoard',enhanceStars);
+  wrapOriginal('renderSkillExplorer',function(){document.getElementById('tab-skill-explorer')?.classList.add('premium-skill-explorer');});
+  wrapOriginal('renderCertificatePreview',function(){document.getElementById('cert-preview')?.classList.add('premium-certificate');});
+})();
+</script>
