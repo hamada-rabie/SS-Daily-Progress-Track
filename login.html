@@ -457,20 +457,8 @@
         const profileSnap = await getDoc(doc(db, "users", user.uid));
         const profile = profileSnap.exists() ? profileSnap.data() : null;
 
-        // Legacy accounts created before the approval system have no profile
-        // document yet. They must continue to work exactly as before.
-        if(profileSnap.exists() && profile?.status !== "approved"){
-          const status = profile?.status || "pending";
-          await signOut(auth);
-          message.className = status === "denied" ? "error" : "success";
-          if(status === "denied"){
-            message.innerHTML = "Access denied by the administrator.<br>تم رفض طلب الوصول. يمكنك التواصل مع مسؤول التطبيق.";
-          }else{
-            message.innerHTML = "Your account is pending admin approval.<br>حسابك في انتظار موافقة مسؤول التطبيق قبل الدخول."; 
-          }
-          return;
-        }
-
+        // Access is self-service: every authenticated teacher account can enter immediately.
+        // Administrator statistics and controls remain admin-only.
         message.className = "success";
         message.textContent = "Login successful. Opening app...";
         window.location.href = "english_dashboard-dynamic.html";
