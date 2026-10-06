@@ -1446,7 +1446,7 @@ main .card{border-radius:16px}
           <select id="skills-class-filter" data-action="filter-skills" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
           <input id="skills-date" type="date" data-action="filter-skills-date" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
-        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Rate skills using six levels for the selected date</span><span class="ar">قيّم المهارات باستخدام ٦ مستويات لليوم المحدد</span></p><div class="daily-bulk-row"><select id="skills-bulk-skill" class="daily-bulk-btn" style="min-width:135px;"><option value="reading">Reading / القراءة</option><option value="writing">Writing / الكتابة</option><option value="listening">Listening / الاستماع</option><option value="speaking">Speaking / المحادثة</option></select><select id="skills-bulk-level" class="daily-bulk-btn" style="min-width:165px;"><option value="very_weak">Very Weak / ضعيف جدًا</option><option value="weak">Weak / ضعيف</option><option value="acceptable">Acceptable / مقبول</option><option value="average">Average / متوسط</option><option value="very_good">Very Good / جيد جدًا</option><option value="excellent">Excellent / ممتاز</option></select><button type="button" class="daily-bulk-btn" data-action="apply-skill-bulk"><i class="fa-solid fa-users" style="color:var(--teal);"></i><span class="en">Apply to All Students</span><span class="ar">تطبيق على كل الطلاب</span></button></div></div>
+        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick apply a skill rating to the selected class</span><span class="ar">تطبيق تقييم مهارة بسرعة على الصف المحدد</span></p><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="open-skill-bulk"><i class="fa-solid fa-users" style="color:var(--teal);"></i><span class="en">Apply Skill to All</span><span class="ar">تطبيق تقييم المهارة على الكل</span></button></div></div>
       </div>
       <div id="skills-list" class="space-y-3"></div>
     </section>
@@ -3167,6 +3167,20 @@ function dailyBulkOptions(field){
   if(field==='homework') return [{key:'done',en:'Mark All Done',ar:'تحديد الكل تم',cls:'badge-ok'},{key:'notdone',en:'Mark All Not Done',ar:'تحديد الكل لم يتم',cls:'badge-warn'},{key:'clear',en:'Clear All',ar:'مسح الكل',cls:'clear'}];
   return [{key:'present',en:'Mark All Present',ar:'تسجيل الكل حاضر',cls:'badge-ok'},{key:'late',en:'Mark All Late',ar:'تسجيل الكل متأخر',cls:'badge-mid'},{key:'absent',en:'Mark All Absent',ar:'تسجيل الكل غائب',cls:'badge-warn'},{key:'clear',en:'Clear All',ar:'مسح الكل',cls:'clear'}];
 }
+function skillBulkOptions(){
+  return SKILL_LEVELS.map(o=>({key:o.key,en:o.en,ar:o.ar,cls:o.score>=5?'badge-ok':o.score>=3?'badge-mid':'badge-warn'})).concat([{key:'',en:'Clear All',ar:'مسح تقييم المهارة',cls:'clear'}]);
+}
+function openSkillBulkMenu(anchor){
+  closeDailyChoiceMenu();
+  const menu=document.createElement('div');
+  menu.className='daily-choice-menu';
+  menu.innerHTML=skillBulkOptions().map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
+  document.body.appendChild(menu);
+  activeDailyChoiceMenu=menu;
+  positionDailyMenu(menu,anchor);
+  menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applySkillBulk(btn.dataset.value); closeDailyChoiceMenu(); }));
+  setTimeout(()=>document.addEventListener('click',closeDailyChoiceMenu,{once:true}),0);
+}
 function openDailyBulkMenu(anchor,field){
   closeDailyChoiceMenu(); const menu=document.createElement('div'); menu.className='daily-choice-menu';
   menu.innerHTML=dailyBulkOptions(field).map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
@@ -3346,16 +3360,23 @@ function setSkill(studentId,key,val){
   if(val!==''){const newVal=skillLevelScore(val);notifyPerfectSkill(studentId,key,date,oldVal,newVal);if(oldVal!==null&&newVal-oldVal>=1)queueSmartAlert('student-improvement','student_'+studentId+'_improve_'+key+'_'+date,date,'Student improvement detected','تم رصد تحسن في الطالب',s.name+' improved in '+QP_SKILL_LABELS[key].en+'.',s.name+' تحسن في '+QP_SKILL_LABELS[key].ar+'.',{studentId,key,date,delta:newVal-oldVal});}
   evaluateStudentSmartAlerts(studentId,date);
 }
-function applySkillBulk(){
+function applySkillBulk(level){
   const classFilter=document.getElementById('skills-class-filter')?.value||'all';
-  const skill=document.getElementById('skills-bulk-skill')?.value||'reading';
-  const level=document.getElementById('skills-bulk-level')?.value||'average';
+  const skill=window.__activeSkillBulkSkill||'reading';
   const date=getSelectedSkillsDate();
   const list=classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter));
   if(!list.length){showToast('No students in the selected class / لا يوجد طلاب في الصف المحدد','error');return;}
-  list.forEach(s=>{migrateSkillData(s);let entry=s.skillHistory.find(h=>h.date===date);if(!entry){entry={date};s.skillHistory.push(entry);}entry[skill]=level;s.skills[skill]=level;});
+  list.forEach(s=>{
+    migrateSkillData(s);
+    let entry=s.skillHistory.find(h=>h.date===date);
+    if(!entry){entry={date};s.skillHistory.push(entry);}
+    if(level===''){delete entry[skill];}
+    else{entry[skill]=level;}
+    const dated=s.skillHistory.filter(h=>skillLevelScore(h[skill])!==null).sort((a,b)=>a.date<b.date?-1:1);
+    s.skills[skill]=dated.length?dated[dated.length-1][skill]:null;
+  });
   saveData();renderSkillsTable();renderStudentsTable();list.forEach(s=>evaluateStudentSmartAlerts(s.id,date));
-  showToast('Skill rating applied to the selected class / تم تطبيق تقييم المهارة على الصف المحدد','success');
+  showToast(level===''?'Skill rating cleared for the selected class / تم مسح تقييم المهارة للصف المحدد':'Skill rating applied to the selected class / تم تطبيق تقييم المهارة على الصف المحدد','success');
 }
 /* ---------- honor board / English Excellence Board ---------- */
 /* Badges are derived ONLY from existing data/functions — no new scoring, no fabrication. */
@@ -5740,7 +5761,10 @@ document.addEventListener('click', function(e){
     case 'close-notif-center': closeNotifCenter(); break;
     case 'open-daily-choice': openDailyChoiceMenu(t,t.dataset.choiceField,Number(t.dataset.id)); break;
     case 'open-daily-bulk': openDailyBulkMenu(t,t.dataset.bulkField); break;
-    case 'apply-skill-bulk': applySkillBulk(); break;
+    case 'open-skill-bulk':
+      window.__activeSkillBulkSkill = 'reading';
+      openSkillBulkMenu(t);
+      break;
     case 'open-global-search': openGlobalSearch(); break;
     case 'close-global-search': closeGlobalSearch(); break;
     case 'select-search-result': selectGlobalSearchResult(Number(t.dataset.resultIndex)); break;
