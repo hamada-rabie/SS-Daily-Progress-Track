@@ -6315,7 +6315,7 @@ window.markAllNotificationsReadRemote = async function markAllNotificationsReadR
   }
 };
 
-<script id="admin-usage-telemetry-2026-10-06">
+
 (function(){'use strict';
 window.recordAppUsage=async function(uid){try{
  if(!uid||!window.db||!window.doc||!window.setDoc)return;
@@ -6328,7 +6328,7 @@ window.recordAppUsage=async function(uid){try{
  await window.setDoc(window.doc(window.db,'users',uid),patch,{merge:true});
 }catch(err){console.warn('Usage telemetry skipped safely:',err);}};
 })();
-</script>
+
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
     onAuthStateChanged(auth, async (user) => {
