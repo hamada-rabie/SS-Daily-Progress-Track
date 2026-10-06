@@ -3,7 +3,7 @@
 // Do not create a second service worker: Firebase Cloud Messaging and the PWA
 // shell must share this root-scope worker.
 
-const PWA_CACHE = 'ss-dpt-pwa-v11';
+const PWA_CACHE = 'ss-dpt-pwa-v12';
 const APP_SHELL = [
   './index.html?v=20261006',
   './index.html',
