@@ -1306,26 +1306,7 @@ main .card{border-radius:16px}
           </div>
         </div>
       </div>
-
-      <!-- Daily Tracking → Progress → Achievement -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div data-action="switch-tab" data-tab="daily" class="card card-interactive p-3 flex flex-col items-center text-center gap-0.5" style="border-top:3px solid #0D9488;">
-          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white mb-1" style="background:#0D9488;"><i class="fa-solid fa-calendar-check"></i></div>
-          <p class="text-xs font-bold"><span class="en">Daily Tracking</span><span class="ar">المتابعة اليومية</span></p>
-          <p class="text-[10px] text-gray-400">المتابعة اليومية</p>
-        </div>
-        <div data-action="switch-tab" data-tab="journey" class="card card-interactive p-3 flex flex-col items-center text-center gap-0.5" style="border-top:3px solid #9333EA;">
-          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white mb-1" style="background:#9333EA;"><i class="fa-solid fa-route"></i></div>
-          <p class="text-xs font-bold"><span class="en">Progress</span><span class="ar">التقدم</span></p>
-          <p class="text-[10px] text-gray-400">التقدم</p>
-        </div>
-        <div data-action="switch-tab" data-tab="stars" class="card card-interactive p-3 flex flex-col items-center text-center gap-0.5" style="border-top:3px solid #F59E0B;">
-          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white mb-1" style="background:#F59E0B;"><i class="fa-solid fa-trophy"></i></div>
-          <p class="text-xs font-bold"><span class="en">Achievement</span><span class="ar">الإنجاز</span></p>
-          <p class="text-[10px] text-gray-400">الإنجاز</p>
-        </div>
-      </div>
-
+      <!-- Hero quick-navigation cards intentionally removed; App Preview bar remains. -->
       <div class="card p-3 sm:p-4 flex items-center gap-4 overflow-x-auto" style="background:#F6FBFA;">
         <div class="shrink-0 pr-3" style="border-right:1px solid var(--line);">
           <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wide"><span class="en">App Preview · Sample</span><span class="ar">معاينة توضيحية — بيانات افتراضية</span></p>
@@ -7677,6 +7658,56 @@ body.lang-bilingual .about-modal-card .about-kicker .ar{
   height:29px!important;
 }
 </style>
+
+<style id="final-refresh-logout-wiring-2026-10-06">
+/* Final wiring: keep the existing refresh control visible on phones and make logout modal controls direct/robust. */
+@media (max-width:640px){
+  #app-topbar button.pwa-refresh-btn{
+    display:inline-flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:32px!important;height:32px!important;
+    min-width:32px!important;min-height:32px!important;
+    flex:0 0 32px!important;
+  }
+  #app-topbar button.pwa-refresh-btn i{display:block!important;font-size:13px!important;}
+}
+</style>
+<script id="final-refresh-logout-wiring-2026-10-06">
+(function(){
+  function wireFinalControls(){
+    const refresh=document.querySelector('#app-topbar button.pwa-refresh-btn');
+    if(refresh){
+      refresh.style.setProperty('display','inline-flex','important');
+      refresh.style.setProperty('visibility','visible','important');
+      refresh.style.setProperty('opacity','1','important');
+      refresh.onclick=async function(e){
+        e.preventDefault(); e.stopPropagation();
+        if(refresh.dataset.busy==='1') return;
+        refresh.dataset.busy='1';
+        try{
+          const reg=await navigator.serviceWorker?.getRegistration?.();
+          if(reg) await reg.update().catch(()=>{});
+        }finally{ window.location.reload(); }
+      };
+    }
+    const logout=document.querySelector('#sidebar button[data-action="logout"]');
+    if(logout){
+      logout.onclick=function(e){
+        e.preventDefault(); e.stopPropagation();
+        const modal=document.getElementById('modal-logout-confirm');
+        if(modal){modal.classList.add('open');modal.setAttribute('aria-hidden','false');}
+      };
+    }
+    const cancel=document.querySelector('#modal-logout-confirm [data-action="cancel-logout"]');
+    if(cancel){cancel.onclick=function(e){e.preventDefault();e.stopPropagation();const modal=document.getElementById('modal-logout-confirm');if(modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}};}
+    const confirm=document.querySelector('#modal-logout-confirm [data-action="confirm-logout"]');
+    if(confirm){confirm.onclick=async function(e){e.preventDefault();e.stopPropagation();const modal=document.getElementById('modal-logout-confirm');if(modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}if(typeof window.logoutUser==='function'){await window.logoutUser();}else{console.error('Logout function not ready.');}};}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wireFinalControls,{once:true});
+  else wireFinalControls();
+})();
+</script>
 </body>
 </html>
 
