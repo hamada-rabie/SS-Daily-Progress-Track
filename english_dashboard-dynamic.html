@@ -6675,12 +6675,14 @@ setPersistence(auth, browserLocalPersistence)
   // administrator's own notification center. Existing accounts are not retroactively
   // marked as first-time users because recordAppUsage only sets firstLoginAt when
   // the users/{uid} document did not exist yet.
+  let adminFirstLoginUnsubscribe=null;
   async function startAdminFirstLoginMonitor(){
     try{
+      if(adminFirstLoginUnsubscribe) return;
       const admin=auth.currentUser;
       if(!admin || String(admin.email||'').toLowerCase()!=='h.nasim0202@education.qa') return;
       const usersQuery=query(collection(db,'users'),limit(500));
-      onSnapshot(usersQuery,async(snap)=>{
+      adminFirstLoginUnsubscribe=onSnapshot(usersQuery,async(snap)=>{
         for(const d of snap.docs){
           const u=d.data()||{};
           if(!u.firstLoginAt || String(u.email||'').toLowerCase()==='h.nasim0202@education.qa') continue;
