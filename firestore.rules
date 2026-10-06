@@ -1,0 +1,85 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    function isApprovedUser(userId) {
+      return signedIn()
+        && request.auth.uid == userId
+        && (
+          isAdmin()
+          || (
+            exists(/databases/$(database)/documents/users/$(userId))
+            && get(/databases/$(database)/documents/users/$(userId)).data.status == "approved"
+          )
+        );
+    }
+
+    // Admin identity is intentionally separate from each teacher's private data.
+    // Bootstrap: create admins/<YOUR_ADMIN_UID> with { active: true } in Firebase
+    // Console once. Do not let clients create or edit admin records.
+    match /admins/{adminId} {
+      allow read: if signedIn() && request.auth.uid == adminId;
+      allow write: if false;
+    }
+
+    // One profile document per authenticated account.
+    match /users/{userId} {
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.status == "pending"
+        && request.resource.data.uid == userId;
+
+      allow get: if signedIn()
+        && (request.auth.uid == userId || isAdmin());
+
+      allow update: if isAdmin()
+        || (
+          signedIn()
+          && request.auth.uid == userId
+          && resource.data.status == "approved"
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.uid == resource.data.uid
+        );
+
+      allow delete: if isAdmin();
+
+      // All private teacher data lives below this user's UID.
+      match /{subcollection=**} {
+        allow read, write: if isAdmin() || isApprovedUser(userId);
+      }
+    }
+
+    // New account requests are visible to the requester and the admin only.
+    match /accessRequests/{requestId} {
+      allow create: if signedIn()
+        && request.auth.uid == requestId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == "pending";
+
+      allow get: if signedIn()
+        && (request.auth.uid == requestId || isAdmin());
+
+      allow list: if isAdmin();
+
+      allow update, delete: if isAdmin();
+    }
+
+    // Explicitly deny everything else. This prevents accidental public access
+    // if a new collection is added later without a matching rule.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
