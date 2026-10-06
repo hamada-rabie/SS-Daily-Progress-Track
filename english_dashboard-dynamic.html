@@ -1842,36 +1842,61 @@ main .card{border-radius:16px}
 </main>
 
 <!-- About Modal -->
-<div id="modal-about" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-3 sm:p-4" aria-hidden="true">
-  <div class="about-modal-card rounded-2xl p-4 sm:p-5 w-full max-w-xl space-y-3 shadow-2xl" style="background:var(--card);color:var(--ink);border:1px solid var(--line);" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
-    <div class="flex items-start justify-between gap-3"><div><p id="about-modal-title" class="font-display font-extrabold text-lg sm:text-xl" style="color:var(--teal-dark);">SS' Daily Progress Track</p><p class="text-[10px] text-gray-500 mt-0.5"><span class="en">About the application</span><span class="ar">عن التطبيق</span></p></div>
-      <button type="button" data-action="close-modal" data-modal="modal-about" class="about-modal-close shrink-0 !w-9 !h-9 !min-w-9 !min-h-9 rounded-xl flex items-center justify-center border text-lg font-bold cursor-pointer" style="border-color:var(--line);color:var(--teal-dark);background:color-mix(in srgb,var(--teal-light) 10%,var(--card));" aria-label="Close About / إغلاق" title="Close / إغلاق"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>
-    <div class="rounded-xl p-3 sm:p-4" style="background:color-mix(in srgb,var(--teal-light) 8%,var(--card));border:1px solid var(--line);">
-      <p class="font-display font-extrabold text-sm sm:text-base mb-2" style="color:var(--teal-dark);"><span class="en">Track → Understand → Act → Celebrate</span><span class="ar">تابع → افهم → تدخّل → احتفل بالإنجاز</span></p>
-      <div class="space-y-2.5 text-[11px] sm:text-xs leading-6">
-        <div class="en"><p>A smart teacher-focused progress tracking system designed to turn everyday classroom observations into meaningful student insights.</p><p>Track attendance, participation, homework, language skills, progress, and individual development — all in one organized place.</p><p><strong>Why it matters:</strong> Less paperwork. Clearer insights. Faster decisions. Better support for every learner.</p><p class="font-bold">From daily tracking to meaningful progress — make every student’s journey visible.</p></div>
-        <div class="ar"><p>نظام ذكي لمتابعة تقدم الطلاب، صُمم للمعلم ليحوّل الملاحظات والمتابعة اليومية داخل الفصل إلى مؤشرات واضحة تساعده على فهم مستوى كل طالب.</p><p>تابع الحضور، والمشاركة، والواجبات، ومهارات اللغة، والتقدم الفردي — كل ذلك في مكان واحد وبطريقة منظمة.</p><p><strong>لماذا يهمك؟</strong> أعمال ورقية أقل. رؤية أوضح. قرارات أسرع. دعم أفضل لكل طالب.</p><p class="font-bold">من المتابعة اليومية إلى تقدم حقيقي وملموس — اجعل رحلة كل طالب واضحة أمامك.</p></div>
+<div id="modal-about" class="fixed inset-0 bg-black/55 z-50 hidden items-center justify-center p-3 sm:p-4" aria-hidden="true">
+  <div class="about-modal-card w-full max-w-lg overflow-hidden rounded-[24px] shadow-2xl" style="background:var(--card);color:var(--ink);border:1px solid var(--line);" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
+    <div class="px-5 sm:px-6 py-5" style="background:linear-gradient(135deg,color-mix(in srgb,var(--teal-dark) 96%,#fff 4%),color-mix(in srgb,var(--teal) 82%,#fff 18%));color:#fff;">
+      <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0">
+          <div class="inline-flex items-center gap-2 mb-2 px-2.5 py-1 rounded-full text-[9px] font-extrabold tracking-wide" style="background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);">
+            <i class="fa-solid fa-sparkles"></i><span class="en">SMART TEACHER TOOL</span><span class="ar">أداة ذكية للمعلم</span>
+          </div>
+          <p id="about-modal-title" class="font-display font-extrabold text-xl sm:text-2xl leading-tight">SS' Daily Progress Track</p>
+          <p class="text-[10px] sm:text-[11px] mt-1 opacity-85"><span class="en">About the application</span><span class="ar">عن التطبيق</span></p>
+        </div>
+        <button type="button" data-action="close-modal" data-modal="modal-about" class="about-modal-close shrink-0 !w-9 !h-9 !min-w-9 !min-h-9 rounded-full flex items-center justify-center cursor-pointer" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.30);color:#fff;" aria-label="Close About / إغلاق" title="Close / إغلاق"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="mt-4 flex items-center gap-2 text-[11px] sm:text-xs font-bold">
+        <span class="h-px flex-1" style="background:rgba(255,255,255,.28);"></span>
+        <span><span class="en">Track → Understand → Act → Celebrate</span><span class="ar">تابع → افهم → تدخّل → احتفل بالإنجاز</span></span>
+        <span class="h-px flex-1" style="background:rgba(255,255,255,.28);"></span>
       </div>
     </div>
-    <div class="mt-3 rounded-xl p-3 sm:p-4" style="background:linear-gradient(135deg,color-mix(in srgb,#E0A12B 16%,var(--card)),color-mix(in srgb,var(--teal-light) 10%,var(--card)));border:2px solid #D49A22;box-shadow:0 8px 24px rgba(0,0,0,.08);">
-      <div class="en">
-        <p class="text-[11px] font-extrabold uppercase tracking-wider mb-2" style="color:#A66A00;">The Core Idea</p>
-        <p class="text-[11px] sm:text-xs leading-6 font-extrabold" style="color:var(--ink);">The app doesn't just record student data — it can intelligently detect important events and alert the teacher when attention, progress, attendance, or daily completion requires it.</p>
+    <div class="p-4 sm:p-5 space-y-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div class="rounded-2xl p-3.5" style="background:color-mix(in srgb,var(--teal-light) 11%,var(--card));border:1px solid var(--line);">
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center mb-2" style="background:color-mix(in srgb,var(--teal) 14%,var(--card));color:var(--teal-dark);"><i class="fa-solid fa-chart-line"></i></div>
+          <p class="text-[10px] font-extrabold uppercase tracking-wide" style="color:var(--teal-dark);"><span class="en">What it does</span><span class="ar">ماذا يفعل؟</span></p>
+          <p class="mt-1.5 text-[11px] leading-5 text-gray-600"><span class="en">A smart teacher-focused progress tracking system that turns everyday classroom observations into meaningful student insights.</span><span class="ar">نظام ذكي لمتابعة تقدم الطلاب يحوّل ملاحظات المعلم اليومية إلى رؤى مفيدة وقابلة للتنفيذ.</span></p>
+        </div>
+        <div class="rounded-2xl p-3.5" style="background:color-mix(in srgb,var(--violet) 7%,var(--card));border:1px solid var(--line);">
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center mb-2" style="background:color-mix(in srgb,var(--violet) 12%,var(--card));color:var(--violet);"><i class="fa-solid fa-layer-group"></i></div>
+          <p class="text-[10px] font-extrabold uppercase tracking-wide" style="color:var(--violet);"><span class="en">All in one place</span><span class="ar">كل شيء في مكان واحد</span></p>
+          <p class="mt-1.5 text-[11px] leading-5 text-gray-600"><span class="en">Attendance, participation, homework, language skills, progress, reports, certificates, and student development.</span><span class="ar">الحضور، والمشاركة، والواجب، ومهارات اللغة، والتقدم، والتقارير، والشهادات، وتطور الطالب.</span></p>
+        </div>
       </div>
-      <div class="ar text-right">
-        <p class="text-[11px] font-extrabold mb-2" style="color:#A66A00;">الخلاصة</p>
-        <p class="text-[11px] sm:text-xs leading-6 font-extrabold" style="color:var(--ink);">التطبيق مش بس بيسجل بيانات الطلاب — يقدر كمان يكتشف بذكاء الأحداث المهمة وينبّه المعلم لما يكون الاهتمام، أو متابعة التقدم، أو الحضور، أو إتمام المتابعة اليومية محتاج متابعة.</p>
+      <div class="rounded-2xl px-4 py-3.5" style="background:var(--card);border:1px solid var(--line);box-shadow:0 5px 18px rgba(0,0,0,.035);">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:color-mix(in srgb,#F6C453 18%,var(--card));color:#B5850C;"><i class="fa-solid fa-lightbulb"></i></div>
+          <p class="text-[10px] font-extrabold uppercase tracking-wide" style="color:#B5850C;"><span class="en">Why it matters</span><span class="ar">لماذا هو مهم؟</span></p>
+        </div>
+        <p class="text-[11px] sm:text-xs leading-6 text-gray-600"><span class="en">Less routine work. More visibility. Better decisions. The app helps the teacher see what is happening, understand what needs attention, and act at the right time.</span><span class="ar">عمل روتيني أقل، ورؤية أوضح، وقرارات أفضل. يساعد التطبيق المعلم على معرفة ما يحدث، وفهم ما يحتاج إلى اهتمام، والتدخل في الوقت المناسب.</span></p>
+      </div>
+      <div class="rounded-2xl p-3.5" style="background:linear-gradient(135deg,color-mix(in srgb,var(--teal-light) 14%,var(--card)),color-mix(in srgb,var(--violet) 7%,var(--card)));border:1px solid var(--line);">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style="background:rgba(255,255,255,.72);color:var(--teal-dark);"><i class="fa-solid fa-bullseye"></i></div>
+          <p class="text-[10px] font-extrabold uppercase tracking-wide" style="color:var(--teal-dark);"><span class="en">Core idea</span><span class="ar">الفكرة الأساسية</span></p>
+        </div>
+        <p class="text-[11px] sm:text-xs leading-6 text-gray-700"><span class="en">The app doesn't just record student data — it can intelligently detect important events and alert the teacher when attention, progress, attendance, or daily completion requires it.</span><span class="ar">التطبيق مش بس بيسجل بيانات الطلاب — يقدر كمان يكتشف بذكاء الأحداث المهمة وينبّه المعلم لما يكون الاهتمام، أو متابعة التقدم، أو الحضور، أو إتمام المتابعة اليومية محتاج متابعة.</span></p>
       </div>
     </div>
   </div>
 </div>
 
-
-<style id="about-modal-compact-2026-10-06">
+<style id="about-modal-premium-2026-10-06">
 .about-modal-card{max-height:82vh;overflow-y:auto;box-sizing:border-box;}
-.about-modal-close{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;}
-.about-modal-close i{display:block!important;visibility:visible!important;}
-@media(max-width:640px){.about-modal-card{max-width:calc(100vw - 24px);max-height:84vh;padding:13px!important;}.about-modal-card .about-modal-close{width:36px!important;height:36px!important;}}
+.about-modal-card .about-modal-close{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;}
+.about-modal-card .about-modal-close i{display:block!important;visibility:visible!important;}
+@media(max-width:640px){.about-modal-card{max-width:calc(100vw - 24px);max-height:86vh;}}
 </style>
 <!-- Add Class Modal -->
 <div id="modal-class" class="fixed inset-0 bg-black/40 z-40 hidden items-center justify-center p-4">
@@ -2355,6 +2380,21 @@ function switchTab(name){
     localStorage.setItem('ss_active_tab', name);
     history.replaceState(null, '', '#'+name);
   }catch(e){}
+  document.querySelectorAll('.nav-group-toggle[data-group]').forEach(toggle=>{
+    toggle.setAttribute('aria-expanded','false');
+    const chevron=document.getElementById('nav-chevron-'+toggle.dataset.group);
+    if(chevron) chevron.style.transform='';
+  });
+  document.querySelectorAll('[id^="nav-group-"]').forEach(group=>group.classList.add('hidden'));
+  const owner=document.querySelector('.nav-link[data-target="'+name+'"]')?.closest('[id^="nav-group-"]');
+  if(owner){
+    const groupName=owner.id.replace(/^nav-group-/,'');
+    owner.classList.remove('hidden');
+    const toggle=document.querySelector('.nav-group-toggle[data-group="'+groupName+'"]');
+    if(toggle) toggle.setAttribute('aria-expanded','true');
+    const chevron=document.getElementById('nav-chevron-'+groupName);
+    if(chevron) chevron.style.transform='rotate(180deg)';
+  }
   syncLanguageVisibility();
   refreshAllViews();
 }
@@ -2568,14 +2608,30 @@ function deleteStudent(id){
 function toggleSidebar(){ document.body.classList.toggle('sidebar-open'); }
 function closeSidebar(){ document.body.classList.remove('sidebar-open'); }
 
-function resetSidebarNavState(){
-  document.querySelectorAll('.nav-group-toggle[data-group]').forEach(toggle=>toggle.setAttribute('aria-expanded','false'));
+function resetSidebarNavState(preserveActiveGroup=false){
+  document.querySelectorAll('.nav-group-toggle[data-group]').forEach(toggle=>{
+    toggle.setAttribute('aria-expanded','false');
+    const chevron=document.getElementById('nav-chevron-'+toggle.dataset.group);
+    if(chevron) chevron.style.transform='';
+  });
   document.querySelectorAll('[id^="modal-"]').forEach(modal=>{ modal.classList.add('hidden'); modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); });
   document.querySelectorAll('[id^="nav-group-"]').forEach(group=>group.classList.add('hidden'));
   const backupMenu=document.getElementById('backup-nav-menu');
   const backupToggle=document.querySelector('[data-action="toggle-backup-menu"]');
   if(backupMenu) backupMenu.classList.add('hidden');
   if(backupToggle) backupToggle.setAttribute('aria-expanded','false');
+  if(preserveActiveGroup){
+    const activeName=(location.hash||'').replace(/^#/,'') || localStorage.getItem('ss_active_tab') || 'dashboard';
+    const owner=document.querySelector('.nav-link[data-target="'+activeName+'"]')?.closest('[id^="nav-group-"]');
+    if(owner){
+      const groupName=owner.id.replace(/^nav-group-/,'');
+      owner.classList.remove('hidden');
+      const toggle=document.querySelector('.nav-group-toggle[data-group="'+groupName+'"]');
+      if(toggle) toggle.setAttribute('aria-expanded','true');
+      const chevron=document.getElementById('nav-chevron-'+groupName);
+      if(chevron) chevron.style.transform='rotate(180deg)';
+    }
+  }
   closeSidebar();
 }
 
@@ -5747,7 +5803,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   // - Refresh: stay on the exact tab (hash/localStorage).
   // - New app/browser session: start clean on Home.
   try{
-    resetSidebarNavState();
+    resetSidebarNavState(false);
     if(window.__SS_FRESH_APP_SESSION){
       localStorage.removeItem('ss_active_tab');
       if(location.hash) history.replaceState(null,'',location.pathname+location.search);
