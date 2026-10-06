@@ -32,7 +32,7 @@
   // PWA shell registration — deliberately separate from Firebase Messaging token registration.
   if('serviceWorker' in navigator){
     window.addEventListener('load',()=>{
-      navigator.serviceWorker.register('firebase-messaging-sw.js?v=20261006-r4',{scope:'./'})
+      navigator.serviceWorker.register('firebase-messaging-sw.js?v=20261006-r5',{scope:'./'})
         .then(reg=>console.log('📦 PWA service worker ready:',reg.scope))
         .catch(err=>console.warn('PWA service worker registration failed:',err));
     });
@@ -7799,3 +7799,153 @@ body.lang-bilingual .home-hero-tagline .ar{margin-top:4px!important;}
   .smart-insights-popover{max-height:calc(100dvh - 260px)!important;border-radius:16px!important;}
 }
 </style>
+
+
+<style id="student-class-first-guard-2026-10-06">
+/* Student selection guard: a student cannot be chosen before a class scope is selected. */
+.ss-student-class-toast{
+  position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(12px);
+  z-index:9999; display:flex; align-items:center; gap:10px;
+  width:max-content; max-width:min(92vw,520px);
+  padding:10px 16px; border-radius:14px;
+  background:var(--card,#fff); color:var(--ink,#0F3733);
+  border:1px solid var(--line,#E2ECE9);
+  box-shadow:0 12px 34px rgba(15,55,51,.20);
+  font-size:12px; font-weight:750; line-height:1.5;
+  text-align:center; opacity:0; pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease;
+}
+.ss-student-class-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.ss-student-class-toast i{color:var(--gold,#F2A93B);font-size:14px;flex-shrink:0;}
+.ss-student-class-toast .en,.ss-student-class-toast .ar{display:block;}
+@media(max-width:640px){
+  .ss-student-class-toast{bottom:18px;max-width:90vw;padding:9px 13px;font-size:11px;}
+}
+/* The old dynamically-created mobile refresh control is no longer needed. */
+#mobile-app-refresh{display:none!important;}
+</style>
+<script id="student-class-first-guard-2026-10-06">
+(function(){
+  const studentClassPairs = [
+    ['pj-student-select','pj-class-select'],
+    ['s360-student-select','s360-class-select'],
+    ['report-student-select','report-class-select'],
+    ['cert-student-select','cert-class-select'],
+    ['pr-student','pr-class'],
+    ['sw-student','sw-class']
+  ];
+
+  function currentLanguage(){
+    if(document.body.classList.contains('lang-ar')) return 'ar';
+    if(document.body.classList.contains('lang-en')) return 'en';
+    return 'bilingual';
+  }
+
+  function showClassFirstMessage(){
+    let toast=document.getElementById('ss-student-class-toast');
+    if(!toast){
+      toast=document.createElement('div');
+      toast.id='ss-student-class-toast';
+      toast.className='ss-student-class-toast';
+      toast.setAttribute('role','status');
+      toast.setAttribute('aria-live','polite');
+      toast.innerHTML='<i class="fa-solid fa-circle-info" aria-hidden="true"></i><span class="ss-msg-en en">Please select a class first.</span><span class="ss-msg-ar ar">برجاء اختيار الصف أولاً.</span>';
+      document.body.appendChild(toast);
+    }
+    const lang=currentLanguage();
+    toast.querySelector('.ss-msg-en').style.display=lang==='ar'?'none':'block';
+    toast.querySelector('.ss-msg-ar').style.display=lang==='en'?'none':'block';
+    toast.classList.remove('show');
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    clearTimeout(window.__ssClassFirstToastTimer);
+    window.__ssClassFirstToastTimer=setTimeout(()=>toast.classList.remove('show'),2600);
+  }
+
+  function isClassSelected(classSelect){
+    if(!classSelect) return false;
+    const v=String(classSelect.value||'').trim();
+    return v!=='';
+  }
+
+  document.addEventListener('mousedown',function(e){
+    const student=e.target.closest?.('select[id]');
+    if(!student) return;
+    const pair=studentClassPairs.find(([sid])=>sid===student.id);
+    if(!pair) return;
+    const classSelect=document.getElementById(pair[1]);
+    if(!isClassSelected(classSelect)){
+      e.preventDefault();
+      showClassFirstMessage();
+      try{student.blur();}catch(_){}
+    }
+  },true);
+
+  document.addEventListener('focus',function(e){
+    const student=e.target.closest?.('select[id]');
+    if(!student) return;
+    const pair=studentClassPairs.find(([sid])=>sid===student.id);
+    if(!pair) return;
+    const classSelect=document.getElementById(pair[1]);
+    if(!isClassSelected(classSelect)){
+      showClassFirstMessage();
+      try{student.blur();}catch(_){}
+    }
+  },true);
+
+  document.addEventListener('change',function(e){
+    const student=e.target.closest?.('select[id]');
+    if(!student) return;
+    const pair=studentClassPairs.find(([sid])=>sid===student.id);
+    if(!pair) return;
+    const classSelect=document.getElementById(pair[1]);
+    if(!isClassSelected(classSelect)){
+      student.value='';
+      showClassFirstMessage();
+    }
+  },true);
+})();
+</script>
+
+<style id="mobile-refresh-hard-fix-2026-10-06">
+@media(max-width:640px){
+  #app-topbar button.pwa-refresh-btn{
+    display:inline-flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    touch-action:manipulation!important;
+    position:relative!important;
+    z-index:80!important;
+  }
+}
+</style>
+<script id="mobile-refresh-hard-fix-2026-10-06">
+(function(){
+  function hardRefresh(){
+    try{
+      const u=new URL(window.location.href);
+      u.searchParams.set('refresh',String(Date.now()));
+      window.location.assign(u.href);
+    }catch(e){
+      window.location.reload();
+    }
+  }
+  function wire(){
+    document.querySelectorAll('#app-topbar button.pwa-refresh-btn, #mobile-app-refresh').forEach(btn=>{
+      btn.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        if(btn.dataset.busy==='1') return;
+        btn.dataset.busy='1';
+        btn.setAttribute('aria-busy','true');
+        btn.style.opacity='.7';
+        setTimeout(hardRefresh,80);
+      };
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});
+  else wire();
+  window.addEventListener('pageshow',wire);
+})();
+</script>
