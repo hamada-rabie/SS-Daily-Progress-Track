@@ -7279,16 +7279,55 @@ document.getElementById('admin-release-send')?.addEventListener('click',async()=
 </style>
 
 <style id="sidebar-final-verified-2026-10-06">
-/* Verified final sidebar layout: auth-pending hides the page until Auth resolves,
-   so the admin slot can remain visible from first paint without a layout flash. */
-#sidebar > div:last-of-type{margin-top:auto!important;position:relative!important;padding-bottom:56px!important;}
-#sidebar button[data-action="open-share-modal"]{position:absolute!important;left:18px!important;right:18px!important;bottom:12px!important;width:auto!important;margin:0!important;height:30px!important;min-height:30px!important;padding:4px 6px!important;font-size:9.5px!important;}
-#sidebar button[data-action="logout"]{height:30px!important;min-height:30px!important;margin-top:10px!important;padding:4px 8px!important;}
-#sidebar .compact-admin-stats{display:flex!important;visibility:visible!important;opacity:1!important;height:26px!important;min-height:26px!important;margin-top:28px!important;margin-bottom:0!important;}
+/* Final verified sidebar layout:
+   Auth-pending hides the entire app, including Admin Statistics.
+   Share is narrowed horizontally and anchored to the bottom.
+   Teacher / Cloud Sync / Version move slightly downward without growing the sidebar. */
+#sidebar > div:last-of-type{
+  margin-top:auto!important;
+  position:relative!important;
+  padding-bottom:58px!important;
+}
+#sidebar > div:last-of-type > div:first-child{
+  transform:translateY(14px)!important;
+}
+#sidebar button[data-action="open-share-modal"]{
+  position:absolute!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:12px!important;
+  transform:translateX(-50%)!important;
+  width:170px!important;
+  max-width:calc(100% - 28px)!important;
+  margin:0!important;
+  height:30px!important;
+  min-height:30px!important;
+  padding:4px 8px!important;
+  font-size:9.5px!important;
+}
+#sidebar button[data-action="logout"]{
+  height:30px!important;
+  min-height:30px!important;
+  margin-top:8px!important;
+  padding:4px 8px!important;
+}
+#sidebar .compact-admin-stats{
+  display:flex!important;
+  height:26px!important;
+  min-height:26px!important;
+  margin-top:24px!important;
+  margin-bottom:0!important;
+  /* Keep visibility inherited during auth-pending so there is no flash. */
+}
 @media(max-width:640px){
- #sidebar > div:last-of-type{padding-bottom:52px!important;}
- #sidebar button[data-action="open-share-modal"]{left:14px!important;right:14px!important;bottom:10px!important;}
- #sidebar .compact-admin-stats{margin-top:24px!important;}
+  #sidebar > div:last-of-type{padding-bottom:52px!important;}
+  #sidebar > div:last-of-type > div:first-child{transform:translateY(10px)!important;}
+  #sidebar button[data-action="open-share-modal"]{
+    bottom:10px!important;
+    width:156px!important;
+    max-width:calc(100% - 24px)!important;
+  }
+  #sidebar .compact-admin-stats{margin-top:22px!important;}
 }
 </style>
 </body>
