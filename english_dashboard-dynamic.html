@@ -2160,8 +2160,8 @@ body.theme-dark .about-footer-line{color:#C1CCC9!important;}
       <span class="ar">تأكيد تسجيل الخروج</span>
     </div>
     <div class="logout-confirm-message">
-      <span class="en">Are you sure you want to log out of SS' Daily Progress Track?</span>
-      <span class="ar">هل أنت متأكد أنك تريد تسجيل الخروج من SS' Daily Progress Track؟</span>
+      <span class="en">Are you sure you want to log out?</span>
+      <span class="ar">هل أنت متأكد أنك تريد تسجيل الخروج؟</span>
     </div>
     <div class="logout-confirm-actions">
       <button type="button" data-action="cancel-logout" class="logout-confirm-btn logout-cancel">
@@ -7664,5 +7664,46 @@ body.lang-bilingual .about-modal-card .about-kicker .ar{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installMobileRefresh);
   else installMobileRefresh();
 })();
-</script></body>
+</script><style id="mobile-refresh-logout-final-fix-2026-10-06">
+/* Final mobile refresh visibility + compact logout controls. */
+@media (max-width: 640px){
+  #app-topbar .pwa-refresh-btn,
+  #premium-header-shell .pwa-refresh-btn,
+  button.pwa-refresh-btn{
+    display:inline-flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:32px!important;
+    height:32px!important;
+    min-width:32px!important;
+    min-height:32px!important;
+    flex:0 0 32px!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  #app-topbar .pwa-refresh-btn i,
+  #premium-header-shell .pwa-refresh-btn i{
+    display:inline-block!important;
+    visibility:visible!important;
+    font-size:13px!important;
+  }
+  #sidebar button[data-action="logout"]{
+    width:132px!important;
+    min-width:132px!important;
+    max-width:132px!important;
+    height:29px!important;
+    min-height:29px!important;
+    padding:4px 8px!important;
+    font-size:9.5px!important;
+    margin-top:5px!important;
+  }
+}
+#sidebar button[data-action="logout"]{
+  width:132px!important;
+  max-width:132px!important;
+  min-height:29px!important;
+  height:29px!important;
+}
+</style>
+</body>
 </html>
