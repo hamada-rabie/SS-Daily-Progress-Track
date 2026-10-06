@@ -6320,23 +6320,7 @@ setPersistence(auth, browserLocalPersistence)
         return;
       }
 
-      try{
-        const profileSnap = await getDoc(doc(db, 'users', user.uid));
-        const status = profileSnap.exists() ? (profileSnap.data().status || 'pending') : 'pending';
-        if(status !== 'approved'){
-          console.warn('Account is not approved:', status);
-          try{ await signOut(auth); }catch(e){}
-          window.location.replace("login.html");
-          return;
-        }
-      }catch(err){
-        console.error('Access status check failed:', err);
-        try{ await signOut(auth); }catch(e){}
-        window.location.replace("login.html");
-        return;
-      }
-
-      console.log("✅ User authenticated and approved:", user.email);
+      console.log("✅ User authenticated:", user.email);
       document.body.classList.remove("auth-pending");
 
       if(localStorage.getItem('ss_cloud_dirty') === '1'){
@@ -6348,7 +6332,12 @@ setPersistence(auth, browserLocalPersistence)
       startNotificationsListener(user.uid);
     });
   })
-  
+  .catch((error) => {
+    console.error("❌ Firebase Auth persistence error:", error);
+    // Never reveal the dashboard when Auth initialization fails.
+    window.location.replace("login.html");
+  });
+
   async function logoutUser() {
     try {
       if(notifUnsubscribe){ notifUnsubscribe(); notifUnsubscribe = null; }
