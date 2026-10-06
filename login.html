@@ -464,7 +464,18 @@
         const user = credential.user;
         const profileSnap = await getDoc(doc(db, "users", user.uid));
         const profile = profileSnap.exists() ? profileSnap.data() : null;
-        const status = profile?.status || "pending";
+        let status = profile?.status || "pending";
+
+        // One-time migration for the existing owner workspace created before
+        // the approval system: legacy accounts have users/{uid}/appData/main.
+        if(!profileSnap.exists()){
+          const legacyData = await getDoc(doc(db, "users", user.uid, "appData", "main"));
+          if(legacyData.exists()){
+            const now = new Date().toISOString();
+            await setDoc(doc(db, "users", user.uid), {uid:user.uid,email:user.email||email,status:"approved",role:"admin",legacyMigratedAt:now,updatedAt:now}, {merge:true});
+            status = "approved";
+          }
+        }
 
         if(status !== "approved"){
           await signOut(auth);
