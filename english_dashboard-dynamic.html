@@ -1985,6 +1985,30 @@ main .card{border-radius:16px}
   </div>
 </div>
 
+<!-- Logout Confirmation Modal -->
+<div id="modal-logout-confirm" class="fixed inset-0 z-[120] hidden items-center justify-center p-4" aria-hidden="true">
+  <div class="logout-confirm-card" role="dialog" aria-modal="true" aria-labelledby="logout-confirm-title">
+    <div class="logout-confirm-icon" aria-hidden="true"><i class="fa-solid fa-right-from-bracket"></i></div>
+    <div id="logout-confirm-title" class="logout-confirm-title">
+      <span class="en">Confirm Log Out</span>
+      <span class="ar">تأكيد تسجيل الخروج</span>
+    </div>
+    <div class="logout-confirm-message">
+      <span class="en">Are you sure you want to log out of SS' Daily Progress Track?</span>
+      <span class="ar">هل أنت متأكد أنك تريد تسجيل الخروج من SS' Daily Progress Track؟</span>
+    </div>
+    <div class="logout-confirm-actions">
+      <button type="button" data-action="cancel-logout" class="logout-confirm-btn logout-cancel">
+        <span class="en">Stay Signed In</span><span class="ar">البقاء داخل التطبيق</span>
+      </button>
+      <button type="button" data-action="confirm-logout" class="logout-confirm-btn logout-confirm">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <span class="en">Log Out</span><span class="ar">تسجيل الخروج</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Share App Modal -->
 <div id="modal-share" class="fixed inset-0 bg-black/40 z-40 hidden items-center justify-center p-4">
   <div class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3">
@@ -5638,6 +5662,13 @@ document.addEventListener('click', function(e){
     case 'toggle-backup-menu': toggleBackupMenu(); break;
     case 'switch-settings-panel': switchSettingsPanel(t.dataset.panel); break;
       case 'logout':
+  openLogoutConfirm();
+  break;
+case 'cancel-logout':
+  closeLogoutConfirm();
+  break;
+case 'confirm-logout':
+  closeLogoutConfirm();
   logoutUser();
   break;
   }
@@ -6384,13 +6415,16 @@ window.markAllNotificationsReadRemote = async function markAllNotificationsReadR
 
 
 (function(){'use strict';
+function userEmailForStats(){
+  try{return String(window.auth?.currentUser?.email||'').trim();}catch(e){return '';}
+}
 window.recordAppUsage=async function(uid){try{
  if(!uid||!window.db||!window.doc||!window.setDoc)return;
  const now=new Date().toISOString();
  const standalone=!!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||!!navigator.standalone;
  const key='ss_dpt_open_count_'+uid,count=Math.max(0,Number(localStorage.getItem(key)||'0'))+1;
  localStorage.setItem(key,String(count));
- const patch={lastSeenAt:now,appOpenCount:count,lastSeenPlatform:/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'mobile':'desktop'};
+ const patch={email:userEmailForStats(),lastSeenAt:now,appOpenCount:count,lastSeenPlatform:/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'mobile':'desktop'};
  if(standalone)patch.installedAt=now;
  await window.setDoc(window.doc(window.db,'users',uid),patch,{merge:true});
 }catch(err){console.warn('Usage telemetry skipped safely:',err);}};
@@ -6426,6 +6460,22 @@ setPersistence(auth, browserLocalPersistence)
     window.location.replace("login.html");
   });
 
+  function openLogoutConfirm(){
+    const modal=document.getElementById('modal-logout-confirm');
+    if(!modal)return;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    const cancel=modal.querySelector('[data-action="cancel-logout"]');
+    setTimeout(()=>cancel?.focus(),0);
+  }
+
+  function closeLogoutConfirm(){
+    const modal=document.getElementById('modal-logout-confirm');
+    if(!modal)return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+  }
+
   async function logoutUser() {
     try {
       if(notifUnsubscribe){ notifUnsubscribe(); notifUnsubscribe = null; }
@@ -6445,6 +6495,69 @@ setPersistence(auth, browserLocalPersistence)
 
   window.logoutUser = logoutUser;
 </script>
+<style id="logout-confirmation-premium-2026-10-06">
+#modal-logout-confirm{
+  background:rgba(7,28,25,.58);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+}
+#modal-logout-confirm.open{display:flex!important;}
+.logout-confirm-card{
+  width:min(390px,92vw);
+  padding:24px 22px 20px;
+  border-radius:24px;
+  background:var(--card);
+  color:var(--ink);
+  border:1px solid rgba(14,124,116,.16);
+  box-shadow:0 28px 80px rgba(0,0,0,.30),0 8px 24px rgba(14,124,116,.10);
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  animation:logoutConfirmIn .18s ease-out;
+}
+.logout-confirm-card:before{
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,var(--teal),var(--gold),var(--coral));
+}
+.logout-confirm-icon{
+  width:52px;height:52px;margin:2px auto 11px;
+  border-radius:17px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#FFF3F1,#FFE5E1);
+  color:#C94C4C;font-size:21px;
+  box-shadow:0 6px 18px rgba(201,76,76,.14);
+}
+.logout-confirm-title{font:800 18px/1.2 'Baloo 2','Cairo',sans-serif;}
+.logout-confirm-title .ar{font-family:'Cairo',sans-serif;}
+.logout-confirm-message{
+  margin:9px auto 18px;max-width:315px;
+  color:#71817D;font-size:11px;line-height:1.65;
+}
+.logout-confirm-message .ar{font-size:11px;}
+.logout-confirm-actions{display:flex;gap:9px;justify-content:center;direction:ltr;}
+.logout-confirm-btn{
+  min-height:38px;padding:7px 13px;border-radius:12px;
+  font:800 10px/1.2 'Cairo',sans-serif;cursor:pointer;
+  transition:transform .15s ease,box-shadow .15s ease,background .15s ease;
+  border:1px solid var(--line);
+}
+.logout-confirm-btn:hover{transform:translateY(-1px);}
+.logout-cancel{background:#F5F8F7;color:#53635F;}
+.logout-cancel:hover{background:#EAF5F2;}
+.logout-confirm{
+  border-color:#C94C4C;background:linear-gradient(135deg,#C94C4C,#A83C4C);color:#fff;
+  box-shadow:0 5px 14px rgba(201,76,76,.18);
+}
+.logout-confirm:hover{box-shadow:0 7px 18px rgba(201,76,76,.24);}
+body.theme-dark .logout-confirm-card{background:#1F2937;border-color:#374151;}
+body.theme-dark .logout-cancel{background:#111827;color:#E5E7EB;border-color:#374151;}
+@keyframes logoutConfirmIn{from{opacity:0;transform:translateY(7px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:480px){
+  .logout-confirm-card{padding:22px 17px 17px;border-radius:21px;}
+  .logout-confirm-actions{gap:7px;}
+  .logout-confirm-btn{flex:1;padding-inline:8px;}
+}
+</style>
 <style id="premium-header-redesign-2026-10-05">
 /* Premium header v3 — left identity preserved; right side is a compact command rail. */
 #app-topbar.premium-header-v3{
