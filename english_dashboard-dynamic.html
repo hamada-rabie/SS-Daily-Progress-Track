@@ -6672,8 +6672,7 @@ try{
   .si-action{padding:6px 8px;font-size:9px;}
 }
 </style>
-</body>
-</html><style id="class-evaluation-status-premium-2026-10-05">
+<style id="class-evaluation-status-premium-2026-10-05">
 .class-eval-history,.class-eval-today{font-size:10.5px;line-height:1.55;font-weight:700}
 .class-eval-history{background:rgba(242,169,59,.13);border:1px solid rgba(242,169,59,.28);color:#8A6100}
 .class-eval-history>i{color:#B5850C}
@@ -6686,7 +6685,6 @@ try{
   .class-eval-history .ar,.class-eval-today .ar{font-size:10.5px}
 }
 </style>
-</script>
 <style id="premium-header-redesign-2026-10-05">
 /* Premium header v3 — left identity preserved; right side is a compact command rail. */
 #app-topbar.premium-header-v3{
@@ -7012,7 +7010,6 @@ try{
   }
 }
 </style>
-</body>
 <style id="admin-statistics-feature-2026-10-06">
 .compact-admin-stats{display:none;min-height:32px;height:32px;width:100%;padding:5px 9px;border:0;border-radius:10px;background:linear-gradient(135deg,#EAF7F5,#F7FBFA);color:var(--teal-dark);font:800 10px/1.1 'Cairo',sans-serif;align-items:center;justify-content:center;gap:6px;cursor:pointer;box-shadow:0 3px 10px rgba(14,124,116,.08);transition:.15s ease}.compact-admin-stats:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(14,124,116,.13);background:#fff}.compact-admin-stats i{font-size:11px;color:var(--violet)}body.theme-dark .compact-admin-stats{background:#183B39;color:#B7F0EA}
 #admin-stats-modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(8,28,25,.52);backdrop-filter:blur(5px)}#admin-stats-modal.open{display:flex}.admin-stats-card{width:min(760px,96vw);max-height:88vh;overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:22px;box-shadow:0 25px 70px rgba(0,0,0,.28);padding:18px}.admin-stats-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px}.admin-stats-title{font:800 17px/1.15 'Baloo 2','Cairo',sans-serif}.admin-stats-sub{font-size:9px;color:#81918D;margin-top:3px}.admin-stats-close{width:30px;height:30px;border:0;border-radius:10px;background:#F1F6F4;color:#657671;cursor:pointer;font-size:16px}.admin-stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.admin-stat{border:1px solid var(--line);border-radius:15px;padding:13px;background:linear-gradient(145deg,#fff,#F5FAF8)}.admin-stat .n{font:800 23px/1 'Baloo 2','Cairo',sans-serif;color:var(--teal-dark)}.admin-stat .en{font-size:9.5px;font-weight:800;margin-top:5px}.admin-stat .ar{font-size:8.5px;color:#8A9A96;margin-top:2px}.admin-stats-note{margin-top:12px;padding:10px 12px;border-radius:13px;background:#F8FBFA;border:1px solid var(--line);font-size:9px;color:#667874;line-height:1.55}.admin-user-list{margin-top:12px;display:grid;gap:7px}.admin-user-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:9px}.admin-user-row .email{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:58%}.admin-user-row .meta{text-align:right;color:#7B8B87;white-space:nowrap}.admin-release{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:15px;background:#FBFDFC}.admin-release-title{font-size:10px;font-weight:800;margin-bottom:7px}.admin-release input,.admin-release textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:7px 9px;margin-top:6px;font:500 9px 'Cairo',sans-serif;background:#fff;color:var(--ink)}.admin-release textarea{min-height:52px;resize:vertical}.admin-release button{margin-top:8px;border:0;border-radius:10px;padding:7px 11px;background:var(--teal);color:#fff;font:800 9px 'Cairo',sans-serif;cursor:pointer}@media(max-width:640px){.admin-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-stats-card{padding:14px}.admin-stat .n{font-size:21px}}
@@ -7029,7 +7026,8 @@ async function reveal(){if(adminBtn&&await isAdmin())adminBtn.style.display='fle
 adminBtn?.addEventListener('click',loadStats);document.getElementById('admin-stats-close')?.addEventListener('click',()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true')});modal?.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true')}});
 document.getElementById('admin-release-send')?.addEventListener('click',async()=>{if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}const title=document.getElementById('admin-release-title-en')?.value.trim(),body=document.getElementById('admin-release-body-en')?.value.trim();if(!title||!body){alert('Enter an update title and message first. / أدخل عنوان التحديث ورسالة التحديث أولًا.');return}try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})).filter(u=>u.status==='approved'),now=new Date().toISOString(),base='release-'+Date.now();await Promise.all(users.map(u=>window.setDoc(window.doc(window.db,'users',u.uid,'notifications',base+'-'+u.uid),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true})));await window.setDoc(window.doc(window.db,'users',window.auth.currentUser.uid,'notifications',base+'-admin'),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true});alert('Update notice sent to approved users and will also appear in your bell. / تم إرسال إشعار التحديث وسيظهر أيضًا في جرسك.');document.getElementById('admin-release-title-en').value='';document.getElementById('admin-release-body-en').value=''}catch(err){console.error('Release notice failed:',err);alert('Could not publish. Check deployed Firestore Rules. / تعذر النشر. تحقق من نشر قواعد Firestore.')}});setTimeout(reveal,700);
 })();
-</script></html><style id="class-evaluation-status-premium-2026-10-05">
+</script>
+<style id="class-evaluation-status-premium-2026-10-05">
 .class-eval-history,.class-eval-today{font-size:10.5px;line-height:1.55;font-weight:700}
 .class-eval-history{background:rgba(242,169,59,.13);border:1px solid rgba(242,169,59,.28);color:#8A6100}
 .class-eval-history>i{color:#B5850C}
@@ -7042,3 +7040,5 @@ document.getElementById('admin-release-send')?.addEventListener('click',async()=
   .class-eval-history .ar,.class-eval-today .ar{font-size:10.5px}
 }
 </style>
+</body>
+</html>
