@@ -412,21 +412,14 @@
         await setDoc(doc(db, "users", user.uid), {
           uid: user.uid,
           email: user.email || email,
-          status: "pending",
+          status: "approved",
           role: "teacher",
-          createdAt: now,
-          updatedAt: now
-        }, { merge: true });
-        await setDoc(doc(db, "accessRequests", user.uid), {
-          uid: user.uid,
-          email: user.email || email,
-          status: "pending",
           createdAt: now,
           updatedAt: now
         }, { merge: true });
         await signOut(auth);
         message.className = "success";
-        message.innerHTML = "Account created successfully.<br><strong>Your access request is now pending admin approval.</strong><br>تم إنشاء الحساب، وطلبك الآن في انتظار موافقة المسؤول.";
+        message.innerHTML = "Account created successfully.<br><strong>You can sign in immediately.</strong><br>تم إنشاء الحساب بنجاح، ويمكنك تسجيل الدخول فورًا.";
         accountPanel.classList.remove("show");
         form.classList.remove("register-mode");
       } catch(error) {
