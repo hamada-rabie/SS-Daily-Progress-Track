@@ -1100,11 +1100,11 @@ main .card{border-radius:16px}
       <a href="#" data-action="switch-tab" data-tab="dashboard" class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-xl" data-target="dashboard"><i class="fa-solid fa-house w-5 text-center" style="color:var(--teal);"></i><span class="bi-label"><span class="en">Home</span><span class="ar">الرئيسية</span></span></a>
       <a href="#" data-action="switch-tab" data-tab="students" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="students"><i class="fa-solid fa-user-graduate w-5 text-center"></i><span class="bi-label"><span class="en">Students</span><span class="ar">الطلاب</span></span></a>
 
-      <button type="button" data-action="toggle-nav-group" data-group="daily" aria-expanded="true" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
+      <button type="button" data-action="toggle-nav-group" data-group="daily" aria-expanded="false" class="nav-group-toggle w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-wide">
         <span class="bi-label"><span class="en">Daily & Analytics</span><span class="ar">التحليلات / اليومي</span></span>
         <i class="fa-solid fa-chevron-down text-[9px] transition-transform" id="nav-chevron-daily"></i>
       </button>
-      <div id="nav-group-daily" class="space-y-1">
+      <div id="nav-group-daily" class="space-y-1 hidden">
         <a href="#" data-action="switch-tab" data-tab="daily" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="daily"><i class="fa-solid fa-calendar-check w-5 text-center"></i><span class="bi-label"><span class="en">Daily Entry</span><span class="ar">الإدخال اليومي</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="skills" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="skills"><i class="fa-solid fa-language w-5 text-center"></i><span class="bi-label"><span class="en">Language Skills</span><span class="ar">مهارات اللغة</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="reports" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="reports"><i class="fa-solid fa-file-lines w-5 text-center"></i><span class="bi-label"><span class="en">Daily / Weekly Reports</span><span class="ar">التقارير اليومية / الأسبوعية</span></span></a>
@@ -1120,7 +1120,7 @@ main .card{border-radius:16px}
         <span class="bi-label"><span class="en">Achievement</span><span class="ar">الإنجاز</span></span>
         <i class="fa-solid fa-chevron-down text-[9px] transition-transform" id="nav-chevron-achievement"></i>
       </button>
-      <div id="nav-group-achievement" class="space-y-1">
+      <div id="nav-group-achievement" class="space-y-1 hidden">
         <a href="#" data-action="switch-tab" data-tab="stars" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="stars"><i class="fa-solid fa-trophy w-5 text-center text-amber-500"></i><span class="bi-label"><span class="en">Honor Board</span><span class="ar">لوحة التميز</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="certificates" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="certificates"><i class="fa-solid fa-award w-5 text-center"></i><span class="bi-label"><span class="en">Certificates</span><span class="ar">الشهادات</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="starcard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="starcard" id="nav-starcard"><i class="fa-solid fa-star w-5 text-center"></i><span class="bi-label"><span class="en">Star Card</span><span class="ar">بطاقة النجم</span></span></a>
@@ -1130,7 +1130,7 @@ main .card{border-radius:16px}
         <span class="bi-label"><span class="en">Management</span><span class="ar">الإدارة</span></span>
         <i class="fa-solid fa-chevron-down text-[9px] transition-transform" id="nav-chevron-management"></i>
       </button>
-      <div id="nav-group-management" class="space-y-1">
+      <div id="nav-group-management" class="space-y-1 hidden">
         <button type="button" data-action="open-about" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 text-left"><i class="fa-solid fa-circle-info w-5 text-center" style="color:var(--sky);"></i><span class="bi-label"><span class="en">About</span><span class="ar">عن التطبيق</span></span></button>
         <a href="#" data-action="switch-tab" data-tab="dashboard" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="dashboard-mgmt"><i class="fa-solid fa-chalkboard w-5 text-center"></i><span class="bi-label"><span class="en">Classes</span><span class="ar">الفصول</span></span></a>
         <a href="#" data-action="switch-tab" data-tab="students" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600" data-target="students-mgmt"><i class="fa-solid fa-file-excel w-5 text-center" style="color:#2E9E44;"></i><span class="bi-label"><span class="en">Import from Excel</span><span class="ar">استيراد من Excel</span></span></a>
@@ -1166,12 +1166,12 @@ main .card{border-radius:16px}
       </div>
       <p class="text-[9px] text-gray-300 mt-0.5"><span class="en">App Version: 2.1.0</span><span class="ar">إصدار التطبيق: 2.1.0</span></p>
       <button type="button" data-action="open-admin-stats" class="compact-admin-stats" title="Admin Statistics / إحصائيات المسؤول"><i class="fa-solid fa-chart-line"></i><span class="sidebar-bilingual"><span class="en">Admin Statistics</span><span class="ar">إحصائيات المسؤول</span></span></button>
-<button type="button" data-action="logout" class="mt-2 text-[9px] font-bold px-2 py-1 rounded-lg flex items-center justify-center gap-1 transition" style="width:150px; max-width:100%; margin-left:auto; margin-right:auto; background:#fff1f2; color:#dc2626; border:1px solid #fecdd3;">
+<button type="button" data-action="logout" class="mt-2 text-[9px] font-bold px-2 py-1 rounded-lg flex items-center justify-center gap-1 transition" style="width:150px; max-width:100%; min-height:30px; height:30px; margin-left:auto; margin-right:auto; background:#fff7f7; color:#c83d4d; border:1px solid #f2c5cb;">
         <i class="fa-solid fa-right-from-bracket"></i>
         <span class="sidebar-bilingual"><span class="en">Log Out</span><span class="ar">تسجيل الخروج</span></span>
       </button>
     </div>
-    <button data-action="open-share-modal" class="w-full text-white text-[9px] font-bold px-3 py-2 rounded-xl flex items-center justify-center gap-2" style="background:linear-gradient(120deg, var(--violet), var(--teal-dark));">
+    <button data-action="open-share-modal" class="w-full text-white text-[10px] font-bold px-3 py-2.5 rounded-xl flex items-center justify-center gap-2" style="background:linear-gradient(120deg, var(--violet), var(--teal-dark));">
       <i class="fa-solid fa-share-nodes"></i>
       <span class="sidebar-bilingual"><span class="en">Share Application</span><span class="ar">مشاركة التطبيق</span></span>
     </button>
@@ -2567,6 +2567,16 @@ function deleteStudent(id){
 /* ---------- dashboard ---------- */
 function toggleSidebar(){ document.body.classList.toggle('sidebar-open'); }
 function closeSidebar(){ document.body.classList.remove('sidebar-open'); }
+
+function resetSidebarNavState(){
+  document.querySelectorAll('.nav-group-toggle[data-group]').forEach(toggle=>toggle.setAttribute('aria-expanded','false'));
+  document.querySelectorAll('[id^="nav-group-"]').forEach(group=>group.classList.add('hidden'));
+  const backupMenu=document.getElementById('backup-nav-menu');
+  const backupToggle=document.querySelector('[data-action="toggle-backup-menu"]');
+  if(backupMenu) backupMenu.classList.add('hidden');
+  if(backupToggle) backupToggle.setAttribute('aria-expanded','false');
+  closeSidebar();
+}
 
 function toggleBackupMenu(){
   const menu = document.getElementById('backup-nav-menu');
@@ -5739,6 +5749,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   // Browser refresh -> restore the exact page from the current URL/local state.
   try{
     if(window.__SS_FRESH_APP_SESSION){
+      resetSidebarNavState();
       switchTab('dashboard');
     }else{
       const hashTab = (location.hash || '').replace(/^#/, '');
@@ -6367,6 +6378,7 @@ setPersistence(auth, browserLocalPersistence)
       if(notifUnsubscribe){ notifUnsubscribe(); notifUnsubscribe = null; }
       await signOut(auth);
       try{
+        resetSidebarNavState();
         localStorage.removeItem('ss_active_tab');
         sessionStorage.removeItem('ss_app_session_active');
         if(location.hash) history.replaceState(null,'',location.pathname+location.search);
@@ -7021,7 +7033,7 @@ try{
 }
 </style>
 <style id="admin-statistics-feature-2026-10-06">
-.compact-admin-stats{display:flex;min-height:32px;height:32px;width:100%;padding:5px 9px;border:0;border-radius:10px;background:linear-gradient(135deg,#EAF7F5,#F7FBFA);color:var(--teal-dark);font:800 10px/1.1 'Cairo',sans-serif;align-items:center;justify-content:center;gap:6px;cursor:pointer;box-shadow:0 3px 10px rgba(14,124,116,.08);transition:.15s ease}.compact-admin-stats:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(14,124,116,.13);background:#fff}.compact-admin-stats i{font-size:11px;color:var(--violet)}body.theme-dark .compact-admin-stats{background:#183B39;color:#B7F0EA}
+.compact-admin-stats{display:flex;min-height:26px;height:26px;width:118px;max-width:100%;margin:0 auto;padding:3px 7px;border:1px solid rgba(14,124,116,.18);border-radius:8px;background:linear-gradient(135deg,#F2FAF8,#E8F5F2);color:var(--teal-dark);font:800 8.5px/1 'Cairo',sans-serif;align-items:center;justify-content:center;gap:5px;cursor:pointer;box-shadow:0 2px 7px rgba(14,124,116,.07);transition:.15s ease}.compact-admin-stats:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(14,124,116,.11);background:#fff}.compact-admin-stats i{font-size:9px;color:var(--teal)}body.theme-dark .compact-admin-stats{background:#183B39;color:#B7F0EA;border-color:#2C625D}
 #admin-stats-modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(8,28,25,.52);backdrop-filter:blur(5px)}#admin-stats-modal.open{display:flex}.admin-stats-card{width:min(760px,96vw);max-height:88vh;overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:22px;box-shadow:0 25px 70px rgba(0,0,0,.28);padding:18px}.admin-stats-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px}.admin-stats-title{font:800 17px/1.15 'Baloo 2','Cairo',sans-serif}.admin-stats-sub{font-size:9px;color:#81918D;margin-top:3px}.admin-stats-close{width:30px;height:30px;border:0;border-radius:10px;background:#F1F6F4;color:#657671;cursor:pointer;font-size:16px}.admin-stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.admin-stat{border:1px solid var(--line);border-radius:15px;padding:13px;background:linear-gradient(145deg,#fff,#F5FAF8)}.admin-stat .n{font:800 23px/1 'Baloo 2','Cairo',sans-serif;color:var(--teal-dark)}.admin-stat .en{font-size:9.5px;font-weight:800;margin-top:5px}.admin-stat .ar{font-size:8.5px;color:#8A9A96;margin-top:2px}.admin-stats-note{margin-top:12px;padding:10px 12px;border-radius:13px;background:#F8FBFA;border:1px solid var(--line);font-size:9px;color:#667874;line-height:1.55}.admin-user-list{margin-top:12px;display:grid;gap:7px}.admin-user-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:9px}.admin-user-row .email{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:58%}.admin-user-row .meta{text-align:right;color:#7B8B87;white-space:nowrap}.admin-release{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:15px;background:#FBFDFC}.admin-release-title{font-size:10px;font-weight:800;margin-bottom:7px}.admin-release input,.admin-release textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:7px 9px;margin-top:6px;font:500 9px 'Cairo',sans-serif;background:#fff;color:var(--ink)}.admin-release textarea{min-height:52px;resize:vertical}.admin-release button{margin-top:8px;border:0;border-radius:10px;padding:7px 11px;background:var(--teal);color:#fff;font:800 9px 'Cairo',sans-serif;cursor:pointer}@media(max-width:640px){.admin-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-stats-card{padding:14px}.admin-stat .n{font-size:21px}}
 </style>
 <div id="admin-stats-modal" aria-hidden="true"><div class="admin-stats-card" role="dialog" aria-modal="true"><div class="admin-stats-head"><div><div class="admin-stats-title"><span class="en">App Statistics</span><span class="ar">إحصائيات التطبيق</span></div><div class="admin-stats-sub"><span class="en">Admin-only · privacy-safe usage overview</span><span class="ar">للمسؤول فقط · ملخص استخدام يحافظ على الخصوصية</span></div></div><button class="admin-stats-close" id="admin-stats-close" type="button">×</button></div><div id="admin-stats-grid" class="admin-stats-grid"></div><div id="admin-stats-note" class="admin-stats-note"></div><div id="admin-user-list" class="admin-user-list"></div><div class="admin-release"><div class="admin-release-title"><span class="en">Publish an app update notice</span><span class="ar">نشر إشعار تحديث للتطبيق</span></div><input id="admin-release-title-en" placeholder="Update title / عنوان التحديث"><textarea id="admin-release-body-en" placeholder="What changed? / ماذا تغير؟"></textarea><button id="admin-release-send" type="button"><i class="fa-solid fa-bullhorn"></i> <span class="en">Notify approved users + me</span><span class="ar">إشعار المستخدمين المعتمدين + أنا</span></button></div></div></div>
@@ -7030,7 +7042,7 @@ import { collection, getDocs, query, limit } from "https://www.gstatic.com/fireb
 (function(){'use strict';
 const adminBtn=document.querySelector('[data-action="open-admin-stats"]'),modal=document.getElementById('admin-stats-modal'),grid=document.getElementById('admin-stats-grid'),note=document.getElementById('admin-stats-note'),list=document.getElementById('admin-user-list');
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const isAdmin=async()=>{try{const u=window.auth?.currentUser;if(!u||!window.db)return false;const a=await window.getDoc(window.doc(window.db,'admins',u.uid));return a.exists()&&a.data().active===true}catch{return false}};
+const isAdmin=async()=>{try{const u=window.auth?.currentUser;if(!u||!window.db)return false;const a=await window.getDoc(window.doc(window.db,'admins',u.uid));if(a.exists()&&a.data()?.active!==false)return true;const p=await window.getDoc(window.doc(window.db,'users',u.uid));return p.exists()&&p.data()?.role==='admin'}catch(e){console.warn('Admin identity check failed:',e);return false}};
 async function loadStats(){if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}grid.innerHTML='<div style="grid-column:1/-1;text-align:center;font-size:10px;color:#7b8b87">Loading… / جارٍ التحميل…</div>';try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})),registered=users,now=Date.now(),active7=registered.filter(u=>u.lastSeenAt&&now-new Date(u.lastSeenAt).getTime()<=7*86400000).length,active30=registered.filter(u=>u.lastSeenAt&&now-new Date(u.lastSeenAt).getTime()<=30*86400000).length,push=registered.filter(u=>u.pushEnabled===true).length,installed=registered.filter(u=>u.installedAt).length;grid.innerHTML=[[''+registered.length,'Registered Users','مستخدمو التطبيق'],[''+installed,'Installed / Standalone','مثبت على الجهاز'],[''+active7,'Active · 7 days','نشط خلال 7 أيام'],[''+push,'Push Enabled','مفعل الإشعارات']].map(x=>'<div class="admin-stat"><div class="n">'+esc(x[0])+'</div><div class="en">'+esc(x[1])+'</div><div class="ar">'+esc(x[2])+'</div></div>').join('');note.innerHTML='<b>Usage snapshot:</b> '+registered.length+' registered · '+active30+' active in 30 days.<br><span dir="rtl">الأرقام تخص حسابات التطبيق واستخدامه فقط، ولا تعرض أي بيانات طلابية.</span>';list.innerHTML=registered.sort((a,b)=>String(a.email||'').localeCompare(String(b.email||''))).map(u=>{const days=u.lastSeenAt?Math.floor((now-new Date(u.lastSeenAt).getTime())/86400000):null,activity=days===null?'Never opened':days===0?'Active today':days+'d ago';return '<div class="admin-user-row"><div class="email">'+esc(u.email||u.uid)+'</div><div class="meta">'+esc(activity)+' · '+(u.pushEnabled?'🔔 Push':'—')+'</div></div>'}).join('')||'<div class="admin-stats-note">No registered users yet.</div>';modal.classList.add('open');modal.setAttribute('aria-hidden','false')}catch(err){console.error('Admin statistics failed:',err);grid.innerHTML='<div style="grid-column:1/-1;color:#B94A35;font-size:10px">Could not load statistics. Check deployed Firestore Rules.</div>';modal.classList.add('open');modal.setAttribute('aria-hidden','false')}}
 async function reveal(){if(adminBtn&&await isAdmin())adminBtn.style.display='flex'}
 adminBtn?.addEventListener('click',loadStats);document.getElementById('admin-stats-close')?.addEventListener('click',()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true')});modal?.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true')}});
