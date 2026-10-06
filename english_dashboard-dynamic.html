@@ -1165,7 +1165,8 @@ main .card{border-radius:16px}
         <span class="cloud-status-text"><span class="cloud-status-en">Cloud synced</span><span class="cloud-status-ar">تمت المزامنة سحابياً</span></span>
       </div>
       <p class="text-[9px] text-gray-300 mt-0.5"><span class="en">App Version: 2.1.0</span><span class="ar">إصدار التطبيق: 2.1.0</span></p>
-      <button type="button" data-action="logout" class="w-full mt-2 text-[11px] font-bold px-2 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition" style="background:#fff1f2; color:#dc2626; border:1px solid #fecdd3;">
+      <button type="button" data-action="open-admin-stats" class="compact-admin-stats" title="Admin Statistics / إحصائيات المسؤول"><i class="fa-solid fa-chart-line"></i><span class="sidebar-bilingual"><span class="en">Admin Statistics</span><span class="ar">إحصائيات المسؤول</span></span></button>
+<button type="button" data-action="logout" class="w-full mt-2 text-[11px] font-bold px-2 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition" style="background:#fff1f2; color:#dc2626; border:1px solid #fecdd3;">
         <i class="fa-solid fa-right-from-bracket"></i>
         <span class="sidebar-bilingual"><span class="en">Log Out</span><span class="ar">تسجيل الخروج</span></span>
       </button>
@@ -6148,6 +6149,7 @@ try{
   limit,
   onSnapshot,
   updateDoc,
+  increment,
   writeBatch,
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
@@ -6237,6 +6239,7 @@ window.registerPushToken = async function registerPushToken(){
         platform: navigator.userAgent,
         createdAt: new Date().toISOString()
       }, { merge: true });
+      await setDoc(doc(db, 'users', auth.currentUser.uid), { pushEnabled:true, lastPushTokenAt:new Date().toISOString() }, { merge:true });
     }
     return token;
   }catch(err){
@@ -6259,6 +6262,7 @@ window.deactivatePushToken = async function deactivatePushToken(){
     if(token){
       const tokenRef = doc(db, 'users', auth.currentUser.uid, 'pushTokens', token);
       await deleteDoc(tokenRef).catch(()=>{});
+      await setDoc(doc(db, 'users', auth.currentUser.uid), { pushEnabled:false, lastPushTokenAt:new Date().toISOString() }, { merge:true });
     }
   }catch(err){
     console.error('Push token deactivation error:', err);
@@ -6312,6 +6316,20 @@ window.markAllNotificationsReadRemote = async function markAllNotificationsReadR
   }
 };
 
+<script id="admin-usage-telemetry-2026-10-06">
+(function(){'use strict';
+window.recordAppUsage=async function(uid){try{
+ if(!uid||!window.db||!window.doc||!window.setDoc)return;
+ const now=new Date().toISOString();
+ const standalone=!!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||!!navigator.standalone;
+ const key='ss_dpt_open_count_'+uid,count=Math.max(0,Number(localStorage.getItem(key)||'0'))+1;
+ localStorage.setItem(key,String(count));
+ const patch={lastSeenAt:now,appOpenCount:count,lastSeenPlatform:/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'mobile':'desktop'};
+ if(standalone)patch.installedAt=now;
+ await window.setDoc(window.doc(window.db,'users',uid),patch,{merge:true});
+}catch(err){console.warn('Usage telemetry skipped safely:',err);}};
+})();
+</script>
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -6322,6 +6340,7 @@ setPersistence(auth, browserLocalPersistence)
 
       console.log("✅ User authenticated:", user.email);
       document.body.classList.remove("auth-pending");
+      if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
 
       if(localStorage.getItem('ss_cloud_dirty') === '1'){
         if(navigator.onLine) await syncPendingCloudChanges();
@@ -6995,7 +7014,23 @@ try{
 }
 </style>
 </body>
-</html><style id="class-evaluation-status-premium-2026-10-05">
+<style id="admin-statistics-feature-2026-10-06">
+.compact-admin-stats{display:none;min-height:32px;height:32px;width:100%;padding:5px 9px;border:0;border-radius:10px;background:linear-gradient(135deg,#EAF7F5,#F7FBFA);color:var(--teal-dark);font:800 10px/1.1 'Cairo',sans-serif;align-items:center;justify-content:center;gap:6px;cursor:pointer;box-shadow:0 3px 10px rgba(14,124,116,.08);transition:.15s ease}.compact-admin-stats:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(14,124,116,.13);background:#fff}.compact-admin-stats i{font-size:11px;color:var(--violet)}body.theme-dark .compact-admin-stats{background:#183B39;color:#B7F0EA}
+#admin-stats-modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(8,28,25,.52);backdrop-filter:blur(5px)}#admin-stats-modal.open{display:flex}.admin-stats-card{width:min(760px,96vw);max-height:88vh;overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:22px;box-shadow:0 25px 70px rgba(0,0,0,.28);padding:18px}.admin-stats-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px}.admin-stats-title{font:800 17px/1.15 'Baloo 2','Cairo',sans-serif}.admin-stats-sub{font-size:9px;color:#81918D;margin-top:3px}.admin-stats-close{width:30px;height:30px;border:0;border-radius:10px;background:#F1F6F4;color:#657671;cursor:pointer;font-size:16px}.admin-stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.admin-stat{border:1px solid var(--line);border-radius:15px;padding:13px;background:linear-gradient(145deg,#fff,#F5FAF8)}.admin-stat .n{font:800 23px/1 'Baloo 2','Cairo',sans-serif;color:var(--teal-dark)}.admin-stat .en{font-size:9.5px;font-weight:800;margin-top:5px}.admin-stat .ar{font-size:8.5px;color:#8A9A96;margin-top:2px}.admin-stats-note{margin-top:12px;padding:10px 12px;border-radius:13px;background:#F8FBFA;border:1px solid var(--line);font-size:9px;color:#667874;line-height:1.55}.admin-user-list{margin-top:12px;display:grid;gap:7px}.admin-user-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:9px}.admin-user-row .email{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:58%}.admin-user-row .meta{text-align:right;color:#7B8B87;white-space:nowrap}.admin-release{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:15px;background:#FBFDFC}.admin-release-title{font-size:10px;font-weight:800;margin-bottom:7px}.admin-release input,.admin-release textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:7px 9px;margin-top:6px;font:500 9px 'Cairo',sans-serif;background:#fff;color:var(--ink)}.admin-release textarea{min-height:52px;resize:vertical}.admin-release button{margin-top:8px;border:0;border-radius:10px;padding:7px 11px;background:var(--teal);color:#fff;font:800 9px 'Cairo',sans-serif;cursor:pointer}@media(max-width:640px){.admin-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-stats-card{padding:14px}.admin-stat .n{font-size:21px}}
+</style>
+<div id="admin-stats-modal" aria-hidden="true"><div class="admin-stats-card" role="dialog" aria-modal="true"><div class="admin-stats-head"><div><div class="admin-stats-title"><span class="en">App Statistics</span><span class="ar">إحصائيات التطبيق</span></div><div class="admin-stats-sub"><span class="en">Admin-only · privacy-safe usage overview</span><span class="ar">للمسؤول فقط · ملخص استخدام يحافظ على الخصوصية</span></div></div><button class="admin-stats-close" id="admin-stats-close" type="button">×</button></div><div id="admin-stats-grid" class="admin-stats-grid"></div><div id="admin-stats-note" class="admin-stats-note"></div><div id="admin-user-list" class="admin-user-list"></div><div class="admin-release"><div class="admin-release-title"><span class="en">Publish an app update notice</span><span class="ar">نشر إشعار تحديث للتطبيق</span></div><input id="admin-release-title-en" placeholder="Update title / عنوان التحديث"><textarea id="admin-release-body-en" placeholder="What changed? / ماذا تغير؟"></textarea><button id="admin-release-send" type="button"><i class="fa-solid fa-bullhorn"></i> <span class="en">Notify approved users + me</span><span class="ar">إشعار المستخدمين المعتمدين + أنا</span></button></div></div></div>
+<script type="module" id="admin-statistics-feature-2026-10-06">
+import { collection, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+(function(){'use strict';
+const adminBtn=document.querySelector('[data-action="open-admin-stats"]'),modal=document.getElementById('admin-stats-modal'),grid=document.getElementById('admin-stats-grid'),note=document.getElementById('admin-stats-note'),list=document.getElementById('admin-user-list');
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const isAdmin=async()=>{try{const u=window.auth?.currentUser;if(!u||!window.db)return false;const a=await window.getDoc(window.doc(window.db,'admins',u.uid));return a.exists()&&a.data().active===true}catch{return false}};
+async function loadStats(){if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}grid.innerHTML='<div style="grid-column:1/-1;text-align:center;font-size:10px;color:#7b8b87">Loading… / جارٍ التحميل…</div>';try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})),approved=users.filter(u=>u.status==='approved'),pending=users.filter(u=>u.status==='pending'),denied=users.filter(u=>u.status==='denied'),now=Date.now(),active7=approved.filter(u=>u.lastSeenAt&&now-new Date(u.lastSeenAt).getTime()<=7*86400000).length,active30=approved.filter(u=>u.lastSeenAt&&now-new Date(u.lastSeenAt).getTime()<=30*86400000).length,push=approved.filter(u=>u.pushEnabled===true).length,installed=approved.filter(u=>u.installedAt).length;grid.innerHTML=[[''+approved.length,'Approved Users','المستخدمون المعتمدون'],[''+installed,'Installed / Standalone','مثبت على الجهاز'],[''+active7,'Active · 7 days','نشط خلال 7 أيام'],[''+push,'Push Enabled','مفعل الإشعارات']].map(x=>'<div class="admin-stat"><div class="n">'+esc(x[0])+'</div><div class="en">'+esc(x[1])+'</div><div class="ar">'+esc(x[2])+'</div></div>').join('');note.innerHTML='<b>Usage snapshot:</b> '+approved.length+' approved · '+active30+' active in 30 days · '+pending.length+' pending · '+denied.length+' denied.<br><span dir="rtl">الأرقام تخص حسابات التطبيق واستخدامه فقط، ولا تعرض أي بيانات طلابية.</span>';list.innerHTML=approved.sort((a,b)=>String(a.email||'').localeCompare(String(b.email||''))).map(u=>{const days=u.lastSeenAt?Math.floor((now-new Date(u.lastSeenAt).getTime())/86400000):null,activity=days===null?'Never opened':days===0?'Active today':days+'d ago';return '<div class="admin-user-row"><div class="email">'+esc(u.email||u.uid)+'</div><div class="meta">'+esc(activity)+' · '+(u.pushEnabled?'🔔 Push':'—')+'</div></div>'}).join('')||'<div class="admin-stats-note">No approved users yet.</div>';modal.classList.add('open');modal.setAttribute('aria-hidden','false')}catch(err){console.error('Admin statistics failed:',err);grid.innerHTML='<div style="grid-column:1/-1;color:#B94A35;font-size:10px">Could not load statistics. Check deployed Firestore Rules.</div>';modal.classList.add('open');modal.setAttribute('aria-hidden','false')}}
+async function reveal(){if(adminBtn&&await isAdmin())adminBtn.style.display='flex'}
+adminBtn?.addEventListener('click',loadStats);document.getElementById('admin-stats-close')?.addEventListener('click',()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true')});modal?.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true')}});
+document.getElementById('admin-release-send')?.addEventListener('click',async()=>{if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}const title=document.getElementById('admin-release-title-en')?.value.trim(),body=document.getElementById('admin-release-body-en')?.value.trim();if(!title||!body){alert('Enter an update title and message first. / أدخل عنوان التحديث ورسالة التحديث أولًا.');return}try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})).filter(u=>u.status==='approved'),now=new Date().toISOString(),base='release-'+Date.now();await Promise.all(users.map(u=>window.setDoc(window.doc(window.db,'users',u.uid,'notifications',base+'-'+u.uid),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true})));alert('Update notice sent to approved users and will also appear in your bell. / تم إرسال إشعار التحديث وسيظهر أيضًا في جرسك.');document.getElementById('admin-release-title-en').value='';document.getElementById('admin-release-body-en').value=''}catch(err){console.error('Release notice failed:',err);alert('Could not publish. Check deployed Firestore Rules. / تعذر النشر. تحقق من نشر قواعد Firestore.')}});setTimeout(reveal,700);
+})();
+</script></html><style id="class-evaluation-status-premium-2026-10-05">
 .class-eval-history,.class-eval-today{font-size:10.5px;line-height:1.55;font-weight:700}
 .class-eval-history{background:rgba(242,169,59,.13);border:1px solid rgba(242,169,59,.28);color:#8A6100}
 .class-eval-history>i{color:#B5850C}
