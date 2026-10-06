@@ -6629,7 +6629,7 @@ window.recordAppUsage=async function(uid){try{
  const userRef=window.doc(window.db,'users',uid);
  let existing=null;
  try{ existing=await window.getDoc(userRef); }catch(e){ console.warn('First-login lookup skipped safely:',e); }
- const isFirstLogin=!!(existing&&!existing.exists());
+ const isFirstLogin=!!(existing && (!existing.exists() || !existing.data()?.lastSeenAt));
  const patch={email:userEmailForStats(),displayName:String(window.auth?.currentUser?.displayName||'').trim(),role:userEmailForStats().toLowerCase()==='h.nasim0202@education.qa'?'admin':'user',timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',lastSeenAt:now,appOpenCount:count,lastSeenPlatform:/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'mobile':'desktop'};
  if(isFirstLogin){ patch.firstLoginAt=now; patch.firstSeenAt=now; patch.firstLoginPlatform=patch.lastSeenPlatform; patch.firstLoginStandalone=standalone; }
  if(standalone)patch.installedAt=now;
