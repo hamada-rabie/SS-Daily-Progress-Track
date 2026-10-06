@@ -3222,14 +3222,14 @@ function openSkillBulkMenu(anchor){
   activeDailyChoiceMenu=menu;
   positionDailyMenu(menu,anchor);
   menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applySkillBulk(btn.dataset.value); closeDailyChoiceMenu(); }));
-  setTimeout(()=>document.addEventListener('click',closeDailyChoiceMenu,{once:true}),0);
+  bindDailyChoiceOutsideClose(menu);
 }
 function openDailyBulkMenu(anchor,field){
   closeDailyChoiceMenu(); const menu=document.createElement('div'); menu.className='daily-choice-menu';
   menu.innerHTML=dailyBulkOptions(field).map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
   document.body.appendChild(menu); activeDailyChoiceMenu=menu; positionDailyMenu(menu,anchor);
   menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applyDailyBulk(field,btn.dataset.value); closeDailyChoiceMenu(); }));
-  setTimeout(()=>document.addEventListener('click',closeDailyChoiceMenu,{once:true}),0);
+  bindDailyChoiceOutsideClose(menu);
 }
 function applyDailyBulk(field,value){
   const date=getSelectedDailyDate(); const classFilter=document.getElementById('daily-class-filter')?.value||'all'; const list=classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter));
@@ -7532,13 +7532,25 @@ body.admin-ready #sidebar .compact-admin-stats{visibility:visible!important;opac
 </style>
 
 <style id="about-bilingual-spacing-2026-10-06">
-/* Keep every English/Arabic pair in the About view clearly separated vertically. */
-.about-modal-card .en{display:block;}
-.about-modal-card .ar{display:block!important;margin-top:4px!important;}
-.about-modal-card .about-flow .en,
-.about-modal-card .about-flow .ar{width:auto!important;text-align:center!important;}
-.about-modal-card .about-kicker .en,
-.about-modal-card .about-kicker .ar{width:auto!important;text-align:center!important;}
+/* In About bilingual mode, every English/Arabic pair is a true vertical pair:
+   English first, Arabic directly underneath on a new line. */
+body.lang-bilingual .about-modal-card .en,
+body.lang-bilingual .about-modal-card .ar{
+  display:block!important;
+}
+body.lang-bilingual .about-modal-card .en + .ar{
+  margin-top:4px!important;
+}
+body.lang-bilingual .about-modal-card .about-flow > span > .en,
+body.lang-bilingual .about-modal-card .about-flow > span > .ar{
+  width:auto!important;
+  text-align:center!important;
+}
+body.lang-bilingual .about-modal-card .about-kicker .en,
+body.lang-bilingual .about-modal-card .about-kicker .ar{
+  width:auto!important;
+  text-align:center!important;
+}
 </style>
 </body>
 </html>
