@@ -5728,10 +5728,7 @@ document.addEventListener('change', function(e){
   const t=e.target.closest('.skill-level-select');
   if(t){ t.dataset.level=t.value||''; t.style.cssText='border-color:var(--line); '+(t.value?scoreColor(t.value):''); }
 });
-document.addEventListener('input', function(e){
-  const t=e.target.closest('[data-action="set-accessibility-zoom"]');
-  if(t) applyAccessibilityZoom(t.value);
-});
+/* Preferences are transactional: visual changes are committed only by Save Preferences. */
 document.addEventListener('click', function(e){
   const t = e.target.closest('[data-action]');
   if(!t) return;
@@ -5911,7 +5908,7 @@ function renderSkillExplorer(){
   const max=Math.max(...assessed.map(x=>x.score)),min=Math.min(...assessed.map(x=>x.score)),average=Math.round(assessed.reduce((a,x)=>a+x.score,0)/assessed.length*10),highest=assessed.filter(x=>x.score===max),lowest=assessed.filter(x=>x.score===min),pct=v=>Math.max(0,Math.min(100,Math.round(v*10)));
   const person=x=>{const lvl=skillExplorerLevel(x.score),cls=x.classObj;return '<div class="se-person"><div class="se-person-main"><div class="se-avatar" style="background:'+color+';">'+escapeHtml(x.student.name.charAt(0))+'</div><div class="min-w-0"><p class="se-name">'+escapeHtml(x.student.name)+'</p><p class="se-class">'+(cls?shortClass(cls):'—')+'</p></div></div><div class="se-score"><strong>'+pct(x.score)+'%</strong><span>'+(lvl?lvl.en:'—')+'</span></div></div>';};
   const feature=(title,ar,items,icon,bg)=>{const score=pct(items[0].score);return '<div class="se-feature '+(title==='Highest'?'se-high':'se-low')+'"><div class="se-feature-head"><div class="se-feature-icon" style="background:'+bg+';"><i class="fa-solid '+icon+'"></i></div><div><p>'+title+' <span>/ '+ar+'</span></p><small>'+label.en+' / '+label.ar+'</small></div><div class="se-score-ring" style="--score:'+score+';--ring:'+color+';"><b>'+score+'%</b></div></div><div class="se-people">'+items.map(person).join('')+'</div></div>';};
-  const ranked=assessed.slice().sort((a,b)=>b.score-a.score),bars=ranked.slice(0,Math.min(8,ranked.length)).map((x,i)=>'<div class="se-rank-row"><span class="se-rank">'+(i+1)+'</span><span class="se-rank-name">'+escapeHtml(x.student.name)+'</span><div class="se-rank-track"><span style="width:'+pct(x.score)+'%;background:'+color+';"></span></div><b>'+pct(x.score)+'%</b></div>').join('');
+  const ranked=assessed.slice().sort((a,b)=>b.score-a.score),bars=ranked.slice(0,Math.min(8,ranked.length)).map((x,i)=>{const isHigh=x.score===max,isLow=x.score===min;return '<div class="se-rank-row '+(isHigh?'se-rank-high ':'')+(isLow?'se-rank-low':'')+'"><span class="se-rank">'+(i+1)+'</span><span class="se-rank-name">'+escapeHtml(x.student.name)+(isHigh?'<em class="se-rank-badge">Highest / الأعلى</em>':isLow?'<em class="se-rank-badge">Lowest / الأقل</em>':'')+'</span><div class="se-rank-track"><span style="width:'+pct(x.score)+'%;background:'+color+';"></span></div><b>'+pct(x.score)+'%</b></div>';}).join('');
   const spread=Math.max(0,Math.min(100,Math.round((max-min)/6*100)));
   results.innerHTML='<div class="se-dashboard"><div class="se-summary"><div><span class="se-summary-kicker"><i class="fa-solid fa-compass"></i> Skill Explorer / مستكشف المهارات</span><h3>'+label.en+' <span>/ '+label.ar+'</span></h3><p><span class="en">A visual view of the assessed range, leaders, and students who need attention.</span><span class="ar">عرض بصري لنطاق التقييم وأعلى الطلاب ومن يحتاجون إلى دعم.</span></p></div><div class="se-summary-stats"><div><b>'+assessed.length+'</b><span>Assessed / مُقيّم</span></div><div><b>'+average+'%</b><span>Average / المتوسط</span></div><div><b>'+spread+'%</b><span>Spread / الفارق</span></div></div></div><div class="se-features">'+feature('Highest','الأعلى',highest,'fa-arrow-trend-up','#E7F6EB')+feature('Lowest','الأقل',lowest,'fa-arrow-trend-down','#FDECE3')+'</div><div class="se-ranking"><div class="se-ranking-head"><div><b>Skill Ranking / ترتيب المهارة</b><span>Top assessed students / أعلى الطلاب المُقيّمين</span></div><span class="se-range">'+pct(min)+'% → '+pct(max)+'%</span></div>'+bars+'</div></div>';
 }
@@ -7808,6 +7805,70 @@ body.dark #stars-board-list .grid>div p,body.dark #stars-board-list .grid>div sp
 .cp-trend-caption{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
 .cp-trend-caption .cp-caption-date{display:block;margin-top:3px;font-size:7.5px;font-weight:800;color:#71817D;}
 .cp-trend-caption .cp-caption-period{display:block;margin-top:2px;font-size:7px;font-weight:700;color:#8A9995;}
+</style>
+<style id="precision-hero-skill-highlight-2026-10-07">
+/* Hero stat labels and CTA: fixed high-contrast text in every language/theme. */
+#tab-dashboard #hero-stat-classes + p,
+#tab-dashboard #hero-stat-students + p{
+  color:#fff!important;
+  opacity:1!important;
+  font-weight:850!important;
+  text-shadow:0 1px 5px rgba(0,0,0,.35)!important;
+}
+#tab-dashboard #hero-stat-classes + p .en,
+#tab-dashboard #hero-stat-classes + p .ar,
+#tab-dashboard #hero-stat-students + p .en,
+#tab-dashboard #hero-stat-students + p .ar{color:#fff!important;opacity:1!important;}
+#tab-dashboard #hero-cta,
+#tab-dashboard #hero-cta .hero-cta-en,
+#tab-dashboard #hero-cta .hero-cta-ar{
+  color:var(--teal-dark)!important;
+  opacity:1!important;
+  font-weight:900!important;
+}
+#tab-dashboard #hero-cta i{color:var(--teal-dark)!important;}
+
+/* Skill Explorer: make the selected highest/lowest students unmistakable in the ranking. */
+#skill-explorer-results .se-rank-row{
+  position:relative;
+  min-height:34px;
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+}
+#skill-explorer-results .se-rank-row.se-rank-high{
+  background:linear-gradient(90deg,#EEF9F0,var(--card))!important;
+  border-top:2px solid #5FAE6E!important;
+  box-shadow:inset 4px 0 0 #2C8C46,0 5px 14px rgba(44,140,70,.08)!important;
+}
+#skill-explorer-results .se-rank-row.se-rank-low{
+  background:linear-gradient(90deg,#FFF3ED,var(--card))!important;
+  border-top:2px solid #EF7A5C!important;
+  box-shadow:inset 4px 0 0 #C85A2E,0 5px 14px rgba(200,90,46,.08)!important;
+}
+#skill-explorer-results .se-rank-row.se-rank-high .se-rank,
+#skill-explorer-results .se-rank-row.se-rank-high .se-rank-name,
+#skill-explorer-results .se-rank-row.se-rank-high>b{color:#246B35!important;font-weight:900!important;}
+#skill-explorer-results .se-rank-row.se-rank-low .se-rank,
+#skill-explorer-results .se-rank-row.se-rank-low .se-rank-name,
+#skill-explorer-results .se-rank-row.se-rank-low>b{color:#9E4428!important;font-weight:900!important;}
+#skill-explorer-results .se-rank-badge{
+  display:inline-block;
+  margin-left:7px;
+  padding:3px 6px;
+  border-radius:999px;
+  font-size:7px;
+  font-style:normal;
+  font-weight:900;
+  vertical-align:middle;
+  white-space:nowrap;
+}
+#skill-explorer-results .se-rank-high .se-rank-badge{background:#DFF1E3;color:#246B35;}
+#skill-explorer-results .se-rank-low .se-rank-badge{background:#F9DDD1;color:#9E4428;}
+#skill-explorer-results .se-feature.se-high{border-top:3px solid #5FAE6E!important;}
+#skill-explorer-results .se-feature.se-low{border-top:3px solid #EF7A5C!important;}
+@media(max-width:640px){
+ #skill-explorer-results .se-rank-badge{display:block;width:max-content;margin:3px 0 0;}
+ #tab-dashboard #hero-stat-classes + p,#tab-dashboard #hero-stat-students + p{font-size:9px!important;}
+}
 </style>
 </body>
 </html>
