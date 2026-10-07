@@ -9178,36 +9178,7 @@ body.theme-dark .stars-achievement-badge{background:color-mix(in srgb, currentCo
   width:auto!important;
 }
 
-<script id="mobile-refresh-body-button-2026-10-07">
-(function(){
-  function ensureBodyRefresh(){
-    if(!document.body)return;
-    let b=document.getElementById('mobile-refresh-body-button');
-    if(!b){
-      b=document.createElement('button');
-      b.id='mobile-refresh-body-button';
-      b.type='button';
-      b.setAttribute('aria-label','Refresh app / تحديث التطبيق');
-      b.title='Refresh app / تحديث التطبيق';
-      b.innerHTML='<i class="fa-solid fa-arrows-rotate"></i>';
-      b.addEventListener('click',async function(){
-        if(b.dataset.busy==='1')return;
-        b.dataset.busy='1';
-        b.querySelector('i')?.classList.add('fa-spin');
-        try{
-          const regs=await navigator.serviceWorker?.getRegistrations?.()||[];
-          await Promise.all(regs.map(r=>r.update().catch(()=>{})));
-        }finally{window.location.reload();}
-      });
-      document.body.appendChild(b);
-    }
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureBodyRefresh,{once:true});
-  else ensureBodyRefresh();
-  window.addEventListener('resize',ensureBodyRefresh);
-})();
-</script>
-</style>
+
 <style id="mobile-refresh-body-button-2026-10-07">
 @media(max-width:640px){
   #mobile-refresh-body-button{
