@@ -5874,7 +5874,7 @@ document.addEventListener('change', function(e){
     case 'skill-explorer-change': renderSkillExplorer(); break;
     case 'pick-class-color-custom': pickClassColor(t.value); break;
     case 'note-student-change': loadNoteForSelectedStudent(); break;
-    case 'report-select-change': generateReport(); break;
+    case 'report-select-change': { const reportClass=document.getElementById('report-class-select'); if(!reportClass?.value){ showBilingualToast('Please select a class first.','برجاء اختيار الصف أولاً.','error'); t.value=''; return; } generateReport(); break; }
     case 'report-class-change': renderReportSelect(); break;
     case 'report-period-change': updateReportWeekRangeLabel(); if(document.getElementById('report-student-select').value) generateReport(); break;
     case 'toggle-report-field':
@@ -8076,7 +8076,7 @@ body.theme-dark .s360-why-premium .why-en,body.theme-dark .s360-why-premium .why
 .pj-chart-point.current{right:6%;background:var(--teal);}
 .pj-chart-labels{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;text-align:center;}
 .pj-chart-labels strong{display:block;font-size:10px!important;font-weight:850!important;color:#2D4641!important;}
-.pj-chart-labels span{display:block;font-size:9px!important;font-weight:650!important;color:#52645F!important;margin-top:2px;}
+.pj-chart-labels span{display:block;font-size:9px!important;font-weight:650!important;color:#52645F!important;margin-top:2px;}.pj-chart-labels small{display:block;font-size:8px!important;font-weight:850!important;color:var(--violet)!important;margin-top:3px;}
 .pj-journey-chart-note{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:10px!important;line-height:1.55!important;color:#40534F!important;font-weight:650!important;}
 @media(max-width:640px){
   .pj-journey-chart{padding:10px 7px!important;}
