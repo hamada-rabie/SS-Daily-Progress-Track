@@ -604,7 +604,7 @@ body.lang-bilingual .home-title-bilingual .en + .ar::before{content:none !import
    content div below it scrolls. No sticky/z-index hack needed — see <main> structure. */
 #app-topbar{
   flex-shrink:0 !important;
-  background:linear-gradient(120deg,var(--teal),var(--teal-dark)) !important;
+  background:linear-gradient(115deg,var(--teal-dark) 0%,var(--teal) 58%,#159287 100%) !important;
   background-color:var(--teal-dark) !important;
   box-shadow:0 3px 12px rgba(0,0,0,.16) !important;
 }
@@ -1444,7 +1444,7 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
 
 <!-- Main -->
 <main class="flex-1 flex flex-col h-screen overflow-y-auto" style="height:100dvh; display:flex; flex-direction:column; flex:1 1 0%; min-width:0; min-height:0; position:relative; overflow-y:auto;">
-  <header id="app-topbar" class="text-white px-4 sm:px-6 py-3 flex items-start justify-between no-print" style="background:linear-gradient(120deg,var(--teal),var(--teal-dark));flex-shrink:0;direction:ltr;gap:18px;position:static;">
+  <header id="app-topbar" class="premium-header-v3 text-white px-4 sm:px-6 py-3 flex items-start justify-between no-print" style="background:linear-gradient(120deg,var(--teal),var(--teal-dark));flex-shrink:0;direction:ltr;gap:18px;position:static;">
 <div class="flex flex-col items-start gap-1.5 shrink-0 header-left-identity">
 <div id="header-ministry-logo"></div>
 <select id="header-term-select" data-action="set-term" class="text-[9.5px] font-semibold rounded-full px-2 py-1 border-0 outline-none header-left-control" style="background:rgba(255,255,255,.18);color:#fff;width:112px;max-width:112px;"><option value="first" style="color:#111;">First Term 2026</option><option value="second" style="color:#111;">Second Term 2026</option></select>
@@ -1457,7 +1457,7 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.5c-3.3 0-6 2.7-6 6v3.4c0 .6-.2 1.2-.6 1.7L4 15.5c-.7.9-.1 2.3 1 2.3h14c1.1 0 1.7-1.4 1-2.3l-1.4-1.9c-.4-.5-.6-1.1-.6-1.7V8.5c0-3.3-2.7-6-6-6Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 19.5a2.5 2.5 0 0 0 5 0" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
     <span id="notif-badge" class="notif-badge hidden">0</span>
   </button>
-  <button type="button" data-action="pwa-refresh" class="pwa-refresh-btn" title="Refresh app / تحديث التطبيق" aria-label="Refresh app"><i class="fa-solid fa-arrows-rotate"></i></button>
+  
   <div id="header-teacher-photo" class="header-teacher-photo w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.72);box-shadow:0 2px 8px rgba(0,0,0,.16);" title="Teacher Profile / ملف المعلم"></div>
 </div></div>
 <div class="flex items-center min-w-[110px] max-w-[220px]" style="direction:ltr;"><span class="bi-label items-start"><span class="en text-sm font-display font-bold" id="current-page-title-en" style="color:#fff;">Home</span><span class="ar text-[11px] font-bold" id="current-page-title-ar" style="color:#fff;">الرئيسية</span></span></div>
@@ -1607,7 +1607,6 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
           <select id="students-class-filter" data-action="filter-students" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
           <input id="students-search" placeholder="Search / بحث بالاسم..." class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
-        <button data-action="open-add-student" class="text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 justify-center" style="background:var(--teal);"><i class="fa-solid fa-user-plus"></i> Add Student / إضافة طالب</button>
       </div>
       <div class="card p-4 space-y-4" style="background:var(--card);">
         <div class="flex items-center justify-between gap-3 flex-wrap">
@@ -1617,13 +1616,22 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <button type="button" data-action="open-add-student" class="text-right rounded-2xl border p-4 flex items-center gap-3 transition hover:-translate-y-0.5" style="border-color:var(--line); background:var(--card);">
-            <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EAF7F5; color:var(--teal);"><i class="fa-solid fa-user-plus"></i></span>
-            <span class="min-w-0">
-              <span class="block font-display font-extrabold text-xs bilingual-inline" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
-              <span class="block text-[10px] text-gray-500 mt-1">Add one student without Excel / إضافة طالب واحد بدون ملف إكسل</span>
-            </span>
-          </button>
+          <div class="rounded-2xl border p-4" style="border-color:var(--line); background:var(--card);">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EAF7F5; color:var(--teal);"><i class="fa-solid fa-user-plus"></i></span>
+              <span class="min-w-0">
+                <span class="block font-display font-extrabold text-xs bilingual-inline" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
+                <span class="block text-[10px] text-gray-500 mt-1">Add one student without Excel / إضافة طالب واحد بدون ملف إكسل</span>
+              </span>
+            </div>
+            <button type="button" data-action="open-add-student" class="w-full text-right rounded-2xl border p-4 flex items-center gap-3 transition hover:-translate-y-0.5" style="border-color:var(--line); background:var(--card);">
+              <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EAF7F5; color:var(--teal);"><i class="fa-solid fa-user-plus"></i></span>
+              <span class="min-w-0">
+                <span class="block font-display font-extrabold text-xs bilingual-inline" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
+                <span class="block text-[10px] text-gray-500 mt-1">Add one student without Excel / إضافة طالب واحد بدون ملف إكسل</span>
+              </span>
+            </button>
+          </div>
           <div class="rounded-2xl border p-4" style="border-color:#DCE8E5; background:#FFFFFF;">
             <div class="flex items-center gap-3 mb-3">
               <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EEF8F0; color:var(--leaf);"><i class="fa-solid fa-file-excel"></i></span>
@@ -1637,9 +1645,9 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
               <option value="">Use Class/Section from Excel / استخدم الصف/الشعبة من ملف الإكسل</option>
             </select>
             <div class="text-[9px] text-gray-400 mb-2">Choose a class to assign all imported students to it. Leave blank to use the Class/Section column from Excel.<br>اختر صفًا لتعيين جميع الطلاب المستوردين إليه، أو اتركه فارغًا لاستخدام عمود الصف/الشعبة من ملف الإكسل.</div>
-            <div class="flex gap-2 flex-wrap items-center">
-              <select id="import-country-code" class="text-xs border rounded-lg px-2 py-2" style="border-color:var(--line);">
-                <option value="">No country code / بدون رمز دولة</option>
+            <div class="flex flex-col gap-2 items-stretch">
+              <select id="import-country-code" class="w-full text-xs border rounded-lg px-2 py-2" style="border-color:var(--line);" aria-label="Choose country code">
+                <option value="">Choose country code / اختر رمز الدولة</option>
                 <option value="974">Qatar +974</option>
                 <option value="20">Egypt +20</option>
                 <option value="966">Saudi Arabia +966</option>
@@ -1649,8 +1657,8 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
                 <option value="968">Oman +968</option>
                 <option value="other">Other / أخرى</option>
               </select>
-              <button type="button" data-action="download-template" class="text-xs font-semibold px-4 py-2 rounded-xl border flex items-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-file-arrow-down"></i> Template / تحميل نموذج</button>
-              <label class="text-xs font-semibold px-4 py-2 rounded-xl text-white flex items-center gap-2 cursor-pointer" style="background:var(--leaf);">
+              <button type="button" data-action="download-template" class="w-full text-xs font-semibold px-4 py-2 rounded-xl border flex items-center justify-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-file-arrow-down"></i> Template / تحميل نموذج</button>
+              <label class="w-full text-xs font-semibold px-4 py-2 rounded-xl text-white flex items-center justify-center gap-2 cursor-pointer" style="background:var(--leaf);">
                 <i class="fa-solid fa-file-excel"></i> Import from Excel / استيراد من Excel
                 <input type="file" accept=".xlsx,.xls,.csv" data-action="import-excel" class="hidden">
               </label>
@@ -6128,7 +6136,7 @@ document.addEventListener('change', function(e){
     case 'import-excel': importStudentsFromExcel(e); break;
     case 'set-font-family': pendingPreferences.fontFamily=t.value; showToast('Font selected — press Save Preferences / تم اختيار الخط — اضغط حفظ التفضيلات','success'); break;
     case 'set-font-size': pendingPreferences.fontSize=t.value; showToast('Font size selected — press Save Preferences / تم اختيار حجم الخط — اضغط حفظ التفضيلات','success'); break;
-    case 'set-language': pendingPreferences.preferredLanguage=t.value; showToast('Language selected — press Save Preferences / تم اختيار اللغة — اضغط حفظ التفضيلات','success'); break;
+    case 'set-language': settings.preferredLanguage=t.value; pendingPreferences.preferredLanguage=t.value; applyLanguage(t.value); saveData(); updateHeaderInfo(); showToast('Language applied / تم تطبيق اللغة','success'); break;
     case 'set-date-format': pendingPreferences.dateFormat=['long','short','long24','short24'].includes(t.value)?t.value:'long'; showToast('Date format selected — press Save Preferences / تم اختيار تنسيق التاريخ — اضغط حفظ التفضيلات','success'); break;
     case 'set-term': setTerm(t.value); break;
     case 'pj-class-change': renderJourneyStudentOptions(); break;
@@ -7863,7 +7871,7 @@ body.lang-bilingual .about-modal-card .about-kicker .ar{
         window.location.reload();
       }
     });
-    bell.parentElement.insertBefore(btn,bell);
+    bell.insertAdjacentElement('afterend',btn);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installMobileRefresh);
   else installMobileRefresh();
