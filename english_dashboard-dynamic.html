@@ -349,6 +349,28 @@ select, input{font-family:'Cairo',sans-serif;}.skill-level-select{min-width:155p
 .ss-cert-term{font-size:clamp(6px,1.2cqw,8px);font-weight:800;color:var(--teal-dark);margin:.55% 0 0;z-index:2}.ss-cert-signatures{width:66%;display:grid;grid-template-columns:1fr 1fr;gap:16%;direction:ltr;margin-top:auto;z-index:2}.ss-cert-signatures>div{display:flex;flex-direction:column;align-items:center;text-align:center}.ss-cert-signatures b{font-size:clamp(5.5px,1.05cqw,7px);color:var(--teal-dark);font-weight:800;white-space:nowrap}.ss-cert-signatures strong{font-family:'Great Vibes',cursive;font-size:clamp(12px,2.4cqw,16px);font-weight:400;color:#274e49;min-height:1.1em}.ss-cert-signatures span{font-size:clamp(5px,1cqw,6.5px);color:#98a39f;border-top:1px solid rgba(14,124,116,.28);padding-top:2px;width:75%}.ss-cert-footer{width:82%;display:flex;justify-content:space-between;gap:10px;direction:ltr;font-size:clamp(5px,1cqw,6.5px);color:#99a6a2;margin-top:1.2%;z-index:2}
 @media print{.ss-cert-shell{background:linear-gradient(135deg,#fbfaf5 0%,#f4f8f6 52%,#eef5f2 100%)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 @media(max-width:640px){.ss-cert-evidence{width:76%}.ss-cert-signatures{width:78%;gap:7%}.ss-cert-footer{width:88%}}
+/* Final certificate title cleanup: one Arabic title only; no pseudo-element duplicate. */
+#cert-preview .ss-cert-title-wrap::after{
+  content:none!important;
+  display:none!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-title{
+  font-size:clamp(22px,4.6cqw,33px)!important;
+  color:#A91F2A!important;
+  line-height:1!important;
+  margin:.2% 0!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-title::before,
+#cert-preview .ss-cert-title-wrap .ss-cert-title::after{
+  content:none!important;
+  display:none!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-title-ar{
+  display:block!important;
+  font-size:clamp(11px,2.15cqw,15px)!important;
+  color:#A91F2A!important;
+  margin-top:.45%!important;
+}
 </style>
 <style id="language-layout-overrides">
 body.lang-ar main, body.lang-ar .settings-panel, body.lang-ar .settings-section-heading,
