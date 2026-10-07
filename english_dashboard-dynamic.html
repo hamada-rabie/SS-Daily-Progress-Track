@@ -3472,29 +3472,88 @@ function openSkillBulkMenu(anchor){
   closeDailyChoiceMenu();
   const menu=document.createElement('div');
   menu.className='daily-choice-menu';
-  menu.innerHTML=skillBulkOptions().map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
+  const options=skillBulkOptions().map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
+  menu.innerHTML=options+
+    '<div class="bulk-menu-divider"></div>'+
+    '<button type="button" class="bulk-select-students-btn" data-bulk-select="1"><i class="fa-solid fa-users"></i><span class="en">Apply to selected students</span><span class="ar">تطبيق على طلاب محددين</span></button>';
   document.body.appendChild(menu);
   activeDailyChoiceMenu=menu;
   positionDailyMenu(menu,anchor);
-  menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applySkillBulk(btn.dataset.value); closeDailyChoiceMenu(); }));
+  menu.querySelectorAll('button[data-value]').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applySkillBulk(btn.dataset.value); closeDailyChoiceMenu(); }));
+  menu.querySelector('[data-bulk-select="1"]').addEventListener('click',e=>{e.stopPropagation(); closeDailyChoiceMenu(); openBulkStudentSelection(anchor,'skill',window.__activeSkillBulkSkill||'reading');});
   bindDailyChoiceOutsideClose(menu);
 }
 function openDailyBulkMenu(anchor,field){
-  closeDailyChoiceMenu(); const menu=document.createElement('div'); menu.className='daily-choice-menu';
-  menu.innerHTML=dailyBulkOptions(field).map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
+  closeDailyChoiceMenu();
+  const menu=document.createElement('div');
+  menu.className='daily-choice-menu';
+  const options=dailyBulkOptions(field).map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
+  menu.innerHTML=options+
+    '<div class="bulk-menu-divider"></div>'+
+    '<button type="button" class="bulk-select-students-btn" data-bulk-select="1"><i class="fa-solid fa-users"></i><span class="en">Apply to selected students</span><span class="ar">تطبيق على طلاب محددين</span></button>';
   document.body.appendChild(menu); activeDailyChoiceMenu=menu; positionDailyMenu(menu,anchor);
-  menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applyDailyBulk(field,btn.dataset.value); closeDailyChoiceMenu(); }));
+  menu.querySelectorAll('button[data-value]').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applyDailyBulk(field,btn.dataset.value); closeDailyChoiceMenu(); }));
+  menu.querySelector('[data-bulk-select="1"]').addEventListener('click',e=>{e.stopPropagation(); closeDailyChoiceMenu(); openBulkStudentSelection(anchor,'daily',field);});
   bindDailyChoiceOutsideClose(menu);
 }
+function openBulkStudentSelection(anchor,mode,field){
+  const classFilterId=mode==='skill'?'skills-class-filter':'daily-class-filter';
+  const classFilter=document.getElementById(classFilterId)?.value||'all';
+  const list=classFilter==='all'?studentsData:studentsData.filter(st=>st.classId===Number(classFilter));
+  if(!list.length){showToast('No students in the selected class / لا يوجد طلاب في الصف المحدد','error');return;}
+  const overlay=document.createElement('div');
+  overlay.className='bulk-student-modal-overlay';
+  const safeField=String(field||'').replace(/[^a-z0-9_-]/gi,'');
+  overlay.innerHTML='<div class="bulk-student-modal" role="dialog" aria-modal="true">'+
+    '<div class="bulk-student-modal-head"><div><div class="bulk-student-kicker"><span class="en">Student Selection</span><span class="ar">اختيار الطلاب</span></div><h3><span class="en">Apply to selected students</span><span class="ar">تطبيق على طلاب محددين</span></h3></div><button type="button" class="bulk-student-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>'+
+    '<div class="bulk-student-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="search" class="bulk-student-search" placeholder="Search student / بحث عن طالب..." autocomplete="off"></div>'+
+    '<div class="bulk-student-tools"><button type="button" data-bulk-check-all>✓ <span class="en">Select all</span><span class="ar">تحديد الكل</span></button><button type="button" data-bulk-uncheck-all>↶ <span class="en">Clear selection</span><span class="ar">إلغاء التحديد</span></button><span class="bulk-student-count"></span></div>'+
+    '<div class="bulk-student-list">'+list.map(st=>'<label class="bulk-student-row" data-name="'+escapeHtml(String(st.name||''))+'"><input type="checkbox" value="'+String(st.id)+'"><span class="bulk-student-check"></span><span class="bulk-student-name">'+escapeHtml(String(st.name||''))+'</span></label>').join('')+'</div>'+
+    '<div class="bulk-student-footer"><button type="button" class="bulk-student-cancel"><span class="en">Cancel</span><span class="ar">إلغاء</span></button><button type="button" class="bulk-student-continue" disabled><i class="fa-solid fa-check"></i><span class="bulk-continue-label">Apply to 0 students / تطبيق على 0 طالب</span></button></div>'+
+    '</div>';
+  document.body.appendChild(overlay);
+  const close=()=>overlay.remove();
+  const search=overlay.querySelector('.bulk-student-search');
+  const countEl=overlay.querySelector('.bulk-student-count');
+  const continueBtn=overlay.querySelector('.bulk-student-continue');
+  const update=()=>{
+    const checked=[...overlay.querySelectorAll('.bulk-student-list input:checked')];
+    const n=checked.length;
+    countEl.textContent=(n+' selected / تم تحديد '+n);
+    continueBtn.disabled=n===0;
+    continueBtn.querySelector('.bulk-continue-label').textContent='Apply to '+n+' student'+(n===1?'':'s')+' / تطبيق على '+n+' '+(n===1?'طالب':'طلاب');
+  };
+  overlay.querySelectorAll('.bulk-student-list input').forEach(cb=>cb.addEventListener('change',update));
+  search.addEventListener('input',()=>{
+    const q=search.value.trim().toLowerCase();
+    overlay.querySelectorAll('.bulk-student-row').forEach(row=>row.style.display=(!q||row.dataset.name.toLowerCase().includes(q))?'flex':'none');
+  });
+  overlay.querySelector('[data-bulk-check-all]').addEventListener('click',()=>{overlay.querySelectorAll('.bulk-student-list input').forEach(cb=>cb.checked=true);update();});
+  overlay.querySelector('[data-bulk-uncheck-all]').addEventListener('click',()=>{overlay.querySelectorAll('.bulk-student-list input').forEach(cb=>cb.checked=false);update();});
+  overlay.querySelector('.bulk-student-close').addEventListener('click',close);
+  overlay.querySelector('.bulk-student-cancel').addEventListener('click',close);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+  continueBtn.addEventListener('click',()=>{
+    const ids=[...overlay.querySelectorAll('.bulk-student-list input:checked')].map(cb=>Number(cb.value));
+    close();
+    window.__bulkTargetIds=ids;
+    if(mode==='skill'){openSkillBulkMenu(anchor);}else{openDailyBulkMenu(anchor,safeField);}
+  });
+  update();
+  setTimeout(()=>search.focus(),60);
+}
 function applyDailyBulk(field,value){
-  const date=getSelectedDailyDate(); const classFilter=document.getElementById('daily-class-filter')?.value||'all'; const list=classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter));
+  const date=getSelectedDailyDate();
+  const classFilter=document.getElementById('daily-class-filter')?.value||'all';
+  const targetIds=Array.isArray(window.__bulkTargetIds)?new Set(window.__bulkTargetIds):null;
+  const list=targetIds?studentsData.filter(s=>targetIds.has(Number(s.id))):(classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter)));
   list.forEach(s=>{ const rec=ensureDailyRecord(date,s.id);
     if(field==='behaviour'){ if(value==='') delete rec.behaviourLevel; else rec.behaviourLevel=value; s.behaviourLevel=latestDailyFieldValue(s.id,'behaviourLevel','disciplined'); }
     else if(field==='participation'){ if(value==='') delete rec.participationLevel; else rec.participationLevel=value; s.participationLevel=latestDailyFieldValue(s.id,'participationLevel','active'); }
     else if(field==='homework'){ if(value==='clear') delete rec.homeworkDone; else rec.homeworkDone=value==='done'; s.homeworkDone=latestDailyFieldValue(s.id,'homeworkDone',false); }
     else if(field==='attendance'){ if(value==='clear') delete rec.attendance; else rec.attendance=value; s.attendance=latestDailyFieldValue(s.id,'attendance','present'); }
   });
-  saveData(); renderDailyTable(); renderStudentsTable(); list.forEach(s=>evaluateStudentSmartAlerts(s.id,date)); showToast('Bulk update applied / تم تطبيق الاختيار على الصف المحدد','success');
+  saveData(); renderDailyTable(); renderStudentsTable(); list.forEach(s=>evaluateStudentSmartAlerts(s.id,date)); const wasSelected=!!targetIds; window.__bulkTargetIds=null; showToast(wasSelected?'Bulk update applied to selected students / تم التطبيق على الطلاب المحددين':'Bulk update applied / تم تطبيق الاختيار على الصف المحدد','success');
 }
 function setParticipation(id, val){
   const s = studentsData.find(x=>x.id===id); if(!s) return;
@@ -3662,7 +3721,8 @@ function applySkillBulk(level){
   const classFilter=document.getElementById('skills-class-filter')?.value||'all';
   const skill=window.__activeSkillBulkSkill||'reading';
   const date=getSelectedSkillsDate();
-  const list=classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter));
+  const targetIds=Array.isArray(window.__bulkTargetIds)?new Set(window.__bulkTargetIds):null;
+  const list=targetIds?studentsData.filter(s=>targetIds.has(Number(s.id))):(classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter)));
   if(!list.length){showToast('No students in the selected class / لا يوجد طلاب في الصف المحدد','error');return;}
   list.forEach(s=>{
     migrateSkillData(s);
@@ -8343,12 +8403,17 @@ body.dark #stars-board-list .grid>div p,body.dark #stars-board-list .grid>div sp
 #tab-dashboard .hero-band [data-action="open-add-class"],
 #tab-dashboard .hero-band [data-action="open-add-class"] *,
 #tab-dashboard .hero-band [data-action="open-add-student"],
-#tab-dashboard .hero-band [data-action="open-add-student"] *,
-#tab-students [data-action="open-add-student"],
-#tab-students [data-action="open-add-student"] *{
+#tab-dashboard .hero-band [data-action="open-add-student"] *{
   color:#fff!important;
   opacity:1!important;
   text-shadow:0 1px 3px rgba(0,0,0,.24)!important;
+}
+#tab-students [data-action="open-add-student"]{
+  color:var(--teal-dark)!important;
+  text-shadow:none!important;
+}
+#tab-students [data-action="open-add-student"] .text-gray-500{
+  color:#71817D!important;
 }
 #tab-dashboard .hero-band .hero-stat{background:rgba(0,0,0,.16)!important;border-color:rgba(255,255,255,.24)!important;}
 /* Preferences are intentionally transactional: selecting previews only; Save Preferences persists. */
@@ -8996,7 +9061,7 @@ body.theme-dark .stars-achievement-badge{background:color-mix(in srgb, currentCo
   const fonts=[['cairo','Cairo','أحمد','#0E7C74'],['tajawal','Tajawal','أحمد','#7C5CBF'],['ibmplex','IBM Plex Sans Arabic','أحمد','#3E7CC9'],['almarai','Almarai','أحمد','#2F7D4A'],['notokufi','Noto Kufi Arabic','أحمد','#E8792F'],['changa','Changa','أحمد','#C83A9B'],['elmessiri','El Messiri','أحمد','#D9668B']];
   function renderFonts(){const sel=document.getElementById('setting-font-family');if(!sel||document.getElementById('font-preview-gallery'))return;const g=document.createElement('div');g.id='font-preview-gallery';g.className='font-preview-gallery';g.innerHTML=fonts.map(f=>'<button type="button" class="font-preview-chip '+(settings.fontFamily===f[0]?'active':'')+'" data-font-preview="'+f[0]+'"><span class="font-preview-dot" style="background:'+f[3]+'"></span><span style="min-width:0"><span class="font-preview-sample" style="font-family:'+FONT_FAMILIES[f[0]]+'">'+f[2]+' — '+f[1]+'</span><span class="font-preview-name">'+f[1]+'</span></span></button>').join('');sel.parentElement.appendChild(g);}
   function activeFonts(){document.querySelectorAll('[data-font-preview]').forEach(b=>b.classList.toggle('active',b.dataset.fontPreview===settings.fontFamily));}
-  function mobileRefresh(){if(window.innerWidth>640||document.getElementById('mobile-refresh-fab'))return;const b=document.createElement('button');b.id='mobile-refresh-fab';b.type='button';b.setAttribute('aria-label','Refresh app / تحديث التطبيق');b.title='Refresh app / تحديث التطبيق';b.innerHTML='<i class="fa-solid fa-arrows-rotate"></i>';Object.assign(b.style,{position:'fixed',top:'8px',left:'8px',width:'34px',height:'34px',borderRadius:'11px',border:'1px solid rgba(255,255,255,.45)',background:'rgba(14,124,116,.94)',color:'#fff',zIndex:'9999',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 5px 14px rgba(0,0,0,.20)',touchAction:'manipulation'});b.onclick=async function(e){e.preventDefault();e.stopPropagation();if(b.dataset.busy==='1')return;b.dataset.busy='1';b.style.opacity='.65';try{const reg=await navigator.serviceWorker?.getRegistration?.();if(reg)await reg.update().catch(()=>{});}finally{const u=new URL(window.location.href);u.searchParams.set('refresh',String(Date.now()));window.location.assign(u.href);}};document.body.appendChild(b);}
+  function mobileRefresh(){if(window.innerWidth>640||document.getElementById('mobile-refresh-fab')||!document.body)return;const b=document.createElement('button');b.id='mobile-refresh-fab';b.type='button';b.setAttribute('aria-label','Refresh app / تحديث التطبيق');b.title='Refresh app / تحديث التطبيق';b.innerHTML='<i class="fa-solid fa-arrows-rotate"></i>';Object.assign(b.style,{position:'fixed',bottom:'calc(14px + env(safe-area-inset-bottom,0px))',left:'12px',width:'38px',height:'38px',borderRadius:'12px',border:'1px solid rgba(255,255,255,.52)',background:'var(--teal)',color:'#fff',zIndex:'10010',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 6px 16px rgba(0,0,0,.24)',touchAction:'manipulation'});b.onclick=async function(e){e.preventDefault();e.stopPropagation();if(b.dataset.busy==='1')return;b.dataset.busy='1';b.style.opacity='.62';try{const reg=await navigator.serviceWorker?.getRegistration?.();if(reg)await reg.update().catch(()=>{});}finally{const u=new URL(window.location.href);u.searchParams.set('refresh',String(Date.now()));window.location.assign(u.href);}};document.body.appendChild(b);}
   function init(){renderFonts();mobileRefresh();}
   document.addEventListener('click',function(e){const b=e.target.closest?.('[data-font-preview]');if(b){e.preventDefault();e.stopPropagation();const sel=document.getElementById('setting-font-family');if(sel){sel.value=b.dataset.fontPreview;applyFontFamily(b.dataset.fontPreview);activeFonts();}}},true);
   window.addEventListener('resize',mobileRefresh);
@@ -9004,6 +9069,38 @@ body.theme-dark .stars-achievement-badge{background:color-mix(in srgb, currentCo
 })();
 </script>
 
+<style id="bulk-student-selection-2026-10-07">
+.bulk-menu-divider{height:1px;background:var(--line);margin:5px 2px;}
+.bulk-select-students-btn{display:flex!important;align-items:center;gap:8px;width:100%;border:0;background:color-mix(in srgb,var(--teal) 7%,var(--card));color:var(--teal-dark);padding:8px 9px;border-radius:9px;font-size:9px;font-weight:850;cursor:pointer;}
+.bulk-select-students-btn:hover{background:color-mix(in srgb,var(--teal) 13%,var(--card));}
+.bulk-select-students-btn i{color:var(--teal);width:16px;text-align:center;}
+.bulk-student-modal-overlay{position:fixed;inset:0;background:rgba(10,25,23,.48);z-index:10020;display:flex;align-items:center;justify-content:center;padding:16px;}
+.bulk-student-modal{width:min(430px,94vw);max-height:min(680px,88vh);display:flex;flex-direction:column;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.25);overflow:hidden;}
+.bulk-student-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px 11px;border-bottom:1px solid var(--line);}
+.bulk-student-kicker{font-size:8px;font-weight:900;letter-spacing:.08em;color:var(--violet);}
+.bulk-student-modal-head h3{margin:3px 0 0;font-size:14px;font-weight:900;color:var(--ink);}
+.bulk-student-close{width:30px;height:30px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.bulk-student-search-wrap{margin:11px 14px 7px;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:11px;background:color-mix(in srgb,var(--teal) 4%,var(--card));}
+.bulk-student-search-wrap i{color:var(--teal);font-size:10px;}
+.bulk-student-search{border:0!important;outline:0!important;background:transparent!important;color:var(--ink)!important;width:100%;font-size:10px!important;padding:0!important;}
+.bulk-student-tools{display:flex;align-items:center;gap:6px;padding:3px 14px 9px;flex-wrap:wrap;}
+.bulk-student-tools button{border:1px solid var(--line);background:var(--card);color:var(--teal-dark);border-radius:8px;padding:5px 8px;font-size:8px;font-weight:800;cursor:pointer;}
+.bulk-student-count{margin-left:auto;font-size:8px;font-weight:850;color:var(--violet);}
+.bulk-student-list{overflow:auto;padding:2px 14px 8px;min-height:90px;}
+.bulk-student-row{display:flex;align-items:center;gap:9px;padding:8px 9px;border:1px solid transparent;border-radius:10px;cursor:pointer;direction:ltr;}
+.bulk-student-row:hover{background:color-mix(in srgb,var(--teal) 6%,var(--card));border-color:var(--line);}
+.bulk-student-row input{position:absolute;opacity:0;pointer-events:none;}
+.bulk-student-check{width:18px;height:18px;border-radius:6px;border:1.5px solid #A8BBB6;background:var(--card);display:flex;align-items:center;justify-content:center;flex:0 0 18px;}
+.bulk-student-row input:checked + .bulk-student-check{background:var(--teal);border-color:var(--teal);}
+.bulk-student-row input:checked + .bulk-student-check:after{content:'✓';color:#fff;font-size:11px;font-weight:900;}
+.bulk-student-name{font-size:10px;font-weight:750;color:var(--ink);direction:rtl;text-align:right;flex:1;}
+.bulk-student-footer{display:flex;justify-content:flex-end;gap:8px;padding:11px 14px;border-top:1px solid var(--line);}
+.bulk-student-cancel,.bulk-student-continue{border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:9px;font-weight:850;cursor:pointer;}
+.bulk-student-cancel{background:var(--card);color:var(--ink);}
+.bulk-student-continue{background:var(--teal);color:#fff;border-color:var(--teal);}
+.bulk-student-continue:disabled{opacity:.45;cursor:not-allowed;}
+@media(max-width:480px){.bulk-student-modal-overlay{padding:10px}.bulk-student-modal{width:96vw;max-height:86vh}.bulk-student-footer{padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));}}
+</style>
 <style id="final-certificate-logo-title-fix-2026-10-07">
 #cert-preview .ss-cert-logo-slot:first-child{justify-content:flex-start!important;transform:translateX(-6%)!important;}
 #cert-preview .ss-cert-logo-slot:last-child{
