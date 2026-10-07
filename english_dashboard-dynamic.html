@@ -7870,6 +7870,94 @@ body.dark #stars-board-list .grid>div p,body.dark #stars-board-list .grid>div sp
  #tab-dashboard #hero-stat-classes + p,#tab-dashboard #hero-stat-students + p{font-size:9px!important;}
 }
 </style>
+<style id="precision-qa-fixes-2026-10-07b">
+/* Hero metric labels and Add Student/Class actions: keep text legible on every theme. */
+#tab-dashboard .hero-band .hero-stat,
+#tab-dashboard .hero-band .hero-stat span,
+#tab-dashboard .hero-band .hero-stat small,
+#tab-dashboard .hero-band [data-action="open-add-class"],
+#tab-dashboard .hero-band [data-action="open-add-class"] *,
+#tab-dashboard .hero-band [data-action="open-add-student"],
+#tab-dashboard .hero-band [data-action="open-add-student"] *,
+#tab-students [data-action="open-add-student"],
+#tab-students [data-action="open-add-student"] *{
+  color:#fff!important;
+  opacity:1!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.24)!important;
+}
+#tab-dashboard .hero-band .hero-stat{background:rgba(0,0,0,.16)!important;border-color:rgba(255,255,255,.24)!important;}
+/* Preferences are intentionally transactional: selecting previews only; Save Preferences persists. */
+#tab-settings [data-action="set-theme"],
+#tab-settings [data-action="set-theme-mode"],
+#tab-settings [data-action="set-font-family"],
+#tab-settings [data-action="set-font-size"],
+#tab-settings [data-action="set-language"],
+#tab-settings [data-action="set-date-format"]{cursor:pointer;}
+/* Class Insights above the command panel: readable muted text, while keeping the command panel visually primary. */
+#cp-card-wrap .cp-academic-block{display:none!important;}
+#cp-card-wrap .cp-lower-command{margin-top:0!important;}
+#cp-card-wrap .cp-lower-command + *{color:#425550!important;}
+#cp-card-wrap .cp-lower-command ~ div p.text-gray-500,
+#cp-card-wrap .cp-lower-command ~ div p.text-gray-400{color:#536560!important;opacity:1!important;}
+/* Honor Board metric captions. */
+#tab-stars .stars-board-list span,
+#tab-stars #stars-board-list small,
+#tab-stars #stars-board-list .text-gray-400,
+#tab-stars #stars-board-list .text-gray-500{color:#465A55!important;opacity:1!important;}
+body.theme-dark #tab-stars .stars-board-list span,
+body.theme-dark #tab-stars #stars-board-list small,
+body.theme-dark #tab-stars #stars-board-list .text-gray-400,
+body.theme-dark #tab-stars #stars-board-list .text-gray-500{color:#D7E6E2!important;}
+/* Skill Explorer: explicit professional highlight treatment for the highest/lowest assessed students. */
+#skill-explorer-results .se-feature{position:relative;overflow:hidden;border:1px solid var(--line)!important;border-radius:18px!important;box-shadow:0 8px 24px rgba(25,55,50,.07)!important;}
+#skill-explorer-results .se-feature.se-high{border-color:#65A873!important;background:linear-gradient(135deg,#F4FBF5,#FFFFFF)!important;}
+#skill-explorer-results .se-feature.se-low{border-color:#D58A68!important;background:linear-gradient(135deg,#FFF7F2,#FFFFFF)!important;}
+#skill-explorer-results .se-feature.se-high::before{content:'TOP PERFORMANCE / الأعلى';position:absolute;top:0;right:0;padding:5px 10px;border-radius:0 0 0 12px;background:#2C8C46;color:#fff;font-size:8px;font-weight:900;letter-spacing:.04em;}
+#skill-explorer-results .se-feature.se-low::before{content:'ATTENTION / يحتاج دعم';position:absolute;top:0;right:0;padding:5px 10px;border-radius:0 0 0 12px;background:#C85A2E;color:#fff;font-size:8px;font-weight:900;letter-spacing:.04em;}
+#skill-explorer-results .se-feature.se-high .se-name{color:#205D31!important;font-weight:900!important;}
+#skill-explorer-results .se-feature.se-low .se-name{color:#8A3E25!important;font-weight:900!important;}
+#skill-explorer-results .se-feature.se-high .se-score strong{color:#26783B!important;}
+#skill-explorer-results .se-feature.se-low .se-score strong{color:#B44C27!important;}
+#skill-explorer-results .se-rank-row.se-rank-high{background:#EEF9F0!important;border:1px solid #8FC69A!important;border-radius:12px!important;padding:7px!important;}
+#skill-explorer-results .se-rank-row.se-rank-low{background:#FFF1EA!important;border:1px solid #E1A184!important;border-radius:12px!important;padding:7px!important;}
+#skill-explorer-results .se-rank-badge{display:inline-flex!important;margin-left:7px;padding:2px 6px;border-radius:999px;background:#2C8C46;color:#fff!important;font-size:7px;font-style:normal;font-weight:900;}
+#skill-explorer-results .se-rank-low .se-rank-badge{background:#C85A2E!important;}
+/* Certificate preview controls and canvas: force readable controls and reserve visible footer space. */
+#tab-certificates [data-action="cert-change"],
+#tab-certificates [data-action="cert-change"] *,
+#tab-certificates .no-print button[data-action="download-cert"],
+#tab-certificates .no-print button[data-action="print-certificate"]{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.18)!important;}
+#tab-certificates .no-print button[data-action="cert-change"]{background:var(--teal)!important;}
+#cert-preview .ss-cert-creative{position:relative!important;box-sizing:border-box!important;min-height:0!important;overflow:hidden!important;padding-bottom:34px!important;}
+#cert-preview .ss-cert-footer-grid,#cert-preview .ss-cert-signatures,#cert-preview .ss-cert-bottom-mark{position:relative!important;z-index:2!important;}
+#cert-preview .ss-cert-footer-grid{margin-top:8px!important;}
+#cert-preview .ss-cert-signatures{margin-top:8px!important;padding-top:5px!important;}
+#cert-preview .ss-cert-bottom-mark{margin-top:6px!important;}
+#cert-preview .ss-cert-creative::before,#cert-preview .ss-cert-creative::after{pointer-events:none!important;z-index:1!important;}
+</style>
+<script id="precision-qa-script-2026-10-07b">
+(function(){
+  function setPreviewOnly(fn){
+    try{fn();}catch(e){console.warn('Preference preview:',e);}
+  }
+  /* Keep every preference preview live, but defer persistence to Save Preferences. */
+  const originalApply={};
+  ['applyTheme','applyThemeMode','applyFontFamily','applyFontSize','applyAccessibilityZoom','applyLanguage'].forEach(name=>{
+    if(typeof window[name]==='function') originalApply[name]=window[name];
+  });
+  /* Skill Explorer already calculates true max/min; reinforce the selected extremes after each render. */
+  function reinforceSkillHighlights(){
+    const root=document.getElementById('skill-explorer-results'); if(!root)return;
+    root.querySelectorAll('.se-feature.se-high .se-person,.se-feature.se-low .se-person').forEach(p=>p.style.opacity='1');
+  }
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('[data-action="skill-explorer-change"]')) setTimeout(reinforceSkillHighlights,180);
+  },true);
+  document.addEventListener('change',e=>{
+    if(e.target.closest?.('#skill-explorer-skill,#skill-explorer-class')) setTimeout(reinforceSkillHighlights,120);
+  },true);
+})();
+</script>
 </body>
 </html>
 
