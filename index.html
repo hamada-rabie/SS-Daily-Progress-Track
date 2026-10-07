@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json?v=20261007">
+  <link rel="manifest" href="manifest.json?v=20261006">
   <meta name="theme-color" content="#0E7C74">
   <title>SS' Daily Progress Track</title>
   <script>
     if('serviceWorker' in navigator){
       window.addEventListener('load',()=>{
-        navigator.serviceWorker.register('firebase-messaging-sw.js?v=20261007',{scope:'./'})
+        navigator.serviceWorker.register('firebase-messaging-sw.js?v=20261006',{scope:'./'})
           .catch(err=>console.warn('PWA service worker registration failed:',err));
       });
     }
     // Always enter through the real authentication page.
     // The version query also prevents an older installed PWA/service-worker
     // response from reopening a stale shell after an app repair.
-    window.location.replace('login.html?v=20261007');
+    window.location.replace('login.html?v=20261006');
   </script>
 </head>
 <body>
