@@ -7759,6 +7759,13 @@ document.addEventListener("DOMContentLoaded",()=>setTimeout(enhance,250));docume
 #tab-dashboard .hero-band button[data-action="open-add-class"] *{
   color:#fff!important;opacity:1!important;text-shadow:0 1px 4px rgba(0,0,0,.28)!important;
 }
+#tab-dashboard .hero-band #hero-cta{
+  background:#fff!important;color:#173E39!important;
+}
+#tab-dashboard .hero-band #hero-cta .hero-cta-en,
+#tab-dashboard .hero-band #hero-cta .hero-cta-ar{
+  color:#173E39!important;opacity:1!important;
+}
 #tab-students button[data-action="open-add-student"],
 #tab-students button[data-action="open-add-student"] *{
   color:#fff!important;opacity:1!important;
@@ -8222,7 +8229,7 @@ body.theme-dark .s360-why-premium .why-en,body.theme-dark .s360-why-premium .why
     const d1=all[0]?.date||'—',d2=all[Math.max(0,all.length-half)]?.date||d1,d3=all[all.length-1]?.date||d2;
     const status=trend.status, improving=status==='improving';
     const badge=improving?'#E7F6EB':status==='needs_support'?'#FDECE3':'#FFF6E0',bc=improving?'#2C8C46':status==='needs_support'?'#C85A2E':'#B5850C';
-    const a=v1===null?50:v1,b=v2===null?50:v2,c=Math.max(0,Math.min(100,b+(improving?8:status==='needs_support'?-6:0)));
+    const a=v1===null?50:v1,b=v2===null?50:v2,c=v3===null?b:Math.max(0,Math.min(100,b+v3));
     const y=v=>105-(v*.8);
     const chart='<div class="cp-trend-chart"><div class="cp-trend-head"><div class="cp-trend-title"><i class="fa-solid fa-chart-line"></i><span class="en">Class Trend</span><span class="ar">اتجاه الصف</span></div><span class="cp-trend-badge" style="background:'+badge+';color:'+bc+';">'+(status==='improving'?'Improving / يتحسن':status==='needs_support'?'Needs Support / يحتاج دعم':'Stable / مستقر')+'</span></div><div class="cp-trend-graph"><svg viewBox="0 0 600 115" preserveAspectRatio="none"><defs><linearGradient id="cpGrad2" x1="0" x2="1"><stop offset="0" stop-color="var(--gold)"/><stop offset=".5" stop-color="var(--violet)"/><stop offset="1" stop-color="var(--teal)"/></linearGradient></defs><path d="M55,'+y(a)+' C190,'+y(a)+' 190,'+y(b)+' 300,'+y(b)+' S430,'+y(c)+' 545,'+y(c)+'" fill="none" stroke="url(#cpGrad2)" stroke-width="6" stroke-linecap="round"></path><circle cx="55" cy="'+y(a)+'" r="7" fill="var(--gold)"></circle><circle cx="300" cy="'+y(b)+'" r="7" fill="var(--violet)"></circle><circle cx="545" cy="'+y(c)+'" r="7" fill="var(--teal)"></circle></svg></div><div class="cp-trend-caption"><div><strong>Earlier / سابقًا</strong><span>'+(v1===null?'—':v1+'%')+'</span><small class="cp-caption-date">'+fmtDate(d1)+'</small><small class="cp-caption-period">First recorded period / أول فترة مسجلة</small></div><div><strong>Now / الآن</strong><span>'+(v2===null?'—':v2+'%')+'</span><small class="cp-caption-date">'+fmtDate(d3)+'</small><small class="cp-caption-period">Latest recorded period / أحدث فترة مسجلة</small></div><div><strong>Direction / الاتجاه</strong><span>'+(v3===null?'—':(v3>0?'↗ +'+v3+'% / صاعد':v3<0?'↘ '+v3+'% / هابط':'→ 0% / مستقر'))+'</span><small class="cp-caption-date">'+fmtDate(d1)+' → '+fmtDate(d3)+'</small><small class="cp-caption-period">Comparison period / فترة المقارنة</small></div></div></div>';
     const firstSection=[...card.querySelectorAll(':scope > div')][1];card.insertBefore(document.createRange().createContextualFragment(chart),firstSection||null);
