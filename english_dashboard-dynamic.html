@@ -1068,8 +1068,6 @@ main button[style*="background:var(--teal)"]:hover{filter:brightness(1.03);trans
 #tab-dashboard .hero-band{min-height:0;padding:34px 16px 20px!important;border-radius:20px!important}
 #tab-dashboard .hero-band h1{font-size:1.65rem!important}
 #tab-dashboard .hero-band .home-books-visual{margin-top:8px!important}
-.pwa-refresh-btn{display:none;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid rgba(255,255,255,.28);border-radius:11px;background:rgba(255,255,255,.12);color:#fff;font-size:11px;box-shadow:0 4px 12px rgba(0,0,0,.10);cursor:pointer}.pwa-refresh-btn:active{transform:scale(.96)}
-@media(max-width:640px){.pwa-refresh-btn{display:inline-flex!important}.pwa-refresh-btn .fa-arrows-rotate{font-size:13px}}
 
 #tab-dashboard .hero-band .flex.flex-wrap.justify-center.gap-2.mt-5{gap:6px!important}
 #tab-dashboard .hero-band .flex.flex-wrap.justify-center.gap-2.mt-5 a{font-size:10px!important;padding:6px 9px!important}
@@ -6032,6 +6030,7 @@ document.addEventListener('click', function(e){
     case 'confirm-disable-notifications': confirmDisableNotifications(); break;
     case 'show-notif-help': showNotifHelp(); break;
     case 'toggle-notif-center': toggleNotifCenter(); break;
+    case 'mobile-refresh': (async()=>{try{const reg=await navigator.serviceWorker?.getRegistration?.();if(reg)await reg.update().catch(()=>{});}finally{window.location.reload();}})(); break;
     case 'pwa-refresh': (async()=>{try{const reg=await navigator.serviceWorker?.getRegistration();if(reg)await reg.update();}catch(e){console.warn('PWA refresh update skipped:',e)}window.location.reload();})(); break;
     case 'close-notif-center': closeNotifCenter(); break;
     case 'open-daily-choice': openDailyChoiceMenu(t,t.dataset.choiceField,Number(t.dataset.id)); break;
@@ -7053,6 +7052,10 @@ body.theme-dark .logout-cancel{background:#111827;color:#E5E7EB;border-color:#37
 }
 .ph-bell-under-ministry:hover{background:rgba(255,255,255,.22);transform:translateY(-1px);}
 .ph-bell-under-ministry i{font-size:10px;}
+.ph-mobile-refresh{display:none;width:27px;height:23px;border-radius:999px;border:1px solid rgba(255,255,255,.20);background:rgba(255,255,255,.11);color:#fff;align-items:center;justify-content:center;cursor:pointer;transition:.16s ease;}
+.ph-mobile-refresh:hover{background:rgba(255,255,255,.22);transform:translateY(-1px);}
+.ph-mobile-refresh i{font-size:10px;}
+@media(max-width:640px){.ph-mobile-refresh{display:flex!important;width:24px;height:22px;}.ph-mobile-refresh i{font-size:9px;}}
 .ph-badge{
   position:absolute;top:-5px;right:-4px;min-width:14px;height:14px;padding:0 3px;border-radius:999px;
   background:#C94C4C;color:#fff;font:800 8px/14px 'Cairo',sans-serif;text-align:center;border:1px solid var(--teal-dark);
@@ -7144,7 +7147,7 @@ try{
           '<select id="premium-language-select" class="ph-pill-select" aria-label="Language / اللغة"></select>',
         '</div></div>',
       '</div>',
-      '<div class="ph-ministry" aria-label="Ministry logo / شعار الوزارة"><div class="ph-ministry-logo-slot"></div><button type="button" class="ph-bell-under-ministry" id="premium-bell" aria-label="Notifications / الإشعارات"><i class="fa-regular fa-bell"></i><span class="ph-badge" id="premium-badge">0</span></button></div>',
+      '<div class="ph-ministry" aria-label="Ministry logo / شعار الوزارة"><div class="ph-ministry-logo-slot"></div><button type="button" class="ph-bell-under-ministry" id="premium-bell" aria-label="Notifications / الإشعارات"><i class="fa-regular fa-bell"></i><span class="ph-badge" id="premium-badge">0</span></button><button type="button" class="ph-mobile-refresh" id="premium-mobile-refresh" data-action="mobile-refresh" aria-label="Refresh app / تحديث التطبيق" title="Refresh app / تحديث التطبيق"><i class="fa-solid fa-arrows-rotate"></i></button></div>',
     '</div>'
   ].join('');
 
@@ -7312,7 +7315,7 @@ try{
   .class-eval-history .ar,.class-eval-today .ar{font-size:10.5px}
 }
 </style>
-<style id="premium-header-redesign-2026-10-05">
+<style id="premium-header-redesign-2026-10-05--dup2">
 /* Premium header v3 — left identity preserved; right side is a compact command rail. */
 #app-topbar.premium-header-v3{
   min-height:96px!important;height:96px!important;padding:10px 18px!important;
@@ -7438,7 +7441,7 @@ try{
   .ph-right{grid-template-columns:minmax(0,1fr) 44px}.ph-command::after{right:51px;}
 }
 </style>
-<script id="premium-header-redesign-controller-2026-10-05">
+<script id="premium-header-redesign-controller-2026-10-05--dup2">
 (function(){
 'use strict';
 try{
@@ -7549,7 +7552,7 @@ try{
 })();
 </script>
 
-<style id="smart-insights-premium-v2-2026-10-05">
+<style id="smart-insights-premium-v2-2026-10-05--dup2">
 /* Smart Insights — presentation-only refinement. No JS/data behavior changed. */
 .smart-insights-wrap{
   width:100%;box-sizing:border-box;display:flex;justify-content:center;align-items:center;
@@ -7684,7 +7687,7 @@ try{
 #admin-stats-modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(8,28,25,.52);backdrop-filter:blur(5px)}#admin-stats-modal.open{display:flex}.admin-stats-card{width:min(760px,96vw);max-height:88vh;overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:22px;box-shadow:0 25px 70px rgba(0,0,0,.28);padding:18px}.admin-stats-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px}.admin-stats-title{font:800 17px/1.15 'Baloo 2','Cairo',sans-serif}.admin-stats-sub{font-size:9px;color:#81918D;margin-top:3px}.admin-stats-close{width:30px;height:30px;border:0;border-radius:10px;background:#F1F6F4;color:#657671;cursor:pointer;font-size:16px}.admin-stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.admin-stat{border:1px solid var(--line);border-radius:15px;padding:13px;background:linear-gradient(145deg,#fff,#F5FAF8)}.admin-stat .n{font:800 23px/1 'Baloo 2','Cairo',sans-serif;color:var(--teal-dark)}.admin-stat .en{font-size:9.5px;font-weight:800;margin-top:5px}.admin-stat .ar{font-size:8.5px;color:#8A9A96;margin-top:2px}.admin-stats-note{margin-top:12px;padding:10px 12px;border-radius:13px;background:#F8FBFA;border:1px solid var(--line);font-size:9px;color:#667874;line-height:1.55}.admin-user-list{margin-top:12px;display:grid;gap:7px}.admin-user-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:9px}.admin-user-row .email{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:58%}.admin-user-row .meta{text-align:right;color:#7B8B87;white-space:nowrap}.admin-user-email{font-size:7.5px;color:#94A39F;font-weight:500;margin-top:1px}.admin-user-extra{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:3px;font-size:8px;color:#7B8B87}.admin-user-extra span{white-space:nowrap}.admin-user-extra span:first-child{font-weight:800;color:var(--teal-dark)}.admin-release{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:15px;background:#FBFDFC}.admin-release-title{font-size:10px;font-weight:800;margin-bottom:7px}.admin-release input,.admin-release textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:7px 9px;margin-top:6px;font:500 9px 'Cairo',sans-serif;background:#fff;color:var(--ink)}.admin-release textarea{min-height:52px;resize:vertical}.admin-release button{margin-top:8px;border:0;border-radius:10px;padding:7px 11px;background:var(--teal);color:#fff;font:800 9px 'Cairo',sans-serif;cursor:pointer}@media(max-width:640px){.admin-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-stats-card{padding:14px}.admin-stat .n{font-size:21px}}
 </style>
 <div id="admin-stats-modal" aria-hidden="true"><div class="admin-stats-card" role="dialog" aria-modal="true"><div class="admin-stats-head"><div><div class="admin-stats-title"><span class="en">App Statistics</span><span class="ar">إحصائيات التطبيق</span></div><div class="admin-stats-sub"><span class="en">Admin-only · privacy-safe usage overview</span><span class="ar">للمسؤول فقط · ملخص استخدام يحافظ على الخصوصية</span></div></div><button class="admin-stats-close" id="admin-stats-close" type="button">×</button></div><div id="admin-stats-grid" class="admin-stats-grid"></div><div id="admin-stats-note" class="admin-stats-note"></div><div id="admin-user-list" class="admin-user-list"></div><div class="admin-release"><div class="admin-release-title"><span class="en">Publish an app update notice</span><span class="ar">نشر إشعار تحديث للتطبيق</span></div><input id="admin-release-title-en" placeholder="Update title / عنوان التحديث"><textarea id="admin-release-body-en" placeholder="What changed? / ماذا تغير؟"></textarea><button id="admin-release-send" type="button"><i class="fa-solid fa-bullhorn"></i> <span class="en">Notify approved users + me</span><span class="ar">إشعار المستخدمين المعتمدين + أنا</span></button></div></div></div>
-<script type="module" id="admin-statistics-feature-2026-10-06">
+<script type="module" id="admin-statistics-feature-2026-10-06--dup2">
 import { collection, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 (function(){'use strict';
 const adminBtn=document.querySelector('[data-action="open-admin-stats"]'),modal=document.getElementById('admin-stats-modal'),grid=document.getElementById('admin-stats-grid'),note=document.getElementById('admin-stats-note'),list=document.getElementById('admin-user-list');
@@ -7703,7 +7706,7 @@ adminBtn?.addEventListener('click',loadStats);document.getElementById('admin-sta
 document.getElementById('admin-release-send')?.addEventListener('click',async()=>{if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}const title=document.getElementById('admin-release-title-en')?.value.trim(),body=document.getElementById('admin-release-body-en')?.value.trim();if(!title||!body){alert('Enter an update title and message first. / أدخل عنوان التحديث ورسالة التحديث أولًا.');return}try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})),now=new Date().toISOString(),base='release-'+Date.now();await Promise.all(users.map(u=>window.setDoc(window.doc(window.db,'users',u.uid,'notifications',base+'-'+u.uid),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true})));await window.setDoc(window.doc(window.db,'users',window.auth.currentUser.uid,'notifications',base+'-admin'),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true});alert('Update notice sent to approved users and will also appear in your bell. / تم إرسال إشعار التحديث وسيظهر أيضًا في جرسك.');document.getElementById('admin-release-title-en').value='';document.getElementById('admin-release-body-en').value=''}catch(err){console.error('Release notice failed:',err);alert('Could not publish. Check deployed Firestore Rules. / تعذر النشر. تحقق من نشر قواعد Firestore.')}});const revealAdminButton=async()=>{try{if(!adminBtn)return;const u=window.auth?.currentUser;const allowed=!!u&&String(u.email||'').toLowerCase()===ADMIN_EMAIL.toLowerCase();if(allowed){document.body.classList.add('admin-ready');adminBtn.style.display='flex';adminBtn.style.visibility='visible';adminBtn.style.opacity='1';}else{document.body.classList.remove('admin-ready');adminBtn.style.display='none';}}catch(e){console.warn('Admin button reveal retry:',e)}}; window.addEventListener('ss-auth-ready',()=>revealAdminButton()); if(window.__SS_AUTH_READY) revealAdminButton(); let adminRevealAttempts=0; const adminRevealTimer=setInterval(()=>{adminRevealAttempts++; revealAdminButton(); if(adminRevealAttempts>=15)clearInterval(adminRevealTimer);},500);
 })();
 </script>
-<style id="class-evaluation-status-premium-2026-10-05">
+<style id="class-evaluation-status-premium-2026-10-05--dup2">
 .class-eval-history,.class-eval-today{font-size:10.5px;line-height:1.55;font-weight:700}
 .class-eval-history{background:rgba(242,169,59,.13);border:1px solid rgba(242,169,59,.28);color:#8A6100}
 .class-eval-history>i{color:#B5850C}
@@ -7812,7 +7815,6 @@ body.lang-bilingual .about-modal-card .about-kicker .ar{
 .admin-stats-grid{grid-template-columns:repeat(5,minmax(0,1fr));}
 @media(max-width:820px){.admin-stats-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media(max-width:640px){.admin-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-.mobile-app-refresh{
   display:none;
   align-items:center;justify-content:center;
   width:28px;height:28px;border:0;border-radius:9px;
@@ -7820,47 +7822,13 @@ body.lang-bilingual .about-modal-card .about-kicker .ar{
   cursor:pointer;flex:0 0 28px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
 }
-.mobile-app-refresh:active{transform:scale(.94);}
-.mobile-app-refresh.refreshing i{animation:mobileRefreshSpin .65s linear infinite;}
 @keyframes mobileRefreshSpin{to{transform:rotate(360deg);}}
 @media(max-width:640px){
-  .mobile-app-refresh{display:inline-flex!important;}
 }
 </style>
-<script id="mobile-refresh-control-2026-10-06">
-(function(){
-  function installMobileRefresh(){
-    if(document.getElementById('mobile-app-refresh'))return;
-    const bell=document.querySelector('.notif-bell-btn');
-    if(!bell||!bell.parentElement)return;
-    const btn=document.createElement('button');
-    btn.type='button';
-    btn.id='mobile-app-refresh';
-    btn.className='mobile-app-refresh';
-    btn.setAttribute('aria-label','Refresh app');
-    btn.title='Refresh / تحديث التطبيق';
-    btn.innerHTML='<i class="fa-solid fa-rotate-right"></i>';
-    btn.addEventListener('click',async()=>{
-      if(btn.classList.contains('refreshing'))return;
-      btn.classList.add('refreshing');
-      try{
-        const reg=await navigator.serviceWorker?.getRegistration?.();
-        if(reg) await reg.update().catch(()=>{});
-      }finally{
-        window.location.reload();
-      }
-    });
-    bell.insertAdjacentElement('afterend',btn);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installMobileRefresh);
-  else installMobileRefresh();
-})();
-</script><style id="mobile-refresh-logout-final-fix-2026-10-06">
+<style id="mobile-refresh-logout-final-fix-2026-10-06">
 /* Final mobile refresh visibility + compact logout controls. */
 @media (max-width: 640px){
-  #app-topbar .pwa-refresh-btn,
-  #premium-header-shell .pwa-refresh-btn,
-  button.pwa-refresh-btn{
     display:inline-flex!important;
     visibility:visible!important;
     opacity:1!important;
@@ -7872,8 +7840,6 @@ body.lang-bilingual .about-modal-card .about-kicker .ar{
     align-items:center!important;
     justify-content:center!important;
   }
-  #app-topbar .pwa-refresh-btn i,
-  #premium-header-shell .pwa-refresh-btn i{
     display:inline-block!important;
     visibility:visible!important;
     font-size:13px!important;
@@ -7897,56 +7863,6 @@ body.lang-bilingual .about-modal-card .about-kicker .ar{
 }
 </style>
 
-<style id="final-refresh-logout-wiring-2026-10-06">
-/* Final wiring: keep the existing refresh control visible on phones and make logout modal controls direct/robust. */
-@media (max-width:640px){
-  #app-topbar button.pwa-refresh-btn{
-    display:inline-flex!important;
-    visibility:visible!important;
-    opacity:1!important;
-    width:32px!important;height:32px!important;
-    min-width:32px!important;min-height:32px!important;
-    flex:0 0 32px!important;
-  }
-  #app-topbar button.pwa-refresh-btn i{display:block!important;font-size:13px!important;}
-}
-</style>
-<script id="final-refresh-logout-wiring-2026-10-06">
-(function(){
-  function wireFinalControls(){
-    const refresh=document.querySelector('#app-topbar button.pwa-refresh-btn');
-    if(refresh){
-      refresh.style.setProperty('display','inline-flex','important');
-      refresh.style.setProperty('visibility','visible','important');
-      refresh.style.setProperty('opacity','1','important');
-      refresh.onclick=async function(e){
-        e.preventDefault(); e.stopPropagation();
-        if(refresh.dataset.busy==='1') return;
-        refresh.dataset.busy='1';
-        try{
-          const reg=await navigator.serviceWorker?.getRegistration?.();
-          if(reg) await reg.update().catch(()=>{});
-        }finally{ window.location.reload(); }
-      };
-    }
-    const logout=document.querySelector('#sidebar button[data-action="logout"]');
-    if(logout){
-      logout.onclick=function(e){
-        e.preventDefault(); e.stopPropagation();
-        const modal=document.getElementById('modal-logout-confirm');
-        if(modal){modal.classList.add('open');modal.setAttribute('aria-hidden','false');}
-      };
-    }
-    const cancel=document.querySelector('#modal-logout-confirm [data-action="cancel-logout"]');
-    if(cancel){cancel.onclick=function(e){e.preventDefault();e.stopPropagation();const modal=document.getElementById('modal-logout-confirm');if(modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}};}
-    const confirm=document.querySelector('#modal-logout-confirm [data-action="confirm-logout"]');
-    if(confirm){confirm.onclick=async function(e){e.preventDefault();e.stopPropagation();const modal=document.getElementById('modal-logout-confirm');if(modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}if(typeof window.logoutUser==='function'){await window.logoutUser();}else{console.error('Logout function not ready.');}};}
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wireFinalControls,{once:true});
-  else wireFinalControls();
-})();
-</script>
-
 <style id="about-readability-and-mobile-controls-2026-10-06">
 /* About: stronger readable body text in all three language modes. */
 .about-why-grid{gap:12px!important;}
@@ -7964,22 +7880,6 @@ body.dark .about-footer-line,body.theme-dark .about-footer-line{color:#e6f1ef!im
  .about-footer-line{font-size:11.5px!important;}
 }
 </style>
-<script id="mobile-controls-capture-fix-2026-10-06">
-(function(){
- document.addEventListener('click',function(e){
-   const t=e.target.closest?.('[data-action="pwa-refresh"],#sidebar button[data-action="logout"]');
-   if(!t)return;
-   e.preventDefault(); e.stopImmediatePropagation();
-   if(t.matches('[data-action="pwa-refresh"]')){
-     if(t.dataset.busy==='1')return; t.dataset.busy='1';
-     (async()=>{try{const reg=await navigator.serviceWorker?.getRegistration?.();if(reg)await reg.update().catch(()=>{});}finally{location.reload();}})();
-   }else{
-     const modal=document.getElementById('modal-logout-confirm');
-     if(modal){modal.classList.add('open');modal.setAttribute('aria-hidden','false');}
-   }
- },true);
-})();
-</script>
 <style id="precision-qa-fixes-2026-10-07">
 #tab-dashboard .hero-band #hero-daily-status,#tab-dashboard .hero-band #hero-daily-status *,#tab-dashboard .hero-band #hero-greeting-en,#tab-dashboard .hero-band #hero-greeting-ar{color:#fff!important;opacity:1!important;text-shadow:0 2px 8px rgba(0,0,0,.30)!important;}
 #tab-dashboard .hero-band #hero-daily-status .text-gray-400,#tab-dashboard .hero-band #hero-daily-status .text-gray-500,#tab-dashboard .hero-band #hero-daily-status .text-gray-600{color:#fff!important;}
@@ -8322,7 +8222,7 @@ body.dark #stars-board-list .grid>div p,body.dark #stars-board-list .grid>div sp
  #tab-dashboard #hero-stat-classes + p,#tab-dashboard #hero-stat-students + p{font-size:9px!important;}
 }
 </style>
-<style id="precision-qa-fixes-2026-10-07b">
+<style id="precision-qa-fixes-2026-10-07b--dup2">
 /* Hero metric labels and Add Student/Class actions: keep text legible on every theme. */
 #tab-dashboard .hero-band .hero-stat,
 #tab-dashboard .hero-band .hero-stat span,
@@ -8563,9 +8463,8 @@ body.lang-bilingual .home-hero-tagline .ar{margin-top:4px!important;}
   .ss-student-class-toast{bottom:18px;max-width:90vw;padding:9px 13px;font-size:11px;}
 }
 /* The old dynamically-created mobile refresh control is no longer needed. */
-#mobile-app-refresh{display:none!important;}
 </style>
-<script id="student-class-first-guard-2026-10-06">
+<script id="student-class-first-guard-2026-10-06--dup2">
 (function(){
   const studentClassPairs = [
     ['pj-student-select','pj-class-select'],
@@ -8647,50 +8546,6 @@ body.lang-bilingual .home-hero-tagline .ar{margin-top:4px!important;}
   },true);
 })();
 </script>
-
-<style id="mobile-refresh-hard-fix-2026-10-06">
-@media(max-width:640px){
-  #app-topbar button.pwa-refresh-btn{
-    display:inline-flex!important;
-    visibility:visible!important;
-    opacity:1!important;
-    pointer-events:auto!important;
-    touch-action:manipulation!important;
-    position:relative!important;
-    z-index:80!important;
-  }
-}
-</style>
-<script id="mobile-refresh-hard-fix-2026-10-06">
-(function(){
-  function hardRefresh(){
-    try{
-      const u=new URL(window.location.href);
-      u.searchParams.set('refresh',String(Date.now()));
-      window.location.assign(u.href);
-    }catch(e){
-      window.location.reload();
-    }
-  }
-  function wire(){
-    document.querySelectorAll('#app-topbar button.pwa-refresh-btn, #mobile-app-refresh').forEach(btn=>{
-      btn.onclick=function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        if(btn.dataset.busy==='1') return;
-        btn.dataset.busy='1';
-        btn.setAttribute('aria-busy','true');
-        btn.style.opacity='.7';
-        setTimeout(hardRefresh,80);
-      };
-    });
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});
-  else wire();
-  window.addEventListener('pageshow',wire);
-})();
-</script>
-
 
 <style id="premium-analytics-redesign-2026-10-06">
 /* ===== Premium readability baseline ===== */
@@ -8851,7 +8706,7 @@ body.theme-dark .s360-why-premium .why-en,body.theme-dark .s360-why-premium .why
 .ss-cert-shell{box-shadow:0 18px 55px rgba(20,55,50,.13)!important;}
 </style>
 
-<script id="premium-analytics-redesign-2026-10-06">
+<script id="premium-analytics-redesign-2026-10-06--dup2">
 (function(){
   const wait=(fn)=>{try{fn();}catch(e){console.warn('Premium redesign:',e)}};
 
@@ -8979,11 +8834,9 @@ function renderClassPulsePremiumLower(wrap, students, acad, hw, partDist, behDis
   const fonts=[['cairo','Cairo','أحمد','#0E7C74'],['tajawal','Tajawal','أحمد','#7C5CBF'],['ibmplex','IBM Plex Sans Arabic','أحمد','#3E7CC9'],['almarai','Almarai','أحمد','#2F7D4A'],['notokufi','Noto Kufi Arabic','أحمد','#E8792F'],['changa','Changa','أحمد','#C83A9B'],['elmessiri','El Messiri','أحمد','#D9668B']];
   function renderFonts(){const sel=document.getElementById('setting-font-family');if(!sel||document.getElementById('font-preview-gallery'))return;const g=document.createElement('div');g.id='font-preview-gallery';g.className='font-preview-gallery';g.innerHTML=fonts.map(f=>'<button type="button" class="font-preview-chip '+(settings.fontFamily===f[0]?'active':'')+'" data-font-preview="'+f[0]+'"><span class="font-preview-dot" style="background:'+f[3]+'"></span><span style="min-width:0"><span class="font-preview-sample" style="font-family:'+FONT_FAMILIES[f[0]]+'">'+f[2]+' — '+f[1]+'</span><span class="font-preview-name">'+f[1]+'</span></span></button>').join('');sel.parentElement.appendChild(g);}
   function activeFonts(){document.querySelectorAll('[data-font-preview]').forEach(b=>b.classList.toggle('active',b.dataset.fontPreview===settings.fontFamily));}
-  function mobileRefresh(){if(window.innerWidth>640||document.getElementById('mobile-refresh-fab'))return;const b=document.createElement('button');b.id='mobile-refresh-fab';b.type='button';b.setAttribute('aria-label','Refresh app / تحديث التطبيق');b.title='Refresh app / تحديث التطبيق';b.innerHTML='<i class="fa-solid fa-arrows-rotate"></i>';Object.assign(b.style,{position:'fixed',top:'8px',left:'8px',width:'34px',height:'34px',borderRadius:'11px',border:'1px solid rgba(255,255,255,.45)',background:'rgba(14,124,116,.94)',color:'#fff',zIndex:'9999',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 5px 14px rgba(0,0,0,.20)',touchAction:'manipulation'});b.onclick=async function(e){e.preventDefault();e.stopPropagation();if(b.dataset.busy==='1')return;b.dataset.busy='1';b.style.opacity='.65';try{const reg=await navigator.serviceWorker?.getRegistration?.();if(reg)await reg.update().catch(()=>{});}finally{const u=new URL(window.location.href);u.searchParams.set('refresh',String(Date.now()));window.location.assign(u.href);}};document.body.appendChild(b);}
   function init(){renderFonts();mobileRefresh();}
   document.addEventListener('click',function(e){const b=e.target.closest?.('[data-font-preview]');if(b){e.preventDefault();e.stopPropagation();const sel=document.getElementById('setting-font-family');if(sel){sel.value=b.dataset.fontPreview;applyFontFamily(b.dataset.fontPreview);activeFonts();}}},true);
-  window.addEventListener('resize',mobileRefresh);
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
 
