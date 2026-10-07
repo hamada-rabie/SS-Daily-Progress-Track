@@ -1346,7 +1346,75 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
 }
 </style>
 
-</head>
+<style id="students-intake-redesign-2026-10-07">
+.student-intake-bar{
+  display:grid;
+  grid-template-columns:minmax(235px,.82fr) minmax(0,1.8fr);
+  gap:10px;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:color-mix(in srgb,var(--teal) 2.5%,var(--card));
+  box-shadow:0 5px 16px rgba(15,55,51,.045);
+}
+.student-intake-primary,.student-intake-excel{
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--card);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 11px;
+}
+.student-intake-primary{border-color:color-mix(in srgb,var(--teal) 24%,var(--line));}
+.student-intake-excel{justify-content:space-between;}
+.student-intake-icon,.student-intake-excel-icon{
+  width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 34px;font-size:13px;
+}
+.student-intake-icon{background:color-mix(in srgb,var(--teal) 11%,var(--card));color:var(--teal);}
+.student-intake-excel-icon{background:color-mix(in srgb,var(--leaf) 12%,var(--card));color:var(--leaf);}
+.student-intake-copy{min-width:0;display:flex;flex-direction:column;gap:2px;}
+.student-intake-title{font-size:11px;font-weight:900;color:var(--teal-dark);line-height:1.15;white-space:nowrap;}
+.student-intake-sub{font-size:8.5px;font-weight:600;color:#60716D;line-height:1.2;white-space:nowrap;}
+.student-intake-add{
+  margin-inline-start:auto;border:0;border-radius:10px;background:var(--teal);color:#fff;
+  min-height:32px;padding:6px 10px;display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:9px;font-weight:850;white-space:nowrap;cursor:pointer;box-shadow:0 4px 10px rgba(14,124,116,.16);
+}
+.student-intake-add i{color:#fff;}
+.student-intake-controls{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:nowrap;min-width:0;}
+.student-intake-controls select,.student-intake-tool,.student-intake-import{
+  min-height:32px;border:1px solid var(--line);border-radius:9px;padding:6px 8px;
+  background:var(--card);color:var(--ink);font-size:8.5px;font-weight:750;white-space:nowrap;
+}
+.student-intake-controls select{max-width:150px;min-width:105px;outline:none;}
+.student-intake-tool{display:flex;align-items:center;justify-content:center;gap:5px;color:var(--teal-dark);border-color:color-mix(in srgb,var(--teal) 38%,var(--line));cursor:pointer;}
+.student-intake-tool i{color:var(--teal);}
+.student-intake-import{display:flex;align-items:center;justify-content:center;gap:5px;background:var(--leaf);border-color:var(--leaf);color:#fff;cursor:pointer;}
+.student-intake-import i{color:#fff;}
+.student-intake-tool:hover,.student-intake-add:hover{filter:brightness(1.04);transform:translateY(-1px);}
+.student-intake-import:hover{filter:brightness(1.05);}
+body.theme-dark .student-intake-sub{color:#B9CAC6;}
+body.theme-dark .student-intake-bar{background:color-mix(in srgb,var(--teal) 7%,var(--card));}
+@media(max-width:820px){
+  .student-intake-bar{grid-template-columns:1fr;}
+  .student-intake-excel{align-items:flex-start;flex-direction:column;}
+  .student-intake-controls{width:100%;justify-content:stretch;flex-wrap:wrap;}
+  .student-intake-controls select{flex:1 1 120px;max-width:none;}
+  .student-intake-tool,.student-intake-import{flex:1 1 130px;}
+}
+@media(max-width:480px){
+  .student-intake-bar{padding:7px;gap:7px;border-radius:15px;}
+  .student-intake-primary,.student-intake-excel{padding:8px;border-radius:12px;}
+  .student-intake-title{font-size:10px;}
+  .student-intake-sub{font-size:7.5px;}
+  .student-intake-icon,.student-intake-excel-icon{width:31px;height:31px;flex-basis:31px;font-size:12px;}
+  .student-intake-add{min-height:30px;padding:5px 8px;font-size:8px;}
+  .student-intake-controls{gap:5px;}
+  .student-intake-controls select,.student-intake-tool,.student-intake-import{min-height:30px;font-size:8px;padding:5px 6px;}
+}
+</style>\n</head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
 <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2"></div>
@@ -1609,52 +1677,51 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
         </div>
         <button data-action="open-add-student" class="text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 justify-center" style="background:var(--teal);"><i class="fa-solid fa-user-plus"></i> Add Student / إضافة طالب</button>
       </div>
-      <div class="card p-4 space-y-4" style="background:var(--card);">
-        <div class="flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <div class="font-display font-extrabold text-sm" style="color:var(--teal-dark);">Add Students / إضافة الطلاب</div>
-            <div class="text-[10px] text-gray-500 mt-0.5">Choose the quickest way to add students / اختر الطريقة الأنسب لإضافة الطلاب</div>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <button type="button" data-action="open-add-student" class="text-right rounded-2xl border p-4 flex items-center gap-3 transition hover:-translate-y-0.5" style="border-color:var(--line); background:var(--card);">
-            <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EAF7F5; color:var(--teal);"><i class="fa-solid fa-user-plus"></i></span>
-            <span class="min-w-0">
-              <span class="block font-display font-extrabold text-xs bilingual-inline" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
-              <span class="block text-[10px] text-gray-500 mt-1">Add one student without Excel / إضافة طالب واحد بدون ملف إكسل</span>
-            </span>
+      <div class="student-intake-bar">
+        <div class="student-intake-primary">
+          <span class="student-intake-icon"><i class="fa-solid fa-user-plus"></i></span>
+          <span class="student-intake-copy">
+            <span class="student-intake-title bilingual-inline">Add Student / إضافة طالب</span>
+            <span class="student-intake-sub">Add one student quickly / إضافة طالب بسرعة</span>
+          </span>
+          <button type="button" data-action="open-add-student" class="student-intake-add">
+            <i class="fa-solid fa-plus"></i>
+            <span class="bilingual-inline">Add Student / إضافة طالب</span>
           </button>
-          <div class="rounded-2xl border p-4" style="border-color:#DCE8E5; background:#FFFFFF;">
-            <div class="flex items-center gap-3 mb-3">
-              <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EEF8F0; color:var(--leaf);"><i class="fa-solid fa-file-excel"></i></span>
-              <span>
-                <span class="block font-display font-extrabold text-xs" style="color:#347A43;">Import from Excel / استيراد من Excel</span>
-                <span class="block text-[10px] text-gray-500 mt-1">Add many students at once / إضافة مجموعة طلاب دفعة واحدة</span>
-              </span>
-            </div>
-            <div class="text-[9.5px] text-gray-500 mb-2">Optional class assignment / تعيين الصف اختياري</div>
-            <select id="import-destination-class" class="w-full text-xs border rounded-lg px-2 py-2 mb-2" style="border-color:var(--line);" title="Choose a class to assign all imported students to it, or leave blank to use Class/Section from Excel.">
-              <option value="">Use Class/Section from Excel / استخدم الصف/الشعبة من ملف الإكسل</option>
+        </div>
+
+        <div class="student-intake-excel">
+          <div class="student-intake-excel-head">
+            <span class="student-intake-excel-icon"><i class="fa-solid fa-file-excel"></i></span>
+            <span class="student-intake-copy">
+              <span class="student-intake-title">Excel Import / استيراد من Excel</span>
+              <span class="student-intake-sub">Add many students at once / إضافة مجموعة طلاب دفعة واحدة</span>
+            </span>
+          </div>
+          <div class="student-intake-controls">
+            <select id="import-destination-class" title="Choose a class to assign all imported students to it, or leave blank to use Class/Section from Excel.">
+              <option value="">Class / الصف من ملف Excel</option>
             </select>
-            <div class="text-[9px] text-gray-400 mb-2">Choose a class to assign all imported students to it. Leave blank to use the Class/Section column from Excel.<br>اختر صفًا لتعيين جميع الطلاب المستوردين إليه، أو اتركه فارغًا لاستخدام عمود الصف/الشعبة من ملف الإكسل.</div>
-            <div class="flex gap-2 flex-wrap items-center">
-              <select id="import-country-code" class="text-xs border rounded-lg px-2 py-2" style="border-color:var(--line);">
-                <option value="">No country code / بدون رمز دولة</option>
-                <option value="974">Qatar +974</option>
-                <option value="20">Egypt +20</option>
-                <option value="966">Saudi Arabia +966</option>
-                <option value="971">UAE +971</option>
-                <option value="965">Kuwait +965</option>
-                <option value="973">Bahrain +973</option>
-                <option value="968">Oman +968</option>
-                <option value="other">Other / أخرى</option>
-              </select>
-              <button type="button" data-action="download-template" class="text-xs font-semibold px-4 py-2 rounded-xl border flex items-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-file-arrow-down"></i> Template / تحميل نموذج</button>
-              <label class="text-xs font-semibold px-4 py-2 rounded-xl text-white flex items-center gap-2 cursor-pointer" style="background:var(--leaf);">
-                <i class="fa-solid fa-file-excel"></i> Import from Excel / استيراد من Excel
-                <input type="file" accept=".xlsx,.xls,.csv" data-action="import-excel" class="hidden">
-              </label>
-            </div>
+            <select id="import-country-code" title="Country code for imported phone numbers.">
+              <option value="">No code / بدون رمز</option>
+              <option value="974">Qatar +974</option>
+              <option value="20">Egypt +20</option>
+              <option value="966">Saudi Arabia +966</option>
+              <option value="971">UAE +971</option>
+              <option value="965">Kuwait +965</option>
+              <option value="973">Bahrain +973</option>
+              <option value="968">Oman +968</option>
+              <option value="other">Other / أخرى</option>
+            </select>
+            <button type="button" data-action="download-template" class="student-intake-tool">
+              <i class="fa-solid fa-file-arrow-down"></i>
+              <span class="bilingual-inline">Template / تحميل النموذج</span>
+            </button>
+            <label class="student-intake-import">
+              <i class="fa-solid fa-file-excel"></i>
+              <span class="bilingual-inline">Import Excel / استيراد Excel</span>
+              <input type="file" accept=".xlsx,.xls,.csv" data-action="import-excel" class="hidden">
+            </label>
           </div>
         </div>
       </div>
@@ -9061,7 +9128,7 @@ body.theme-dark .stars-achievement-badge{background:color-mix(in srgb, currentCo
   const fonts=[['cairo','Cairo','أحمد','#0E7C74'],['tajawal','Tajawal','أحمد','#7C5CBF'],['ibmplex','IBM Plex Sans Arabic','أحمد','#3E7CC9'],['almarai','Almarai','أحمد','#2F7D4A'],['notokufi','Noto Kufi Arabic','أحمد','#E8792F'],['changa','Changa','أحمد','#C83A9B'],['elmessiri','El Messiri','أحمد','#D9668B']];
   function renderFonts(){const sel=document.getElementById('setting-font-family');if(!sel||document.getElementById('font-preview-gallery'))return;const g=document.createElement('div');g.id='font-preview-gallery';g.className='font-preview-gallery';g.innerHTML=fonts.map(f=>'<button type="button" class="font-preview-chip '+(settings.fontFamily===f[0]?'active':'')+'" data-font-preview="'+f[0]+'"><span class="font-preview-dot" style="background:'+f[3]+'"></span><span style="min-width:0"><span class="font-preview-sample" style="font-family:'+FONT_FAMILIES[f[0]]+'">'+f[2]+' — '+f[1]+'</span><span class="font-preview-name">'+f[1]+'</span></span></button>').join('');sel.parentElement.appendChild(g);}
   function activeFonts(){document.querySelectorAll('[data-font-preview]').forEach(b=>b.classList.toggle('active',b.dataset.fontPreview===settings.fontFamily));}
-  function mobileRefresh(){if(window.innerWidth>640)return;const old=document.getElementById('mobile-refresh-fab');if(old)return;const host=document.documentElement;if(!host)return;const b=document.createElement('button');b.id='mobile-refresh-fab';b.type='button';b.setAttribute('aria-label','Refresh app / تحديث التطبيق');b.title='Refresh app / تحديث التطبيق';b.innerHTML='<i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>';Object.assign(b.style,{position:'fixed',bottom:'calc(12px + env(safe-area-inset-bottom,0px))',left:'12px',width:'42px',height:'42px',minWidth:'42px',minHeight:'42px',padding:'0',margin:'0',borderRadius:'13px',border:'1px solid rgba(255,255,255,.68)',background:'var(--teal,#0E7C74)',color:'#fff',zIndex:'2147483647',display:'flex',alignItems:'center',justifyContent:'center',boxSizing:'border-box',boxShadow:'0 7px 20px rgba(0,0,0,.28)',touchAction:'manipulation',cursor:'pointer',fontSize:'16px',lineHeight:'1'});b.onclick=async function(e){e.preventDefault();e.stopPropagation();if(b.dataset.busy==='1')return;b.dataset.busy='1';b.style.opacity='.62';try{const reg=await navigator.serviceWorker?.getRegistration?.();if(reg)await reg.update().catch(()=>{});}finally{const u=new URL(window.location.href);u.searchParams.set('refresh',String(Date.now()));window.location.assign(u.href);}};host.appendChild(b);}
+  function mobileRefresh(){const old=document.getElementById('mobile-refresh-fab');if(old)old.remove();const btn=document.querySelector('#app-topbar button.pwa-refresh-btn');if(!btn)return;btn.style.setProperty('position','fixed','important');btn.style.setProperty('left','12px','important');btn.style.setProperty('bottom','calc(12px + env(safe-area-inset-bottom,0px))','important');btn.style.setProperty('width','42px','important');btn.style.setProperty('height','42px','important');btn.style.setProperty('min-width','42px','important');btn.style.setProperty('min-height','42px','important');btn.style.setProperty('z-index','2147483647','important');btn.style.setProperty('background','var(--teal,#0E7C74)','important');btn.style.setProperty('color','#fff','important');btn.style.setProperty('display',window.innerWidth<=640?'inline-flex':'none','important');btn.style.setProperty('visibility','visible','important');btn.style.setProperty('opacity','1','important');btn.style.setProperty('box-shadow','0 7px 20px rgba(0,0,0,.28)','important');}
   function init(){renderFonts();mobileRefresh();}
   document.addEventListener('click',function(e){const b=e.target.closest?.('[data-font-preview]');if(b){e.preventDefault();e.stopPropagation();const sel=document.getElementById('setting-font-family');if(sel){sel.value=b.dataset.fontPreview;applyFontFamily(b.dataset.fontPreview);activeFonts();}}},true);
   window.addEventListener('resize',mobileRefresh);
