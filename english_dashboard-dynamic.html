@@ -1130,6 +1130,200 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
   }
 }
 </style>
+
+<style id="certificate-reference-design-2026-10-07">
+/* Final certificate direction: inspired by the supplied red-wave reference,
+   while preserving the app's bilingual data and certificate functionality. */
+#cert-preview .ss-cert-creative{
+  background:#fff!important;
+  border:2px solid #B52B32!important;
+  border-radius:4px!important;
+  padding:4.2% 6.2% 3.4%!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+
+/* Elegant red sweeping ribbons, concentrated on the left like the reference. */
+#cert-preview .ss-cert-creative .ss-cert-ribbon{
+  position:absolute!important;
+  pointer-events:none!important;
+  z-index:0!important;
+  background:none!important;
+  opacity:1!important;
+  filter:none!important;
+}
+#cert-preview .ss-cert-creative .ribbon-a{
+  width:47%!important;
+  height:145%!important;
+  left:-29%!important;
+  top:-24%!important;
+  border:13px solid rgba(181,43,50,.30)!important;
+  border-right-color:rgba(217,91,95,.10)!important;
+  border-bottom-color:rgba(217,91,95,.08)!important;
+  border-radius:50%!important;
+  transform:rotate(-18deg)!important;
+  box-shadow:18px 0 0 rgba(217,91,95,.10),36px 0 0 rgba(181,43,50,.07)!important;
+}
+#cert-preview .ss-cert-creative .ribbon-b{
+  width:43%!important;
+  height:125%!important;
+  left:-22%!important;
+  top:25%!important;
+  border:10px solid rgba(181,43,50,.22)!important;
+  border-right-color:transparent!important;
+  border-bottom-color:rgba(217,91,95,.12)!important;
+  border-radius:50%!important;
+  transform:rotate(-28deg)!important;
+  box-shadow:15px 0 0 rgba(217,91,95,.10)!important;
+}
+
+/* Keep the decorative frame clean and red. */
+#cert-preview .ss-cert-creative .ss-cert-frame{
+  inset:1.5%!important;
+  border:1px solid rgba(181,43,50,.32)!important;
+  border-radius:2px!important;
+  z-index:1!important;
+}
+#cert-preview .ss-cert-creative .ss-cert-frame:after{
+  inset:5px!important;
+  border:1px solid rgba(181,43,50,.10)!important;
+  border-radius:1px!important;
+}
+
+/* Real logos: Ministry clearly left, Department/School clearly right,
+   with a little extra outward spacing. */
+#cert-preview .ss-cert-brand-row{
+  position:relative!important;
+  width:98%!important;
+  grid-template-columns:1fr auto 1fr!important;
+  direction:ltr!important;
+  transform:translateY(-5.5%)!important;
+  z-index:3!important;
+}
+#cert-preview .ss-cert-logo-slot:first-child{
+  justify-content:flex-start!important;
+  transform:translateX(-6%)!important;
+}
+#cert-preview .ss-cert-logo-slot:last-child{
+  justify-content:flex-end!important;
+  transform:translateX(6%)!important;
+}
+#cert-preview .ss-cert-logo-slot img{
+  background:#fff!important;
+  box-shadow:none!important;
+}
+
+/* Only one Arabic title. */
+#cert-preview .ss-cert-title-wrap::after{
+  content:none!important;
+  display:none!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-title::after,
+#cert-preview .ss-cert-title-wrap .ss-cert-title::before{
+  content:none!important;
+  display:none!important;
+}
+#cert-preview .ss-cert-title-wrap{
+  position:relative!important;
+  z-index:3!important;
+  margin-top:-2.8%!important;
+  margin-bottom:1.2%!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-title{
+  font-size:clamp(22px,4.6cqw,33px)!important;
+  color:#A91F2A!important;
+  letter-spacing:.02em!important;
+}
+#cert-preview .ss-cert-title-ar{
+  font-size:clamp(11px,2.15cqw,15px)!important;
+  color:#A91F2A!important;
+  margin-top:.45%!important;
+}
+
+/* Make the student's name the visual focal point, like the reference. */
+#cert-preview .ss-cert-nameplate{
+  position:relative!important;
+  z-index:3!important;
+  width:78%!important;
+  max-width:760px!important;
+  margin:1.1% auto .8%!important;
+  padding:1.0% 2.5% 1.2%!important;
+  border-top:1px solid rgba(169,31,42,.38)!important;
+  border-bottom:1px solid rgba(169,31,42,.38)!important;
+  background:rgba(255,255,255,.82)!important;
+}
+#cert-preview .ss-cert-nameplate span{
+  color:#7E5B5E!important;
+  font-size:clamp(6px,1.0cqw,8px)!important;
+}
+#cert-preview .ss-cert-name{
+  color:#1D2626!important;
+  font-family:'Great Vibes',cursive!important;
+  font-size:clamp(28px,6.0cqw,42px)!important;
+  line-height:1!important;
+}
+
+/* Reduce vertical pressure so both signatures stay completely visible. */
+#cert-preview .ss-cert-award{
+  position:relative!important;
+  z-index:3!important;
+  margin:.2% auto .7%!important;
+  padding:.45% 1.5%!important;
+}
+#cert-preview .ss-cert-present{
+  position:relative!important;
+  z-index:3!important;
+  margin:.45% auto .3%!important;
+  line-height:1.45!important;
+}
+#cert-preview .ss-cert-evidence{
+  position:relative!important;
+  z-index:3!important;
+  margin:.55% auto .45%!important;
+  padding:.8% 1.7%!important;
+}
+#cert-preview .ss-cert-footer-grid{
+  position:relative!important;
+  z-index:3!important;
+  margin-top:.35%!important;
+}
+#cert-preview .ss-cert-signatures{
+  position:relative!important;
+  z-index:4!important;
+  width:72%!important;
+  gap:18%!important;
+  margin-top:1.0%!important;
+  padding-top:1.0%!important;
+  padding-bottom:0!important;
+  flex-shrink:0!important;
+}
+#cert-preview .ss-cert-signatures strong{
+  color:#202626!important;
+  min-height:1.25em!important;
+}
+#cert-preview .ss-cert-signatures b{
+  color:#4B5553!important;
+}
+#cert-preview .ss-cert-signatures span{
+  color:#7B8582!important;
+}
+
+/* The reference has a clean lower edge; remove the extra decorative text
+   that was consuming vertical space below the signatures. */
+#cert-preview .ss-cert-bottom-mark{
+  display:none!important;
+}
+
+@media(max-width:700px){
+  #cert-preview .ss-cert-creative{padding:5% 4.5% 3.5%!important}
+  #cert-preview .ss-cert-brand-row{width:100%!important}
+  #cert-preview .ss-cert-logo-slot:first-child{transform:translateX(-2%)!important}
+  #cert-preview .ss-cert-logo-slot:last-child{transform:translateX(2%)!important}
+  #cert-preview .ss-cert-nameplate{width:88%!important}
+  #cert-preview .ss-cert-signatures{width:86%!important;gap:8%!important}
+}
+</style>
+
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
