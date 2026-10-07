@@ -297,7 +297,10 @@ body.lang-ar .nav-link .bi-label .ar,body.lang-ar .nav-group-toggle .bi-label .a
 @keyframes pjFadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
 .chk.checked{background:var(--teal);border-color:var(--teal);color:#fff;}
 
-select, input{font-family:'Cairo',sans-serif;}.skill-level-select{min-width:155px;transition:background .15s ease,color .15s ease,border-color .15s ease}.skill-level-select[data-level="very_weak"],.skill-level-select[data-level="weak"]{background:#FDECE3!important;color:#C85A2E!important;border-color:#F1C7B8!important}.skill-level-select[data-level="acceptable"],.skill-level-select[data-level="average"]{background:#FFF6E0!important;color:#A87300!important;border-color:#EEDB9A!important}.skill-level-select[data-level="very_good"],.skill-level-select[data-level="excellent"]{background:#E7F6EB!important;color:#2C8C46!important;border-color:#B9DEC2!important}.skill-level-select option{background:#fff;color:#263633}.skill-level-select[data-level="very_weak"] option,.skill-level-select[data-level="weak"] option{color:#C85A2E}.skill-level-select[data-level="acceptable"] option,.skill-level-select[data-level="average"] option{color:#A87300}.skill-level-select[data-level="very_good"] option,.skill-level-select[data-level="excellent"] option{color:#2C8C46}
+select, input{font-family:'Cairo',sans-serif;}.skill-level-select{min-width:155px;transition:background .15s ease,color .15s ease,border-color .15s ease}.student-note-icon{position:relative;width:18px;height:20px;display:inline-block;border-radius:3px;background:#FFE76A;border:1px solid #E6C84A;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);overflow:visible;}
+.student-note-icon:before{content:"";position:absolute;left:-1px;top:-1px;width:18px;height:5px;border-radius:3px 3px 1px 1px;background:#F2A23A;border:1px solid #D98722;}
+.student-note-icon:after{content:"";position:absolute;left:3px;top:8px;width:9px;height:1px;background:#C89E22;box-shadow:0 3px 0 #C89E22,0 6px 0 #C89E22;}
+.student-note-pencil{position:absolute;right:-5px;bottom:-4px;font-size:9px;color:#D56B2A;transform:rotate(-35deg);text-shadow:0 1px 0 #fff;z-index:2;}.skill-level-select[data-level="very_weak"],.skill-level-select[data-level="weak"]{background:#FDECE3!important;color:#C85A2E!important;border-color:#F1C7B8!important}.skill-level-select[data-level="acceptable"],.skill-level-select[data-level="average"]{background:#FFF6E0!important;color:#A87300!important;border-color:#EEDB9A!important}.skill-level-select[data-level="very_good"],.skill-level-select[data-level="excellent"]{background:#E7F6EB!important;color:#2C8C46!important;border-color:#B9DEC2!important}.skill-level-select option{background:#fff;color:#263633}.skill-level-select[data-level="very_weak"] option,.skill-level-select[data-level="weak"] option{color:#C85A2E}.skill-level-select[data-level="acceptable"] option,.skill-level-select[data-level="average"] option{color:#A87300}.skill-level-select[data-level="very_good"] option,.skill-level-select[data-level="excellent"] option{color:#2C8C46}
 
 .cert-wrap{width:100%;aspect-ratio:1.414/1;background:linear-gradient(135deg,#FDFBF4,#FAF5E6);position:relative;overflow:hidden;border-radius:10px;box-shadow:0 6px 24px rgba(201,154,42,0.16), 0 2px 8px rgba(0,0,0,0.06);container-type:inline-size;}
 @media print{ .cert-wrap{ box-shadow:none !important; background:linear-gradient(135deg,#FDFBF4,#FAF5E6) !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
@@ -1608,62 +1611,38 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
           <input id="students-search" placeholder="Search / بحث بالاسم..." class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
       </div>
-      <div class="card p-3 space-y-2.5" style="background:var(--card);">
-        <div class="flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <div class="font-display font-extrabold text-sm" style="color:var(--teal-dark);">Add Students / إضافة الطلاب</div>
-            <div class="text-[10px] text-gray-500 mt-0.5">Choose the quickest way to add students / اختر الطريقة الأنسب لإضافة الطلاب</div>
-          </div>
+      <div class="card p-3 space-y-2" style="background:var(--card);">
+        <div>
+          <div class="font-display font-extrabold text-sm" style="color:var(--teal-dark);">Add Students / إضافة الطلاب</div>
+          <div class="text-[10px] text-gray-500 mt-0.5">Choose the quickest way to add students / اختر الطريقة الأنسب لإضافة الطلاب</div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <div class="rounded-2xl border p-2.5" style="border-color:var(--line); background:var(--card);">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="background:#EAF7F5; color:var(--teal);"><i class="fa-solid fa-user-plus"></i></span>
-              <span class="min-w-0">
-                <span class="block font-display font-extrabold text-xs bilingual-inline" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
-                <span class="block text-[10px] text-gray-500 mt-1">Add one student without Excel / إضافة طالب واحد بدون ملف إكسل</span>
-              </span>
-            </div>
-            <button type="button" data-action="open-add-student" class="w-full text-right rounded-lg border px-2 py-1 flex items-center gap-2 transition hover:-translate-y-0.5" style="border-color:var(--line); background:var(--card);">
-              <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EAF7F5; color:var(--teal);"><i class="fa-solid fa-user-plus"></i></span>
-              <span class="min-w-0">
-                <span class="block font-display font-extrabold text-xs bilingual-inline" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
-                <span class="block text-[10px] text-gray-500 mt-1">Add one student without Excel / إضافة طالب واحد بدون ملف إكسل</span>
-              </span>
-            </button>
-          </div>
-          <div class="rounded-2xl border p-4" style="border-color:#DCE8E5; background:#FFFFFF;">
-            <div class="flex items-center gap-3 mb-3">
-              <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EEF8F0; color:var(--leaf);"><i class="fa-solid fa-file-excel"></i></span>
-              <span>
-                <span class="block font-display font-extrabold text-xs" style="color:#347A43;">Import from Excel / استيراد من Excel</span>
-                <span class="block text-[10px] text-gray-500 mt-1">Add many students at once / إضافة مجموعة طلاب دفعة واحدة</span>
-              </span>
-            </div>
-            <div class="text-[9.5px] text-gray-500 mb-2">Optional class assignment / تعيين الصف اختياري</div>
-            <select id="import-destination-class" class="w-full text-xs border rounded-lg px-2 py-2 mb-2" style="border-color:var(--line);" title="Choose a class to assign all imported students to it, or leave blank to use Class/Section from Excel.">
-              <option value="">Use Class/Section from Excel / استخدم الصف/الشعبة من ملف الإكسل</option>
-            </select>
-            <div class="text-[9px] text-gray-400 mb-2">Choose a class to assign all imported students to it. Leave blank to use the Class/Section column from Excel.<br>اختر صفًا لتعيين جميع الطلاب المستوردين إليه، أو اتركه فارغًا لاستخدام عمود الصف/الشعبة من ملف الإكسل.</div>
-            <div class="flex flex-col gap-1.5 items-stretch">
-              <button type="button" data-action="download-template" class="w-full text-xs font-semibold px-2 py-1 rounded-lg border flex items-center justify-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-file-arrow-down"></i> Template / تحميل نموذج</button>
-              <label class="w-full text-xs font-semibold px-2 py-1 rounded-lg text-white flex items-center justify-center gap-2 cursor-pointer" style="background:var(--leaf);">
-                <i class="fa-solid fa-file-excel"></i> Import from Excel / استيراد من Excel
-                <input type="file" accept=".xlsx,.xls,.csv" data-action="import-excel" class="hidden">
-              </label>
-              <select id="import-country-code" class="w-full text-xs border rounded-lg px-2 py-1" style="border-color:var(--line);" aria-label="Choose country code">
-                <option value="">Choose country code / اختر رمز الدولة</option>
-                <option value="974">Qatar +974</option>
-                <option value="20">Egypt +20</option>
-                <option value="966">Saudi Arabia +966</option>
-                <option value="971">UAE +971</option>
-                <option value="965">Kuwait +965</option>
-                <option value="973">Bahrain +973</option>
-                <option value="968">Oman +968</option>
-                <option value="other">Other / أخرى</option>
-              </select>
-            </div>
-          </div>
+        <div class="text-[9.5px] text-gray-500">Optional class assignment / تعيين الصف اختياري</div>
+        <select id="import-destination-class" class="w-full text-xs border rounded-lg px-2 py-1" style="border-color:var(--line);" title="Choose a class to assign all imported students to it, or leave blank to use Class/Section from Excel.">
+          <option value="">Use Class/Section from Excel / استخدم الصف/الشعبة من ملف الإكسل</option>
+        </select>
+        <div class="text-[9px] text-gray-400">Choose a class to assign all imported students to it. Leave blank to use the Class/Section column from Excel.<br>اختر صفًا لتعيين جميع الطلاب المستوردين إليه، أو اتركه فارغًا لاستخدام عمود الصف/الشعبة من ملف الإكسل.</div>
+        <div class="grid grid-cols-2 gap-1.5">
+          <button type="button" data-action="open-add-student" class="w-full text-xs font-semibold border rounded-lg px-2 py-1 flex items-center justify-center gap-2" style="border-color:var(--teal); color:var(--teal-dark); background:var(--card);">
+            <i class="fa-solid fa-user-plus"></i><span>Add Student / إضافة طالب</span>
+          </button>
+          <button type="button" data-action="download-template" class="w-full text-xs font-semibold border rounded-lg px-2 py-1 flex items-center justify-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);">
+            <i class="fa-solid fa-file-arrow-down"></i><span>Template / تحميل نموذج</span>
+          </button>
+          <label class="w-full text-xs font-semibold rounded-lg px-2 py-1 text-white flex items-center justify-center gap-2 cursor-pointer" style="background:var(--leaf);">
+            <i class="fa-solid fa-file-excel"></i><span>Import from Excel / استيراد من Excel</span>
+            <input type="file" accept=".xlsx,.xls,.csv" data-action="import-excel" class="hidden">
+          </label>
+          <select id="import-country-code" class="w-full text-xs border rounded-lg px-2 py-1" style="border-color:var(--line);" aria-label="Choose country code">
+            <option value="">Choose country code / اختر رمز الدولة</option>
+            <option value="974">Qatar +974</option>
+            <option value="20">Egypt +20</option>
+            <option value="966">Saudi Arabia +966</option>
+            <option value="971">UAE +971</option>
+            <option value="965">Kuwait +965</option>
+            <option value="973">Bahrain +973</option>
+            <option value="968">Oman +968</option>
+            <option value="other">Other / أخرى</option>
+          </select>
         </div>
       </div>
       <div class="card table-scroll-x">
@@ -3329,9 +3308,9 @@ function renderStudentsTable(){
       <td class="p-3"><span class="badge ${s.homeworkDone?'badge-ok':'badge-warn'}">${s.homeworkDone?'Done / تم':'Not done / لم يتم'}</span></td>
       <td class="p-3"><span class="font-bold" style="color:var(--coral);">${total} / 40</span><br><span class="text-[9px] text-gray-400">4 Skills</span></td>
       <td class="p-3">${(s.phoneNumbers && s.phoneNumbers.length)
-          ? `<div class="flex gap-1">${s.phoneNumbers.map((ph,i)=>`<button data-action="send-whatsapp" data-id="${s.id}" data-phone-index="${i}" class="w-7 h-7 rounded-full text-white flex items-center justify-center text-xs" style="background:#25D366;" title="${ph}"><i class="fa-brands fa-whatsapp"></i></button>`).join('')}</div>`
+          ? `<div class="flex gap-1">${s.phoneNumbers.map((ph,i)=>`<button data-action="send-whatsapp" data-id="${s.id}" data-phone-index="${i}" class="w-7 h-7 rounded-full text-white flex items-center justify-center text-xs" style="background:#25D366;" title="${ph}"><i class="fa-brands fa-whatsapp whatsapp-student-icon" style="color:#fff;"></i></button>`).join('')}</div>`
           : '<span class="text-gray-300 text-xs">—</span>'}</td>
-      <td class="p-3"><button data-action="open-note-modal" data-id="${s.id}" class="w-8 h-8 rounded-full flex items-center justify-center ${hasNote?'text-white':'text-gray-400 border'}" style="${hasNote?'background:var(--gold);':'border-color:var(--line);'}" title="Note / ملاحظة"><i class="fa-solid fa-note-sticky"></i></button></td>
+      <td class="p-3"><button data-action="open-note-modal" data-id="${s.id}" class="w-8 h-8 rounded-full flex items-center justify-center ${hasNote?'text-white':'text-gray-400 border'}" style="${hasNote?'background:var(--gold);':'border-color:var(--line);'}" title="Note / ملاحظة"><span class="student-note-icon" aria-hidden="true"><i class="fa-solid fa-pencil student-note-pencil"></i></span></button></td>
       <td class="p-3 flex gap-2">
         <button data-action="open-edit-student" data-id="${s.id}" class="text-gray-300 hover:text-teal-600" title="Edit / تعديل"><i class="fa-solid fa-pen"></i></button>
         <button data-action="delete-student" data-id="${s.id}" class="text-gray-300 hover:text-red-500" title="Delete / حذف"><i class="fa-solid fa-trash"></i></button>
