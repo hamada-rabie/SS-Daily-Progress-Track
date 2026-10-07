@@ -215,7 +215,7 @@
   <script>
     if('serviceWorker' in navigator){
       window.addEventListener('load',()=>{
-        navigator.serviceWorker.register('firebase-messaging-sw.js?v=20261007-r8',{scope:'./'})
+        navigator.serviceWorker.register('firebase-messaging-sw.js',{scope:'./'})
           .catch(err=>console.warn('PWA service worker registration failed:',err));
       });
     }
