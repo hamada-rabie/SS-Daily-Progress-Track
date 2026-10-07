@@ -8190,6 +8190,7 @@ body.theme-dark .s360-why-premium .why-en,body.theme-dark .s360-why-premium .why
 })();
 </script>
 
+<script id="cp-lower-command-script-2026-10-07">
 function renderClassPulsePremiumLower(wrap, students, acad, hw, partDist, behDist, insights, trend){
   const card=wrap.querySelector('.card');if(!card||card.querySelector('.cp-lower-command'))return;
   const keys=['reading','writing','listening','speaking'];
@@ -8200,6 +8201,8 @@ function renderClassPulsePremiumLower(wrap, students, acad, hw, partDist, behDis
   const ins=insights&&insights.length?insights.slice(0,4).map(i=>'<div class="cp-action-card"><i class="fa-solid fa-sparkles"></i><div><b>'+i.en+'</b><span>'+i.ar+'</span></div></div>').join(''):'<div class="cp-action-card"><i class="fa-solid fa-circle-info"></i><div><b>Keep monitoring the class trend.</b><span>استمر في متابعة اتجاه الصف.</span></div></div>';
   card.insertAdjacentHTML('beforeend','<div class="cp-lower-command"><div class="cp-lower-head"><div><span class="cp-lower-kicker"><i class="fa-solid fa-gauge-high"></i> Class Performance Command / لوحة أداء الصف</span><h3>What the numbers are saying / ماذا تقول الأرقام؟</h3></div><div class="cp-lower-overall"><b>'+(overall===null?'—':overall+'%')+'</b><span>Academic average / المتوسط الأكاديمي</span></div></div><div class="cp-lower-grid"><div class="cp-lower-panel"><div class="cp-panel-title"><i class="fa-solid fa-chart-simple"></i><span>Skill Balance / توازن المهارات</span></div><div class="cp-skill-list">'+skills+'</div></div><div class="cp-lower-panel"><div class="cp-panel-title"><i class="fa-solid fa-users-viewfinder"></i><span>Engagement Snapshot / لقطة المشاركة</span></div><div class="cp-snapshot-grid"><div><b>'+students.length+'</b><span>Students / الطلاب</span></div><div><b>'+hwText+'</b><span>Homework / الواجب</span></div><div><b>'+partStrong+'</b><span>Active / نشط</span></div><div><b>'+behStrong+'</b><span>Disciplined / منضبط</span></div></div></div></div><div class="cp-lower-grid cp-lower-bottom"><div class="cp-lower-panel"><div class="cp-panel-title"><i class="fa-solid fa-layer-group"></i><span>Participation / المشاركة</span></div><div class="cp-dist-list">'+dist(PARTICIPATION_OPTIONS,partDist)+'</div></div><div class="cp-lower-panel"><div class="cp-panel-title"><i class="fa-solid fa-shield-heart"></i><span>Behaviour / السلوك</span></div><div class="cp-dist-list">'+dist(BEHAVIOUR_OPTIONS,behDist)+'</div></div></div><div class="cp-action-panel"><div class="cp-panel-title"><i class="fa-solid fa-bolt"></i><span>Teacher Action Signals / إشارات تحتاج انتباه المعلم</span></div><div class="cp-action-list">'+ins+'</div></div></div>');
 }
+
+</script>
 
 <style id="precision-polish-2026-10-06">
 #tab-dashboard .hero-band .hero-secondary-kicker{color:rgba(255,255,255,.97)!important;opacity:1!important;font-weight:850!important;letter-spacing:.12em!important;text-shadow:0 1px 2px rgba(0,0,0,.18);}
