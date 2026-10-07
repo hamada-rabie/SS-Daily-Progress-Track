@@ -3,12 +3,12 @@
 // Do not create a second service worker: Firebase Cloud Messaging and the PWA
 // shell must share this root-scope worker.
 
-const PWA_CACHE = 'ss-dpt-pwa-v21';
+const PWA_CACHE = 'ss-dpt-pwa-v22';
 const APP_SHELL = [
-  './index.html?v=20261006-r7',
+  './index.html?v=20261007-stab1',
   './index.html',
-  './login.html?v=20261006-r7',
-  './english_dashboard-dynamic.html?v=20261006-r7',
+  './login.html?v=20261007-stab1',
+  './english_dashboard-dynamic.html?v=20261007-stab1',
   './manifest.json',
   './icon-192.svg',
   './icon-512.svg',
@@ -49,7 +49,7 @@ self.addEventListener('fetch', (event) => {
 
   if(url.origin === self.location.origin){
     event.respondWith(
-      fetch(request)
+      fetch(request, {cache:'no-store'})
         .then(response => {
           if(response && response.ok){
             const copy = response.clone();
