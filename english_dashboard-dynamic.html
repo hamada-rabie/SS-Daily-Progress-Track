@@ -32,7 +32,7 @@
   // PWA shell registration — deliberately separate from Firebase Messaging token registration.
   if('serviceWorker' in navigator){
     window.addEventListener('load',()=>{
-      navigator.serviceWorker.register('firebase-messaging-sw.js?v=20261007-r8',{scope:'./'})
+      navigator.serviceWorker.register('firebase-messaging-sw.js?v=20261006-r7',{scope:'./'})
         .then(reg=>console.log('📦 PWA service worker ready:',reg.scope))
         .catch(err=>console.warn('PWA service worker registration failed:',err));
     });
@@ -571,7 +571,7 @@ body.lang-ar .hero-status-row > span:last-child{margin-right:auto;}
 </style>
 <style id="release-header-sidebar-final">
 /* Release layout: identical geometry in EN / AR / Bilingual. */
-#app-topbar{grid-template-columns:132px minmax(0,1fr) 330px !important;column-gap:18px !important;box-sizing:border-box;overflow:visible;}
+#app-topbar{grid-template-columns:132px minmax(0,1fr) 330px !important;column-gap:18px !important;box-sizing:border-box;overflow:hidden;}
 .header-left-identity{width:132px !important;min-width:132px !important;max-width:132px !important;}
 .header-right-identity{width:330px !important;min-width:330px !important;max-width:330px !important;grid-template-columns:minmax(125px,1fr) 150px !important;gap:16px !important;box-sizing:border-box;align-items:start !important;}
 .header-right-identity > div:first-child{grid-column:2 !important;width:150px !important;min-width:150px !important;max-width:150px !important;align-items:flex-end !important;justify-self:end !important;}
@@ -1346,75 +1346,7 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
 }
 </style>
 
-<style id="students-intake-redesign-2026-10-07">
-.student-intake-bar{
-  display:grid;
-  grid-template-columns:minmax(235px,.82fr) minmax(0,1.8fr);
-  gap:10px;
-  padding:10px;
-  border:1px solid var(--line);
-  border-radius:18px;
-  background:color-mix(in srgb,var(--teal) 2.5%,var(--card));
-  box-shadow:0 5px 16px rgba(15,55,51,.045);
-}
-.student-intake-primary,.student-intake-excel{
-  min-width:0;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:var(--card);
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 11px;
-}
-.student-intake-primary{border-color:color-mix(in srgb,var(--teal) 24%,var(--line));}
-.student-intake-excel{justify-content:space-between;}
-.student-intake-icon,.student-intake-excel-icon{
-  width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 34px;font-size:13px;
-}
-.student-intake-icon{background:color-mix(in srgb,var(--teal) 11%,var(--card));color:var(--teal);}
-.student-intake-excel-icon{background:color-mix(in srgb,var(--leaf) 12%,var(--card));color:var(--leaf);}
-.student-intake-copy{min-width:0;display:flex;flex-direction:column;gap:2px;}
-.student-intake-title{font-size:11px;font-weight:900;color:var(--teal-dark);line-height:1.15;white-space:nowrap;}
-.student-intake-sub{font-size:8.5px;font-weight:600;color:#60716D;line-height:1.2;white-space:nowrap;}
-.student-intake-add{
-  margin-inline-start:auto;border:0;border-radius:10px;background:var(--teal);color:#fff;
-  min-height:32px;padding:6px 10px;display:flex;align-items:center;justify-content:center;gap:6px;
-  font-size:9px;font-weight:850;white-space:nowrap;cursor:pointer;box-shadow:0 4px 10px rgba(14,124,116,.16);
-}
-.student-intake-add i{color:#fff;}
-.student-intake-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;justify-content:stretch;gap:6px;min-width:0;}
-.student-intake-controls select,.student-intake-tool,.student-intake-import{
-  min-height:32px;border:1px solid var(--line);border-radius:9px;padding:6px 8px;
-  background:var(--card);color:var(--ink);font-size:8.5px;font-weight:750;white-space:nowrap;
-}
-.student-intake-controls select{max-width:150px;min-width:105px;outline:none;}
-.student-intake-tool{display:flex;align-items:center;justify-content:center;gap:5px;color:var(--teal-dark);border-color:color-mix(in srgb,var(--teal) 38%,var(--line));cursor:pointer;}
-.student-intake-tool i{color:var(--teal);}
-.student-intake-import{display:flex;align-items:center;justify-content:center;gap:5px;background:var(--leaf);border-color:var(--leaf);color:#fff;cursor:pointer;}
-.student-intake-import i{color:#fff;}
-.student-intake-tool:hover,.student-intake-add:hover{filter:brightness(1.04);transform:translateY(-1px);}
-.student-intake-import:hover{filter:brightness(1.05);}
-body.theme-dark .student-intake-sub{color:#B9CAC6;}
-body.theme-dark .student-intake-bar{background:color-mix(in srgb,var(--teal) 7%,var(--card));}
-@media(max-width:820px){
-  .student-intake-bar{grid-template-columns:1fr;}
-  .student-intake-excel{align-items:flex-start;flex-direction:column;}
-  .student-intake-controls{width:100%;justify-content:stretch;flex-wrap:wrap;}
-  .student-intake-controls select{flex:1 1 120px;max-width:none;}
-  .student-intake-tool,.student-intake-import{flex:1 1 130px;}
-}
-@media(max-width:480px){
-  .student-intake-bar{padding:7px;gap:7px;border-radius:15px;}
-  .student-intake-primary,.student-intake-excel{padding:8px;border-radius:12px;}
-  .student-intake-title{font-size:10px;}
-  .student-intake-sub{font-size:7.5px;}
-  .student-intake-icon,.student-intake-excel-icon{width:31px;height:31px;flex-basis:31px;font-size:12px;}
-  .student-intake-add{min-height:30px;padding:5px 8px;font-size:8px;}
-  .student-intake-controls{gap:5px;}
-  .student-intake-controls select,.student-intake-tool,.student-intake-import{min-height:30px;font-size:8px;padding:5px 6px;}
-}
-</style>\n</head>
+</head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
 <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2"></div>
@@ -1677,51 +1609,52 @@ body.theme-dark .student-intake-bar{background:color-mix(in srgb,var(--teal) 7%,
         </div>
         <button data-action="open-add-student" class="text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 justify-center" style="background:var(--teal);"><i class="fa-solid fa-user-plus"></i> Add Student / إضافة طالب</button>
       </div>
-      <div class="student-intake-bar">
-        <div class="student-intake-primary">
-          <span class="student-intake-icon"><i class="fa-solid fa-user-plus"></i></span>
-          <span class="student-intake-copy">
-            <span class="student-intake-title bilingual-inline">Add Student / إضافة طالب</span>
-            <span class="student-intake-sub">Add one student quickly / إضافة طالب بسرعة</span>
-          </span>
-          <button type="button" data-action="open-add-student" class="student-intake-add">
-            <i class="fa-solid fa-plus"></i>
-            <span class="bilingual-inline">Add Student / إضافة طالب</span>
-          </button>
-        </div>
-
-        <div class="student-intake-excel">
-          <div class="student-intake-excel-head">
-            <span class="student-intake-excel-icon"><i class="fa-solid fa-file-excel"></i></span>
-            <span class="student-intake-copy">
-              <span class="student-intake-title">Excel Import / استيراد من Excel</span>
-              <span class="student-intake-sub">Add many students at once / إضافة مجموعة طلاب دفعة واحدة</span>
-            </span>
+      <div class="card p-4 space-y-4" style="background:var(--card);">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div class="font-display font-extrabold text-sm" style="color:var(--teal-dark);">Add Students / إضافة الطلاب</div>
+            <div class="text-[10px] text-gray-500 mt-0.5">Choose the quickest way to add students / اختر الطريقة الأنسب لإضافة الطلاب</div>
           </div>
-          <div class="student-intake-controls">
-            <select id="import-destination-class" title="Choose a class to assign all imported students to it, or leave blank to use Class/Section from Excel.">
-              <option value="">Class / الصف من ملف Excel</option>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <button type="button" data-action="open-add-student" class="text-right rounded-2xl border p-4 flex items-center gap-3 transition hover:-translate-y-0.5" style="border-color:var(--line); background:var(--card);">
+            <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EAF7F5; color:var(--teal);"><i class="fa-solid fa-user-plus"></i></span>
+            <span class="min-w-0">
+              <span class="block font-display font-extrabold text-xs bilingual-inline" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
+              <span class="block text-[10px] text-gray-500 mt-1">Add one student without Excel / إضافة طالب واحد بدون ملف إكسل</span>
+            </span>
+          </button>
+          <div class="rounded-2xl border p-4" style="border-color:#DCE8E5; background:#FFFFFF;">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EEF8F0; color:var(--leaf);"><i class="fa-solid fa-file-excel"></i></span>
+              <span>
+                <span class="block font-display font-extrabold text-xs" style="color:#347A43;">Import from Excel / استيراد من Excel</span>
+                <span class="block text-[10px] text-gray-500 mt-1">Add many students at once / إضافة مجموعة طلاب دفعة واحدة</span>
+              </span>
+            </div>
+            <div class="text-[9.5px] text-gray-500 mb-2">Optional class assignment / تعيين الصف اختياري</div>
+            <select id="import-destination-class" class="w-full text-xs border rounded-lg px-2 py-2 mb-2" style="border-color:var(--line);" title="Choose a class to assign all imported students to it, or leave blank to use Class/Section from Excel.">
+              <option value="">Use Class/Section from Excel / استخدم الصف/الشعبة من ملف الإكسل</option>
             </select>
-            <select id="import-country-code" title="Country code for imported phone numbers.">
-              <option value="">No code / بدون رمز</option>
-              <option value="974">Qatar +974</option>
-              <option value="20">Egypt +20</option>
-              <option value="966">Saudi Arabia +966</option>
-              <option value="971">UAE +971</option>
-              <option value="965">Kuwait +965</option>
-              <option value="973">Bahrain +973</option>
-              <option value="968">Oman +968</option>
-              <option value="other">Other / أخرى</option>
-            </select>
-            <button type="button" data-action="download-template" class="student-intake-tool">
-              <i class="fa-solid fa-file-arrow-down"></i>
-              <span class="bilingual-inline">Template / تحميل النموذج</span>
-            </button>
-            <label class="student-intake-import">
-              <i class="fa-solid fa-file-excel"></i>
-              <span class="bilingual-inline">Import Excel / استيراد Excel</span>
-              <input type="file" accept=".xlsx,.xls,.csv" data-action="import-excel" class="hidden">
-            </label>
+            <div class="text-[9px] text-gray-400 mb-2">Choose a class to assign all imported students to it. Leave blank to use the Class/Section column from Excel.<br>اختر صفًا لتعيين جميع الطلاب المستوردين إليه، أو اتركه فارغًا لاستخدام عمود الصف/الشعبة من ملف الإكسل.</div>
+            <div class="flex gap-2 flex-wrap items-center">
+              <select id="import-country-code" class="text-xs border rounded-lg px-2 py-2" style="border-color:var(--line);">
+                <option value="">No country code / بدون رمز دولة</option>
+                <option value="974">Qatar +974</option>
+                <option value="20">Egypt +20</option>
+                <option value="966">Saudi Arabia +966</option>
+                <option value="971">UAE +971</option>
+                <option value="965">Kuwait +965</option>
+                <option value="973">Bahrain +973</option>
+                <option value="968">Oman +968</option>
+                <option value="other">Other / أخرى</option>
+              </select>
+              <button type="button" data-action="download-template" class="text-xs font-semibold px-4 py-2 rounded-xl border flex items-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-file-arrow-down"></i> Template / تحميل نموذج</button>
+              <label class="text-xs font-semibold px-4 py-2 rounded-xl text-white flex items-center gap-2 cursor-pointer" style="background:var(--leaf);">
+                <i class="fa-solid fa-file-excel"></i> Import from Excel / استيراد من Excel
+                <input type="file" accept=".xlsx,.xls,.csv" data-action="import-excel" class="hidden">
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -3539,88 +3472,29 @@ function openSkillBulkMenu(anchor){
   closeDailyChoiceMenu();
   const menu=document.createElement('div');
   menu.className='daily-choice-menu';
-  const options=skillBulkOptions().map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
-  menu.innerHTML=options+
-    '<div class="bulk-menu-divider"></div>'+
-    '<button type="button" class="bulk-select-students-btn" data-bulk-select="1"><i class="fa-solid fa-users"></i><span class="en">Apply to selected students</span><span class="ar">تطبيق على طلاب محددين</span></button>';
+  menu.innerHTML=skillBulkOptions().map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
   document.body.appendChild(menu);
   activeDailyChoiceMenu=menu;
   positionDailyMenu(menu,anchor);
-  menu.querySelectorAll('button[data-value]').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applySkillBulk(btn.dataset.value); closeDailyChoiceMenu(); }));
-  menu.querySelector('[data-bulk-select="1"]').addEventListener('click',e=>{e.stopPropagation(); closeDailyChoiceMenu(); openBulkStudentSelection(anchor,'skill',window.__activeSkillBulkSkill||'reading');});
+  menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applySkillBulk(btn.dataset.value); closeDailyChoiceMenu(); }));
   bindDailyChoiceOutsideClose(menu);
 }
 function openDailyBulkMenu(anchor,field){
-  closeDailyChoiceMenu();
-  const menu=document.createElement('div');
-  menu.className='daily-choice-menu';
-  const options=dailyBulkOptions(field).map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
-  menu.innerHTML=options+
-    '<div class="bulk-menu-divider"></div>'+
-    '<button type="button" class="bulk-select-students-btn" data-bulk-select="1"><i class="fa-solid fa-users"></i><span class="en">Apply to selected students</span><span class="ar">تطبيق على طلاب محددين</span></button>';
+  closeDailyChoiceMenu(); const menu=document.createElement('div'); menu.className='daily-choice-menu';
+  menu.innerHTML=dailyBulkOptions(field).map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
   document.body.appendChild(menu); activeDailyChoiceMenu=menu; positionDailyMenu(menu,anchor);
-  menu.querySelectorAll('button[data-value]').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applyDailyBulk(field,btn.dataset.value); closeDailyChoiceMenu(); }));
-  menu.querySelector('[data-bulk-select="1"]').addEventListener('click',e=>{e.stopPropagation(); closeDailyChoiceMenu(); openBulkStudentSelection(anchor,'daily',field);});
+  menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applyDailyBulk(field,btn.dataset.value); closeDailyChoiceMenu(); }));
   bindDailyChoiceOutsideClose(menu);
 }
-function openBulkStudentSelection(anchor,mode,field){
-  const classFilterId=mode==='skill'?'skills-class-filter':'daily-class-filter';
-  const classFilter=document.getElementById(classFilterId)?.value||'all';
-  const list=classFilter==='all'?studentsData:studentsData.filter(st=>st.classId===Number(classFilter));
-  if(!list.length){showToast('No students in the selected class / لا يوجد طلاب في الصف المحدد','error');return;}
-  const overlay=document.createElement('div');
-  overlay.className='bulk-student-modal-overlay';
-  const safeField=String(field||'').replace(/[^a-z0-9_-]/gi,'');
-  overlay.innerHTML='<div class="bulk-student-modal" role="dialog" aria-modal="true">'+
-    '<div class="bulk-student-modal-head"><div><div class="bulk-student-kicker"><span class="en">Student Selection</span><span class="ar">اختيار الطلاب</span></div><h3><span class="en">Apply to selected students</span><span class="ar">تطبيق على طلاب محددين</span></h3></div><button type="button" class="bulk-student-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>'+
-    '<div class="bulk-student-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="search" class="bulk-student-search" placeholder="Search student / بحث عن طالب..." autocomplete="off"></div>'+
-    '<div class="bulk-student-tools"><button type="button" data-bulk-check-all>✓ <span class="en">Select all</span><span class="ar">تحديد الكل</span></button><button type="button" data-bulk-uncheck-all>↶ <span class="en">Clear selection</span><span class="ar">إلغاء التحديد</span></button><span class="bulk-student-count"></span></div>'+
-    '<div class="bulk-student-list">'+list.map(st=>'<label class="bulk-student-row" data-name="'+escapeHtml(String(st.name||''))+'"><input type="checkbox" value="'+String(st.id)+'"><span class="bulk-student-check"></span><span class="bulk-student-name">'+escapeHtml(String(st.name||''))+'</span></label>').join('')+'</div>'+
-    '<div class="bulk-student-footer"><button type="button" class="bulk-student-cancel"><span class="en">Cancel</span><span class="ar">إلغاء</span></button><button type="button" class="bulk-student-continue" disabled><i class="fa-solid fa-check"></i><span class="bulk-continue-label">Apply to 0 students / تطبيق على 0 طالب</span></button></div>'+
-    '</div>';
-  document.body.appendChild(overlay);
-  const close=()=>overlay.remove();
-  const search=overlay.querySelector('.bulk-student-search');
-  const countEl=overlay.querySelector('.bulk-student-count');
-  const continueBtn=overlay.querySelector('.bulk-student-continue');
-  const update=()=>{
-    const checked=[...overlay.querySelectorAll('.bulk-student-list input:checked')];
-    const n=checked.length;
-    countEl.textContent=(n+' selected / تم تحديد '+n);
-    continueBtn.disabled=n===0;
-    continueBtn.querySelector('.bulk-continue-label').textContent='Apply to '+n+' student'+(n===1?'':'s')+' / تطبيق على '+n+' '+(n===1?'طالب':'طلاب');
-  };
-  overlay.querySelectorAll('.bulk-student-list input').forEach(cb=>cb.addEventListener('change',update));
-  search.addEventListener('input',()=>{
-    const q=search.value.trim().toLowerCase();
-    overlay.querySelectorAll('.bulk-student-row').forEach(row=>row.style.display=(!q||row.dataset.name.toLowerCase().includes(q))?'flex':'none');
-  });
-  overlay.querySelector('[data-bulk-check-all]').addEventListener('click',()=>{overlay.querySelectorAll('.bulk-student-list input').forEach(cb=>cb.checked=true);update();});
-  overlay.querySelector('[data-bulk-uncheck-all]').addEventListener('click',()=>{overlay.querySelectorAll('.bulk-student-list input').forEach(cb=>cb.checked=false);update();});
-  overlay.querySelector('.bulk-student-close').addEventListener('click',close);
-  overlay.querySelector('.bulk-student-cancel').addEventListener('click',close);
-  overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
-  continueBtn.addEventListener('click',()=>{
-    const ids=[...overlay.querySelectorAll('.bulk-student-list input:checked')].map(cb=>Number(cb.value));
-    close();
-    window.__bulkTargetIds=ids;
-    if(mode==='skill'){openSkillBulkMenu(anchor);}else{openDailyBulkMenu(anchor,safeField);}
-  });
-  update();
-  setTimeout(()=>search.focus(),60);
-}
 function applyDailyBulk(field,value){
-  const date=getSelectedDailyDate();
-  const classFilter=document.getElementById('daily-class-filter')?.value||'all';
-  const targetIds=Array.isArray(window.__bulkTargetIds)?new Set(window.__bulkTargetIds):null;
-  const list=targetIds?studentsData.filter(s=>targetIds.has(Number(s.id))):(classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter)));
+  const date=getSelectedDailyDate(); const classFilter=document.getElementById('daily-class-filter')?.value||'all'; const list=classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter));
   list.forEach(s=>{ const rec=ensureDailyRecord(date,s.id);
     if(field==='behaviour'){ if(value==='') delete rec.behaviourLevel; else rec.behaviourLevel=value; s.behaviourLevel=latestDailyFieldValue(s.id,'behaviourLevel','disciplined'); }
     else if(field==='participation'){ if(value==='') delete rec.participationLevel; else rec.participationLevel=value; s.participationLevel=latestDailyFieldValue(s.id,'participationLevel','active'); }
     else if(field==='homework'){ if(value==='clear') delete rec.homeworkDone; else rec.homeworkDone=value==='done'; s.homeworkDone=latestDailyFieldValue(s.id,'homeworkDone',false); }
     else if(field==='attendance'){ if(value==='clear') delete rec.attendance; else rec.attendance=value; s.attendance=latestDailyFieldValue(s.id,'attendance','present'); }
   });
-  saveData(); renderDailyTable(); renderStudentsTable(); list.forEach(s=>evaluateStudentSmartAlerts(s.id,date)); const wasSelected=!!targetIds; window.__bulkTargetIds=null; showToast(wasSelected?'Bulk update applied to selected students / تم التطبيق على الطلاب المحددين':'Bulk update applied / تم تطبيق الاختيار على الصف المحدد','success');
+  saveData(); renderDailyTable(); renderStudentsTable(); list.forEach(s=>evaluateStudentSmartAlerts(s.id,date)); showToast('Bulk update applied / تم تطبيق الاختيار على الصف المحدد','success');
 }
 function setParticipation(id, val){
   const s = studentsData.find(x=>x.id===id); if(!s) return;
@@ -3788,8 +3662,7 @@ function applySkillBulk(level){
   const classFilter=document.getElementById('skills-class-filter')?.value||'all';
   const skill=window.__activeSkillBulkSkill||'reading';
   const date=getSelectedSkillsDate();
-  const targetIds=Array.isArray(window.__bulkTargetIds)?new Set(window.__bulkTargetIds):null;
-  const list=targetIds?studentsData.filter(s=>targetIds.has(Number(s.id))):(classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter)));
+  const list=classFilter==='all'?studentsData:studentsData.filter(s=>s.classId===Number(classFilter));
   if(!list.length){showToast('No students in the selected class / لا يوجد طلاب في الصف المحدد','error');return;}
   list.forEach(s=>{
     migrateSkillData(s);
@@ -3843,7 +3716,7 @@ function renderStarsSpotlight(){
 function badgeRow(s, rank){
   const badges = getStudentBadges(s, rank);
   if(!badges.length) return '';
-  return `<div class="flex flex-wrap gap-1 mt-1">${badges.map(b=>`<span class="stars-achievement-badge inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full" style="color:${b.color}; background:color-mix(in srgb, ${b.color} 14%, var(--card)); border:1px solid color-mix(in srgb, ${b.color} 28%, var(--line));"><i class="fa-solid ${b.icon}"></i> ${b.en}</span>`).join('')}</div>`;
+  return `<div class="flex flex-wrap gap-1 mt-1">${badges.map(b=>`<span class="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white" style="background:${b.color};"><i class="fa-solid ${b.icon}"></i> ${b.en}</span>`).join('')}</div>`;
 }
 function renderStarsBoard(){
   renderStarsSpotlight();
@@ -7282,7 +7155,6 @@ try{
         '<div class="ph-section-row"><div class="ph-page-title"></div><div class="ph-utilities">',
           '<select id="premium-term-select" class="ph-pill-select" aria-label="Term / الفصل الدراسي"></select>',
           '<select id="premium-language-select" class="ph-pill-select" aria-label="Language / اللغة"></select>',
-          '<button type="button" class="ph-refresh-mobile" data-action="pwa-refresh" aria-label="Refresh app / تحديث التطبيق" title="Refresh app / تحديث التطبيق"><i class="fa-solid fa-arrows-rotate"></i></button>',
         '</div></div>',
       '</div>',
       '<div class="ph-ministry" aria-label="Ministry logo / شعار الوزارة"><div class="ph-ministry-logo-slot"></div><button type="button" class="ph-bell-under-ministry" id="premium-bell" aria-label="Notifications / الإشعارات"><i class="fa-regular fa-bell"></i><span class="ph-badge" id="premium-badge">0</span></button></div>',
@@ -7598,7 +7470,6 @@ try{
         '<div class="ph-section-row"><div class="ph-page-title"></div><div class="ph-utilities">',
           '<select id="premium-term-select" class="ph-pill-select" aria-label="Term / الفصل الدراسي"></select>',
           '<select id="premium-language-select" class="ph-pill-select" aria-label="Language / اللغة"></select>',
-          '<button type="button" class="ph-refresh-mobile" data-action="pwa-refresh" aria-label="Refresh app / تحديث التطبيق" title="Refresh app / تحديث التطبيق"><i class="fa-solid fa-arrows-rotate"></i></button>',
         '</div></div>',
       '</div>',
       '<div class="ph-ministry" aria-label="Ministry logo / شعار الوزارة"><div class="ph-ministry-logo-slot"></div><button type="button" class="ph-bell-under-ministry" id="premium-bell" aria-label="Notifications / الإشعارات"><i class="fa-regular fa-bell"></i><span class="ph-badge" id="premium-badge">0</span></button></div>',
@@ -8472,17 +8343,12 @@ body.dark #stars-board-list .grid>div p,body.dark #stars-board-list .grid>div sp
 #tab-dashboard .hero-band [data-action="open-add-class"],
 #tab-dashboard .hero-band [data-action="open-add-class"] *,
 #tab-dashboard .hero-band [data-action="open-add-student"],
-#tab-dashboard .hero-band [data-action="open-add-student"] *{
+#tab-dashboard .hero-band [data-action="open-add-student"] *,
+#tab-students [data-action="open-add-student"],
+#tab-students [data-action="open-add-student"] *{
   color:#fff!important;
   opacity:1!important;
   text-shadow:0 1px 3px rgba(0,0,0,.24)!important;
-}
-#tab-students [data-action="open-add-student"]{
-  color:var(--teal-dark)!important;
-  text-shadow:none!important;
-}
-#tab-students [data-action="open-add-student"] .text-gray-500{
-  color:#71817D!important;
 }
 #tab-dashboard .hero-band .hero-stat{background:rgba(0,0,0,.16)!important;border-color:rgba(255,255,255,.24)!important;}
 /* Preferences are intentionally transactional: selecting previews only; Save Preferences persists. */
@@ -9119,10 +8985,6 @@ function renderClassPulsePremiumLower(wrap, students, acad, hw, partDist, behDis
 #stars-board-list .text-4xl,#stars-board-list .text-5xl,#stars-board-list .text-3xl{font-size:0!important;}
 #cert-preview .ss-cert-creative{position:relative;overflow:hidden;min-height:690px;padding:34px 42px 28px!important;border-radius:26px!important;background:radial-gradient(circle at 50% 32%,rgba(14,124,116,.08),transparent 32%),linear-gradient(145deg,#fffdf8,#f4fbf8)!important;border:1px solid #D7E5E0!important;color:#163A36!important}#cert-preview .ss-cert-creative .ss-cert-frame{position:absolute;inset:12px;border:1px solid rgba(14,124,116,.28);border-radius:20px;pointer-events:none}#cert-preview .ss-cert-creative .ss-cert-frame:after{content:'';position:absolute;inset:6px;border:1px dashed rgba(139,107,199,.22);border-radius:16px}#cert-preview .ss-cert-ribbon{position:absolute;width:260px;height:26px;transform:rotate(-34deg);opacity:.13;filter:blur(.2px)}#cert-preview .ribbon-a{left:-72px;top:92px;background:linear-gradient(90deg,var(--teal),transparent)}#cert-preview .ribbon-b{right:-72px;bottom:110px;background:linear-gradient(90deg,transparent,var(--violet));transform:rotate(34deg)}#cert-preview .ss-cert-topline{position:relative;display:flex;justify-content:space-between;gap:12px;font-size:8px;letter-spacing:.18em;font-weight:850;color:#68807A;margin-bottom:16px}#cert-preview .ss-cert-brand-row{position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px}#cert-preview .ss-cert-logo-slot{height:58px;display:flex;align-items:center}#cert-preview .ss-cert-logo-slot:last-child{justify-content:flex-end}#cert-preview .ss-cert-logo-slot img{max-height:52px;max-width:145px;object-fit:contain;background:#fff;border-radius:10px;padding:4px}#cert-preview .ss-cert-brand-center{display:flex;align-items:center;gap:10px;justify-content:center}#cert-preview .ss-cert-emblem{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,var(--teal),var(--violet));box-shadow:0 8px 18px rgba(14,124,116,.18)}#cert-preview .ss-cert-brand-center strong{display:block;font-size:17px;letter-spacing:.08em;color:var(--teal-dark)}#cert-preview .ss-cert-brand-center small{display:block;font-size:7px;letter-spacing:.08em;color:#758983}#cert-preview .ss-cert-kicker{text-align:center;margin-top:18px;font-size:9px;font-weight:900;letter-spacing:.18em;color:#667B76}#cert-preview .ss-cert-title-wrap{display:flex;align-items:center;gap:12px;margin:9px 0 13px}#cert-preview .ss-cert-line{height:1px;flex:1;background:linear-gradient(90deg,transparent,#A7C9C1)}#cert-preview .ss-cert-title{font-size:clamp(25px,3vw,42px)!important;color:#123D38!important;text-align:center;letter-spacing:.02em!important;margin:0!important}#cert-preview .ss-cert-award{position:relative;display:flex;justify-content:center;align-items:center;gap:11px;margin:4px auto 12px;padding:8px 16px;width:max-content;max-width:90%;border-radius:999px;background:rgba(14,124,116,.08);border:1px solid rgba(14,124,116,.16)}#cert-preview .ss-cert-award-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,var(--gold),var(--violet));font-size:12px}#cert-preview .ss-cert-award span{display:block;font-size:10px;font-weight:850;color:var(--teal-dark)}#cert-preview .ss-cert-award b{display:block;font-size:9px;color:#7A8D88}#cert-preview .ss-cert-present{text-align:center;max-width:700px;margin:0 auto!important;font-size:14px!important;line-height:1.8!important;color:#4A5F5A!important;font-weight:650!important}#cert-preview .ss-cert-nameplate{position:relative;text-align:center;margin:15px auto 12px;padding:9px 20px 10px;max-width:650px;border-top:1px solid #B8D0CA;border-bottom:1px solid #B8D0CA;background:rgba(255,255,255,.58)}#cert-preview .ss-cert-nameplate span{display:block;font-size:8px;letter-spacing:.18em;font-weight:900;color:#7A8E88}#cert-preview .ss-cert-name{display:block!important;font-size:29px!important;color:#0E5F58!important;font-weight:900!important;margin:2px 0!important}#cert-preview .ss-cert-nameplate small{font-size:8px;color:#7B8D88}#cert-preview .ss-cert-evidence{margin:13px auto 12px;max-width:720px;padding:12px 16px;border-radius:15px;background:rgba(255,255,255,.72);border:1px solid #D8E5E1;box-shadow:0 7px 18px rgba(30,60,55,.06)}#cert-preview .ss-cert-evidence-label{font-size:9px!important;font-weight:900!important;color:var(--violet)!important;letter-spacing:.13em!important}#cert-preview .ss-cert-evidence-text{font-size:12px!important;line-height:1.7!important;color:#40534F!important;font-weight:700!important;margin-top:4px}#cert-preview .ss-cert-footer-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end;margin-top:14px}#cert-preview .ss-cert-footer-grid>div:first-child{text-align:left}#cert-preview .ss-cert-footer-grid>div:last-child{text-align:right}#cert-preview .ss-cert-footer-grid b{display:block;font-size:11px;font-weight:900;color:#234944}#cert-preview .ss-cert-footer-grid span{display:block;font-size:8px;color:#6E827C;margin-top:2px}#cert-preview .ss-cert-term{text-align:center!important;font-size:8px!important;font-weight:800!important;color:#7A8B86!important}#cert-preview .ss-cert-signatures{position:relative;display:grid!important;grid-template-columns:1fr 1fr;gap:46px;margin-top:17px!important;padding-top:9px;border-top:1px solid #C7D8D3}#cert-preview .ss-cert-signatures>div{text-align:center}#cert-preview .ss-cert-signatures b{display:block;font-size:8px!important;color:#6C817B!important}#cert-preview .ss-cert-signatures strong{display:block;font-size:13px!important;color:#163E39!important;margin-top:3px}#cert-preview .ss-cert-signatures span{display:block;font-size:7px;color:#82918D;margin-top:2px}#cert-preview .ss-cert-bottom-mark{display:flex;justify-content:center;align-items:center;gap:7px;margin-top:13px;font-size:6.5px;letter-spacing:.13em;font-weight:900;color:#7A8C87}#cert-preview .ss-cert-bottom-mark i{font-size:6px;color:var(--violet)}
 @media(max-width:700px){.se-summary{display:block}.se-summary-stats{min-width:0;margin-top:10px}.se-features{grid-template-columns:1fr}.se-rank-row{grid-template-columns:18px minmax(70px,110px) 1fr 38px}.cp-lower-grid{grid-template-columns:1fr}.cp-skill-list{grid-template-columns:1fr 1fr}.pj-playback-head{display:block}.pj-replay-btn{margin-top:8px}.pj-play-chart{height:135px}.font-preview-gallery{grid-template-columns:1fr 1fr}#cert-preview .ss-cert-creative{padding:26px 18px 22px!important;min-height:620px}#cert-preview .ss-cert-logo-slot img{max-width:95px;max-height:42px}#cert-preview .ss-cert-present{font-size:12px!important}#cert-preview .ss-cert-name{font-size:24px!important}#cert-preview .ss-cert-footer-grid{grid-template-columns:1fr;gap:6px;text-align:center}#cert-preview .ss-cert-footer-grid>div:first-child,#cert-preview .ss-cert-footer-grid>div:last-child{text-align:center}#cert-preview .ss-cert-signatures{gap:12px}}
-
-/* Excellence Board badges: keep label text readable against its badge in every theme. */
-.stars-achievement-badge{white-space:nowrap;line-height:1.35;text-shadow:none!important;}
-body.theme-dark .stars-achievement-badge{background:color-mix(in srgb, currentColor 22%, var(--card))!important;}
 </style>
 
 <script id="precision-controls-2026-10-06">
@@ -9130,7 +8992,7 @@ body.theme-dark .stars-achievement-badge{background:color-mix(in srgb, currentCo
   const fonts=[['cairo','Cairo','أحمد','#0E7C74'],['tajawal','Tajawal','أحمد','#7C5CBF'],['ibmplex','IBM Plex Sans Arabic','أحمد','#3E7CC9'],['almarai','Almarai','أحمد','#2F7D4A'],['notokufi','Noto Kufi Arabic','أحمد','#E8792F'],['changa','Changa','أحمد','#C83A9B'],['elmessiri','El Messiri','أحمد','#D9668B']];
   function renderFonts(){const sel=document.getElementById('setting-font-family');if(!sel||document.getElementById('font-preview-gallery'))return;const g=document.createElement('div');g.id='font-preview-gallery';g.className='font-preview-gallery';g.innerHTML=fonts.map(f=>'<button type="button" class="font-preview-chip '+(settings.fontFamily===f[0]?'active':'')+'" data-font-preview="'+f[0]+'"><span class="font-preview-dot" style="background:'+f[3]+'"></span><span style="min-width:0"><span class="font-preview-sample" style="font-family:'+FONT_FAMILIES[f[0]]+'">'+f[2]+' — '+f[1]+'</span><span class="font-preview-name">'+f[1]+'</span></span></button>').join('');sel.parentElement.appendChild(g);}
   function activeFonts(){document.querySelectorAll('[data-font-preview]').forEach(b=>b.classList.toggle('active',b.dataset.fontPreview===settings.fontFamily));}
-  function mobileRefresh(){const old=document.getElementById('mobile-refresh-fab');if(old)old.remove();const legacy=document.getElementById('mobile-app-refresh');if(legacy)legacy.remove();const btn=document.querySelector('.ph-refresh-mobile')||document.querySelector('#app-topbar button.pwa-refresh-btn');if(!btn)return;btn.style.setProperty('visibility','visible','important');btn.style.setProperty('opacity','1','important');}
+  function mobileRefresh(){if(window.innerWidth>640||document.getElementById('mobile-refresh-fab'))return;const b=document.createElement('button');b.id='mobile-refresh-fab';b.type='button';b.setAttribute('aria-label','Refresh app / تحديث التطبيق');b.title='Refresh app / تحديث التطبيق';b.innerHTML='<i class="fa-solid fa-arrows-rotate"></i>';Object.assign(b.style,{position:'fixed',top:'8px',left:'8px',width:'34px',height:'34px',borderRadius:'11px',border:'1px solid rgba(255,255,255,.45)',background:'rgba(14,124,116,.94)',color:'#fff',zIndex:'9999',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 5px 14px rgba(0,0,0,.20)',touchAction:'manipulation'});b.onclick=async function(e){e.preventDefault();e.stopPropagation();if(b.dataset.busy==='1')return;b.dataset.busy='1';b.style.opacity='.65';try{const reg=await navigator.serviceWorker?.getRegistration?.();if(reg)await reg.update().catch(()=>{});}finally{const u=new URL(window.location.href);u.searchParams.set('refresh',String(Date.now()));window.location.assign(u.href);}};document.body.appendChild(b);}
   function init(){renderFonts();mobileRefresh();}
   document.addEventListener('click',function(e){const b=e.target.closest?.('[data-font-preview]');if(b){e.preventDefault();e.stopPropagation();const sel=document.getElementById('setting-font-family');if(sel){sel.value=b.dataset.fontPreview;applyFontFamily(b.dataset.fontPreview);activeFonts();}}},true);
   window.addEventListener('resize',mobileRefresh);
@@ -9138,38 +9000,6 @@ body.theme-dark .stars-achievement-badge{background:color-mix(in srgb, currentCo
 })();
 </script>
 
-<style id="bulk-student-selection-2026-10-07">
-.bulk-menu-divider{height:1px;background:var(--line);margin:5px 2px;}
-.bulk-select-students-btn{display:flex!important;align-items:center;gap:8px;width:100%;border:0;background:color-mix(in srgb,var(--teal) 7%,var(--card));color:var(--teal-dark);padding:8px 9px;border-radius:9px;font-size:9px;font-weight:850;cursor:pointer;}
-.bulk-select-students-btn:hover{background:color-mix(in srgb,var(--teal) 13%,var(--card));}
-.bulk-select-students-btn i{color:var(--teal);width:16px;text-align:center;}
-.bulk-student-modal-overlay{position:fixed;inset:0;background:rgba(10,25,23,.48);z-index:10020;display:flex;align-items:center;justify-content:center;padding:16px;}
-.bulk-student-modal{width:min(430px,94vw);max-height:min(680px,88vh);display:flex;flex-direction:column;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.25);overflow:hidden;}
-.bulk-student-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px 11px;border-bottom:1px solid var(--line);}
-.bulk-student-kicker{font-size:8px;font-weight:900;letter-spacing:.08em;color:var(--violet);}
-.bulk-student-modal-head h3{margin:3px 0 0;font-size:14px;font-weight:900;color:var(--ink);}
-.bulk-student-close{width:30px;height:30px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.bulk-student-search-wrap{margin:11px 14px 7px;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:11px;background:color-mix(in srgb,var(--teal) 4%,var(--card));}
-.bulk-student-search-wrap i{color:var(--teal);font-size:10px;}
-.bulk-student-search{border:0!important;outline:0!important;background:transparent!important;color:var(--ink)!important;width:100%;font-size:10px!important;padding:0!important;}
-.bulk-student-tools{display:flex;align-items:center;gap:6px;padding:3px 14px 9px;flex-wrap:wrap;}
-.bulk-student-tools button{border:1px solid var(--line);background:var(--card);color:var(--teal-dark);border-radius:8px;padding:5px 8px;font-size:8px;font-weight:800;cursor:pointer;}
-.bulk-student-count{margin-left:auto;font-size:8px;font-weight:850;color:var(--violet);}
-.bulk-student-list{overflow:auto;padding:2px 14px 8px;min-height:90px;}
-.bulk-student-row{display:flex;align-items:center;gap:9px;padding:8px 9px;border:1px solid transparent;border-radius:10px;cursor:pointer;direction:ltr;}
-.bulk-student-row:hover{background:color-mix(in srgb,var(--teal) 6%,var(--card));border-color:var(--line);}
-.bulk-student-row input{position:absolute;opacity:0;pointer-events:none;}
-.bulk-student-check{width:18px;height:18px;border-radius:6px;border:1.5px solid #A8BBB6;background:var(--card);display:flex;align-items:center;justify-content:center;flex:0 0 18px;}
-.bulk-student-row input:checked + .bulk-student-check{background:var(--teal);border-color:var(--teal);}
-.bulk-student-row input:checked + .bulk-student-check:after{content:'✓';color:#fff;font-size:11px;font-weight:900;}
-.bulk-student-name{font-size:10px;font-weight:750;color:var(--ink);direction:rtl;text-align:right;flex:1;}
-.bulk-student-footer{display:flex;justify-content:flex-end;gap:8px;padding:11px 14px;border-top:1px solid var(--line);}
-.bulk-student-cancel,.bulk-student-continue{border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:9px;font-weight:850;cursor:pointer;}
-.bulk-student-cancel{background:var(--card);color:var(--ink);}
-.bulk-student-continue{background:var(--teal);color:#fff;border-color:var(--teal);}
-.bulk-student-continue:disabled{opacity:.45;cursor:not-allowed;}
-@media(max-width:480px){.bulk-student-modal-overlay{padding:10px}.bulk-student-modal{width:96vw;max-height:86vh}.bulk-student-footer{padding-bottom:calc(11px + env(safe-area-inset-bottom,0px));}}
-</style>
 <style id="final-certificate-logo-title-fix-2026-10-07">
 #cert-preview .ss-cert-logo-slot:first-child{justify-content:flex-start!important;transform:translateX(-6%)!important;}
 #cert-preview .ss-cert-logo-slot:last-child{
