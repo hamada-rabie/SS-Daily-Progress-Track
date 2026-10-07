@@ -7051,7 +7051,7 @@ body.theme-dark .logout-cancel{background:#111827;color:#E5E7EB;border-color:#37
 }
 .ph-bell-under-ministry:hover{background:rgba(255,255,255,.22);transform:translateY(-1px);}
 .ph-bell-under-ministry i{font-size:10px;}
-.ph-mobile-refresh{display:none;width:27px;height:23px;border-radius:999px;border:1px solid rgba(255,255,255,.20);background:rgba(255,255,255,.11);color:#fff;align-items:center;justify-content:center;cursor:pointer;transition:.16s ease;}
+.ph-mobile-refresh{display:none;width:27px;height:23px;border-radius:999px;border:1px solid rgba(255,255,255,.20);background:rgba(255,255,255,.11);color:#fff;align-items:center;justify-content:center;cursor:pointer;transition:.16s ease;position:relative;z-index:3;visibility:visible!important;opacity:1!important;}
 .ph-mobile-refresh:hover{background:rgba(255,255,255,.22);transform:translateY(-1px);}
 .ph-mobile-refresh i{font-size:10px;}
 @media(max-width:640px){
@@ -7070,7 +7070,7 @@ body.theme-dark .logout-cancel{background:#111827;color:#E5E7EB;border-color:#37
     height:40px!important;max-width:45px!important;padding:4px!important;border-radius:10px!important;
   }
   .ph-bell-under-ministry{grid-column:1;grid-row:2;width:22px;height:22px;}
-  .ph-mobile-refresh{grid-column:2;grid-row:2;display:flex!important;width:22px;height:22px;flex:0 0 22px;}
+  .ph-mobile-refresh{grid-column:2;grid-row:2;display:flex!important;width:22px;height:22px;flex:0 0 22px;visibility:visible!important;opacity:1!important;}
   .ph-mobile-refresh i{font-size:9px;}
 }
 .ph-badge{
@@ -7129,7 +7129,7 @@ body.theme-dark .logout-cancel{background:#111827;color:#E5E7EB;border-color:#37
   .ph-left{gap:6px}.ph-profile{width:38px;height:38px;flex-basis:38px;border-radius:12px}
   .ph-dept-icon{width:30px;height:30px;flex-basis:30px;border-radius:10px;font-size:13px}.ph-dept{gap:6px}
   .ph-dept-copy .en{font-size:10px}.ph-dept-copy .ar{font-size:8px}
-  .ph-right{grid-template-columns:minmax(0,1fr) 49px;column-gap:6px;}
+  .ph-right{grid-template-columns:minmax(0,1fr) 56px;column-gap:6px;}
   .ph-ministry{gap:3px}.ph-ministry img{height:40px!important;max-width:45px!important;padding:4px!important;border-radius:10px!important;}
   .ph-command{gap:5px}.ph-section-row{gap:5px;}
   .ph-page-title .en{font-size:10px;max-width:105px}.ph-page-title .ar{font-size:7.5px;max-width:105px}
@@ -7139,6 +7139,7 @@ body.theme-dark .logout-cancel{background:#111827;color:#E5E7EB;border-color:#37
 }
 @media(max-width:380px){
   #premium-header-shell{grid-template-columns:122px minmax(145px,1fr)}
+  .ph-right{grid-template-columns:minmax(0,1fr) 52px;}
   .ph-dept-icon{display:none}.ph-page-title .ar{display:none}.ph-page-title .en{font-size:9px;max-width:90px}
   .ph-right{grid-template-columns:minmax(0,1fr) 44px}.ph-command::after{right:51px;}
   .ph-ministry{grid-template-columns:20px 20px;grid-template-rows:38px 20px;gap:2px;}
