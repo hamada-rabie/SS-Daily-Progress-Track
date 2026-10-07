@@ -1085,6 +1085,51 @@ main .card{border-radius:16px}
   .smart-insights-popover{width:min(460px,calc(100vw - 20px));max-height:calc(100dvh - 96px);}
 }
 </style>
+<style id="theme-safe-contrast-2026-10-07">
+/* Theme-safe controls: one visual rule across English, Arabic and Bilingual modes. */
+[data-action="save-settings"][data-preferences-save="1"]{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  padding-inline:16px!important;
+  min-height:38px!important;
+  background:var(--card)!important;
+  color:var(--ink)!important;
+  border:1px solid color-mix(in srgb,var(--teal) 58%,var(--line))!important;
+  box-shadow:0 6px 16px rgba(20,55,50,.12)!important;
+  font-weight:850!important;
+  line-height:1.25!important;
+  text-shadow:none!important;
+}
+[data-action="save-settings"][data-preferences-save="1"] .en,
+[data-action="save-settings"][data-preferences-save="1"] .ar,
+[data-action="save-settings"][data-preferences-save="1"] i{
+  color:var(--ink)!important;
+  opacity:1!important;
+}
+[data-action="save-settings"][data-preferences-save="1"] i{
+  color:var(--teal)!important;
+  flex:0 0 auto!important;
+  margin-inline-end:1px!important;
+}
+[data-action="save-settings"][data-preferences-save="1"]:hover{
+  background:color-mix(in srgb,var(--card) 88%,var(--teal-light))!important;
+  border-color:var(--teal)!important;
+  transform:translateY(-1px);
+}
+body.theme-dark [data-action="save-settings"][data-preferences-save="1"],
+body.dark [data-action="save-settings"][data-preferences-save="1"]{
+  color:var(--ink)!important;
+  background:var(--card)!important;
+}
+@media(max-width:640px){
+  [data-action="save-settings"][data-preferences-save="1"]{
+    gap:8px!important;
+    padding-inline:14px!important;
+  }
+}
+</style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
