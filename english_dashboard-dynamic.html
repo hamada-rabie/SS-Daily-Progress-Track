@@ -7789,6 +7789,134 @@ body.dark .about-footer-line,body.theme-dark .about-footer-line{color:#e6f1ef!im
 #cert-preview .ss-cert-creative{min-height:0!important;height:auto!important;overflow:hidden!important;padding-bottom:20px!important}#cert-preview .ss-cert-footer-grid{margin-top:9px!important}#cert-preview .ss-cert-signatures{margin-top:11px!important;padding-top:7px!important}#cert-preview .ss-cert-bottom-mark{margin-top:8px!important}#cert-preview .ss-cert-ribbon{opacity:.16!important}#cert-preview .ribbon-a{background:linear-gradient(90deg,#B52B32,rgba(181,43,50,0))!important}#cert-preview .ribbon-b{background:linear-gradient(90deg,rgba(181,43,50,0),#D95B5F)!important}#cert-preview .ss-cert-creative::before{content:""!important;position:absolute!important;top:0!important;bottom:0!important;left:0!important;width:12px!important;background:linear-gradient(180deg,rgba(181,43,50,.20),rgba(217,91,95,.06),rgba(181,43,50,.16))!important;pointer-events:none!important}#cert-preview .ss-cert-creative::after{content:""!important;position:absolute!important;top:0!important;bottom:0!important;right:0!important;width:12px!important;background:linear-gradient(180deg,rgba(217,91,95,.10),rgba(181,43,50,.18),rgba(217,91,95,.06))!important;pointer-events:none!important}
 @media(max-width:700px){#cert-preview .ss-cert-creative{padding-bottom:16px!important}.cp-trend-dates{gap:5px}.cp-trend-date{padding:6px 3px}}
 </style>
+<style id="certificate-precision-fix-2026-10-07">
+/* Certificate controls: dark readable text on light controls, including dark theme. */
+#tab-certificates #cert-class-select,
+#tab-certificates #cert-student-select,
+#tab-certificates #cert-type-select,
+#tab-certificates #cert-lang-select{
+  background:var(--card)!important;
+  color:var(--ink)!important;
+  border-color:var(--line)!important;
+  -webkit-text-fill-color:var(--ink)!important;
+  color-scheme:light;
+}
+#tab-certificates #cert-class-select option,
+#tab-certificates #cert-student-select option,
+#tab-certificates #cert-type-select option,
+#tab-certificates #cert-lang-select option{
+  background:#FFFFFF!important;
+  color:#173E39!important;
+}
+#tab-certificates button[data-action="cert-change"]{
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+}
+#tab-certificates button[data-action="download-cert"],
+#tab-certificates button[data-action="print-certificate"]{
+  background:#FFFFFF!important;
+  color:#173E39!important;
+  -webkit-text-fill-color:#173E39!important;
+}
+#tab-certificates button[data-action="download-cert"] i,
+#tab-certificates button[data-action="print-certificate"] i{
+  color:#173E39!important;
+}
+#tab-certificates button[data-action="send-cert-whatsapp"]{
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+}
+
+/* Move the two real logos upward and remove the central SS branding completely. */
+#cert-preview .ss-cert-brand-row{
+  transform:translateY(-2.2%)!important;
+}
+#cert-preview .ss-cert-brand-center{
+  display:none!important;
+}
+#cert-preview .ss-cert-topline{
+  display:none!important;
+}
+
+/* Certificate heading: only the requested English + Arabic title. */
+#cert-preview .ss-cert-kicker{
+  display:none!important;
+}
+#cert-preview .ss-cert-title-wrap{
+  margin-top:-1.2%!important;
+  margin-bottom:1.5%!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-title{
+  font-size:clamp(20px,4.2cqw,29px)!important;
+  line-height:1.05!important;
+  margin:.2% 0!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-title::after{
+  content:" Achievement  Certificate"!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-title{
+  font-size:0!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-title::after{
+  font-size:clamp(20px,4.2cqw,29px)!important;
+  color:#6F2630!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-line{
+  display:none!important;
+}
+
+/* Replace the dynamic title area with the exact two-line requested wording. */
+#cert-preview .ss-cert-title-wrap::after{
+  content:"شهادة تقدير"!important;
+  display:block!important;
+  color:#7A2F35!important;
+  font-family:'Cairo',sans-serif!important;
+  font-size:clamp(11px,2.1cqw,15px)!important;
+  font-weight:800!important;
+  line-height:1.15!important;
+  margin-top:1.2%!important;
+}
+#cert-preview .ss-cert-title-wrap .ss-cert-title::before{
+  content:""!important;
+}
+#cert-preview .ss-cert-award{
+  margin-top:.5%!important;
+}
+
+/* Remove the icon and SS text visually from the certificate. */
+#cert-preview .ss-cert-emblem,
+#cert-preview .ss-cert-brand-center{
+  display:none!important;
+}
+
+/* Keep signatures visible inside the printable frame. */
+#cert-preview .ss-cert-signatures{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  position:relative!important;
+  z-index:20!important;
+  min-height:10%!important;
+  margin-top:1.5%!important;
+  padding-bottom:1.2%!important;
+}
+#cert-preview .ss-cert-signatures>div{
+  min-height:100%!important;
+}
+#cert-preview .ss-cert-signatures strong{
+  min-height:1.3em!important;
+  color:#642F35!important;
+}
+#cert-preview .ss-cert-signatures b{
+  color:#6D4B50!important;
+}
+
+/* Keep the WhatsApp action white on its green background. */
+#tab-certificates button[data-action="send-cert-whatsapp"]{
+  background:#25D366!important;
+  color:#FFFFFF!important;
+}
+</style>
 <style id="precision-ui-contrast-fix-2026-10-07">
 :root{--on-primary:#FFFFFF}
 button[style*="background:var(--teal)"],a[style*="background:var(--teal)"]{color:var(--on-primary)!important}
