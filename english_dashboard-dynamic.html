@@ -1624,7 +1624,7 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
                 <span class="block text-[10px] text-gray-500 mt-1">Add one student without Excel / إضافة طالب واحد بدون ملف إكسل</span>
               </span>
             </div>
-            <button type="button" data-action="open-add-student" class="w-full text-right rounded-2xl border p-2.5 flex items-center gap-2 transition hover:-translate-y-0.5" style="border-color:var(--line); background:var(--card);">
+            <button type="button" data-action="open-add-student" class="w-full text-right rounded-lg border px-2 py-1 flex items-center gap-2 transition hover:-translate-y-0.5" style="border-color:var(--line); background:var(--card);">
               <span class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:#EAF7F5; color:var(--teal);"><i class="fa-solid fa-user-plus"></i></span>
               <span class="min-w-0">
                 <span class="block font-display font-extrabold text-xs bilingual-inline" style="color:var(--teal-dark);">Add Student / إضافة طالب</span>
@@ -1646,12 +1646,12 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
             </select>
             <div class="text-[9px] text-gray-400 mb-2">Choose a class to assign all imported students to it. Leave blank to use the Class/Section column from Excel.<br>اختر صفًا لتعيين جميع الطلاب المستوردين إليه، أو اتركه فارغًا لاستخدام عمود الصف/الشعبة من ملف الإكسل.</div>
             <div class="flex flex-col gap-1.5 items-stretch">
-              <button type="button" data-action="download-template" class="w-full text-xs font-semibold px-3 py-1.5 rounded-xl border flex items-center justify-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-file-arrow-down"></i> Template / تحميل نموذج</button>
-              <label class="w-full text-xs font-semibold px-3 py-1.5 rounded-xl text-white flex items-center justify-center gap-2 cursor-pointer" style="background:var(--leaf);">
+              <button type="button" data-action="download-template" class="w-full text-xs font-semibold px-2 py-1 rounded-lg border flex items-center justify-center gap-2" style="border-color:var(--teal); color:var(--teal-dark);"><i class="fa-solid fa-file-arrow-down"></i> Template / تحميل نموذج</button>
+              <label class="w-full text-xs font-semibold px-2 py-1 rounded-lg text-white flex items-center justify-center gap-2 cursor-pointer" style="background:var(--leaf);">
                 <i class="fa-solid fa-file-excel"></i> Import from Excel / استيراد من Excel
                 <input type="file" accept=".xlsx,.xls,.csv" data-action="import-excel" class="hidden">
               </label>
-              <select id="import-country-code" class="w-full text-xs border rounded-lg px-2 py-1.5" style="border-color:var(--line);" aria-label="Choose country code">
+              <select id="import-country-code" class="w-full text-xs border rounded-lg px-2 py-1" style="border-color:var(--line);" aria-label="Choose country code">
                 <option value="">Choose country code / اختر رمز الدولة</option>
                 <option value="974">Qatar +974</option>
                 <option value="20">Egypt +20</option>
