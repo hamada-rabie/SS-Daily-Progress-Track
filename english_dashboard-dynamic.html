@@ -7055,11 +7055,22 @@ body.theme-dark .logout-cancel{background:#111827;color:#E5E7EB;border-color:#37
 .ph-mobile-refresh:hover{background:rgba(255,255,255,.22);transform:translateY(-1px);}
 .ph-mobile-refresh i{font-size:10px;}
 @media(max-width:640px){
-  /* Mobile command rail: keep the Ministry logo, notifications and Refresh together
-     in one compact row so Refresh is always visible and easy to reach. */
-  .ph-ministry{flex-direction:row;gap:5px;align-items:center;justify-content:center;}
-  .ph-ministry img{height:42px!important;max-width:58px!important;padding:4px!important;}
-  .ph-mobile-refresh{display:flex!important;width:24px;height:22px;flex:0 0 24px;}
+  /* Mobile command rail: use two compact rows inside the existing Ministry column.
+     The logo stays prominent; Bell + Refresh share the lower row, preventing clipping. */
+  .ph-ministry{
+    display:grid;
+    grid-template-columns:22px 22px;
+    grid-template-rows:40px 22px;
+    gap:3px;
+    align-items:center;
+    justify-content:center;
+  }
+  .ph-ministry-logo-slot{grid-column:1 / 3;grid-row:1;display:flex;align-items:center;justify-content:center;min-width:0;}
+  .ph-ministry img{
+    height:40px!important;max-width:45px!important;padding:4px!important;border-radius:10px!important;
+  }
+  .ph-bell-under-ministry{grid-column:1;grid-row:2;width:22px;height:22px;}
+  .ph-mobile-refresh{grid-column:2;grid-row:2;display:flex!important;width:22px;height:22px;flex:0 0 22px;}
   .ph-mobile-refresh i{font-size:9px;}
 }
 .ph-badge{
@@ -7130,6 +7141,9 @@ body.theme-dark .logout-cancel{background:#111827;color:#E5E7EB;border-color:#37
   #premium-header-shell{grid-template-columns:122px minmax(145px,1fr)}
   .ph-dept-icon{display:none}.ph-page-title .ar{display:none}.ph-page-title .en{font-size:9px;max-width:90px}
   .ph-right{grid-template-columns:minmax(0,1fr) 44px}.ph-command::after{right:51px;}
+  .ph-ministry{grid-template-columns:20px 20px;grid-template-rows:38px 20px;gap:2px;}
+  .ph-ministry img{height:38px!important;max-width:42px!important;}
+  .ph-bell-under-ministry,.ph-mobile-refresh{width:20px!important;height:20px!important;flex-basis:20px!important;}
 }
 </style>
 <script id="premium-header-redesign-controller-2026-10-05">
