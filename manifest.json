@@ -2,7 +2,7 @@
   "name": "SS' Daily Progress Track",
   "short_name": "SS' Progress Track",
   "description": "Teacher Progress Command Center — متابعة التقدم اليومي للطلاب",
-  "start_url": "./index.html?v=20261006",
+  "start_url": "./index.html?v=20261007",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
