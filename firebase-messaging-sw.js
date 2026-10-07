@@ -5,10 +5,10 @@
 
 const PWA_CACHE = 'ss-dpt-pwa-v22';
 const APP_SHELL = [
-  './index.html?v=20261006-r7',
+  './index.html?v=20261007-r8',
   './index.html',
-  './login.html?v=20261006-r7',
-  './english_dashboard-dynamic.html?v=20261006-r7',
+  './login.html?v=20261007-r8',
+  './english_dashboard-dynamic.html?v=20261007-r8',
   './manifest.json',
   './icon-192.svg',
   './icon-512.svg',
