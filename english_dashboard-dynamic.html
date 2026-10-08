@@ -4537,7 +4537,7 @@ async function renderReadingResultsForStudent(studentId){
   box.replaceChildren();
   if(!auth.currentUser){box.textContent='Sign in to view saved results / سجّل الدخول لعرض النتائج المحفوظة';return;}
   try{
-    const snap=await getDocs(collection(db,'users',auth.currentUser.uid,'remediationResults'));
+    const snap=await getDocs(query(collection(db,'remediationResults'),where('teacherUid','==',auth.currentUser.uid)));
     const items=snap.docs.map(d=>({id:d.id,...d.data()}))
       .filter(r=>String(r.studentId)===String(studentId))
       .sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
@@ -6712,6 +6712,7 @@ try{
   setDoc,
   collection,
   query,
+  where,
   orderBy,
   limit,
   onSnapshot,
@@ -6943,20 +6944,28 @@ async function processPendingReadingResult(uid){
     const student=studentsData.find(s=>String(s.id)===String(studentId));
     if(!student)throw new Error('This student ID is not in the current teacher roster');
     const resultId=String(uid)+'_'+studentId+'_'+setId+'_a'+attempt;
-    const ref=doc(db,'users',uid,'remediationResults',resultId);
-    const existing=await getDoc(ref);
-    if(existing.exists()){
-      localStorage.removeItem(KEY);
-      if(typeof showToast==='function')showToast('This attempt was already recorded / تم تسجيل هذه المحاولة من قبل','error');
-      return;
+    const ref=doc(db,'remediationResults',resultId);
+    try{
+      await setDoc(ref,{
+        teacherUid:uid,studentId,studentName:String(student.name||''),setId,attempt,
+        answers,score,total,wrongQuestionNumbers:wrong,
+        createdAt:new Date().toISOString(),
+        source:'student-shared-result-link',
+        grading:'recalculated-in-dashboard; client-origin answers are not tamper-proof'
+      });
+    }catch(writeErr){
+      // Create-only Firestore rules reject a replay/overwrite. If the existing
+      // record belongs to this teacher, treat it as an already-recorded attempt.
+      try{
+        const existing=await getDoc(ref);
+        if(existing.exists() && existing.data().teacherUid===uid){
+          localStorage.removeItem(KEY);
+          if(typeof showToast==='function')showToast('This attempt was already recorded / تم تسجيل هذه المحاولة من قبل','error');
+          return;
+        }
+      }catch(_){ }
+      throw writeErr;
     }
-    await setDoc(ref,{
-      studentId,studentName:String(student.name||''),setId,attempt,
-      answers,score,total,wrongQuestionNumbers:wrong,
-      createdAt:new Date().toISOString(),
-      source:'student-shared-result-link',
-      grading:'recalculated-in-dashboard; client-origin answers are not tamper-proof'
-    });
     localStorage.removeItem(KEY);
     if(typeof showToast==='function')showToast('Reading remedial result recorded / تم تسجيل نتيجة تدريب القراءة','success');
     if(typeof renderReadingResultsForStudent==='function')await renderReadingResultsForStudent(studentId);
