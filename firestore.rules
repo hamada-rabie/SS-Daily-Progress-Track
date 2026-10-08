@@ -33,10 +33,14 @@ service cloud.firestore {
 
     // One profile document per authenticated account.
     match /users/{userId} {
+      // Self-registration must never grant an elevated role.
+      // Existing trusted admin profiles remain recognized by isAdmin(), but
+      // a client creating its own profile can only register as a teacher.
       allow create: if signedIn()
         && request.auth.uid == userId
         && request.resource.data.status == "approved"
-        && request.resource.data.uid == userId;
+        && request.resource.data.uid == userId
+        && request.resource.data.role == "teacher";
 
       allow get: if signedIn()
         && (request.auth.uid == userId || isAdmin());
