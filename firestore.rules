@@ -83,6 +83,14 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+
+    // Controlled application release pointer. Everyone may read the currently
+    // approved release; only the administrator may publish a new one.
+    match /appConfig/release {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
     // Explicitly deny everything else. This prevents accidental public access
     // if a new collection is added later without a matching rule.
     match /{document=**} {
