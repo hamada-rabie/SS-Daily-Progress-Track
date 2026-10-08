@@ -92,8 +92,9 @@ function check(){
  $('feedback').textContent=(correct?'Correct! / إجابة صحيحة. ':'Not quite. / ليست صحيحة. ')+q.ex;$('feedback').classList.remove('hidden');$('checkBtn').classList.add('hidden');$('nextBtn').classList.remove('hidden');$('nextBtn').textContent=idx===SET.questions.length-1?'See result | عرض النتيجة':'Next | التالي';
 }
 function resultUrl(){
- const attemptKey=KEY+'_attempt',attempt=Math.max(0,Number(localStorage.getItem(attemptKey)||'0'))+1;
- try{localStorage.setItem(attemptKey,String(attempt));}catch(e){}
+  const attemptKey=KEY+'_attempt';let previous=0;try{previous=Number(localStorage.getItem(attemptKey)||'0');}catch(e){}
+  const attempt=(Number.isSafeInteger(previous)&&previous>=0&&previous<1000000)?previous+1:1;
+  try{localStorage.setItem(attemptKey,String(attempt));}catch(e){}
  const score=answers.reduce((n,a,i)=>n+(a===SET.questions[i].a?1:0),0);
  const payload=[SET_ID,SID,attempt,score,SET.questions.length,wrong.join(','),answers.join(',')].join('.');
  const url=new URL('english_dashboard-dynamic.html',location.href);url.searchParams.set('pr',payload);
