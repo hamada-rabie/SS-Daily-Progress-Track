@@ -1,25 +1,89 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SS' Daily Progress Track — Admin</title>
-<style>body{margin:0;font-family:Arial,sans-serif;background:#f3faf8;color:#123c38;padding:24px}.wrap{max-width:900px;margin:auto}.card{background:#fff;border:1px solid #dcebe7;border-radius:18px;padding:20px;box-shadow:0 10px 30px #0000000d;margin-bottom:16px}h1{margin:0 0 6px}.muted{color:#6b7c78;font-size:13px}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid #e4efec;border-radius:14px;margin-top:10px;flex-wrap:wrap}button{border:0;border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer}.ok{background:#0e7c74;color:#fff}.deny{background:#fff1ee;color:#b94a35;border:1px solid #f1c6bb}.logout{background:#eef5f3;color:#245b55}.status{padding:8px 12px;border-radius:10px;background:#fff8e8;color:#9a7200;font-weight:700;font-size:12px}</style></head>
-<body><div class="wrap"><div class="card"><h1>App Access Administration</h1><div class="muted">Pending teacher accounts / طلبات دخول المعلمين</div><div id="adminStatus" class="status" style="margin-top:14px">Checking administrator access…</div></div><div class="card"><h2>Pending Requests / الطلبات المعلقة</h2><div id="requests"><div class="muted">Loading…</div></div></div><div class="card"><button class="logout" id="logout">Sign out / تسجيل الخروج</button></div></div>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SS' Daily Progress Track — Admin Control Center</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f3faf8;color:#123c38;padding:20px}
+.wrap{max-width:1100px;margin:auto}.card{background:#fff;border:1px solid #dcebe7;border-radius:18px;padding:20px;box-shadow:0 10px 30px #0000000d;margin-bottom:16px}
+h1,h2{margin:0 0 8px}.muted{color:#6b7c78;font-size:13px}.status{padding:10px 12px;border-radius:12px;background:#fff8e8;color:#8b6800;font-weight:700;font-size:12px;margin-top:12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;border:1px solid #e4efec;border-radius:14px;margin-top:10px;flex-wrap:wrap}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}.ok{background:#0e7c74;color:#fff}.ok:disabled{opacity:.55;cursor:not-allowed}.logout{background:#eef5f3;color:#245b55}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.stat{padding:14px;border:1px solid #e4efec;border-radius:14px;background:#f8fcfb}.stat b{display:block;font-size:22px;color:#0e7c74}.stat span{font-size:11px;color:#71817d}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:12px}th,td{text-align:left;padding:9px;border-bottom:1px solid #e6efec}th{color:#58706b;background:#f8fcfb}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eaf7f5;color:#0e7c74;font-weight:800}.old{background:#fff1ee;color:#b94a35}.new{background:#eaf7ec;color:#2c8c46}
+@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}table{font-size:10px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card"><h1>Release Control Center / مركز التحكم في الإصدارات</h1><div class="muted">You control when an approved build becomes the user-facing release. No automatic publishing.</div><div id="adminStatus" class="status">Checking administrator access…</div></div>
+<div class="card">
+<h2>Release Gate / بوابة النشر</h2>
+<div id="releaseInfo" class="row"><div class="muted">Loading release status…</div></div>
+<div class="row"><div><strong>Candidate / الإصدار الجاهز</strong><div class="muted">20261008-release-control-v1</div><div class="muted">english_dashboard-v20261008-release-control-v1.html</div></div><button id="publish" class="ok" disabled>Send update to users / إرسال التحديث للمستخدمين</button></div>
+<div class="muted" style="margin-top:10px">Publishing changes only the approved release pointer and sends an in-app update notice. Users must press Refresh / تحديث to install it.</div>
+</div>
+<div class="card"><h2>User Version Statistics / إحصائيات إصدارات المستخدمين</h2><div class="grid"><div class="stat"><b id="total">—</b><span>Total users / إجمالي المستخدمين</span></div><div class="stat"><b id="current">—</b><span>On approved release / على الإصدار المعتمد</span></div><div class="stat"><b id="old">—</b><span>Older release / إصدار أقدم</span></div><div class="stat"><b id="never">—</b><span>No version check yet / لم يسجل بعد</span></div></div><div id="usersTable" class="muted" style="margin-top:12px">Loading…</div></div>
+<div class="card"><button class="logout" id="logout">Sign out / تسجيل الخروج</button></div>
+</div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import{getFirestore,doc,getDoc,collection,query,where,onSnapshot,updateDoc,setDoc}from"https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import{getFirestore,doc,getDoc,setDoc,collection,getDocs,serverTimestamp}from"https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyAlrLU20zWisISrmZKAMBNoAxclSA8B9iY",authDomain:"ss-daily-progress-track.firebaseapp.com",projectId:"ss-daily-progress-track",storageBucket:"ss-daily-progress-track.firebasestorage.app",messagingSenderId:"946203049271",appId:"1:946203049271:web:7534618a40b304ac722eb2",measurementId:"G-MH3X8WZW37"});
-const auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
+const auth=getAuth(app),db=getFirestore(app);
+const CANDIDATE={version:"20261008-release-control-v1",path:"english_dashboard-v20261008-release-control-v1.html"};
+const $=id=>document.getElementById(id);
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
 async function boot(user){
- const a=await getDoc(doc(db,"admins",user.uid));
- if(!a.exists()||a.data().active!==true){$("adminStatus").textContent="Not authorized / غير مصرح لك";$("requests").innerHTML='<div class="muted">Administrator access is required.</div>';return;}
+ const admin=await getDoc(doc(db,"admins",user.uid));
+ if(!admin.exists()||admin.data().active!==true){$("adminStatus").textContent="Not authorized / غير مصرح لك";return;}
  $("adminStatus").textContent="Administrator access confirmed / تم التحقق من صلاحيات المسؤول";
- const q=query(collection(db,"accessRequests"),where("status","==","pending"));
- onSnapshot(q,snap=>{
-  if(snap.empty){$("requests").innerHTML='<div class="muted">No pending requests / لا توجد طلبات معلقة</div>';return;}
-  $("requests").innerHTML=snap.docs.map(d=>{const x=d.data();return '<div class="row"><div><strong>'+esc(x.email||x.uid)+'</strong><div class="muted">'+esc(x.uid)+'</div></div><div><button class="ok" data-a="'+esc(d.id)+'">Accept / قبول</button> <button class="deny" data-d="'+esc(d.id)+'">Deny / رفض</button></div></div>';}).join("");
- });
+ let releaseSnap=await getDoc(doc(db,"appConfig","release"));
+ if(!releaseSnap.exists()){
+   await setDoc(doc(db,"appConfig","release"),{publishedVersion:"20261007-stab1",publishedPath:"english_dashboard-dynamic.html",initializedAt:serverTimestamp(),initializedBy:user.uid});
+   releaseSnap=await getDoc(doc(db,"appConfig","release"));
+ }
+ const renderRelease=()=>{
+   const r=releaseSnap.data()||{};
+   $("releaseInfo").innerHTML="<div><strong>Current approved release / الإصدار المعتمد</strong><div style='margin-top:5px'><span class='pill'>"+esc(r.publishedVersion||"20261007-stab1")+"</span></div><div class='muted'>"+esc(r.publishedPath||"english_dashboard-dynamic.html")+"</div></div><div class='muted'>Publishing is manual / النشر يدوي</div>";
+   $("publish").disabled=(r.publishedVersion===CANDIDATE.version);
+ };
+ renderRelease();
+ await refreshUsers(releaseSnap.data()?.publishedVersion||"20261007-stab1");
+ $("publish").onclick=async()=>{
+   if(!confirm("هل تريد إرسال الإصدار الجديد للمستخدمين الآن؟\n\nالمستخدم لن يتغير عنده الإصدار إلا بعد أن يضغط Refresh / تحديث."))return;
+   $("publish").disabled=true;
+   try{
+     const now=serverTimestamp();
+     await setDoc(doc(db,"appConfig","release"),{publishedVersion:CANDIDATE.version,publishedPath:CANDIDATE.path,publishedAt:now,publishedBy:user.uid},{merge:true});
+     const users=await getDocs(collection(db,"users"));
+     await Promise.all(users.docs.map(u=>setDoc(doc(db,"users",u.id,"notifications","release-"+CANDIDATE.version),{
+       titleEn:"A new app release is available",
+       titleAr:"يوجد إصدار جديد للتطبيق",
+       bodyEn:"A new version has been approved. Press Refresh / تحديث once to install it.",
+       bodyAr:"تم اعتماد إصدار جديد. اضغط Refresh / تحديث مرة واحدة لتثبيته.",
+       createdAt:now,read:false,type:"app-update",version:CANDIDATE.version
+     },{merge:true})));
+     releaseSnap=await getDoc(doc(db,"appConfig","release"));
+     renderRelease();
+     await refreshUsers(CANDIDATE.version);
+     alert("تم إرسال التحديث. المستخدمون سيحصلون على إشعار، والتثبيت يتم عند الضغط على Refresh / تحديث.");
+   }catch(e){console.error(e);alert("Publish failed / فشل النشر: "+e.message);$("publish").disabled=false;}
+ };
 }
-$("requests").addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;const uid=b.dataset.a||b.dataset.d,ok=!!b.dataset.a;if(!uid)return;b.disabled=true;try{const now=new Date().toISOString();await updateDoc(doc(db,"users",uid),{status:ok?"approved":"denied",updatedAt:now});await updateDoc(doc(db,"accessRequests",uid),{status:ok?"approved":"denied",updatedAt:now,reviewedBy:auth.currentUser.uid});await setDoc(doc(db,"users",uid,"notifications","access-"+Date.now()),{titleEn:ok?"Access approved":"Access request denied",titleAr:ok?"تمت الموافقة على الوصول":"تم رفض طلب الوصول",bodyEn:ok?"Your account is now approved. You can sign in and use your private workspace.":"Your request was denied by the application administrator.",bodyAr:ok?"تمت الموافقة على حسابك. يمكنك تسجيل الدخول واستخدام مساحة العمل الخاصة بك.":"تم رفض طلبك من مسؤول التطبيق.",createdAt:now,read:false,type:"access"});}catch(err){console.error(err);alert("Action failed. Check Firestore Rules.");}finally{b.disabled=false}});
+async function refreshUsers(releaseVersion){
+ const snap=await getDocs(collection(db,"users"));
+ let current=0,old=0,never=0,rows="";
+ snap.docs.forEach(d=>{
+   const x=d.data(),v=x.appVersion||"";
+   if(!v)never++; else if(v===releaseVersion)current++; else old++;
+   rows+="<tr><td>"+esc(x.email||x.displayName||d.id)+"</td><td>"+(v?esc(v):"<span class='pill old'>Not recorded</span>")+"</td><td>"+(v===releaseVersion?"<span class='pill new'>Current</span>":v?"<span class='pill old'>Older</span>":"—")+"</td><td>"+esc(x.lastSeenDevice||"—")+"</td><td>"+(x.lastSeenAt?.toDate?esc(x.lastSeenAt.toDate().toLocaleString()):"—")+"</td></tr>";
+ });
+ $("total").textContent=snap.size;$("current").textContent=current;$("old").textContent=old;$("never").textContent=never;
+ $("usersTable").innerHTML="<table><thead><tr><th>User</th><th>App version</th><th>Status</th><th>Device</th><th>Last seen</th></tr></thead><tbody>"+(rows||"<tr><td colspan='5'>No users yet.</td></tr>")+"</tbody></table>";
+}
 $("logout").onclick=()=>signOut(auth).then(()=>location.href="login.html");
 onAuthStateChanged(auth,u=>{if(!u){location.href="login.html";return}boot(u).catch(e=>{console.error(e);$("adminStatus").textContent="Admin check failed / تعذر التحقق من المسؤول"});});
-</script></body></html>
+</script>
+</body></html>
