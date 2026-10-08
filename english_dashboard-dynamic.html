@@ -1347,6 +1347,17 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
 }
 </style>
 
+<style id="final-certificate-logo-title-fix-2026-10-07">
+#cert-preview .ss-cert-logo-slot:first-child{justify-content:flex-start!important;transform:translateX(-6%)!important;}
+#cert-preview .ss-cert-logo-slot:last-child{
+  position:absolute!important;
+  right:0!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  justify-content:flex-end!important;
+  width:auto!important;
+}
+</style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
@@ -8600,15 +8611,3 @@ function renderClassPulsePremiumLower(wrap, students, acad, hw, partDist, behDis
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
-
-<style id="final-certificate-logo-title-fix-2026-10-07">
-#cert-preview .ss-cert-logo-slot:first-child{justify-content:flex-start!important;transform:translateX(-6%)!important;}
-#cert-preview .ss-cert-logo-slot:last-child{
-  position:absolute!important;
-  right:0!important;
-  top:50%!important;
-  transform:translateY(-50%)!important;
-  justify-content:flex-end!important;
-  width:auto!important;
-}
-</style>
