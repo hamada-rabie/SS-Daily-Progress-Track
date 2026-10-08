@@ -45,7 +45,25 @@ function injectUi(){
   btn.id="ss-release-refresh-btn"; btn.type="button";
   btn.innerHTML="<i>↻</i><span>Refresh / تحديث</span>";
   btn.title="Refresh the app to install the latest approved release / حدّث التطبيق لتثبيت آخر إصدار معتمد";
-  btn.onclick=()=>{ btn.disabled=true; btn.style.opacity=".65"; location.reload(); };
+  btn.onclick=async()=>{ 
+    btn.disabled=true; btn.style.opacity=".65";
+    try{
+      const snap=await getDoc(doc(db,"appConfig","release"));
+      const release=snap.exists()?snap.data():null;
+      const publishedPath=release?.publishedPath || SS_RELEASE.fallbackPath;
+      const publishedVersion=release?.publishedVersion || "20261007-stab1";
+      const currentFile=location.pathname.split("/").pop() || "";
+      if(publishedPath && publishedPath!==currentFile){
+        const q="?release="+encodeURIComponent(publishedVersion);
+        location.href=publishedPath+q;
+      }else{
+        location.reload();
+      }
+    }catch(e){
+      console.warn("Release refresh routing failed; reloading current page:",e);
+      location.reload();
+    }
+  };
   document.body.appendChild(btn);
   const hint=document.createElement("div");
   hint.id="ss-release-hint";
