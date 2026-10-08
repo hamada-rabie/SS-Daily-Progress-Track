@@ -4598,7 +4598,7 @@ function renderClassPulseCard(){
     <div class="card p-6 space-y-6">
       <div class="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <p class="font-display font-extrabold text-lg">${shortClass(cls)}</p>
+          <p class="font-display font-extrabold text-lg">${escapeHtml(shortClass(cls))}</p>
           <p class="text-xs text-gray-500">${students.length} student(s) / طالب</p>
         </div>
         <div class="text-center px-3 py-2 rounded-xl" style="background:${tr.bg};">
