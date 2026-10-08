@@ -4518,6 +4518,14 @@ function renderS360Card(){
           : `<p class="text-xs text-gray-500 mt-1">Not enough historical data to determine a reliable best period.<br>لا توجد بيانات تاريخية كافية لتحديد أفضل فترة بشكل موثوق.</p>`}
       </div>
       ${whyBlock}
+      <div class="card p-4" style="border:1px solid var(--line);">
+        <p class="font-bold text-sm">Reading Remedial / علاج القراءة</p>
+        <p class="text-xs text-gray-500 mt-1">Open a short reading practice for this student, then ask the student to share the result link with you. / افتح تدريب قراءة قصيرًا لهذا الطالب، ثم اطلب منه مشاركة رابط النتيجة معك.</p>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <a class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal);color:white;" target="_blank" rel="noopener noreferrer" href="practice.html?set=R2-S01&amp;sid=${encodeURIComponent(String(s.id))}">Practice Set 1 / التدريب الأول</a>
+          <a class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal-dark);color:white;" target="_blank" rel="noopener noreferrer" href="practice.html?set=R2-S02&amp;sid=${encodeURIComponent(String(s.id))}">Practice Set 2 / التدريب الثاني</a>
+        </div>
+      </div>
     </div>`;
 }
 
