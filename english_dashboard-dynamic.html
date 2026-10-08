@@ -3736,7 +3736,7 @@ function renderStarsSpotlight(){
       <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl shrink-0" style="background:linear-gradient(135deg,var(--gold),#C99A2A);"><i class="fa-solid fa-trophy"></i></div>
       <div class="min-w-0">
         <p class="text-[10px] font-bold uppercase tracking-wide" style="color:#B5850C;">Student Spotlight / إبراز الطالب</p>
-        <p class="font-extrabold text-base truncate">${escapeHtml(s.name)} <span class="font-semibold text-sm text-gray-500">${cls? '· '+shortClass(cls) : ''}</span></p>
+        <p class="font-extrabold text-base truncate">${escapeHtml(s.name)} <span class="font-semibold text-sm text-gray-500">${cls? '· '+escapeHtml(shortClass(cls)) : ''}</span></p>
         <p class="text-xs text-gray-600 mt-0.5">Honor Score ${honorScore(s)}%${evidenceLine ? ' · '+evidenceLine : ''}</p>
       </div>
     </div>`;
