@@ -83,6 +83,28 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // Immutable teacher-owned reading-remedial results.
+    // Only the authenticated teacher dashboard can create results for its own UID.
+    match /remediationResults/{resultId} {
+      allow create: if signedIn()
+        && request.resource.data.teacherUid == request.auth.uid
+        && request.resource.data.studentId is int
+        && request.resource.data.setId in ['R2-S01', 'R2-S02']
+        && request.resource.data.attempt is int
+        && request.resource.data.attempt >= 1
+        && request.resource.data.score is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 5
+        && request.resource.data.total == 5
+        && request.resource.data.answers is list
+        && request.resource.data.answers.size() == 5
+        && request.resource.data.wrongQuestionNumbers is list
+        && request.resource.data.createdAt is string;
+      allow get, list: if signedIn()
+        && resource.data.teacherUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
     // Explicitly deny everything else. This prevents accidental public access
     // if a new collection is added later without a matching rule.
     match /{document=**} {
