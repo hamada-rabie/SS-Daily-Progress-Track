@@ -27,6 +27,8 @@ function deviceLabel(){
   return w<=600 ? "mobile" : w<=1024 ? "tablet" : "desktop";
 }
 function injectUi(){
+  // This control is intentionally MOBILE-ONLY. Desktop already has a normal browser Refresh.
+  if(deviceLabel() !== "mobile") return;
   if(document.getElementById("ss-release-refresh-btn")) return;
   const style=document.createElement("style");
   style.textContent=`
