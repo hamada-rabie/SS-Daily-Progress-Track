@@ -15,9 +15,10 @@ expect_fail() {
     exit 1
   fi
 }
-expect_pass production "$VALID_SHA" "$VALID_SHA"
-expect_fail production 0123456789abcdef0123456789abcdef01234568 "$VALID_SHA"
-expect_fail production "$VALID_SHA" 0123456789abcdef0123456789abcdef0123456
+expect_pass candidate "$VALID_SHA" "$VALID_SHA"
+expect_fail candidate 0123456789abcdef0123456789abcdef01234568 "$VALID_SHA"
+expect_fail candidate "$VALID_SHA" 0123456789abcdef0123456789abcdef0123456
+expect_fail production "$VALID_SHA" "$VALID_SHA"
 expect_fail preview "$VALID_SHA" "$VALID_SHA"
-expect_fail 'production; echo unsafe' "$VALID_SHA" "$VALID_SHA"
-echo "PASS: release gate accepted only the exact full SHA and production target."
+expect_fail 'candidate; echo unsafe' "$VALID_SHA" "$VALID_SHA"
+echo "PASS: gate allows only exact-SHA candidate packaging; all deployment targets are refused."
