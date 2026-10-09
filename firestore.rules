@@ -62,7 +62,9 @@ service cloud.firestore {
         allow read, write: if isAdmin() || isApprovedUser(userId);
       }
 
-      match /{subcollection=**} {
+      // Require a real subcollection segment; a bare recursive wildcard can
+      // match the parent profile document in Rules v2 and bypass profile-field guards.
+      match /{subcollection}/{document=**} {
         allow read, write: if isAdmin() || isApprovedUser(userId);
       }
     }
