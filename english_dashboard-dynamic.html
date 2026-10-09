@@ -4,6 +4,38 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
+<script id="reading-remediation-pr-capture-2026-10-08">
+  // Phase A: preserve an incoming practice result before authentication redirects.
+  // This is only a short-lived transport buffer; it is not a remediation-results store.
+  (() => {
+    const KEY = 'ss_pending_pr';
+    const TTL_MS = 30 * 60 * 1000;
+    try {
+      const now = Date.now();
+      const existingRaw = localStorage.getItem(KEY);
+      if (existingRaw) {
+        try {
+          const existing = JSON.parse(existingRaw);
+          if (!existing || typeof existing.ts !== 'number' || (now - existing.ts) > TTL_MS) {
+            localStorage.removeItem(KEY);
+          }
+        } catch (_) {
+          localStorage.removeItem(KEY);
+        }
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('pr')) {
+        localStorage.setItem(KEY, JSON.stringify({
+          raw: window.location.search,
+          ts: now
+        }));
+      }
+    } catch (_) {
+      // Storage/query failures must never block application startup.
+    }
+  })();
+</script>
 <script id="fresh-session-home-guard-2026-10-05">
   // Session-aware navigation:
   // - Browser refresh: keep the page the teacher was on.
