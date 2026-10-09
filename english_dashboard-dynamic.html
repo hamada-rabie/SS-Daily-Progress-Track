@@ -6872,7 +6872,7 @@ window.recordAppUsage=async function(uid){try{
  let existing=null;
  try{ existing=await window.getDoc(userRef); }catch(e){ console.warn('First-login lookup skipped safely:',e); }
  const isFirstLogin=!!(existing && (!existing.exists() || !existing.data()?.lastSeenAt));
- const patch={email:userEmailForStats(),displayName:String(window.auth?.currentUser?.displayName||'').trim(),role:userEmailForStats().toLowerCase()==='h.nasim0202@education.qa'?'admin':'user',timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',lastSeenAt:now,appOpenCount:count,lastSeenPlatform:/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'mobile':'desktop'};
+ const patch={email:userEmailForStats(),displayName:String(window.auth?.currentUser?.displayName||'').trim(),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',lastSeenAt:now,appOpenCount:count,lastSeenPlatform:/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'mobile':'desktop'};
  const ua=navigator.userAgent||''; const deviceType=/Mobi|Android|iPhone|iPad/i.test(ua)?'mobile':'desktop'; const os=/Android/i.test(ua)?'Android':/iPhone|iPad/i.test(ua)?'iOS':/Windows/i.test(ua)?'Windows':/Mac OS X/i.test(ua)?'macOS':/Linux/i.test(ua)?'Linux':'Other';
  let deviceId=localStorage.getItem('ss_dpt_device_id'); if(!deviceId){deviceId=(crypto?.randomUUID?crypto.randomUUID():'dev-'+Date.now()+'-'+Math.random().toString(36).slice(2));localStorage.setItem('ss_dpt_device_id',deviceId);}
  try{await window.setDoc(window.doc(window.db,'users',uid,'devices',deviceId),{deviceId,deviceType,os,standalone,lastSeenAt:now,createdAt:now,platformLabel:deviceType==='mobile'?('Mobile · '+os):('Desktop · '+os)},{merge:true});}catch(e){console.warn('Device telemetry skipped safely:',e);}
@@ -6929,7 +6929,7 @@ setPersistence(auth, browserLocalPersistence)
       adminFirstLoginUnsubscribe=onSnapshot(usersQuery,async(snap)=>{
         for(const d of snap.docs){
           const u=d.data()||{};
-          if(!u.firstLoginAt || String(u.email||'').toLowerCase()==='h.nasim0202@education.qa') continue;
+          if(!u.firstLoginAt || d.id===admin.uid) continue;
           const notifId='new-user-'+d.id;
           try{
             await setDoc(doc(db,'users',admin.uid,'notifications',notifId),{
@@ -7529,9 +7529,9 @@ import { collection, getDocs, query, limit } from "https://www.gstatic.com/fireb
 (function(){'use strict';
 const adminBtn=document.querySelector('[data-action="open-admin-stats"]'),modal=document.getElementById('admin-stats-modal'),grid=document.getElementById('admin-stats-grid'),note=document.getElementById('admin-stats-note'),list=document.getElementById('admin-user-list');
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const ADMIN_EMAIL='h.nasim0202@education.qa';
+// Admin privileges are verified against the trusted /admins/{uid} record below.
 const inferCountryFromTimezone=tz=>{const map={'Asia/Qatar':'Qatar','Asia/Riyadh':'Saudi Arabia','Asia/Kuwait':'Kuwait','Asia/Bahrain':'Bahrain','Asia/Dubai':'United Arab Emirates','Asia/Muscat':'Oman','Asia/Amman':'Jordan','Asia/Beirut':'Lebanon','Africa/Cairo':'Egypt','Europe/London':'United Kingdom','Europe/Paris':'France','Europe/Berlin':'Germany','America/New_York':'United States','America/Chicago':'United States','America/Denver':'United States','America/Los_Angeles':'United States','Asia/Kolkata':'India','Asia/Dhaka':'Bangladesh','Asia/Karachi':'Pakistan','Asia/Manila':'Philippines','Asia/Jakarta':'Indonesia','Asia/Kuala_Lumpur':'Malaysia','Asia/Singapore':'Singapore','Asia/Tokyo':'Japan','Asia/Seoul':'South Korea','Australia/Sydney':'Australia'};return map[String(tz||'')]||''};
-const userRole=u=>String(u.role||'').toLowerCase()==='admin'||String(u.email||'').toLowerCase()===ADMIN_EMAIL.toLowerCase()?'Admin':'User';
+const userRole=u=>String(u.role||'').toLowerCase()==='admin'?'Admin':'User';
 const userLabel=u=>String(u.displayName||u.email||u.uid||'').trim();
 const userCountry=u=>String(u.country||'').trim()||inferCountryFromTimezone(u.timezone)||'Unknown';
 const isAdmin=async()=>{try{const u=window.auth?.currentUser;if(!u||!window.db||!window.doc||!window.getDoc)return false;const snap=await window.getDoc(window.doc(window.db,'admins',u.uid));return snap.exists()&&snap.data()?.active===true}catch(e){console.warn('Admin identity check failed:',e);return false}};
