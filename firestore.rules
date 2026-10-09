@@ -116,7 +116,7 @@ service cloud.firestore {
       }
       function validWrongQuestionNumbers(data) {
         return data.wrongQuestionNumbers is list
-          && data.wrongQuestionNumbers.size() <= 5
+          && data.wrongQuestionNumbers.size() == (5 - data.score)
           && data.wrongQuestionNumbers.hasOnly([1, 2, 3, 4, 5]);
       }
       allow create: if signedIn()
