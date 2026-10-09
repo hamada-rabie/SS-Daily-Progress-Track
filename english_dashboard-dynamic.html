@@ -3102,7 +3102,7 @@ function openEditClassModal(id){
   colorBox.innerHTML = Object.values(THEME_PALETTES).map(p=>{
     const selected = c.color===p.p;
     return `<button type="button" data-action="pick-class-color" data-color="${p.p}" class="w-8 h-8 rounded-full" style="background:${p.p}; ${selected?'outline:3px solid #333; outline-offset:2px;':''}"></button>`;
-  }).join('') + `<input type="color" id="edit-class-color-custom" data-action="pick-class-color-custom" value="${c.color}" class="w-8 h-8 rounded-full cursor-pointer border" style="border-color:var(--line);">`;
+  }).join('') + `<input type="color" id="edit-class-color-custom" data-action="pick-class-color-custom" value="${escapeHtml(safeCssColor(c.color))}" class="w-8 h-8 rounded-full cursor-pointer border" style="border-color:var(--line);">`;
   const iconBox = document.getElementById('edit-class-icon-choices');
   iconBox.innerHTML = CLASS_ICON_CHOICES.map(ic=>{
     const selected = (c.icon||'fa-book')===ic;
@@ -3410,8 +3410,8 @@ function renderDashboard(){
     return `<div class="card card-interactive p-4 flex flex-col gap-3" data-action="open-class" data-id="${c.id}">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold shrink-0" style="background:${c.color};">
-            <i class="fa-solid ${c.icon||'fa-book'}"></i>
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold shrink-0" style="background:${safeCssColor(c.color)};">
+            <i class="fa-solid ${safeIconClass(c.icon)}"></i>
           </div>
           <div class="cursor-pointer" data-action="open-class" data-id="${c.id}">
             <p class="font-bold text-sm">${escapeHtml(shortClass(c))}</p>
@@ -4180,7 +4180,7 @@ function renderQuickProfileCard(){
     <div class="card p-6 space-y-6">
       <div class="flex items-center justify-between flex-wrap gap-3">
         <div class="flex items-center gap-3">
-          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${cls? cls.color : 'var(--teal)'};">${s.name.charAt(0)}</div>
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${safeCssColor(cls?cls.color:'var(--teal)')};">${escapeHtml(String(s.name||'').charAt(0))}</div>
           <div>
             <p class="font-display font-extrabold text-lg">${escapeHtml(s.name)}</p>
             <p class="text-xs text-gray-500">${cls? escapeHtml(shortClass(cls)) : '-'}</p>
@@ -4684,7 +4684,7 @@ function renderS360Card(){
       <!-- Header -->
       <div class="flex items-start justify-between flex-wrap gap-3">
         <div class="flex items-center gap-3">
-          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${cls? cls.color : 'var(--teal)'};">${s.name.charAt(0)}</div>
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${safeCssColor(cls?cls.color:'var(--teal)')};">${escapeHtml(String(s.name||'').charAt(0))}</div>
           <div>
             <p class="font-display font-extrabold text-lg">${escapeHtml(s.name)}</p>
             <p class="text-xs text-gray-500">${cls? escapeHtml(shortClass(cls)) : '-'}</p>
@@ -5293,10 +5293,10 @@ function loadSettingsForm(){
   if(showPhoto) showPhoto.checked = settings.showTeacherPhoto !== false;
   renderThemeSwatches();
   const sp = document.getElementById('school-logo-preview');
-  sp.innerHTML = settings.schoolLogo ? `<img src="${escapeHtml(settings.schoolLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
+  sp.innerHTML = safeImageUrl(settings.schoolLogo) ? `<img src="${escapeHtml(safeImageUrl(settings.schoolLogo))}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
   renderTeacherPhoto();
   const mp = document.getElementById('ministry-logo-preview');
-  mp.innerHTML = settings.ministryLogo ? `<img src="${escapeHtml(settings.ministryLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
+  mp.innerHTML = safeImageUrl(settings.ministryLogo) ? `<img src="${escapeHtml(safeImageUrl(settings.ministryLogo))}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
 }
 function editProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.setAttribute('aria-readonly','false');el.focus();try{el.setSelectionRange(el.value.length,el.value.length);}catch(_){}}
 function deleteProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.value='';el.setAttribute('aria-readonly','false');el.focus();}
@@ -5311,6 +5311,24 @@ let notifUnreadCount = 0;
 
 function escapeHtml(str){
   return String(str==null?'':str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// Context-specific allowlists for values that may enter CSS or URL attributes.
+function safeCssColor(value, fallback='var(--teal)'){
+  const v=String(value==null?'':value).trim();
+  if(/^#[0-9a-fA-F]{3,8}$/.test(v))return v;
+  if(/^var\(--(?:ink|teal|teal-dark|teal-light|paper|card|gold|coral|sky|violet|leaf|line)\)$/.test(v))return v;
+  if(/^(?:rgb|rgba|hsl|hsla)\([0-9.% ,+-]+\)$/.test(v))return v;
+  return fallback;
+}
+function safeIconClass(value, fallback='fa-book'){
+  const v=String(value||'');
+  return Array.isArray(CLASS_ICON_CHOICES)&&CLASS_ICON_CHOICES.includes(v)?v:fallback;
+}
+function safeImageUrl(value){
+  const v=String(value||'').trim();
+  if(/^https:\/\/[a-z0-9.-]+(?::\d+)?(?:[/?#][^\s]*)?$/i.test(v))return v;
+  if(/^data:image\/(?:png|jpeg|webp|gif);base64,[a-z0-9+/=]+$/i.test(v))return v;
+  return '';
 }
 
 function updateNotificationStatusUI(){
@@ -5521,7 +5539,7 @@ function buildGlobalSearchIndex(){
     index.classes.push({
       type:'class', id:c.id, titleEn: label, titleAr: label,
       searchText: (c.name+' '+c.section+' '+label).toLowerCase(),
-      icon: c.icon||'fa-book', color: c.color||'var(--violet)'
+      icon: safeIconClass(c.icon), color: safeCssColor(c.color,'var(--violet)')
     });
   });
   studentsData.forEach(s=>{
@@ -5614,7 +5632,7 @@ function renderGlobalSearchResults(rawQuery){
       subLine += ' · 📝 ' + gsHighlight(snippet, q);
     }
     return `<div class="gs-item" data-result-index="${i}" data-action="select-search-result">
-      <div class="gs-item-icon" style="background:${it.color};"><i class="fa-solid fa-user-graduate"></i></div>
+      <div class="gs-item-icon" style="background:${safeCssColor(it.color)};"><i class="fa-solid fa-user-graduate"></i></div>
       <div class="gs-item-text">
         <div class="gs-item-title">${gsHighlight(it.titleEn, q)}</div>
         <div class="gs-item-sub">${subLine}</div>
@@ -5623,7 +5641,7 @@ function renderGlobalSearchResults(rawQuery){
   });
 
   addGroup('Classes','الصفوف', classes, (it,i)=>`<div class="gs-item" data-result-index="${i}" data-action="select-search-result">
-      <div class="gs-item-icon" style="background:${it.color};"><i class="fa-solid ${it.icon}"></i></div>
+      <div class="gs-item-icon" style="background:${safeCssColor(it.color)};"><i class="fa-solid ${safeIconClass(it.icon)}"></i></div>
       <div class="gs-item-text"><div class="gs-item-title">${gsHighlight(it.titleEn, q)}</div></div>
     </div>`);
 
@@ -5732,13 +5750,13 @@ function saveSettings(){
   if(!schoolLogoVisible){ logoBox.style.background = 'var(--teal)'; logoBox.classList.add('text-white'); }
   else { logoBox.style.background = '#fff'; }
   const sp = document.getElementById('school-logo-preview');
-  if(sp) sp.innerHTML = settings.schoolLogo ? `<img src="${escapeHtml(settings.schoolLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
+  if(sp) sp.innerHTML = safeImageUrl(settings.schoolLogo) ? `<img src="${escapeHtml(safeImageUrl(settings.schoolLogo))}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
   const mp = document.getElementById('ministry-logo-preview');
-  if(mp) mp.innerHTML = settings.ministryLogo ? `<img src="${escapeHtml(settings.ministryLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
+  if(mp) mp.innerHTML = safeImageUrl(settings.ministryLogo) ? `<img src="${escapeHtml(safeImageUrl(settings.ministryLogo))}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
   const hsl = document.getElementById('header-school-logo');
-  if(hsl) hsl.innerHTML = (settings.showSchoolLogo !== false && settings.schoolLogo) ? `<img src="${escapeHtml(settings.schoolLogo)}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
+  if(hsl) hsl.innerHTML = (settings.showSchoolLogo !== false && safeImageUrl(settings.schoolLogo)) ? `<img src="${escapeHtml(safeImageUrl(settings.schoolLogo))}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
   const hml = document.getElementById('header-ministry-logo');
-  if(hml) hml.innerHTML = (settings.showMinistryLogo !== false && settings.ministryLogo) ? `<img src="${escapeHtml(settings.ministryLogo)}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
+  if(hml) hml.innerHTML = (settings.showMinistryLogo !== false && safeImageUrl(settings.ministryLogo)) ? `<img src="${escapeHtml(safeImageUrl(settings.ministryLogo))}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
   if(typeof renderDashboard === 'function') renderDashboard();
 }
 
@@ -7014,7 +7032,11 @@ window.auth = auth;
 window.db = db;
 window.doc = doc;
 window.getDoc = getDoc;
+window.getDocs = getDocs;
 window.setDoc = setDoc;
+window.collection = collection;
+window.query = query;
+window.where = where;
 
 console.log("🔥 Firebase connected successfully");
 
@@ -7172,63 +7194,76 @@ window.recordAppUsage=async function(uid){try{
 async function processPendingReadingResult(uid){
   const KEY='ss_pending_pr', TTL_MS=30*60*1000;
   let pending;
-  try{pending=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){localStorage.removeItem(KEY);return;}
-  if(!pending || typeof pending.ts!=='number' || Date.now()-pending.ts>TTL_MS){
-    localStorage.removeItem(KEY); return;
+  const removePending=()=>{try{localStorage.removeItem(KEY);}catch(_){}};
+  try{pending=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){removePending();return;}
+  if(!pending || typeof pending.ts!=='number' || !Number.isFinite(pending.ts) || Date.now()-pending.ts>TTL_MS || pending.ts>Date.now()+60000){
+    removePending(); return;
   }
+  let isTemporaryFailure=false;
   try{
     const raw=String(pending.raw||'');
+    if(raw.length>4096)throw new Error('Result link too long');
     const params=new URLSearchParams(raw.startsWith('?')?raw.slice(1):raw);
-    const encoded=params.get('pr');
-    if(!encoded)return;
+    const allPr=params.getAll('pr');
+    if(allPr.length!==1)throw new Error('Missing or duplicate result payload');
+    const encoded=allPr[0];
+    if(!encoded || encoded.length>1024)throw new Error('Invalid result payload length');
     const parts=encoded.split('.');
     if(parts.length!==7)throw new Error('Invalid result link format');
     const [setId,studentIdRaw,attemptRaw,claimedScoreRaw,totalRaw,wrongRaw,answersRaw]=parts;
-    const key={
-      'R2-S01':[1,0,2,3,2],
-      'R2-S02':[0,1,1,2,1]
-    }[setId];
-    if(!key)throw new Error('Unknown practice set');
-    if(!/^\d{1,16}$/.test(studentIdRaw))throw new Error('Invalid student ID');
-    const studentId=Number(studentIdRaw), attempt=Number(attemptRaw), claimedScore=Number(claimedScoreRaw), total=Number(totalRaw);
-    if(!Number.isSafeInteger(attempt)||attempt<1||attempt>1000000||total!==key.length)throw new Error('Invalid attempt or total');
+    const allowedSets=Object.freeze({'R2-S01':[1,0,2,3,2],'R2-S02':[0,1,1,2,1]});
+    if(!Object.prototype.hasOwnProperty.call(allowedSets,setId))throw new Error('Unknown practice set');
+    const key=allowedSets[setId];
+    if(!/^\d{1,16}$/.test(studentIdRaw)||!/^([1-2])$/.test(attemptRaw)||!/^([0-5])$/.test(claimedScoreRaw)||totalRaw!=='5')throw new Error('Invalid student, attempt, score, or total');
+    if(!/^(?:[0-3],[0-3],[0-3],[0-3],[0-3])$/.test(answersRaw))throw new Error('Invalid answer list');
+    const studentId=Number(studentIdRaw), attempt=Number(attemptRaw), claimedScore=Number(claimedScoreRaw);
+    if(!Number.isSafeInteger(studentId)||studentId<=0)throw new Error('Unsafe student ID');
     const answers=answersRaw.split(',').map(Number);
-    if(answers.length!==key.length||answers.some(v=>!Number.isInteger(v)||v<0||v>3))throw new Error('Invalid answer list');
     const score=answers.reduce((n,a,i)=>n+(a===key[i]?1:0),0);
     const wrong=answers.map((a,i)=>a===key[i]?null:i+1).filter(v=>v!==null);
-    const claimedWrong=wrongRaw?wrongRaw.split(',').map(Number):[];
-    if(score!==claimedScore||JSON.stringify(wrong)!==JSON.stringify(claimedWrong))throw new Error('Score does not match the submitted answers');
-    const student=studentsData.find(s=>String(s.id)===String(studentId));
-    if(!student)throw new Error('This student ID is not in the current teacher roster');
+    const claimedWrong=wrongRaw===''?[]:wrongRaw.split(',').map(v=>/^([1-5])$/.test(v)?Number(v):NaN);
+    if(claimedWrong.some(v=>!Number.isInteger(v)) || score!==claimedScore || JSON.stringify(wrong)!==JSON.stringify(claimedWrong))throw new Error('Score or wrong-question list does not match submitted answers');
+    const matchingStudents=studentsData.filter(s=>String(s.id)===studentIdRaw);
+    if(matchingStudents.length!==1)throw new Error('Student ID must match exactly one student in the current teacher roster');
+    const student=matchingStudents[0];
+    const confirmed=typeof window.confirm==='function' && window.confirm(
+      'Confirm reading practice result?\nStudent: '+String(student.name||'')+
+      '\nClass: '+String(student.className||student.class||student.classId||'—')+
+      '\nSet: '+setId+'\nAttempt: '+attempt+'\nScore: '+score+'/5'
+    );
+    if(!confirmed){removePending();if(typeof showToast==='function')showToast('Result cancelled; nothing was saved / تم الإلغاء ولم تُحفظ النتيجة','info');return;}
     const resultId=String(uid)+'_'+studentId+'_'+setId+'_a'+attempt;
     const ref=doc(db,'remediationResults',resultId);
     try{
       await setDoc(ref,{
         teacherUid:uid,studentId,studentName:String(student.name||''),setId,attempt,
-        answers,score,total,wrongQuestionNumbers:wrong,
+        answers,score,total:5,wrongQuestionNumbers:wrong,
         createdAt:new Date().toISOString(),
         source:'student-shared-result-link',
         grading:'recalculated-in-dashboard; client-origin answers are not tamper-proof'
       });
     }catch(writeErr){
-      // Create-only Firestore rules reject a replay/overwrite. If the existing
-      // record belongs to this teacher, treat it as an already-recorded attempt.
       try{
         const existing=await getDoc(ref);
         if(existing.exists() && existing.data().teacherUid===uid){
-          localStorage.removeItem(KEY);
+          removePending();
           if(typeof showToast==='function')showToast('This attempt was already recorded / تم تسجيل هذه المحاولة من قبل','error');
           return;
         }
-      }catch(_){ }
+      }catch(readErr){
+        const code=String(readErr?.code||'');
+        if(['unavailable','deadline-exceeded','network-request-failed','unknown'].includes(code))isTemporaryFailure=true;
+      }
+      const writeCode=String(writeErr?.code||'');
+      if(['unavailable','deadline-exceeded','network-request-failed','unknown'].includes(writeCode))isTemporaryFailure=true;
       throw writeErr;
     }
-    localStorage.removeItem(KEY);
+    removePending();
     if(typeof showToast==='function')showToast('Reading remedial result recorded / تم تسجيل نتيجة تدريب القراءة','success');
     if(typeof renderReadingResultsForStudent==='function')await renderReadingResultsForStudent(studentId);
-
   }catch(err){
     console.error('Reading remedial result rejected:',err);
+    if(!isTemporaryFailure)removePending();
     if(typeof showToast==='function')showToast('Reading result was not recorded. Check the result link / لم تُسجّل النتيجة؛ راجع رابط النتيجة','error');
   }
 }
@@ -8367,7 +8402,7 @@ body.theme-dark #stars-board-list .text-gray-500,body.theme-dark #stars-board-li
 </style>
 <script id="precision-qa-script-2026-10-07">
 (function(){
-function fmtDate(ds){if(!ds)return "—";const p=String(ds).split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:ds;}
+function fmtDate(ds){if(!ds)return "—";const v=String(ds);if(!/^\d{4}-\d{2}-\d{2}$/.test(v))return escapeHtml(v);const p=v.split("-");return p[2]+"/"+p[1]+"/"+p[0];}
 function avgSkill(obj){if(!obj)return null;const vals=Object.keys(QP_SKILL_LABELS||{}).map(k=>skillLevelScore(obj[k])).filter(v=>v!==null);return vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length/6*100):null;}
 function journeyDateStrip(){const chart=document.querySelector("#pj-journey-play-wrap .pj-play-chart"),track=document.querySelector("#pj-journey-play-wrap .pj-timeline-track");if(!chart||!track||chart.querySelector(".pj-play-dates"))return;const studentId=Number(document.getElementById("pj-student-select")?.value),st=studentsData.find(x=>x.id===studentId);if(!st)return;const dates=[...new Set([...getStudentHistoricalRecords(st).map(r=>r.date),...getStudentSkillHistory(st).map(h=>h.date)])].sort();let last=null;const html=dates.map(d=>{const h=getStudentSkillHistory(st).find(x=>x.date===d),v=avgSkill(h),prev=last;if(v!==null)last=v;const diff=v!==null&&prev!==null?v-prev:0,cl=diff>0?"is-up":diff<0?"is-down":"is-stable",status=diff>0?"↑ Improving / صاعد":diff<0?"↓ Needs support / هابط":"→ Stable / مستقر";return "<div class=\"pj-play-date-item "+cl+"\"><b>"+fmtDate(d)+"</b><span>"+status+"</span></div>";}).join("");const strip=document.createElement("div");strip.className="pj-play-dates";strip.style.gridTemplateColumns="repeat("+Math.max(1,dates.length)+",minmax(0,1fr))";strip.innerHTML=html;chart.insertAdjacentElement("afterend",strip);}
 function classPulseDateAnchors(){const root=document.getElementById("cp-card-wrap"),chart=root?.querySelector(".cp-trend-chart"),classId=document.getElementById("cp-class-select")?.value;if(!chart||chart.querySelector(".cp-trend-dates")||!classId)return;const st=getClassStudents(classId),dates=[...new Set(st.flatMap(s=>getStudentHistoricalRecords(s).map(r=>r.date)))].sort();if(!dates.length)return;const picks=[dates[0],dates[Math.floor((dates.length-1)/2)],dates[dates.length-1]],unique=[...new Set(picks)];while(unique.length<3)unique.push(unique[unique.length-1]);const trend=getClassTrend(st),status=trend.status==="improving"?"↑ Improving / يتحسن":trend.status==="needs_support"?"↓ Needs support / يحتاج دعم":"→ Stable / مستقر",cl=trend.status==="improving"?"status-up":trend.status==="needs_support"?"status-down":"status-stable";const strip=document.createElement("div");strip.className="cp-trend-dates";strip.innerHTML="<div class=\"cp-trend-date "+cl+"\"><b>"+fmtDate(unique[0])+"</b><span>Start / البداية</span></div><div class=\"cp-trend-date "+cl+"\"><b>"+fmtDate(unique[1])+"</b><span>Midpoint / المنتصف</span></div><div class=\"cp-trend-date "+cl+"\"><b>"+fmtDate(unique[2])+"</b><span>"+status+"</span></div>";chart.appendChild(strip);}

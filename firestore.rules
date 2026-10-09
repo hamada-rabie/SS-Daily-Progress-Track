@@ -62,7 +62,9 @@ service cloud.firestore {
         allow read, write: if isAdmin() || isApprovedUser(userId);
       }
 
-      match /{subcollection=**} {
+      // Require a real subcollection segment; a bare recursive wildcard can
+      // match the parent profile document in Rules v2 and bypass profile-field guards.
+      match /{subcollection}/{document=**} {
         allow read, write: if isAdmin() || isApprovedUser(userId);
       }
     }
@@ -114,10 +116,39 @@ service cloud.firestore {
             + (data.answers[4] == 1 ? 1 : 0))
         );
       }
+      function wrongQuestionNumbersUnique(data) {
+        return (data.wrongQuestionNumbers.size() == 0)
+          || (data.wrongQuestionNumbers.size() == 1)
+          || (data.wrongQuestionNumbers.size() == 2
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[1])
+          || (data.wrongQuestionNumbers.size() == 3
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[1]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[2]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[2])
+          || (data.wrongQuestionNumbers.size() == 4
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[1]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[2]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[3]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[2]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[3]
+            && data.wrongQuestionNumbers[2] != data.wrongQuestionNumbers[3])
+          || (data.wrongQuestionNumbers.size() == 5
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[1]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[2]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[3]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[4]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[2]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[3]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[4]
+            && data.wrongQuestionNumbers[2] != data.wrongQuestionNumbers[3]
+            && data.wrongQuestionNumbers[2] != data.wrongQuestionNumbers[4]
+            && data.wrongQuestionNumbers[3] != data.wrongQuestionNumbers[4]);
+      }
       function validWrongQuestionNumbers(data) {
         return data.wrongQuestionNumbers is list
-          && data.wrongQuestionNumbers.size() <= 5
-          && data.wrongQuestionNumbers.hasOnly([1, 2, 3, 4, 5]);
+          && data.wrongQuestionNumbers.size() == (5 - data.score)
+          && data.wrongQuestionNumbers.hasOnly([1, 2, 3, 4, 5])
+          && wrongQuestionNumbersUnique(data);
       }
       allow create: if signedIn()
         && request.resource.data.keys().hasAll([
@@ -138,7 +169,7 @@ service cloud.firestore {
         && request.resource.data.setId in ['R2-S01', 'R2-S02']
         && request.resource.data.attempt is int
         && request.resource.data.attempt >= 1
-        && request.resource.data.attempt <= 1000000
+        && request.resource.data.attempt <= 2
         && request.resource.data.score is int
         && request.resource.data.score >= 0
         && request.resource.data.score <= 5

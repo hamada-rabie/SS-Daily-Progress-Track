@@ -1,0 +1,39 @@
+name: Firestore rules security tests
+
+on:
+  push:
+    branches:
+      - remediation/stabilize-2026-10-10
+  pull_request:
+    branches:
+      - release-candidate-2026-10-09
+    paths:
+      - 'firestore.rules'
+      - 'tests/firestore.rules.test.js'
+      - 'firebase.json'
+      - 'package.json'
+      - '.github/workflows/firestore-rules-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  firestore-rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Set up Java for Firestore Emulator
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run Firestore rules tests
+        run: npm test
