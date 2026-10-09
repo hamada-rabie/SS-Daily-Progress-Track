@@ -465,7 +465,10 @@
 
       try {
 
-        await setPersistence(auth, browserLocalPersistence);
+        // getAuth() already uses Firebase's supported browser persistence by default.
+        // Avoid waiting on a separate persistence migration before the actual sign-in,
+        // which can stall on some mobile/PWA browser storage states.
+        message.textContent = "Connecting securely to Firebase...";
 
         const credential = await signInWithEmailAndPassword(auth, email, password);
 
