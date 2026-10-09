@@ -6981,11 +6981,26 @@ setPersistence(auth, browserLocalPersistence)
   function openLogoutConfirm(){
     const modal=document.getElementById('modal-logout-confirm');
     if(!modal)return;
+    modal.classList.remove('hidden');
     modal.classList.add('open');
     modal.setAttribute('aria-hidden','false');
     const cancel=modal.querySelector('[data-action="cancel-logout"]');
     setTimeout(()=>cancel?.focus(),0);
   }
+
+  // Mobile WebViews can miss the delegated sidebar click in some layouts.
+  // Bind a direct capture-phase handler to the actual logout control, while
+  // preventing the document-level handler from running the same action twice.
+  window.openLogoutConfirm = openLogoutConfirm;
+  document.querySelectorAll('#sidebar button[data-action="logout"]').forEach(function(button){
+    if(button.dataset.logoutCaptureBound === 'true') return;
+    button.dataset.logoutCaptureBound = 'true';
+    button.addEventListener('click', function(event){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      openLogoutConfirm();
+    }, true);
+  });
 
   function closeLogoutConfirm(){
     const modal=document.getElementById('modal-logout-confirm');
