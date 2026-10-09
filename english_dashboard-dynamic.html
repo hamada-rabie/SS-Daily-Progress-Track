@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
+<script id="reading-remediation-pr-capture-2026-10-08">
+(() => {
+  const KEY='ss_pending_pr', TTL_MS=30*60*1000;
+  try {
+    const now=Date.now(), existingRaw=localStorage.getItem(KEY);
+    if(existingRaw){try{const existing=JSON.parse(existingRaw);if(!existing||typeof existing.ts!=='number'||(now-existing.ts)>TTL_MS)localStorage.removeItem(KEY);}catch(_){localStorage.removeItem(KEY);}}
+    const params=new URLSearchParams(window.location.search);
+    if(params.get('pr'))localStorage.setItem(KEY,JSON.stringify({raw:window.location.search,ts:now}));
+  } catch (_) {}
+})();
+</script>
+
 <script id="fresh-session-home-guard-2026-10-05">
   // Preserve the dashboard URL so a Back press can never strand the app on login.html.
   window.__SS_APP_BASE_URL=location.pathname+location.search;
@@ -2597,13 +2609,25 @@ async function loadCloudData(){
     }
 
    const uid = window.auth.currentUser.uid;
-    const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
+   const ownerKey = 'ss_cloud_owner_uid';
+   const localOwner = localStorage.getItem(ownerKey);
+   // Fail closed: untagged local data has no verifiable owner and must not be migrated.
+   if(localOwner !== uid){
+     classesData = [];
+     studentsData = [];
+     dailyArchives = {};
+     settings = { teacherName:'', coordinatorName:'', schoolName:'مدرسة عبدالله بن علي المسند الإعدادية', selectedTerm:'first', ministryName:'وزارة التربية والتعليم والتعليم العالي - دولة قطر', schoolLogo: DEFAULT_SCHOOL_LOGO, ministryLogo: DEFAULT_MINISTRY_LOGO, teacherPhoto:'', preferredLanguage:'bilingual', theme:'purple', themeMode:'light', accessibilityZoom:100, fontFamily:'cairo', fontSize:'md', dateFormat:'long', honorParticipationWeight:20, showSchoolLogo:true, showMinistryLogo:true, showTeacherPhoto:true };
+     ['eng_classes','eng_students','eng_daily','eng_settings','ss_cloud_dirty'].forEach(k=>localStorage.removeItem(k));
+   }
+   const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
     const cloudSnap = await window.getDoc(cloudRef);
+    // Ignore stale async responses if the authenticated account changed mid-load.
+    if(window.auth.currentUser?.uid !== uid) return;
 
     if(cloudSnap.exists()){
       const data = cloudSnap.data();
       const hasUnsyncedLocalEdits = localStorage.getItem('ss_cloud_dirty') === '1';
-      if(hasUnsyncedLocalEdits && navigator.onLine){
+      if(hasUnsyncedLocalEdits && localStorage.getItem('ss_cloud_owner_uid') === uid && navigator.onLine){
         console.log('☁️ Local changes are pending; pushing local data before accepting cloud snapshot.');
         await saveCloudData();
         return;
@@ -2617,7 +2641,7 @@ async function loadCloudData(){
       const cloudIsEmpty = cloudClasses.length === 0 && cloudStudents.length === 0 && Object.keys(cloudDaily).length === 0;
       const localHasData = localClasses.length > 0 || localStudents.length > 0 || Object.keys(localDaily).length > 0;
 
-      if(cloudIsEmpty && localHasData){
+      if(cloudIsEmpty && localHasData && localStorage.getItem('ss_cloud_owner_uid') === uid){
         console.log('☁️ Cloud record is empty; preserving local data and migrating it to Firestore...');
         await saveCloudData();
         return;
@@ -2636,6 +2660,8 @@ async function loadCloudData(){
       localStorage.setItem('eng_students', JSON.stringify(studentsData));
       localStorage.setItem('eng_daily', JSON.stringify(dailyArchives));
       localStorage.setItem('eng_settings', JSON.stringify(settings));
+      // Tag the browser cache only after this account's cloud snapshot has been applied.
+      localStorage.setItem(ownerKey, uid);
 
       console.log('☁️ Cloud data loaded:', window.auth.currentUser.email);
       if(typeof renderDashboard === 'function')
@@ -2652,9 +2678,23 @@ async function loadCloudData(){
         window.__refreshStarCard();
 
     }else{
-      console.log('☁️ No cloud data found. Migrating local data...');
+      const sameOwner = localStorage.getItem('ss_cloud_owner_uid') === uid;
+      const localHasData = (Array.isArray(classesData) && classesData.length > 0) || (Array.isArray(studentsData) && studentsData.length > 0) || (dailyArchives && Object.keys(dailyArchives).length > 0);
+      if(sameOwner && localHasData){
+        console.log('☁️ Migrating local data owned by this account...');
+      }else{
+        classesData = [];
+        studentsData = [];
+        dailyArchives = {};
+        localStorage.setItem('eng_classes','[]');
+        localStorage.setItem('eng_students','[]');
+        localStorage.setItem('eng_daily','{}');
+      }
+      // The local dataset has now been verified as empty or owned by this UID.
+      // Tag it before saving so offline retries cannot attribute it to another account.
+      localStorage.setItem(ownerKey, uid);
       await saveCloudData();
-      console.log('✅ Local data migrated to Firestore');
+      console.log('✅ Account-scoped cloud data initialized');
     }
 
   }catch(error){
@@ -2719,6 +2759,13 @@ async function saveCloudData(){
     }
 
     const uid = window.auth.currentUser.uid;
+    const localOwner = localStorage.getItem('ss_cloud_owner_uid');
+    // Fail closed: only upload data explicitly tagged to this signed-in UID.
+    if(localOwner !== uid){
+      console.error('☁️ Cloud save blocked: browser data ownership has not been verified for this account.');
+      setCloudStatus('error');
+      return false;
+    }
     const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
     await window.setDoc(cloudRef, {
       classesData: classesData,
@@ -2727,6 +2774,7 @@ async function saveCloudData(){
       settings: settings,
       updatedAt: new Date().toISOString()
     });
+    localStorage.setItem('ss_cloud_owner_uid', uid);
 
     console.log('☁️ Cloud data saved:', window.auth.currentUser.email);
     setCloudStatus('synced');
@@ -2758,7 +2806,10 @@ window.addEventListener('offline', ()=>{
 });
 window.addEventListener('online', ()=>{
   console.log('🌐 Connection restored. Checking for pending changes...');
-  syncPendingCloudChanges();
+  const uid = window.auth?.currentUser?.uid;
+  const owner = localStorage.getItem('ss_cloud_owner_uid');
+  if(uid && owner === uid) syncPendingCloudChanges();
+  else console.warn('☁️ Pending sync skipped: browser data owner does not match the signed-in account.');
 });
 if(!navigator.onLine) setTimeout(()=>setCloudStatus('offline'),0);
 
@@ -2935,7 +2986,7 @@ installAppBackNavigation();
 function openAddClassModal(){ document.getElementById('modal-class').classList.remove('hidden'); document.getElementById('modal-class').classList.add('flex'); }
 function openNoteModal(preselectId){
   const sel = document.getElementById('note-student-select');
-  sel.innerHTML = studentsData.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  sel.innerHTML = studentsData.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
   if(preselectId) sel.value = preselectId;
   loadNoteForSelectedStudent();
   document.getElementById('modal-note').classList.remove('hidden');
@@ -2974,7 +3025,7 @@ function openAddStudentModal(){
   document.getElementById('new-student-phone2').value = '';
   document.getElementById('new-student-phone3').value = '';
   const sel = document.getElementById('new-student-class');
-  sel.innerHTML = classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
+  sel.innerHTML = classesData.map(c=>`<option value="${c.id}">${escapeHtml(shortClass(c))}</option>`).join('');
   document.getElementById('modal-student').classList.remove('hidden');
   document.getElementById('modal-student').classList.add('flex');
 }
@@ -2991,7 +3042,7 @@ function openEditStudentModal(id){
   document.getElementById('new-student-phone2').value = phones[1] || '';
   document.getElementById('new-student-phone3').value = phones[2] || '';
   const sel = document.getElementById('new-student-class');
-  sel.innerHTML = classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
+  sel.innerHTML = classesData.map(c=>`<option value="${c.id}">${escapeHtml(shortClass(c))}</option>`).join('');
   sel.value = s.classId;
   document.getElementById('modal-student').classList.remove('hidden');
   document.getElementById('modal-student').classList.add('flex');
@@ -3363,7 +3414,7 @@ function renderDashboard(){
             <i class="fa-solid ${c.icon||'fa-book'}"></i>
           </div>
           <div class="cursor-pointer" data-action="open-class" data-id="${c.id}">
-            <p class="font-bold text-sm">${shortClass(c)}</p>
+            <p class="font-bold text-sm">${escapeHtml(shortClass(c))}</p>
             <p class="text-[11px] text-gray-500">${count} student(s) / طالب</p>
           </div>
         </div>
@@ -3432,7 +3483,7 @@ function getClassDailyCompletion(classId,date){const list=studentsData.filter(s=
 function evaluateStudentSmartAlerts(studentId,date){const s=studentsData.find(x=>x.id===studentId);if(!s)return;const cls=classesData.find(c=>c.id===s.classId),abs=getStudentRepeatedAbsence(studentId),hw=getStudentHomeworkMisses(studentId);if(abs>=3)queueSmartAlert('attendance-repeat','student_'+studentId+'_absence_'+date,date,'Repeated absence','غياب متكرر',s.name+' has '+abs+' absences in the last 10 tracked days.',s.name+' لديه '+abs+' حالات غياب خلال آخر 10 أيام متابعة.',{studentId,date,count:abs});if(hw>=2)queueSmartAlert('attention-homework','student_'+studentId+'_homework_'+date,date,'Homework needs attention','الواجب يحتاج متابعة',s.name+' missed homework '+hw+' times in the last 3 tracked days.',s.name+' لم ينجز الواجب '+hw+' مرات خلال آخر 3 أيام متابعة.',{studentId,date,count:hw});if(s.behaviourLevel==='needs_improvement')queueSmartAlert('attention-behaviour','student_'+studentId+'_behaviour_'+date,date,'Behaviour needs attention','السلوك يحتاج متابعة',s.name+' currently needs behaviour support.',s.name+' يحتاج حاليًا إلى متابعة في السلوك.',{studentId,date});if(s.participationLevel==='sleepy'||s.participationLevel==='passive')queueSmartAlert('attention-participation','student_'+studentId+'_participation_'+date,date,'Participation needs attention','المشاركة تحتاج متابعة',s.name+' currently needs participation support.',s.name+' يحتاج حاليًا إلى دعم في المشاركة.',{studentId,date});if(cls){const classAlerts=getClassSmartAlerts(cls.id),positive=classAlerts.find(a=>a.type==='positive');if(positive)queueSmartAlert('class-improvement','class_'+cls.id+'_improvement_'+date,date,'Class progress detected','تم رصد تحسن في الصف',positive.en,positive.ar,{classId:cls.id,date});const completion=getClassDailyCompletion(cls.id,date);if(completion>0&&completion<70)queueSmartAlert('daily-completion','class_'+cls.id+'_completion_'+date,date,'Daily tracking is incomplete','المتابعة اليومية غير مكتملة',shortClass(cls)+' is only '+completion+'% complete for today.', 'تم إنجاز '+completion+'% فقط من متابعة الصف '+shortClass(cls)+' اليوم.',{classId:cls.id,date,completion});}renderSmartAlerts();}
 function classOptionsHTML(includeAll){
   let html = includeAll ? '<option value="all">All Classes / كل الصفوف</option>' : '';
-  html += classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
+  html += classesData.map(c=>`<option value="${c.id}">${escapeHtml(shortClass(c))}</option>`).join('');
   return html;
 }
 
@@ -3445,7 +3496,7 @@ function renderStudentsTable(){
   const destSel = document.getElementById('import-destination-class');
   if(destSel){
     const prevDest = destSel.value;
-    destSel.innerHTML = '<option value="">Use Class/Section from Excel / استخدم الصف من ملف الإكسل</option>' + classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
+    destSel.innerHTML = '<option value="">Use Class/Section from Excel / استخدم الصف من ملف الإكسل</option>' + classesData.map(c=>`<option value="${c.id}">${escapeHtml(shortClass(c))}</option>`).join('');
     if(prevDest && classesData.some(c=>String(c.id)===prevDest)) destSel.value = prevDest;
   }
   const search = document.getElementById('students-search').value.trim().toLowerCase();
@@ -3461,13 +3512,13 @@ function renderStudentsTable(){
     const attLabel = attendanceLabel(s.attendance);
     const hasNote = s.notes && s.notes.trim();
     return `<tr class="border-b text-sm" style="border-color:var(--line);">
-      <td class="p-3 font-semibold">${s.name}</td>
-      <td class="p-3 text-gray-500">${cls? shortClass(cls) : '-'}</td>
+      <td class="p-3 font-semibold">${escapeHtml(s.name)}</td>
+      <td class="p-3 text-gray-500">${cls? escapeHtml(shortClass(cls)) : '-'}</td>
       <td class="p-3"><span class="badge ${attLabel.cls}">${attLabel.text}</span></td>
       <td class="p-3"><span class="badge ${s.homeworkDone?'badge-ok':'badge-warn'}">${s.homeworkDone?'Done / تم':'Not done / لم يتم'}</span></td>
       <td class="p-3"><span class="font-bold" style="color:var(--coral);">${total} / 40</span><br><span class="text-[9px] text-gray-400">4 Skills</span></td>
       <td class="p-3">${(s.phoneNumbers && s.phoneNumbers.length)
-          ? `<div class="flex gap-1">${s.phoneNumbers.map((ph,i)=>`<button data-action="send-whatsapp" data-id="${s.id}" data-phone-index="${i}" class="w-7 h-7 rounded-full text-white flex items-center justify-center text-xs" style="background:#25D366;" title="${ph}"><i class="fa-brands fa-whatsapp whatsapp-student-icon" style="color:#fff;"></i></button>`).join('')}</div>`
+          ? `<div class="flex gap-1">${s.phoneNumbers.map((ph,i)=>`<button data-action="send-whatsapp" data-id="${s.id}" data-phone-index="${i}" class="w-7 h-7 rounded-full text-white flex items-center justify-center text-xs" style="background:#25D366;" title="${escapeHtml(ph)}"><i class="fa-brands fa-whatsapp whatsapp-student-icon" style="color:#fff;"></i></button>`).join('')}</div>`
           : '<span class="text-gray-300 text-xs">—</span>'}</td>
       <td class="p-3"><button data-action="open-note-modal" data-id="${s.id}" class="w-8 h-8 rounded-full flex items-center justify-center ${hasNote?'text-white':'text-gray-400 border'}" style="${hasNote?'background:var(--gold);':'border-color:var(--line);'}" title="Note / ملاحظة"><span class="student-note-icon" aria-hidden="true"><i class="fa-solid fa-pencil student-note-pencil"></i></span></button></td>
       <td class="p-3 flex gap-2">
@@ -3937,7 +3988,7 @@ function renderStarsSpotlight(){
       <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl shrink-0" style="background:linear-gradient(135deg,var(--gold),#C99A2A);"><i class="fa-solid fa-trophy"></i></div>
       <div class="min-w-0">
         <p class="text-[10px] font-bold uppercase tracking-wide" style="color:#B5850C;">Student Spotlight / إبراز الطالب</p>
-        <p class="font-extrabold text-base truncate">${s.name} <span class="font-semibold text-sm text-gray-500">${cls? '· '+shortClass(cls) : ''}</span></p>
+        <p class="font-extrabold text-base truncate">${escapeHtml(s.name)} <span class="font-semibold text-sm text-gray-500">${cls? '· '+escapeHtml(shortClass(cls)) : ''}</span></p>
         <p class="text-xs text-gray-600 mt-0.5">Honor Score ${honorScore(s)}%${evidenceLine ? ' · '+evidenceLine : ''}</p>
       </div>
     </div>`;
@@ -3962,8 +4013,8 @@ function renderStarsBoard(){
     const m = medalStyle[i];
     return `<div class="rounded-2xl px-3 py-3 sm:px-4 sm:py-4 shadow-sm flex flex-col items-center text-center gap-1" style="background:${m.bg}; border:2px solid ${m.ring}; ${i===0?`box-shadow:0 4px 18px rgba(201,154,42,0.22);`:''}">
       <span class="${m.size} leading-none">${m.emoji}</span>
-      <p class="font-extrabold text-xs sm:text-base leading-tight">${s.name}</p>
-      <p class="text-[10px] sm:text-xs text-gray-600">${cls? shortClass(cls) : ''}</p>
+      <p class="font-extrabold text-xs sm:text-base leading-tight">${escapeHtml(s.name)}</p>
+      <p class="text-[10px] sm:text-xs text-gray-600">${cls? escapeHtml(shortClass(cls)) : ''}</p>
       <span class="font-extrabold text-sm sm:text-lg" style="color:${m.ring};">${honorScore(s)}<span class="text-[9px] sm:text-xs font-semibold text-gray-500">%</span></span>
       ${badgeRow(s,i+1)}
     </div>`;
@@ -3984,8 +4035,8 @@ function renderStarsBoard(){
         <div class="flex items-center gap-3 min-w-0">
           <span class="w-6 text-center font-bold text-sm text-gray-400 shrink-0">${rank}</span>
           <div class="min-w-0">
-            <p class="font-semibold text-sm truncate">${s.name}</p>
-            <p class="text-[11px] text-gray-500">${cls? shortClass(cls) : ''}</p>
+            <p class="font-semibold text-sm truncate">${escapeHtml(s.name)}</p>
+            <p class="text-[11px] text-gray-500">${cls? escapeHtml(shortClass(cls)) : ''}</p>
           </div>
         </div>
         <span class="font-bold text-sm shrink-0" style="color:var(--teal-dark);">${score}%</span>
@@ -4037,7 +4088,7 @@ function renderQuickProfileSelectors(){
   const classSel = document.getElementById('qp-class-select');
   if(!classSel) return;
   const prevClass = classSel.value;
-  classSel.innerHTML = '<option value="">Select Class / اختر الصف</option>' + classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
+  classSel.innerHTML = '<option value="">Select Class / اختر الصف</option>' + classesData.map(c=>`<option value="${c.id}">${escapeHtml(shortClass(c))}</option>`).join('');
   if(prevClass && classesData.some(c=>String(c.id)===prevClass)) classSel.value = prevClass;
   renderQuickProfileStudentOptions();
 }
@@ -4048,7 +4099,7 @@ function renderQuickProfileStudentOptions(){
   const classId = classSel.value;
   const prevStudent = studentSel.value;
   const list = classId ? studentsData.filter(s=>String(s.classId)===classId) : [];
-  studentSel.innerHTML = '<option value="">Select Student / اختر الطالب</option>' + list.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  studentSel.innerHTML = '<option value="">Select Student / اختر الطالب</option>' + list.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
   if(list.some(s=>String(s.id)===prevStudent)) studentSel.value = prevStudent;
   renderQuickProfileCard();
 }
@@ -4131,8 +4182,8 @@ function renderQuickProfileCard(){
         <div class="flex items-center gap-3">
           <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${cls? cls.color : 'var(--teal)'};">${s.name.charAt(0)}</div>
           <div>
-            <p class="font-display font-extrabold text-lg">${s.name}</p>
-            <p class="text-xs text-gray-500">${cls? shortClass(cls) : '-'}</p>
+            <p class="font-display font-extrabold text-lg">${escapeHtml(s.name)}</p>
+            <p class="text-xs text-gray-500">${cls? escapeHtml(shortClass(cls)) : '-'}</p>
           </div>
         </div>
       </div>
@@ -4202,7 +4253,7 @@ function renderJourneySelectors(){
   const classSel = document.getElementById('pj-class-select');
   if(!classSel) return;
   const prevClass = classSel.value;
-  classSel.innerHTML = '<option value="">Select Class / اختر الصف</option>' + classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
+  classSel.innerHTML = '<option value="">Select Class / اختر الصف</option>' + classesData.map(c=>`<option value="${c.id}">${escapeHtml(shortClass(c))}</option>`).join('');
   if(prevClass && classesData.some(c=>String(c.id)===prevClass)) classSel.value = prevClass;
   renderJourneyStudentOptions();
 }
@@ -4213,7 +4264,7 @@ function renderJourneyStudentOptions(){
   const classId = classSel.value;
   const prevStudent = studentSel.value;
   const list = classId ? studentsData.filter(s=>String(s.classId)===classId) : [];
-  studentSel.innerHTML = '<option value="">Select Student / اختر الطالب</option>' + list.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  studentSel.innerHTML = '<option value="">Select Student / اختر الطالب</option>' + list.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
   if(list.some(s=>String(s.id)===prevStudent)) studentSel.value = prevStudent;
   renderJourneyCard();
 }
@@ -4325,7 +4376,7 @@ function renderJourneyCard(){
         <div class="min-w-0">
           <p class="text-[10px] font-bold uppercase tracking-wide" style="color:var(--violet);">Student Journey / رحلة الطالب</p>
           <p class="font-display font-extrabold text-xl truncate">${escapeHtml(s.name)}</p>
-          <p class="text-xs text-gray-500">${cls?shortClass(cls):'—'} · ${fmt(firstDate)} → ${fmt(lastDate)}</p>
+          <p class="text-xs text-gray-500">${cls?escapeHtml(shortClass(cls)):'—'} · ${fmt(firstDate)} → ${fmt(lastDate)}</p>
         </div>
         <div class="rounded-xl px-3 py-2 text-right shrink-0" style="background:#F7F3FC;border:1px solid #E4D8F4;">
           <p class="text-[9px] text-gray-400">Recorded points / نقاط مسجلة</p>
@@ -4567,7 +4618,7 @@ function renderS360Selectors(){
   const classSel = document.getElementById('s360-class-select');
   if(!classSel) return;
   const prevClass = classSel.value;
-  classSel.innerHTML = '<option value="">Select Class / اختر الصف</option>' + classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
+  classSel.innerHTML = '<option value="">Select Class / اختر الصف</option>' + classesData.map(c=>`<option value="${c.id}">${escapeHtml(shortClass(c))}</option>`).join('');
   if(prevClass && classesData.some(c=>String(c.id)===prevClass)) classSel.value = prevClass;
   renderS360StudentOptions();
 }
@@ -4578,7 +4629,7 @@ function renderS360StudentOptions(){
   const classId = classSel.value;
   const prevStudent = studentSel.value;
   const list = classId ? studentsData.filter(s=>String(s.classId)===classId) : [];
-  studentSel.innerHTML = '<option value="">Select Student / اختر الطالب</option>' + list.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  studentSel.innerHTML = '<option value="">Select Student / اختر الطالب</option>' + list.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
   if(list.some(s=>String(s.id)===prevStudent)) studentSel.value = prevStudent;
   renderS360Card();
 }
@@ -4635,8 +4686,8 @@ function renderS360Card(){
         <div class="flex items-center gap-3">
           <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${cls? cls.color : 'var(--teal)'};">${s.name.charAt(0)}</div>
           <div>
-            <p class="font-display font-extrabold text-lg">${s.name}</p>
-            <p class="text-xs text-gray-500">${cls? shortClass(cls) : '-'}</p>
+            <p class="font-display font-extrabold text-lg">${escapeHtml(s.name)}</p>
+            <p class="text-xs text-gray-500">${cls? escapeHtml(shortClass(cls)) : '-'}</p>
           </div>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
@@ -4719,14 +4770,47 @@ function renderS360Card(){
           : `<p class="text-xs text-gray-500 mt-1">Not enough historical data to determine a reliable best period.<br>لا توجد بيانات تاريخية كافية لتحديد أفضل فترة بشكل موثوق.</p>`}
       </div>
       ${whyBlock}
+      <div class="card p-4" style="border:1px solid var(--line);">
+        <p class="font-bold text-sm">Reading Remedial / علاج القراءة</p>
+        <p class="text-xs text-gray-500 mt-1">Open a short reading practice for this student, then ask the student to share the result link with you. / افتح تدريب قراءة قصيرًا لهذا الطالب، ثم اطلب منه مشاركة رابط النتيجة معك.</p>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <a class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal);color:white;" target="_blank" rel="noopener noreferrer" href="practice.html?set=R2-S01&amp;sid=${encodeURIComponent(String(s.id))}">Practice Set 1 / التدريب الأول</a>
+          <a class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal-dark);color:white;" target="_blank" rel="noopener noreferrer" href="practice.html?set=R2-S02&amp;sid=${encodeURIComponent(String(s.id))}">Practice Set 2 / التدريب الثاني</a>
+        </div>
+        <div id="reading-remedial-history" class="mt-3 text-xs text-gray-600" aria-live="polite">Loading previous reading results… / جارٍ تحميل النتائج السابقة…</div>
+      </div>
     </div>`;
+  renderReadingResultsForStudent(s.id);
+}
+
+async function renderReadingResultsForStudent(studentId){
+  const box=document.getElementById('reading-remedial-history');
+  if(!box)return;
+  box.replaceChildren();
+  if(!auth.currentUser){box.textContent='Sign in to view saved results / سجّل الدخول لعرض النتائج المحفوظة';return;}
+  try{
+    const snap=await getDocs(query(collection(db,'remediationResults'),where('teacherUid','==',auth.currentUser.uid)));
+    const items=snap.docs.map(d=>({id:d.id,...d.data()}))
+      .filter(r=>String(r.studentId)===String(studentId))
+      .sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+    if(!items.length){box.textContent='No saved reading results yet / لا توجد نتائج قراءة محفوظة حتى الآن';return;}
+    const title=document.createElement('p');title.className='font-bold mb-2';title.textContent='Saved practice results / نتائج التدريب المحفوظة';box.append(title);
+    items.slice(0,8).forEach(r=>{
+      const row=document.createElement('div');row.className='rounded-lg p-2 mb-2';row.style.border='1px solid var(--line)';
+      const line=document.createElement('p');line.className='font-semibold';
+      line.textContent=String(r.setId||'Reading')+' · '+String(r.score??'—')+'/'+String(r.total??'—')+' · Attempt '+String(r.attempt??'—');
+      const detail=document.createElement('p');detail.className='text-gray-500 mt-1';
+      detail.textContent='Wrong questions: '+((Array.isArray(r.wrongQuestionNumbers)&&r.wrongQuestionNumbers.length)?r.wrongQuestionNumbers.join(', '):'None')+' · '+String(r.createdAt||'');
+      row.append(line,detail);box.append(row);
+    });
+  }catch(err){console.error('Reading result history unavailable:',err);box.textContent='Could not load saved results. Check your connection and Firestore access. / تعذر تحميل النتائج المحفوظة؛ تحقق من الاتصال والصلاحيات.';}
 }
 
 function renderClassPulseSelector(){
   const sel = document.getElementById('cp-class-select');
   if(!sel) return;
   const prev = sel.value;
-  sel.innerHTML = '<option value="">Select Class / اختر الصف</option>' + classesData.map(c=>`<option value="${c.id}">${shortClass(c)}</option>`).join('');
+  sel.innerHTML = '<option value="">Select Class / اختر الصف</option>' + classesData.map(c=>`<option value="${c.id}">${escapeHtml(shortClass(c))}</option>`).join('');
   if(prev && classesData.some(c=>String(c.id)===prev)) sel.value = prev;
   renderClassPulseCard();
 }
@@ -4766,7 +4850,7 @@ function renderClassPulseCard(){
     <div class="card p-6 space-y-6">
       <div class="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <p class="font-display font-extrabold text-lg">${shortClass(cls)}</p>
+          <p class="font-display font-extrabold text-lg">${escapeHtml(shortClass(cls))}</p>
           <p class="text-xs text-gray-500">${students.length} student(s) / طالب</p>
         </div>
         <div class="text-center px-3 py-2 rounded-xl" style="background:${tr.bg};">
@@ -4808,7 +4892,7 @@ function renderReportSelect(){
   let list = studentsData;
   if(classSel && classSel.value!=='all') list = list.filter(s=>String(s.classId)===classSel.value);
   if(search) list = list.filter(s=>s.name.toLowerCase().includes(search));
-  sel.innerHTML = '<option value="">Choose student / اختر الطالب...</option>' + list.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  sel.innerHTML = '<option value="">Choose student / اختر الطالب...</option>' + list.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
   if(list.some(s=>String(s.id)===prev)) sel.value = prev;
   renderReportFieldChecks();
   initReportPeriodControls();
@@ -4830,7 +4914,7 @@ function renderCertStudentOptions(){
   let list = studentsData;
   if(filterVal && filterVal!=='all') list = list.filter(s=>s.classId===Number(filterVal));
   const prev = csel.value;
-  csel.innerHTML = list.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  csel.innerHTML = list.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
   if(list.some(s=>String(s.id)===prev)) csel.value = prev;
 }
 function reportSummaryText(s, date){
@@ -4927,8 +5011,8 @@ function renderDailyReport(s, dateStr, out){
   if(!rec){
     out.innerHTML = `
       <div class="space-y-2">
-        <p class="font-display font-bold text-lg">${s.name}</p>
-        <p class="text-xs text-gray-500">${cls? shortClass(cls) : ''} · ${dateFmt}</p>
+        <p class="font-display font-bold text-lg">${escapeHtml(s.name)}</p>
+        <p class="text-xs text-gray-500">${cls? escapeHtml(shortClass(cls)) : ''} · ${dateFmt}</p>
         <p class="text-sm text-gray-400 pt-3">No daily record available for this date.<br>لا يوجد سجل يومي متاح لهذا التاريخ.</p>
       </div>`;
     return;
@@ -4951,12 +5035,12 @@ function renderDailyReport(s, dateStr, out){
   out.innerHTML = `
     <div class="space-y-3">
       <div>
-        <p class="font-display font-bold text-lg">${s.name}</p>
-        <p class="text-xs text-gray-500">${cls? shortClass(cls) : ''} · ${dateFmt}</p>
+        <p class="font-display font-bold text-lg">${escapeHtml(s.name)}</p>
+        <p class="text-xs text-gray-500">${cls? escapeHtml(shortClass(cls)) : ''} · ${dateFmt}</p>
       </div>
       ${(topRow||behRow) ? `<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">${topRow}${behRow}</div>` : ''}
       ${skillRows ? `<div><p class="text-xs font-semibold text-gray-500 mb-1">Language Skills / مهارات اللغة</p>${skillRows}</div>` : ''}
-      <p class="text-xs text-gray-400 pt-2 border-t" style="border-color:var(--line);">👨‍🏫 ${settings.teacherName}</p>
+      <p class="text-xs text-gray-400 pt-2 border-t" style="border-color:var(--line);">👨‍🏫 ${escapeHtml(settings.teacherName)}</p>
     </div>`;
 }
 function renderWeeklyReport(s, anyDateInWeek, out){
@@ -4980,8 +5064,8 @@ function renderWeeklyReport(s, anyDateInWeek, out){
   out.innerHTML = `
     <div class="space-y-3">
       <div>
-        <p class="font-display font-bold text-lg">${s.name}</p>
-        <p class="text-xs text-gray-500">${cls? shortClass(cls) : ''} · Week ${wr.startStr} – ${wr.endStr}</p>
+        <p class="font-display font-bold text-lg">${escapeHtml(s.name)}</p>
+        <p class="text-xs text-gray-500">${cls? escapeHtml(shortClass(cls)) : ''} · Week ${wr.startStr} – ${wr.endStr}</p>
       </div>
       <div class="grid grid-cols-2 gap-2 text-center">
         <div class="border rounded-xl p-2" style="border-color:var(--line);"><p class="text-[11px] text-gray-500">Days recorded / أيام مسجّلة</p><p class="font-bold text-sm">${present} / 7</p></div>
@@ -4989,7 +5073,7 @@ function renderWeeklyReport(s, anyDateInWeek, out){
       </div>
       <div>${dayList}</div>
       ${present===0 ? '<p class="text-xs text-gray-400">No daily records exist for this week — nothing to summarize.<br>لا توجد سجلات يومية لهذا الأسبوع.</p>' : ''}
-      <p class="text-xs text-gray-400 pt-2 border-t" style="border-color:var(--line);">👨‍🏫 ${settings.teacherName}</p>
+      <p class="text-xs text-gray-400 pt-2 border-t" style="border-color:var(--line);">👨‍🏫 ${escapeHtml(settings.teacherName)}</p>
     </div>`;
 }
 function exportReportDataToExcel(){
@@ -5138,7 +5222,7 @@ function renderBulkCertStudentList(){
   let students = studentsData;
   if(classSel.value!=='all') students = students.filter(s=>String(s.classId)===classSel.value);
   if(students.length===0){ list.innerHTML = `<p class="text-gray-400 col-span-full">No students / لا يوجد طلاب</p>`; return; }
-  list.innerHTML = students.map(s=>`<label class="flex items-center gap-1.5"><input type="checkbox" class="bulk-cert-student-check" value="${s.id}"> ${s.name}</label>`).join('');
+  list.innerHTML = students.map(s=>`<label class="flex items-center gap-1.5"><input type="checkbox" class="bulk-cert-student-check" value="${s.id}"> ${escapeHtml(s.name)}</label>`).join('');
 }
 function generateBulkCerts(){
   const checks = Array.from(document.querySelectorAll('.bulk-cert-student-check:checked'));
@@ -5209,10 +5293,10 @@ function loadSettingsForm(){
   if(showPhoto) showPhoto.checked = settings.showTeacherPhoto !== false;
   renderThemeSwatches();
   const sp = document.getElementById('school-logo-preview');
-  sp.innerHTML = settings.schoolLogo ? `<img src="${settings.schoolLogo}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
+  sp.innerHTML = settings.schoolLogo ? `<img src="${escapeHtml(settings.schoolLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
   renderTeacherPhoto();
   const mp = document.getElementById('ministry-logo-preview');
-  mp.innerHTML = settings.ministryLogo ? `<img src="${settings.ministryLogo}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
+  mp.innerHTML = settings.ministryLogo ? `<img src="${escapeHtml(settings.ministryLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
 }
 function editProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.setAttribute('aria-readonly','false');el.focus();try{el.setSelectionRange(el.value.length,el.value.length);}catch(_){}}
 function deleteProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.value='';el.setAttribute('aria-readonly','false');el.focus();}
@@ -5643,18 +5727,18 @@ function saveSettings(){
   const logoBox = document.getElementById('sidebar-logo-box');
   const schoolLogoVisible = settings.showSchoolLogo !== false && !!settings.schoolLogo;
   logoBox.innerHTML = schoolLogoVisible
-    ? `<img src="${settings.schoolLogo}" class="object-contain rounded-2xl" style="width:44px; height:44px;">`
+    ? `<img src="${escapeHtml(settings.schoolLogo)}" class="object-contain rounded-2xl" style="width:44px; height:44px;">`
     : 'Aa';
   if(!schoolLogoVisible){ logoBox.style.background = 'var(--teal)'; logoBox.classList.add('text-white'); }
   else { logoBox.style.background = '#fff'; }
   const sp = document.getElementById('school-logo-preview');
-  if(sp) sp.innerHTML = settings.schoolLogo ? `<img src="${settings.schoolLogo}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
+  if(sp) sp.innerHTML = settings.schoolLogo ? `<img src="${escapeHtml(settings.schoolLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
   const mp = document.getElementById('ministry-logo-preview');
-  if(mp) mp.innerHTML = settings.ministryLogo ? `<img src="${settings.ministryLogo}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
+  if(mp) mp.innerHTML = settings.ministryLogo ? `<img src="${escapeHtml(settings.ministryLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
   const hsl = document.getElementById('header-school-logo');
-  if(hsl) hsl.innerHTML = (settings.showSchoolLogo !== false && settings.schoolLogo) ? `<img src="${settings.schoolLogo}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
+  if(hsl) hsl.innerHTML = (settings.showSchoolLogo !== false && settings.schoolLogo) ? `<img src="${escapeHtml(settings.schoolLogo)}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
   const hml = document.getElementById('header-ministry-logo');
-  if(hml) hml.innerHTML = (settings.showMinistryLogo !== false && settings.ministryLogo) ? `<img src="${settings.ministryLogo}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
+  if(hml) hml.innerHTML = (settings.showMinistryLogo !== false && settings.ministryLogo) ? `<img src="${escapeHtml(settings.ministryLogo)}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
   if(typeof renderDashboard === 'function') renderDashboard();
 }
 
@@ -6111,7 +6195,7 @@ function handleTeacherPhotoUpload(event){
 }
 function renderTeacherPhoto(){
   const photoHtml = settings.teacherPhoto
-    ? `<img src="${settings.teacherPhoto}" class="w-full h-full object-cover">`
+    ? `<img src="${escapeHtml(settings.teacherPhoto)}" class="w-full h-full object-cover">`
     : '<i class="fa-solid fa-user text-gray-300 text-2xl"></i>';
   const profileEl = document.getElementById('teacher-profile-photo-preview');
   if(profileEl) profileEl.innerHTML = photoHtml;
@@ -6119,7 +6203,7 @@ function renderTeacherPhoto(){
   if(headerEl){
     headerEl.style.display = settings.showTeacherPhoto !== false ? '' : 'none';
     headerEl.innerHTML = settings.teacherPhoto
-      ? `<img src="${settings.teacherPhoto}" class="w-full h-full object-cover">`
+      ? `<img src="${escapeHtml(settings.teacherPhoto)}" class="w-full h-full object-cover">`
       : '<i class="fa-solid fa-user text-white/80 text-sm"></i>';
   }
 }
@@ -6399,19 +6483,19 @@ function renderSkillExplorer(){
   const skillSel=document.getElementById('skill-explorer-skill'),classSel=document.getElementById('skill-explorer-class'),results=document.getElementById('skill-explorer-results');
   if(!skillSel||!classSel||!results)return;
   const prevSkill=skillSel.value||'reading',prevClass=classSel.value||'all';
-  skillSel.innerHTML=Object.keys(QP_SKILL_LABELS).map(k=>'<option value="'+k+'">'+QP_SKILL_LABELS[k].en+' / '+QP_SKILL_LABELS[k].ar+'</option>').join('');
+  skillSel.innerHTML=Object.keys(QP_SKILL_LABELS).map(k=>'<option value="'+escapeHtml(k)+'">'+escapeHtml(QP_SKILL_LABELS[k].en)+' / '+escapeHtml(QP_SKILL_LABELS[k].ar)+'</option>').join('');
   skillSel.value=Object.prototype.hasOwnProperty.call(QP_SKILL_LABELS,prevSkill)?prevSkill:'reading';
-  classSel.innerHTML='<option value="all">All Classes / كل الصفوف</option>'+classesData.map(c=>'<option value="'+c.id+'">'+shortClass(c)+'</option>').join('');
+  classSel.innerHTML='<option value="all">All Classes / كل الصفوف</option>'+classesData.map(c=>'<option value="'+escapeHtml(c.id)+'">'+escapeHtml(shortClass(c))+'</option>').join('');
   classSel.value=(prevClass==='all'||classesData.some(c=>String(c.id)===String(prevClass)))?prevClass:'all';
   let list=studentsData.slice();if(classSel.value!=='all')list=list.filter(s=>String(s.classId)===String(classSel.value));
   const skill=skillSel.value,assessed=list.map(s=>{const score=getCurrentSkillValue(s,skill);return score===null?null:{student:s,score:score,classObj:classesData.find(c=>c.id===s.classId)};}).filter(Boolean),label=QP_SKILL_LABELS[skill],color=SKILL_COLORS[skill]||'var(--teal)';
   if(!assessed.length){results.innerHTML='<div class="card p-8 text-center text-gray-500 text-sm lg:col-span-2"><i class="fa-solid fa-chart-column text-3xl mb-2"></i><p><span class="en">No assessed students for this skill in the selected class.</span><span class="ar">لا يوجد طلاب مُقيّمون في هذه المهارة للصف المحدد.</span></p></div>';return;}
   const max=Math.max(...assessed.map(x=>x.score)),min=Math.min(...assessed.map(x=>x.score)),average=Math.round(assessed.reduce((a,x)=>a+x.score,0)/assessed.length*10),highest=assessed.filter(x=>x.score===max),lowest=assessed.filter(x=>x.score===min),pct=v=>Math.max(0,Math.min(100,Math.round(v*10)));
-  const person=x=>{const lvl=skillExplorerLevel(x.score),cls=x.classObj;return '<div class="se-person"><div class="se-person-main"><div class="se-avatar" style="background:'+color+';">'+escapeHtml(x.student.name.charAt(0))+'</div><div class="min-w-0"><p class="se-name">'+escapeHtml(x.student.name)+'</p><p class="se-class">'+(cls?shortClass(cls):'—')+'</p></div></div><div class="se-score"><strong>'+pct(x.score)+'%</strong><span>'+(lvl?lvl.en:'—')+'</span></div></div>';};
-  const feature=(title,ar,items,icon,bg)=>{const score=pct(items[0].score);return '<div class="se-feature '+(title==='Highest'?'se-high':'se-low')+'"><div class="se-feature-head"><div class="se-feature-icon" style="background:'+bg+';"><i class="fa-solid '+icon+'"></i></div><div><p>'+title+' <span>/ '+ar+'</span></p><small>'+label.en+' / '+label.ar+'</small></div><div class="se-score-ring" style="--score:'+score+';--ring:'+color+';"><b>'+score+'%</b></div></div><div class="se-people">'+items.map(person).join('')+'</div></div>';};
+  const person=x=>{const lvl=skillExplorerLevel(x.score),cls=x.classObj;return '<div class="se-person"><div class="se-person-main"><div class="se-avatar" style="background:'+color+';">'+escapeHtml(x.student.name.charAt(0))+'</div><div class="min-w-0"><p class="se-name">'+escapeHtml(x.student.name)+'</p><p class="se-class">'+(cls?escapeHtml(shortClass(cls)):'—')+'</p></div></div><div class="se-score"><strong>'+pct(x.score)+'%</strong><span>'+(lvl?escapeHtml(lvl.en):'—')+'</span></div></div>';};
+  const feature=(title,ar,items,icon,bg)=>{const score=pct(items[0].score);return '<div class="se-feature '+(title==='Highest'?'se-high':'se-low')+'"><div class="se-feature-head"><div class="se-feature-icon" style="background:'+bg+';"><i class="fa-solid '+icon+'"></i></div><div><p>'+title+' <span>/ '+ar+'</span></p><small>'+escapeHtml(label.en)+' / '+escapeHtml(label.ar)+'</small></div><div class="se-score-ring" style="--score:'+score+';--ring:'+color+';"><b>'+score+'%</b></div></div><div class="se-people">'+items.map(person).join('')+'</div></div>';};
   const ranked=assessed.slice().sort((a,b)=>b.score-a.score),visibleRanked=ranked.slice(0,Math.min(8,ranked.length)),extremes=ranked.filter(x=>x.score===max||x.score===min),bars=[...new Map([...visibleRanked,...extremes].map(x=>[x.student.id,x])).values()].map((x)=>{const rank=ranked.indexOf(x)+1,isHigh=x.score===max,isLow=x.score===min;return '<div class="se-rank-row '+(isHigh?'se-rank-high ':'')+(isLow?'se-rank-low':'')+'"><span class="se-rank">'+(rank+1)+'</span><span class="se-rank-name">'+escapeHtml(x.student.name)+(isHigh?'<em class="se-rank-badge">Highest / الأعلى</em>':isLow?'<em class="se-rank-badge">Lowest / الأقل</em>':'')+'</span><div class="se-rank-track"><span style="width:'+pct(x.score)+'%;background:'+color+';"></span></div><b>'+pct(x.score)+'%</b></div>';}).join('');
   const spread=Math.max(0,Math.min(100,Math.round((max-min)/6*100)));
-  results.innerHTML='<div class="se-dashboard"><div class="se-summary"><div><span class="se-summary-kicker"><i class="fa-solid fa-compass"></i> Skill Explorer / مستكشف المهارات</span><h3>'+label.en+' <span>/ '+label.ar+'</span></h3><p><span class="en">A visual view of the assessed range, leaders, and students who need attention.</span><span class="ar">عرض بصري لنطاق التقييم وأعلى الطلاب ومن يحتاجون إلى دعم.</span></p></div><div class="se-summary-stats"><div><b>'+assessed.length+'</b><span>Assessed / مُقيّم</span></div><div><b>'+average+'%</b><span>Average / المتوسط</span></div><div><b>'+spread+'%</b><span>Spread / الفارق</span></div></div></div><div class="se-features">'+feature('Highest','الأعلى',highest,'fa-arrow-trend-up','#E7F6EB')+feature('Lowest','الأقل',lowest,'fa-arrow-trend-down','#FDECE3')+'</div><div class="se-ranking"><div class="se-ranking-head"><div><b>Skill Ranking / ترتيب المهارة</b><span>Top assessed students / أعلى الطلاب المُقيّمين</span></div><span class="se-range">'+pct(min)+'% → '+pct(max)+'%</span></div>'+bars+'</div></div>';
+  results.innerHTML='<div class="se-dashboard"><div class="se-summary"><div><span class="se-summary-kicker"><i class="fa-solid fa-compass"></i> Skill Explorer / مستكشف المهارات</span><h3>'+escapeHtml(label.en)+' <span>/ '+escapeHtml(label.ar)+'</span></h3><p><span class="en">A visual view of the assessed range, leaders, and students who need attention.</span><span class="ar">عرض بصري لنطاق التقييم وأعلى الطلاب ومن يحتاجون إلى دعم.</span></p></div><div class="se-summary-stats"><div><b>'+assessed.length+'</b><span>Assessed / مُقيّم</span></div><div><b>'+average+'%</b><span>Average / المتوسط</span></div><div><b>'+spread+'%</b><span>Spread / الفارق</span></div></div></div><div class="se-features">'+feature('Highest','الأعلى',highest,'fa-arrow-trend-up','#E7F6EB')+feature('Lowest','الأقل',lowest,'fa-arrow-trend-down','#FDECE3')+'</div><div class="se-ranking"><div class="se-ranking-head"><div><b>Skill Ranking / ترتيب المهارة</b><span>Top assessed students / أعلى الطلاب المُقيّمين</span></div><span class="se-range">'+pct(min)+'% → '+pct(max)+'%</span></div>'+bars+'</div></div>';
 }
 /* About modal: it closes ONLY through its explicit X button. */
 /* ---------- refresh ---------- */
@@ -6881,9 +6965,11 @@ try{
   persistentLocalCache,
   doc,
   getDoc,
+  getDocs,
   setDoc,
   collection,
   query,
+  where,
   orderBy,
   limit,
   onSnapshot,
@@ -7069,7 +7155,7 @@ window.recordAppUsage=async function(uid){try{
  let existing=null;
  try{ existing=await window.getDoc(userRef); }catch(e){ console.warn('First-login lookup skipped safely:',e); }
  const isFirstLogin=!!(existing && (!existing.exists() || !existing.data()?.lastSeenAt));
- const patch={email:userEmailForStats(),displayName:String(window.auth?.currentUser?.displayName||'').trim(),role:userEmailForStats().toLowerCase()==='h.nasim0202@education.qa'?'admin':'user',timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',lastSeenAt:now,appOpenCount:count,lastSeenPlatform:/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'mobile':'desktop'};
+ const patch={email:userEmailForStats(),displayName:String(window.auth?.currentUser?.displayName||'').trim(),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',lastSeenAt:now,appOpenCount:count,lastSeenPlatform:/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'mobile':'desktop'};
  const ua=navigator.userAgent||''; const deviceType=/Mobi|Android|iPhone|iPad/i.test(ua)?'mobile':'desktop'; const os=/Android/i.test(ua)?'Android':/iPhone|iPad/i.test(ua)?'iOS':/Windows/i.test(ua)?'Windows':/Mac OS X/i.test(ua)?'macOS':/Linux/i.test(ua)?'Linux':'Other';
  let deviceId=localStorage.getItem('ss_dpt_device_id'); if(!deviceId){deviceId=(crypto?.randomUUID?crypto.randomUUID():'dev-'+Date.now()+'-'+Math.random().toString(36).slice(2));localStorage.setItem('ss_dpt_device_id',deviceId);}
  try{await window.setDoc(window.doc(window.db,'users',uid,'devices',deviceId),{deviceId,deviceType,os,standalone,lastSeenAt:now,createdAt:now,platformLabel:deviceType==='mobile'?('Mobile · '+os):('Desktop · '+os)},{merge:true});}catch(e){console.warn('Device telemetry skipped safely:',e);}
@@ -7078,6 +7164,74 @@ window.recordAppUsage=async function(uid){try{
  await window.setDoc(userRef,patch,{merge:true});
 }catch(err){console.warn('Usage telemetry skipped safely:',err);}};
 })();
+
+
+/* Reading Remedial result intake.
+   The shared URL is untrusted input. Recompute scores from the answer key and
+   match the student to this teacher's already-loaded private roster before writing. */
+async function processPendingReadingResult(uid){
+  const KEY='ss_pending_pr', TTL_MS=30*60*1000;
+  let pending;
+  try{pending=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){localStorage.removeItem(KEY);return;}
+  if(!pending || typeof pending.ts!=='number' || Date.now()-pending.ts>TTL_MS){
+    localStorage.removeItem(KEY); return;
+  }
+  try{
+    const raw=String(pending.raw||'');
+    const params=new URLSearchParams(raw.startsWith('?')?raw.slice(1):raw);
+    const encoded=params.get('pr');
+    if(!encoded)return;
+    const parts=encoded.split('.');
+    if(parts.length!==7)throw new Error('Invalid result link format');
+    const [setId,studentIdRaw,attemptRaw,claimedScoreRaw,totalRaw,wrongRaw,answersRaw]=parts;
+    const key={
+      'R2-S01':[1,0,2,3,2],
+      'R2-S02':[0,1,1,2,1]
+    }[setId];
+    if(!key)throw new Error('Unknown practice set');
+    if(!/^\\d{1,16}$/.test(studentIdRaw))throw new Error('Invalid student ID');
+    const studentId=Number(studentIdRaw), attempt=Number(attemptRaw), claimedScore=Number(claimedScoreRaw), total=Number(totalRaw);
+    if(!Number.isSafeInteger(attempt)||attempt<1||attempt>1000000||total!==key.length)throw new Error('Invalid attempt or total');
+    const answers=answersRaw.split(',').map(Number);
+    if(answers.length!==key.length||answers.some(v=>!Number.isInteger(v)||v<0||v>3))throw new Error('Invalid answer list');
+    const score=answers.reduce((n,a,i)=>n+(a===key[i]?1:0),0);
+    const wrong=answers.map((a,i)=>a===key[i]?null:i+1).filter(v=>v!==null);
+    const claimedWrong=wrongRaw?wrongRaw.split(',').map(Number):[];
+    if(score!==claimedScore||JSON.stringify(wrong)!==JSON.stringify(claimedWrong))throw new Error('Score does not match the submitted answers');
+    const student=studentsData.find(s=>String(s.id)===String(studentId));
+    if(!student)throw new Error('This student ID is not in the current teacher roster');
+    const resultId=String(uid)+'_'+studentId+'_'+setId+'_a'+attempt;
+    const ref=doc(db,'remediationResults',resultId);
+    try{
+      await setDoc(ref,{
+        teacherUid:uid,studentId,studentName:String(student.name||''),setId,attempt,
+        answers,score,total,wrongQuestionNumbers:wrong,
+        createdAt:new Date().toISOString(),
+        source:'student-shared-result-link',
+        grading:'recalculated-in-dashboard; client-origin answers are not tamper-proof'
+      });
+    }catch(writeErr){
+      // Create-only Firestore rules reject a replay/overwrite. If the existing
+      // record belongs to this teacher, treat it as an already-recorded attempt.
+      try{
+        const existing=await getDoc(ref);
+        if(existing.exists() && existing.data().teacherUid===uid){
+          localStorage.removeItem(KEY);
+          if(typeof showToast==='function')showToast('This attempt was already recorded / تم تسجيل هذه المحاولة من قبل','error');
+          return;
+        }
+      }catch(_){ }
+      throw writeErr;
+    }
+    localStorage.removeItem(KEY);
+    if(typeof showToast==='function')showToast('Reading remedial result recorded / تم تسجيل نتيجة تدريب القراءة','success');
+    if(typeof renderReadingResultsForStudent==='function')await renderReadingResultsForStudent(studentId);
+
+  }catch(err){
+    console.error('Reading remedial result rejected:',err);
+    if(typeof showToast==='function')showToast('Reading result was not recorded. Check the result link / لم تُسجّل النتيجة؛ راجع رابط النتيجة','error');
+  }
+}
 
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
@@ -7091,18 +7245,13 @@ setPersistence(auth, browserLocalPersistence)
       // Navigation state is managed by the session-aware entry guard above.
       // Do not clear the active tab here: Auth can re-fire during a browser refresh.
       try{ sessionStorage.setItem('ss_app_session_active','1'); }catch(e){}
-      // Keep the established authenticated-dashboard reveal behavior while cloud loading runs.
+      if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
+      // Keep the dashboard hidden until account-scoped cloud data is loaded.
+      await loadCloudData();
+      if(window.auth.currentUser?.uid !== user.uid) return;
       document.body.classList.remove("auth-pending");
       window.__SS_AUTH_READY = true;
       window.dispatchEvent(new Event("ss-auth-ready"));
-      if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
-
-      if(localStorage.getItem('ss_cloud_dirty') === '1'){
-        if(navigator.onLine) await syncPendingCloudChanges();
-        else setCloudStatus('offline');
-      }else{
-        await loadCloudData();
-      }
       if(typeof window.applyAuthenticatedTeacherName === 'function'){
         await window.applyAuthenticatedTeacherName(user);
       }
@@ -7126,12 +7275,14 @@ setPersistence(auth, browserLocalPersistence)
     try{
       if(adminFirstLoginUnsubscribe) return;
       const admin=auth.currentUser;
-      if(!admin || String(admin.email||'').toLowerCase()!=='h.nasim0202@education.qa') return;
+      if(!admin) return;
+      const adminDoc=await getDoc(doc(db,'admins',admin.uid));
+      if(!adminDoc.exists() || adminDoc.data()?.active !== true) return;
       const usersQuery=query(collection(db,'users'),limit(500));
       adminFirstLoginUnsubscribe=onSnapshot(usersQuery,async(snap)=>{
         for(const d of snap.docs){
           const u=d.data()||{};
-          if(!u.firstLoginAt || String(u.email||'').toLowerCase()==='h.nasim0202@education.qa') continue;
+          if(!u.firstLoginAt || d.id===admin.uid) continue;
           const notifId='new-user-'+d.id;
           try{
             await setDoc(doc(db,'users',admin.uid,'notifications',notifId),{
@@ -7839,18 +7990,18 @@ import { collection, getDocs, query, limit } from "https://www.gstatic.com/fireb
 (function(){'use strict';
 const adminBtn=document.querySelector('[data-action="open-admin-stats"]'),modal=document.getElementById('admin-stats-modal'),grid=document.getElementById('admin-stats-grid'),note=document.getElementById('admin-stats-note'),list=document.getElementById('admin-user-list');
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const ADMIN_EMAIL='h.nasim0202@education.qa';
+// Admin privileges are verified against the trusted /admins/{uid} record below.
 const inferCountryFromTimezone=tz=>{const map={'Asia/Qatar':'Qatar','Asia/Riyadh':'Saudi Arabia','Asia/Kuwait':'Kuwait','Asia/Bahrain':'Bahrain','Asia/Dubai':'United Arab Emirates','Asia/Muscat':'Oman','Asia/Amman':'Jordan','Asia/Beirut':'Lebanon','Africa/Cairo':'Egypt','Europe/London':'United Kingdom','Europe/Paris':'France','Europe/Berlin':'Germany','America/New_York':'United States','America/Chicago':'United States','America/Denver':'United States','America/Los_Angeles':'United States','Asia/Kolkata':'India','Asia/Dhaka':'Bangladesh','Asia/Karachi':'Pakistan','Asia/Manila':'Philippines','Asia/Jakarta':'Indonesia','Asia/Kuala_Lumpur':'Malaysia','Asia/Singapore':'Singapore','Asia/Tokyo':'Japan','Asia/Seoul':'South Korea','Australia/Sydney':'Australia'};return map[String(tz||'')]||''};
-const userRole=u=>String(u.role||'').toLowerCase()==='admin'||String(u.email||'').toLowerCase()===ADMIN_EMAIL.toLowerCase()?'Admin':'User';
+const userRole=u=>String(u.role||'').toLowerCase()==='admin'?'Admin':'User';
 const userLabel=u=>String(u.displayName||u.email||u.uid||'').trim();
 const userCountry=u=>String(u.country||'').trim()||inferCountryFromTimezone(u.timezone)||'Unknown';
-const isAdmin=async()=>{try{const u=window.auth?.currentUser;if(!u)return false;return String(u.email||'').toLowerCase()===ADMIN_EMAIL.toLowerCase()}catch(e){console.warn('Admin identity check failed:',e);return false}};
+const isAdmin=async()=>{try{const u=window.auth?.currentUser;if(!u||!window.db||!window.doc||!window.getDoc)return false;const snap=await window.getDoc(window.doc(window.db,'admins',u.uid));return snap.exists()&&snap.data()?.active===true}catch(e){console.warn('Admin identity check failed:',e);return false}};
 async function loadStats(){if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}grid.innerHTML='<div style="grid-column:1/-1;text-align:center;font-size:10px;color:#7b8b87">Loading… / جارٍ التحميل…</div>';try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})),registered=users,now=Date.now(),active7=registered.filter(u=>u.lastSeenAt&&now-new Date(u.lastSeenAt).getTime()<=7*86400000).length,active30=registered.filter(u=>u.lastSeenAt&&now-new Date(u.lastSeenAt).getTime()<=30*86400000).length,push=registered.filter(u=>u.pushEnabled===true).length,installed=registered.filter(u=>u.installedAt).length;const newUsers=registered.filter(u=>u.firstLoginAt).length;
 const deviceLists=await Promise.all(registered.map(async u=>{try{const ds=await getDocs(collection(window.db,'users',u.uid,'devices'));return [u.uid,ds.docs.map(d=>d.data())]}catch(e){return [u.uid,[]]}}));const deviceMap=new Map(deviceLists),deviceTotal=deviceLists.reduce((n,[,ds])=>n+ds.length,0);
 grid.innerHTML=[[''+registered.length,'Registered Users','مستخدمو التطبيق'],[''+deviceTotal,'Devices / Instances','الأجهزة المستخدمة'],[''+installed,'Installed / Standalone','مثبت على الجهاز'],[''+active7,'Active · 7 days','نشط خلال 7 أيام'],[''+push,'Push-Ready Users','مستخدمون فعّلوا الإشعارات'],[''+newUsers,'First-time Users','مستخدمون دخلوا لأول مرة']].map(x=>'<div class="admin-stat"><div class="n">'+esc(x[0])+'</div><div class="en">'+esc(x[1])+'</div><div class="ar">'+esc(x[2])+'</div></div>').join('');note.innerHTML='<b>Usage snapshot:</b> '+registered.length+' registered · '+active30+' active in 30 days.<br><span dir="rtl">الأرقام تخص حسابات التطبيق واستخدامه فقط، ولا تعرض أي بيانات طلابية.</span>';list.innerHTML=registered.sort((a,b)=>String(a.email||'').localeCompare(String(b.email||''))).map(u=>{const days=u.lastSeenAt?Math.floor((now-new Date(u.lastSeenAt).getTime())/86400000):null,activity=days===null?'Never opened':days===0?'Active today':days+'d ago',country=userCountry(u),role=userRole(u),devices=deviceMap.get(u.uid)||[],platforms=[...new Set(devices.map(d=>d.platformLabel||d.deviceType||'Unknown'))],platform=devices.length?platforms.join(' · '):(u.lastSeenPlatform||'—'),firstLogin=u.firstLoginAt?'🆕 First login':'';return '<div class="admin-user-row"><div class="email"><div>'+esc(userLabel(u))+(u.email&&u.displayName&&u.email!==u.displayName?'<div class="admin-user-email">'+esc(u.email)+'</div>':'')+'</div><div class="admin-user-extra"><span>'+esc(role)+'</span><span>🌍 '+esc(country)+'</span><span>📱 '+esc(platform)+'</span>'+(firstLogin?'<span class="admin-first-login-tag">'+esc(firstLogin)+'</span>':'')+'</div></div><div class="meta">'+esc(activity)+' · '+(u.pushEnabled?'🔔 Push':'—')+'</div></div>'}).join('')||'<div class="admin-stats-note">No registered users yet.</div>';modal.classList.add('open');modal.setAttribute('aria-hidden','false')}catch(err){console.error('Admin statistics failed:',err);grid.innerHTML='<div style="grid-column:1/-1;color:#B94A35;font-size:10px">Could not load statistics. Check deployed Firestore Rules.</div>';modal.classList.add('open');modal.setAttribute('aria-hidden','false')}}
 async function reveal(){if(adminBtn&&await isAdmin())adminBtn.style.display='flex'}
 adminBtn?.addEventListener('click',loadStats);document.getElementById('admin-stats-close')?.addEventListener('click',()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true')});modal?.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true')}});
-document.getElementById('admin-release-send')?.addEventListener('click',async()=>{if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}const title=document.getElementById('admin-release-title-en')?.value.trim(),body=document.getElementById('admin-release-body-en')?.value.trim();if(!title||!body){alert('Enter an update title and message first. / أدخل عنوان التحديث ورسالة التحديث أولًا.');return}try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})),now=new Date().toISOString(),base='release-'+Date.now();await Promise.all(users.map(u=>window.setDoc(window.doc(window.db,'users',u.uid,'notifications',base+'-'+u.uid),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true})));await window.setDoc(window.doc(window.db,'users',window.auth.currentUser.uid,'notifications',base+'-admin'),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true});alert('Update notice sent to approved users and will also appear in your bell. / تم إرسال إشعار التحديث وسيظهر أيضًا في جرسك.');document.getElementById('admin-release-title-en').value='';document.getElementById('admin-release-body-en').value=''}catch(err){console.error('Release notice failed:',err);alert('Could not publish. Check deployed Firestore Rules. / تعذر النشر. تحقق من نشر قواعد Firestore.')}});const revealAdminButton=async()=>{try{if(!adminBtn)return;const u=window.auth?.currentUser;const allowed=!!u&&String(u.email||'').toLowerCase()===ADMIN_EMAIL.toLowerCase();if(allowed){document.body.classList.add('admin-ready');adminBtn.style.display='flex';adminBtn.style.visibility='visible';adminBtn.style.opacity='1';}else{document.body.classList.remove('admin-ready');adminBtn.style.display='none';}}catch(e){console.warn('Admin button reveal retry:',e)}}; window.addEventListener('ss-auth-ready',()=>revealAdminButton()); if(window.__SS_AUTH_READY) revealAdminButton(); let adminRevealAttempts=0; const adminRevealTimer=setInterval(()=>{adminRevealAttempts++; revealAdminButton(); if(adminRevealAttempts>=15)clearInterval(adminRevealTimer);},500);
+document.getElementById('admin-release-send')?.addEventListener('click',async()=>{if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}const title=document.getElementById('admin-release-title-en')?.value.trim(),body=document.getElementById('admin-release-body-en')?.value.trim();if(!title||!body){alert('Enter an update title and message first. / أدخل عنوان التحديث ورسالة التحديث أولًا.');return}try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})),now=new Date().toISOString(),base='release-'+Date.now();await Promise.all(users.map(u=>window.setDoc(window.doc(window.db,'users',u.uid,'notifications',base+'-'+u.uid),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true})));await window.setDoc(window.doc(window.db,'users',window.auth.currentUser.uid,'notifications',base+'-admin'),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true});alert('Update notice sent to approved users and will also appear in your bell. / تم إرسال إشعار التحديث وسيظهر أيضًا في جرسك.');document.getElementById('admin-release-title-en').value='';document.getElementById('admin-release-body-en').value=''}catch(err){console.error('Release notice failed:',err);alert('Could not publish. Check deployed Firestore Rules. / تعذر النشر. تحقق من نشر قواعد Firestore.')}});const revealAdminButton=async()=>{try{if(!adminBtn)return;const u=window.auth?.currentUser;const allowed=!!u&&await isAdmin();if(allowed){document.body.classList.add('admin-ready');adminBtn.style.display='flex';adminBtn.style.visibility='visible';adminBtn.style.opacity='1';}else{document.body.classList.remove('admin-ready');adminBtn.style.display='none';}}catch(e){console.warn('Admin button reveal retry:',e)}}; window.addEventListener('ss-auth-ready',()=>revealAdminButton()); if(window.__SS_AUTH_READY) revealAdminButton(); let adminRevealAttempts=0; const adminRevealTimer=setInterval(()=>{adminRevealAttempts++; revealAdminButton(); if(adminRevealAttempts>=15)clearInterval(adminRevealTimer);},500);
 })();
 </script>
 <style id="class-evaluation-status-premium-2026-10-05--dup2">
@@ -8958,6 +9109,68 @@ function renderClassPulsePremiumLower(wrap, students, acad, hw, partDist, behDis
   function init(){renderFonts();}
   document.addEventListener('click',function(e){const b=e.target.closest?.('[data-font-preview]');if(b){e.preventDefault();e.stopPropagation();const sel=document.getElementById('setting-font-family');if(sel){sel.value=b.dataset.fontPreview;applyFontFamily(b.dataset.fontPreview);activeFonts();}}},true);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
+<!-- Modal dismissal policy: explicit X only; outside clicks and Escape never dismiss a modal. -->
+<style id="modal-x-only-policy-2026-10-09">
+.ss-universal-modal-close{position:absolute!important;top:10px!important;right:10px!important;z-index:20!important;width:32px!important;height:32px!important;display:flex!important;align-items:center!important;justify-content:center!important;border:1px solid var(--line,#D8E4E0)!important;border-radius:10px!important;background:var(--card,#fff)!important;color:var(--ink,#23433D)!important;font-size:22px!important;line-height:1!important;font-weight:700!important;box-shadow:0 2px 8px rgba(0,0,0,.10)!important;cursor:pointer!important}
+.ss-universal-modal-close:focus-visible{outline:3px solid var(--teal,#0E7C74)!important;outline-offset:2px!important}
+</style>
+<script id="modal-x-only-policy-2026-10-09">
+(function(){
+  'use strict';
+  const modalIds=['modal-about','modal-class','modal-edit-class','modal-student','modal-note','modal-disable-notif','modal-logout-confirm','modal-share','admin-stats-modal'];
+  function isVisible(el){
+    if(!el)return false;
+    if(el.id==='admin-stats-modal')return el.classList.contains('open');
+    return !el.classList.contains('hidden') && getComputedStyle(el).display!=='none' && el.getAttribute('aria-hidden')!=='true';
+  }
+  function closeExplicitly(id,overlay){
+    if(id==='admin-stats-modal'){
+      overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); return;
+    }
+    if(id==='modal-logout-confirm'){
+      const cancel=overlay.querySelector('[data-action="cancel-logout"]');
+      if(cancel){cancel.click();return;}
+    }
+    if(typeof window.closeModal==='function')window.closeModal(id);
+    else {overlay.classList.add('hidden');overlay.classList.remove('flex');overlay.setAttribute('aria-hidden','true');}
+  }
+  function installCloseButtons(){
+    modalIds.forEach(id=>{
+      const overlay=document.getElementById(id);
+      if(!overlay)return;
+      const panel=id==='admin-stats-modal'?overlay.querySelector('.admin-stats-card'):overlay.querySelector('[role="dialog"]')||overlay.firstElementChild;
+      if(!panel)return;
+      if(panel.querySelector('.about-modal-close,.admin-stats-close,.ss-universal-modal-close,[aria-label*="Close"],[aria-label*="close"]'))return;
+      const style=getComputedStyle(panel);
+      if(style.position==='static')panel.style.position='relative';
+      const btn=document.createElement('button');
+      btn.type='button';btn.className='ss-universal-modal-close';btn.setAttribute('aria-label','Close window / إغلاق النافذة');btn.setAttribute('title','Close / إغلاق');btn.innerHTML='×';
+      btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();closeExplicitly(id,overlay);});
+      panel.insertBefore(btn,panel.firstChild);
+    });
+  }
+  // Capture phase blocks older per-modal backdrop-dismiss handlers before they run.
+  document.addEventListener('click',function(e){
+    const target=e.target;
+    if(!(target instanceof Element))return;
+    const overlay=target;
+    const isKnown=modalIds.includes(overlay.id);
+    const isFixedBackdrop=overlay.classList.contains('fixed')&&overlay.classList.contains('inset-0');
+    const hasPanel=!!overlay.querySelector('[role="dialog"],.about-modal-card,.admin-stats-card');
+    if((isKnown||isFixedBackdrop)&&hasPanel&&isVisible(overlay)){
+      e.preventDefault();e.stopImmediatePropagation();
+    }
+  },true);
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Escape')return;
+    const anyOpen=modalIds.some(id=>isVisible(document.getElementById(id)));
+    if(anyOpen){e.preventDefault();e.stopImmediatePropagation();}
+  },true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installCloseButtons,{once:true});
+  else installCloseButtons();
 })();
 </script>
 </body>
