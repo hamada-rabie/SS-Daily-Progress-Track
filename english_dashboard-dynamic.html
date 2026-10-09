@@ -103,6 +103,10 @@ body.lang-ar .en{display:none !important;}
 .home-title-bilingual{display:flex;flex-direction:column;align-items:center;justify-content:center;}
 body.lang-en .bi-label .en,
 body.lang-ar .bi-label .ar{display:block !important;}
+.header-ministry-profile-row{display:flex;align-items:center;justify-content:flex-start;gap:8px;width:100%;direction:ltr;min-height:40px;}
+.header-ministry-profile-row #header-ministry-logo{flex:0 1 auto;min-width:0;}
+.header-ministry-profile-row #header-ministry-logo img{max-width:76px;max-height:40px;object-fit:contain;}
+.header-ministry-profile-row #header-teacher-photo{width:36px;height:36px;flex:0 0 36px;transform:none!important;margin:0!important;}
 .header-teacher-photo{transition:transform .15s ease, box-shadow .15s ease;}
 .home-teacher-photo{width:44px;height:44px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.18);box-shadow:0 4px 14px rgba(0,0,0,.18);flex:0 0 44px;}
 .home-teacher-photo img{display:block;width:100%;height:100%;object-fit:cover;}
@@ -1491,7 +1495,7 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
 <main class="flex-1 flex flex-col h-screen overflow-y-auto" style="height:100dvh; display:flex; flex-direction:column; flex:1 1 0%; min-width:0; min-height:0; position:relative; overflow-y:auto;">
   <header id="app-topbar" class="premium-header-v3 text-white px-4 sm:px-6 py-3 flex items-start justify-between no-print" style="background:linear-gradient(120deg,var(--teal),var(--teal-dark));flex-shrink:0;direction:ltr;gap:18px;position:static;">
 <div class="flex flex-col items-start gap-1.5 shrink-0 header-left-identity">
-<div id="header-ministry-logo"></div>
+<div class="header-ministry-profile-row"><div id="header-ministry-logo"></div><div id="header-teacher-photo" class="header-teacher-photo w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.72);box-shadow:0 2px 8px rgba(0,0,0,.16);" title="Teacher Profile / ملف المعلم"></div></div>
 <select id="header-term-select" data-action="set-term" class="text-[9.5px] font-semibold rounded-full px-2 py-1 border-0 outline-none header-left-control" style="background:rgba(255,255,255,.18);color:#fff;width:112px;max-width:112px;"><option value="first" style="color:#111;">First Term 2026</option><option value="second" style="color:#111;">Second Term 2026</option></select>
 <select id="header-language-select" data-action="set-language" class="text-[9.5px] font-semibold rounded-full px-2 py-1 border-0 outline-none header-left-control" title="Preferred Language / اللغة المفضلة" style="background:rgba(255,255,255,.18);color:#fff;width:112px;max-width:112px;"><option value="bilingual" style="color:#111;">Bilingual / ثنائي</option><option value="en" style="color:#111;">English</option><option value="ar" style="color:#111;">العربية</option></select>
 <span class="flex items-center gap-1.5 text-[10px] text-white/70 header-clock-row"><i class="fa-solid fa-clock"></i><span id="top-date-span">--</span></span>
@@ -1502,8 +1506,7 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.5c-3.3 0-6 2.7-6 6v3.4c0 .6-.2 1.2-.6 1.7L4 15.5c-.7.9-.1 2.3 1 2.3h14c1.1 0 1.7-1.4 1-2.3l-1.4-1.9c-.4-.5-.6-1.1-.6-1.7V8.5c0-3.3-2.7-6-6-6Z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.5 19.5a2.5 2.5 0 0 0 5 0" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
     <span id="notif-badge" class="notif-badge hidden">0</span>
   </button>
-  
-  <div id="header-teacher-photo" class="header-teacher-photo w-9 h-9 rounded-full overflow-hidden shrink-0 flex items-center justify-center" style="background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.72);box-shadow:0 2px 8px rgba(0,0,0,.16);" title="Teacher Profile / ملف المعلم"></div>
+
 </div></div>
 <div class="flex items-center min-w-[110px] max-w-[220px]" style="direction:ltr;"><span class="bi-label items-start"><span class="en text-sm font-display font-bold" id="current-page-title-en" style="color:#fff;">Home</span><span class="ar text-[11px] font-bold" id="current-page-title-ar" style="color:#fff;">الرئيسية</span></span></div>
 </div></header>
@@ -1552,7 +1555,6 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
           <p class="text-xs sm:text-sm home-hero-tagline"><span class="en">Track student progress every day with clarity and evidence.</span><span class="ar">تابع تقدم الطلاب يوميًا بوضوح واستنادًا إلى بيانات موثوقة.</span></p>
         </div>
 
-        <div id="home-teacher-photo" class="home-teacher-photo flex items-center justify-center mx-auto mb-2" title="Teacher Profile / ملف المعلم" aria-label="Teacher profile photo"></div>
         <div class="home-books-visual flex justify-center mt-1" aria-label="English Language: Learn, Practice, Speak, Succeed">
   <svg viewBox="0 0 220 132" style="width:112px;height:68px;" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
     <defs>
@@ -6113,13 +6115,6 @@ function renderTeacherPhoto(){
     : '<i class="fa-solid fa-user text-gray-300 text-2xl"></i>';
   const profileEl = document.getElementById('teacher-profile-photo-preview');
   if(profileEl) profileEl.innerHTML = photoHtml;
-  const homePhotoEl = document.getElementById('home-teacher-photo');
-  if(homePhotoEl){
-    homePhotoEl.style.display = settings.showTeacherPhoto !== false ? 'flex' : 'none';
-    homePhotoEl.innerHTML = settings.teacherPhoto
-      ? `<img src="${settings.teacherPhoto}" class="w-full h-full object-cover">`
-      : '<i class="fa-solid fa-user text-white/80 text-sm"></i>';
-  }
   const headerEl = document.getElementById('header-teacher-photo');
   if(headerEl){
     headerEl.style.display = settings.showTeacherPhoto !== false ? '' : 'none';
