@@ -1,14 +1,26 @@
 #!/usr/bin/env bash
-# Usage: release-gate.sh <target preview|production> <confirm> <resolved_sha>
-# Production requires confirm == the exact 40-char commit SHA being deployed.
+# Usage: release-gate.sh <target> <confirm_sha> <resolved_sha>
 set -euo pipefail
-target="${1:-}"; confirm="${2:-}"; sha="${3:-}"
-case "$sha" in [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*) ;; *) echo "bad sha" >&2; exit 1;; esac
-[ "${#sha}" -eq 40 ] || { echo "sha must be 40 chars" >&2; exit 1; }
+target="${1:-}"
+confirm="${2:-}"
+sha="${3:-}"
+
+# Require exactly 40 lowercase hexadecimal characters (full Git commit SHA).
+if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "REFUSED: resolved commit must be a full 40-character lowercase hexadecimal SHA." >&2
+  exit 1
+fi
+
 case "$target" in
-  preview) echo "ok: preview deploy of $sha" ;;
   production)
-    [ "$confirm" = "$sha" ] || { echo "REFUSED: type the exact commit SHA ($sha) in 'confirm' to deploy to production" >&2; exit 1; }
-    echo "ok: production deploy of $sha confirmed" ;;
-  *) echo "target must be preview or production" >&2; exit 1 ;;
+    if [[ ! "$confirm" =~ ^[0-9a-f]{40}$ || "$confirm" != "$sha" ]]; then
+      echo "REFUSED: production requires typing the exact resolved commit SHA: $sha" >&2
+      exit 1
+    fi
+    echo "OK: exact production commit SHA confirmed: $sha"
+    ;;
+  *)
+    echo "REFUSED: unsupported deployment target '$target'. Only production is enabled." >&2
+    exit 1
+    ;;
 esac
