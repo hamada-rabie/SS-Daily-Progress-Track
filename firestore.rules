@@ -138,7 +138,7 @@ service cloud.firestore {
         && request.resource.data.setId in ['R2-S01', 'R2-S02']
         && request.resource.data.attempt is int
         && request.resource.data.attempt >= 1
-        && request.resource.data.attempt <= 1000000
+        && request.resource.data.attempt <= 2
         && request.resource.data.score is int
         && request.resource.data.score >= 0
         && request.resource.data.score <= 5
