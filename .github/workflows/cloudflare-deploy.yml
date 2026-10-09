@@ -1,0 +1,52 @@
+# Manual-only candidate packaging. Deployment is intentionally disabled until
+# the repository owner configures and verifies independent production Environment approval.
+name: Cloudflare Pages release candidate (build only)
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag, or full commit SHA to package"
+        required: true
+        type: string
+      confirm:
+        description: "Type the exact 40-character commit SHA to authorize packaging"
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: cloudflare-release-package
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - id: sha
+        shell: bash
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Validate exact candidate SHA (inputs passed via environment)
+        env:
+          TARGET: candidate
+          CONFIRM_SHA: ${{ inputs.confirm }}
+          RESOLVED_SHA: ${{ steps.sha.outputs.sha }}
+        shell: bash
+        run: scripts/release-gate.sh "$TARGET" "$CONFIRM_SHA" "$RESOLVED_SHA"
+      - name: Test release gate fail-closed behavior
+        shell: bash
+        run: bash scripts/test-release-gate.sh
+      - name: Build allowlisted distribution
+        shell: bash
+        run: scripts/build-dist.sh dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-candidate-${{ steps.sha.outputs.sha }}
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
+# No deployment job, no Cloudflare secrets, no preview, and no production write.
