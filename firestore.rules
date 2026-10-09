@@ -119,8 +119,7 @@ service cloud.firestore {
       function validWrongQuestionNumbers(data) {
         return data.wrongQuestionNumbers is list
           && data.wrongQuestionNumbers.size() <= 5
-          && (!data.wrongQuestionNumbers.size() == 0
-              || data.wrongQuestionNumbers.size() == 0);
+          && data.wrongQuestionNumbers.hasOnly([1, 2, 3, 4, 5]);
       }
       allow create: if signedIn()
         && request.resource.data.keys().hasAll([
