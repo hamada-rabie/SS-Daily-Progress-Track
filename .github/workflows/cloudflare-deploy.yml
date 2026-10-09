@@ -44,6 +44,9 @@ jobs:
           RESOLVED_SHA: ${{ steps.sha.outputs.sha }}
         shell: bash
         run: scripts/release-gate.sh "$TARGET" "$CONFIRM_SHA" "$RESOLVED_SHA"
+      - name: Test release gate fail-closed behavior
+        shell: bash
+        run: bash scripts/test-release-gate.sh
       - name: Build allowlisted distribution
         shell: bash
         run: scripts/build-dist.sh dist
