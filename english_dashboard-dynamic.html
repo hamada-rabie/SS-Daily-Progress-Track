@@ -6967,7 +6967,7 @@ async function processPendingReadingResult(uid){
     const student=matches[0];
     const resultId=String(uid)+'_'+studentId+'_'+setId+'_a'+attempt;
     const ref=doc(db,'remediationResults',resultId);
-    if(!window.confirm('Record this reading practice result for '+String(student.name||('Student '+studentId))+'?\\n\\nSet: '+setId+'\\nScore: '+score+'/'+total+'\\nAttempt: '+attempt+'\\n\\nهل تريد حفظ نتيجة تدريب القراءة لهذا الطالب؟')){
+    if(!window.confirm('Record this reading practice result for '+String(student.name||('Student '+studentId))+'?\n\nSet: '+setId+'\\nScore: '+score+'/'+total+'\\nAttempt: '+attempt+'\\n\\nهل تريد حفظ نتيجة تدريب القراءة لهذا الطالب؟')){
       localStorage.removeItem(KEY);
       return;
     }
