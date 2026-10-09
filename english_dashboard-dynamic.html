@@ -7014,7 +7014,11 @@ window.auth = auth;
 window.db = db;
 window.doc = doc;
 window.getDoc = getDoc;
+window.getDocs = getDocs;
 window.setDoc = setDoc;
+window.collection = collection;
+window.query = query;
+window.where = where;
 
 console.log("🔥 Firebase connected successfully");
 
@@ -7172,63 +7176,74 @@ window.recordAppUsage=async function(uid){try{
 async function processPendingReadingResult(uid){
   const KEY='ss_pending_pr', TTL_MS=30*60*1000;
   let pending;
-  try{pending=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){localStorage.removeItem(KEY);return;}
-  if(!pending || typeof pending.ts!=='number' || Date.now()-pending.ts>TTL_MS){
-    localStorage.removeItem(KEY); return;
+  const removePending=()=>{try{localStorage.removeItem(KEY);}catch(_){}};
+  try{pending=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){removePending();return;}
+  if(!pending || typeof pending.ts!=='number' || !Number.isFinite(pending.ts) || Date.now()-pending.ts>TTL_MS || pending.ts>Date.now()+60000){
+    removePending(); return;
   }
+  let isTemporaryFailure=false;
   try{
     const raw=String(pending.raw||'');
+    if(raw.length>4096)throw new Error('Result link too long');
     const params=new URLSearchParams(raw.startsWith('?')?raw.slice(1):raw);
-    const encoded=params.get('pr');
-    if(!encoded)return;
+    const allPr=params.getAll('pr');
+    if(allPr.length!==1)throw new Error('Missing or duplicate result payload');
+    const encoded=allPr[0];
+    if(!encoded || encoded.length>1024)throw new Error('Invalid result payload length');
     const parts=encoded.split('.');
     if(parts.length!==7)throw new Error('Invalid result link format');
     const [setId,studentIdRaw,attemptRaw,claimedScoreRaw,totalRaw,wrongRaw,answersRaw]=parts;
-    const key={
-      'R2-S01':[1,0,2,3,2],
-      'R2-S02':[0,1,1,2,1]
-    }[setId];
-    if(!key)throw new Error('Unknown practice set');
-    if(!/^\d{1,16}$/.test(studentIdRaw))throw new Error('Invalid student ID');
-    const studentId=Number(studentIdRaw), attempt=Number(attemptRaw), claimedScore=Number(claimedScoreRaw), total=Number(totalRaw);
-    if(!Number.isSafeInteger(attempt)||attempt<1||attempt>1000000||total!==key.length)throw new Error('Invalid attempt or total');
+    const allowedSets=Object.freeze({'R2-S01':[1,0,2,3,2],'R2-S02':[0,1,1,2,1]});
+    if(!Object.prototype.hasOwnProperty.call(allowedSets,setId))throw new Error('Unknown practice set');
+    const key=allowedSets[setId];
+    if(!/^\\d{1,16}$/.test(studentIdRaw)||!/^([1-2])$/.test(attemptRaw)||!/^([0-5])$/.test(claimedScoreRaw)||totalRaw!=='5')throw new Error('Invalid student, attempt, score, or total');
+    if(!/^(?:[0-3],[0-3],[0-3],[0-3],[0-3])$/.test(answersRaw))throw new Error('Invalid answer list');
+    const studentId=Number(studentIdRaw), attempt=Number(attemptRaw), claimedScore=Number(claimedScoreRaw);
     const answers=answersRaw.split(',').map(Number);
-    if(answers.length!==key.length||answers.some(v=>!Number.isInteger(v)||v<0||v>3))throw new Error('Invalid answer list');
     const score=answers.reduce((n,a,i)=>n+(a===key[i]?1:0),0);
     const wrong=answers.map((a,i)=>a===key[i]?null:i+1).filter(v=>v!==null);
-    const claimedWrong=wrongRaw?wrongRaw.split(',').map(Number):[];
-    if(score!==claimedScore||JSON.stringify(wrong)!==JSON.stringify(claimedWrong))throw new Error('Score does not match the submitted answers');
-    const student=studentsData.find(s=>String(s.id)===String(studentId));
-    if(!student)throw new Error('This student ID is not in the current teacher roster');
+    const claimedWrong=wrongRaw===''?[]:wrongRaw.split(',').map(v=>/^([1-5])$/.test(v)?Number(v):NaN);
+    if(claimedWrong.some(v=>!Number.isInteger(v)) || score!==claimedScore || JSON.stringify(wrong)!==JSON.stringify(claimedWrong))throw new Error('Score or wrong-question list does not match submitted answers');
+    const matchingStudents=studentsData.filter(s=>String(s.id)===studentIdRaw);
+    if(matchingStudents.length!==1)throw new Error('Student ID must match exactly one student in the current teacher roster');
+    const student=matchingStudents[0];
+    const confirmed=typeof window.confirm==='function' && window.confirm(
+      'Confirm reading practice result?\\nStudent: '+String(student.name||'')+
+      '\\nClass: '+String(student.className||student.class||student.classId||'—')+
+      '\\nSet: '+setId+'\\nAttempt: '+attempt+'\\nScore: '+score+'/5'
+    );
+    if(!confirmed){removePending();if(typeof showToast==='function')showToast('Result cancelled; nothing was saved / تم الإلغاء ولم تُحفظ النتيجة','info');return;}
     const resultId=String(uid)+'_'+studentId+'_'+setId+'_a'+attempt;
     const ref=doc(db,'remediationResults',resultId);
     try{
       await setDoc(ref,{
         teacherUid:uid,studentId,studentName:String(student.name||''),setId,attempt,
-        answers,score,total,wrongQuestionNumbers:wrong,
+        answers,score,total:5,wrongQuestionNumbers:wrong,
         createdAt:new Date().toISOString(),
         source:'student-shared-result-link',
         grading:'recalculated-in-dashboard; client-origin answers are not tamper-proof'
       });
     }catch(writeErr){
-      // Create-only Firestore rules reject a replay/overwrite. If the existing
-      // record belongs to this teacher, treat it as an already-recorded attempt.
       try{
         const existing=await getDoc(ref);
         if(existing.exists() && existing.data().teacherUid===uid){
-          localStorage.removeItem(KEY);
+          removePending();
           if(typeof showToast==='function')showToast('This attempt was already recorded / تم تسجيل هذه المحاولة من قبل','error');
           return;
         }
-      }catch(_){ }
+      }catch(readErr){
+        isTemporaryFailure=true;
+      }
+      if(!isTemporaryFailure && (writeErr?.code==='permission-denied'||writeErr?.code==='already-exists'))throw writeErr;
+      isTemporaryFailure=true;
       throw writeErr;
     }
-    localStorage.removeItem(KEY);
+    removePending();
     if(typeof showToast==='function')showToast('Reading remedial result recorded / تم تسجيل نتيجة تدريب القراءة','success');
     if(typeof renderReadingResultsForStudent==='function')await renderReadingResultsForStudent(studentId);
-
   }catch(err){
     console.error('Reading remedial result rejected:',err);
+    if(!isTemporaryFailure)removePending();
     if(typeof showToast==='function')showToast('Reading result was not recorded. Check the result link / لم تُسجّل النتيجة؛ راجع رابط النتيجة','error');
   }
 }
