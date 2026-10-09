@@ -3102,7 +3102,7 @@ function openEditClassModal(id){
   colorBox.innerHTML = Object.values(THEME_PALETTES).map(p=>{
     const selected = c.color===p.p;
     return `<button type="button" data-action="pick-class-color" data-color="${p.p}" class="w-8 h-8 rounded-full" style="background:${p.p}; ${selected?'outline:3px solid #333; outline-offset:2px;':''}"></button>`;
-  }).join('') + `<input type="color" id="edit-class-color-custom" data-action="pick-class-color-custom" value="${c.color}" class="w-8 h-8 rounded-full cursor-pointer border" style="border-color:var(--line);">`;
+  }).join('') + `<input type="color" id="edit-class-color-custom" data-action="pick-class-color-custom" value="${escapeHtml(safeCssColor(c.color))}" class="w-8 h-8 rounded-full cursor-pointer border" style="border-color:var(--line);">`;
   const iconBox = document.getElementById('edit-class-icon-choices');
   iconBox.innerHTML = CLASS_ICON_CHOICES.map(ic=>{
     const selected = (c.icon||'fa-book')===ic;
@@ -3410,8 +3410,8 @@ function renderDashboard(){
     return `<div class="card card-interactive p-4 flex flex-col gap-3" data-action="open-class" data-id="${c.id}">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold shrink-0" style="background:${c.color};">
-            <i class="fa-solid ${c.icon||'fa-book'}"></i>
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold shrink-0" style="background:${safeCssColor(c.color)};">
+            <i class="fa-solid ${safeIconClass(c.icon)}"></i>
           </div>
           <div class="cursor-pointer" data-action="open-class" data-id="${c.id}">
             <p class="font-bold text-sm">${escapeHtml(shortClass(c))}</p>
@@ -4180,7 +4180,7 @@ function renderQuickProfileCard(){
     <div class="card p-6 space-y-6">
       <div class="flex items-center justify-between flex-wrap gap-3">
         <div class="flex items-center gap-3">
-          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${cls? cls.color : 'var(--teal)'};">${s.name.charAt(0)}</div>
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${safeCssColor(cls?cls.color:'var(--teal)')};">${escapeHtml(String(s.name||'').charAt(0))}</div>
           <div>
             <p class="font-display font-extrabold text-lg">${escapeHtml(s.name)}</p>
             <p class="text-xs text-gray-500">${cls? escapeHtml(shortClass(cls)) : '-'}</p>
@@ -4684,7 +4684,7 @@ function renderS360Card(){
       <!-- Header -->
       <div class="flex items-start justify-between flex-wrap gap-3">
         <div class="flex items-center gap-3">
-          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${cls? cls.color : 'var(--teal)'};">${s.name.charAt(0)}</div>
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${safeCssColor(cls?cls.color:'var(--teal)')};">${escapeHtml(String(s.name||'').charAt(0))}</div>
           <div>
             <p class="font-display font-extrabold text-lg">${escapeHtml(s.name)}</p>
             <p class="text-xs text-gray-500">${cls? escapeHtml(shortClass(cls)) : '-'}</p>
@@ -5632,7 +5632,7 @@ function renderGlobalSearchResults(rawQuery){
       subLine += ' · 📝 ' + gsHighlight(snippet, q);
     }
     return `<div class="gs-item" data-result-index="${i}" data-action="select-search-result">
-      <div class="gs-item-icon" style="background:${it.color};"><i class="fa-solid fa-user-graduate"></i></div>
+      <div class="gs-item-icon" style="background:${safeCssColor(it.color)};"><i class="fa-solid fa-user-graduate"></i></div>
       <div class="gs-item-text">
         <div class="gs-item-title">${gsHighlight(it.titleEn, q)}</div>
         <div class="gs-item-sub">${subLine}</div>
@@ -5641,7 +5641,7 @@ function renderGlobalSearchResults(rawQuery){
   });
 
   addGroup('Classes','الصفوف', classes, (it,i)=>`<div class="gs-item" data-result-index="${i}" data-action="select-search-result">
-      <div class="gs-item-icon" style="background:${it.color};"><i class="fa-solid ${it.icon}"></i></div>
+      <div class="gs-item-icon" style="background:${safeCssColor(it.color)};"><i class="fa-solid ${safeIconClass(it.icon)}"></i></div>
       <div class="gs-item-text"><div class="gs-item-title">${gsHighlight(it.titleEn, q)}</div></div>
     </div>`);
 
