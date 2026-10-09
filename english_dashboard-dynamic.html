@@ -2571,6 +2571,8 @@ async function loadCloudData(){
    }
    const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
     const cloudSnap = await window.getDoc(cloudRef);
+    // Ignore stale async responses if the authenticated account changed mid-load.
+    if(window.auth.currentUser?.uid !== uid) return;
 
     if(cloudSnap.exists()){
       const data = cloudSnap.data();
@@ -6895,6 +6897,8 @@ setPersistence(auth, browserLocalPersistence)
       // Keep the dashboard hidden until the authenticated account's data has been
       // loaded and browser-cache ownership has been checked.
       await loadCloudData();
+      // A sign-out/account switch may have happened while the cloud read was pending.
+      if(window.auth.currentUser?.uid !== user.uid) return;
       document.body.classList.remove("auth-pending");
       window.__SS_AUTH_READY = true;
       window.dispatchEvent(new Event("ss-auth-ready"));
