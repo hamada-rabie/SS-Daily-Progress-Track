@@ -7196,7 +7196,7 @@ async function processPendingReadingResult(uid){
     const allowedSets=Object.freeze({'R2-S01':[1,0,2,3,2],'R2-S02':[0,1,1,2,1]});
     if(!Object.prototype.hasOwnProperty.call(allowedSets,setId))throw new Error('Unknown practice set');
     const key=allowedSets[setId];
-    if(!/^\\d{1,16}$/.test(studentIdRaw)||!/^([1-2])$/.test(attemptRaw)||!/^([0-5])$/.test(claimedScoreRaw)||totalRaw!=='5')throw new Error('Invalid student, attempt, score, or total');
+    if(!/^\d{1,16}$/.test(studentIdRaw)||!/^([1-2])$/.test(attemptRaw)||!/^([0-5])$/.test(claimedScoreRaw)||totalRaw!=='5')throw new Error('Invalid student, attempt, score, or total');
     if(!/^(?:[0-3],[0-3],[0-3],[0-3],[0-3])$/.test(answersRaw))throw new Error('Invalid answer list');
     const studentId=Number(studentIdRaw), attempt=Number(attemptRaw), claimedScore=Number(claimedScoreRaw);
     if(!Number.isSafeInteger(studentId)||studentId<=0)throw new Error('Unsafe student ID');
@@ -7209,9 +7209,9 @@ async function processPendingReadingResult(uid){
     if(matchingStudents.length!==1)throw new Error('Student ID must match exactly one student in the current teacher roster');
     const student=matchingStudents[0];
     const confirmed=typeof window.confirm==='function' && window.confirm(
-      'Confirm reading practice result?\\nStudent: '+String(student.name||'')+
-      '\\nClass: '+String(student.className||student.class||student.classId||'—')+
-      '\\nSet: '+setId+'\\nAttempt: '+attempt+'\\nScore: '+score+'/5'
+      'Confirm reading practice result?\nStudent: '+String(student.name||'')+
+      '\nClass: '+String(student.className||student.class||student.classId||'—')+
+      '\nSet: '+setId+'\nAttempt: '+attempt+'\nScore: '+score+'/5'
     );
     if(!confirmed){removePending();if(typeof showToast==='function')showToast('Result cancelled; nothing was saved / تم الإلغاء ولم تُحفظ النتيجة','info');return;}
     const resultId=String(uid)+'_'+studentId+'_'+setId+'_a'+attempt;
