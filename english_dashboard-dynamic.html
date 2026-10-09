@@ -609,7 +609,7 @@ body.lang-bilingual .home-title-bilingual .en + .ar::before{content:none !import
    content div below it scrolls. No sticky/z-index hack needed — see <main> structure. */
 #app-topbar{
   flex-shrink:0 !important;
-  background:linear-gradient(115deg,var(--teal-dark) 0%,var(--teal) 58%,#159287 100%) !important;
+  background:linear-gradient(115deg,var(--teal-dark) 0%,var(--teal) 58%,var(--teal-light) 100%) !important;
   background-color:var(--teal-dark) !important;
   box-shadow:0 3px 12px rgba(0,0,0,.16) !important;
 }
@@ -620,7 +620,7 @@ aside{
   isolation:isolate !important;
 }
 aside > div:first-child{
-  background:linear-gradient(135deg,#EAF7F5,#F5FAF8) !important;
+  background:linear-gradient(135deg,var(--teal-light),var(--card)) !important;
   border-color:var(--line) !important;
 }
 aside nav{background:var(--card) !important;}
@@ -2859,7 +2859,7 @@ function switchTab(name){
 
 // Browser/Android Back: restore the prior in-app tab instead of leaving the dashboard.
 // A dedicated guard entry keeps the authenticated app open when the user is already at Home.
-(function installAppBackNavigation(){
+function installAppBackNavigation(){
   if(window.__SS_BACK_NAV_INSTALLED) return;
   window.__SS_BACK_NAV_INSTALLED=true;
   const base=window.__SS_APP_BASE_URL||location.pathname+location.search;
@@ -2888,6 +2888,7 @@ function switchTab(name){
     try{history.pushState({ssAppNavigation:true,tab:active,guard:false},'',base+'#'+active);}catch(e){}
   },false);
 }
+installAppBackNavigation();
 
 /* ---------- modals ---------- */
 function openAddClassModal(){ document.getElementById('modal-class').classList.remove('hidden'); document.getElementById('modal-class').classList.add('flex'); }
@@ -7392,7 +7393,10 @@ try{
   const leftIdentity = shell.querySelector('.ph-left');
   if(leftIdentity) leftIdentity.insertBefore(menuButton,leftIdentity.firstChild);
   else header.appendChild(menuButton);
-  menuButton.addEventListener('click',function(){
+  menuButton.addEventListener('click',function(event){
+    event.preventDefault();
+    event.stopPropagation();
+    toggleSidebar();
     menuButton.setAttribute('aria-expanded',String(document.body.classList.contains('sidebar-open')));
   });
   document.addEventListener('click',function(event){
