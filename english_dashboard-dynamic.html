@@ -7189,7 +7189,7 @@ async function processPendingReadingResult(uid){
       'R2-S02':[0,1,1,2,1]
     }[setId];
     if(!key)throw new Error('Unknown practice set');
-    if(!/^\\d{1,16}$/.test(studentIdRaw))throw new Error('Invalid student ID');
+    if(!/^\d{1,16}$/.test(studentIdRaw))throw new Error('Invalid student ID');
     const studentId=Number(studentIdRaw), attempt=Number(attemptRaw), claimedScore=Number(claimedScoreRaw), total=Number(totalRaw);
     if(!Number.isSafeInteger(attempt)||attempt<1||attempt>1000000||total!==key.length)throw new Error('Invalid attempt or total');
     const answers=answersRaw.split(',').map(Number);
@@ -7248,6 +7248,9 @@ setPersistence(auth, browserLocalPersistence)
       if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
       // Keep the dashboard hidden until account-scoped cloud data is loaded.
       await loadCloudData();
+      if(window.auth.currentUser?.uid !== user.uid) return;
+      // Import a shared reading result only after this teacher's authenticated roster is loaded.
+      if(typeof processPendingReadingResult === 'function') await processPendingReadingResult(user.uid);
       if(window.auth.currentUser?.uid !== user.uid) return;
       document.body.classList.remove("auth-pending");
       window.__SS_AUTH_READY = true;
