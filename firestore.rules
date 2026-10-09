@@ -114,10 +114,39 @@ service cloud.firestore {
             + (data.answers[4] == 1 ? 1 : 0))
         );
       }
+      function wrongQuestionNumbersUnique(data) {
+        return (data.wrongQuestionNumbers.size() == 0)
+          || (data.wrongQuestionNumbers.size() == 1)
+          || (data.wrongQuestionNumbers.size() == 2
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[1])
+          || (data.wrongQuestionNumbers.size() == 3
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[1]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[2]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[2])
+          || (data.wrongQuestionNumbers.size() == 4
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[1]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[2]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[3]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[2]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[3]
+            && data.wrongQuestionNumbers[2] != data.wrongQuestionNumbers[3])
+          || (data.wrongQuestionNumbers.size() == 5
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[1]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[2]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[3]
+            && data.wrongQuestionNumbers[0] != data.wrongQuestionNumbers[4]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[2]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[3]
+            && data.wrongQuestionNumbers[1] != data.wrongQuestionNumbers[4]
+            && data.wrongQuestionNumbers[2] != data.wrongQuestionNumbers[3]
+            && data.wrongQuestionNumbers[2] != data.wrongQuestionNumbers[4]
+            && data.wrongQuestionNumbers[3] != data.wrongQuestionNumbers[4]);
+      }
       function validWrongQuestionNumbers(data) {
         return data.wrongQuestionNumbers is list
           && data.wrongQuestionNumbers.size() == (5 - data.score)
-          && data.wrongQuestionNumbers.hasOnly([1, 2, 3, 4, 5]);
+          && data.wrongQuestionNumbers.hasOnly([1, 2, 3, 4, 5])
+          && wrongQuestionNumbersUnique(data);
       }
       allow create: if signedIn()
         && request.resource.data.keys().hasAll([
