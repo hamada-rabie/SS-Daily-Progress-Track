@@ -3122,10 +3122,48 @@ function updateGreeting(){
   if(hour < 12){ en='Good morning'; ar='صباح الخير'; }
   else if(hour < 18){ en='Good afternoon'; ar='مساء الخير'; }
   else { en='Good evening'; ar='مساء الخير'; }
-  nameEl.textContent = settings.teacherName;
+  const teacherName = String(settings.teacherName || '').trim() || 'Teacher';
+  nameEl.textContent = teacherName;
   enEl.childNodes[0].textContent = en + ', ';
-  arEl.textContent = `${ar}، ${settings.teacherName}`;
+  arEl.textContent = `${ar}، ${teacherName}`;
 }
+
+// The signed-in account profile is the source of the teacher's personal name.
+// Older accounts without a saved name use their email prefix, never another
+// teacher's hard-coded display name. A trusted admin with no profile name keeps
+// the existing name already stored in the admin's own app settings.
+window.applyAuthenticatedTeacherName = async function(user){
+  if(!user) return;
+  try{
+    const profileSnap = await window.getDoc(window.doc(window.db,'users',user.uid));
+    const profile = profileSnap.exists() ? (profileSnap.data() || {}) : {};
+    const firstName = String(profile.firstName || '').trim();
+    const lastName = String(profile.lastName || '').trim();
+    let accountName = [firstName,lastName].filter(Boolean).join(' ').trim();
+    if(!accountName) accountName = String(profile.displayName || user.displayName || '').trim();
+
+    if(!accountName){
+      let trustedAdmin = false;
+      try{
+        const adminSnap = await window.getDoc(window.doc(window.db,'admins',user.uid));
+        trustedAdmin = adminSnap.exists() && adminSnap.data()?.active === true;
+      }catch(adminCheckError){
+        console.warn('Trusted admin name fallback check skipped:',adminCheckError);
+      }
+      if(trustedAdmin) return;
+      accountName = String(user.email || '').split('@')[0].replace(/[._-]+/g,' ').trim() || 'Teacher';
+    }
+
+    settings.teacherName = accountName;
+    localStorage.setItem('eng_settings',JSON.stringify(settings));
+    const sidebarName = document.getElementById('sidebar-teacher-name');
+    if(sidebarName) sidebarName.textContent = accountName;
+    updateGreeting();
+    if(typeof renderDashboard === 'function') renderDashboard();
+  }catch(error){
+    console.warn('Account display name could not be applied safely:',error);
+  }
+};
 function renderHeroDailyStatus(){
   const wrap = document.getElementById('hero-daily-status');
   if(!wrap) return;
@@ -6853,7 +6891,6 @@ setPersistence(auth, browserLocalPersistence)
       // Navigation state is managed by the session-aware entry guard above.
       // Do not clear the active tab here: Auth can re-fire during a browser refresh.
       try{ sessionStorage.setItem('ss_app_session_active','1'); }catch(e){}
-      document.body.classList.remove("auth-pending");
       window.__SS_AUTH_READY = true;
       window.dispatchEvent(new Event("ss-auth-ready"));
       if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
@@ -6864,6 +6901,10 @@ setPersistence(auth, browserLocalPersistence)
       }else{
         await loadCloudData();
       }
+      if(typeof window.applyAuthenticatedTeacherName === 'function'){
+        await window.applyAuthenticatedTeacherName(user);
+      }
+      document.body.classList.remove("auth-pending");
       startNotificationsListener(user.uid);
       startAdminFirstLoginMonitor();
     });
@@ -7185,6 +7226,31 @@ try{
 
   header.classList.add('premium-header-v3');
   header.appendChild(shell);
+
+  // Keep the mobile navigation discoverable: the hamburger opens the existing
+  // right-side drawer and its nested navigation groups.
+  const menuButton = document.createElement('button');
+  menuButton.type = 'button';
+  menuButton.className = 'sidebar-toggle-btn';
+  menuButton.dataset.action = 'toggle-sidebar';
+  menuButton.setAttribute('aria-label','Open navigation menu / فتح قائمة التنقل');
+  menuButton.setAttribute('title','Menu / القائمة');
+  menuButton.setAttribute('aria-controls','sidebar');
+  menuButton.setAttribute('aria-expanded','false');
+  menuButton.innerHTML = '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+  const leftIdentity = shell.querySelector('.ph-left');
+  if(leftIdentity) leftIdentity.insertBefore(menuButton,leftIdentity.firstChild);
+  else header.appendChild(menuButton);
+  menuButton.addEventListener('click',function(){
+    menuButton.setAttribute('aria-expanded',String(document.body.classList.contains('sidebar-open')));
+  });
+  document.addEventListener('click',function(event){
+    if(event.target.closest('[data-action="close-sidebar"],[data-action="switch-tab"]')){
+      menuButton.setAttribute('aria-expanded','false');
+    }else if(event.target.closest('[data-action="toggle-sidebar"]')){
+      setTimeout(()=>menuButton.setAttribute('aria-expanded',String(document.body.classList.contains('sidebar-open'))),0);
+    }
+  },true);
 
   const copyMarkup=function(sourceId,target){
     const source=document.getElementById(sourceId);
@@ -8612,3 +8678,33 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 </body>
 </html>
+
+<style id="mobile-hamburger-navigation-2026-10-09">
+@media(max-width:1023px){
+  #app-topbar.premium-header-v3{position:relative!important;}
+  #premium-header-shell .ph-left .sidebar-toggle-btn{
+    display:flex!important;align-items:center;justify-content:center;
+    width:32px;height:32px;flex:0 0 32px;padding:0;margin:0;
+    border-radius:10px;background:rgba(255,255,255,.18);
+    color:#fff;border:1px solid rgba(255,255,255,.48);
+    box-shadow:0 2px 8px rgba(0,0,0,.12);font-size:14px;
+  }
+  #premium-header-shell .ph-left .sidebar-toggle-btn:focus-visible{
+    outline:3px solid #F2A93B;outline-offset:2px;
+  }
+}
+@media(max-width:640px){
+  #premium-header-shell .ph-left{gap:4px;min-width:0;}
+  #premium-header-shell .ph-left .ph-profile{width:36px;height:36px;flex:0 0 36px;}
+  #premium-header-shell .ph-left .ph-dept{gap:4px;min-width:0;}
+  #premium-header-shell .ph-left .ph-dept-copy{min-width:0;}
+  #premium-header-shell .ph-left .ph-dept-copy .en{max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+  #premium-header-shell .ph-left .ph-dept-copy .ar{max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+}
+@media(max-width:380px){
+  #premium-header-shell .ph-left .sidebar-toggle-btn{width:29px;height:29px;flex-basis:29px;border-radius:9px;}
+  #premium-header-shell .ph-left .ph-profile{width:32px;height:32px;flex-basis:32px;}
+  #premium-header-shell .ph-left .ph-dept-copy .en{font-size:8.5px;}
+}
+</style>
+
