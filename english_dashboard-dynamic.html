@@ -7199,6 +7199,7 @@ async function processPendingReadingResult(uid){
     if(!/^\\d{1,16}$/.test(studentIdRaw)||!/^([1-2])$/.test(attemptRaw)||!/^([0-5])$/.test(claimedScoreRaw)||totalRaw!=='5')throw new Error('Invalid student, attempt, score, or total');
     if(!/^(?:[0-3],[0-3],[0-3],[0-3],[0-3])$/.test(answersRaw))throw new Error('Invalid answer list');
     const studentId=Number(studentIdRaw), attempt=Number(attemptRaw), claimedScore=Number(claimedScoreRaw);
+    if(!Number.isSafeInteger(studentId)||studentId<=0)throw new Error('Unsafe student ID');
     const answers=answersRaw.split(',').map(Number);
     const score=answers.reduce((n,a,i)=>n+(a===key[i]?1:0),0);
     const wrong=answers.map((a,i)=>a===key[i]?null:i+1).filter(v=>v!==null);
@@ -7232,10 +7233,11 @@ async function processPendingReadingResult(uid){
           return;
         }
       }catch(readErr){
-        isTemporaryFailure=true;
+        const code=String(readErr?.code||'');
+        if(['unavailable','deadline-exceeded','network-request-failed','unknown'].includes(code))isTemporaryFailure=true;
       }
-      if(!isTemporaryFailure && (writeErr?.code==='permission-denied'||writeErr?.code==='already-exists'))throw writeErr;
-      isTemporaryFailure=true;
+      const writeCode=String(writeErr?.code||'');
+      if(['unavailable','deadline-exceeded','network-request-failed','unknown'].includes(writeCode))isTemporaryFailure=true;
       throw writeErr;
     }
     removePending();
