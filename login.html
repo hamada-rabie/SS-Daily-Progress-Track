@@ -289,7 +289,9 @@
 
       <div id="accountPanel" class="account-panel">
         <h2>Create a new teacher account / إنشاء حساب معلم جديد</h2>
-        <input id="newEmail" type="email" placeholder="Email / البريد الإلكتروني" autocomplete="email">
+        <input id="newFirstName" type="text" placeholder="First name / الاسم الأول" autocomplete="given-name" maxlength="60" required>
+        <input id="newLastName" type="text" placeholder="Last name / اسم العائلة" autocomplete="family-name" maxlength="60" required>
+        <input id="newEmail" type="email" placeholder="Email / البريد الإلكتروني" autocomplete="email" required>
         <input id="newPassword" type="password" placeholder="Password (6+ characters) / كلمة المرور (6 أحرف فأكثر)" autocomplete="new-password">
         <input id="newPasswordConfirm" type="password" placeholder="Confirm password / تأكيد كلمة المرور" autocomplete="new-password">
         <button type="button" class="login-button" id="registerButton">Create Account / إنشاء الحساب</button>
@@ -346,6 +348,8 @@
     const accountPanel = document.getElementById("accountPanel");
     const registerButton = document.getElementById("registerButton");
     const cancelRegisterButton = document.getElementById("cancelRegisterButton");
+    const newFirstName = document.getElementById("newFirstName");
+    const newLastName = document.getElementById("newLastName");
     const newEmail = document.getElementById("newEmail");
     const newPassword = document.getElementById("newPassword");
     const newPasswordConfirm = document.getElementById("newPasswordConfirm");
@@ -379,8 +383,10 @@
     createAccountButton.addEventListener("click", () => {
       accountPanel.classList.add("show");
       form.classList.add("register-mode");
+      newFirstName.value = "";
+      newLastName.value = "";
       newEmail.value = "";
-      newEmail.focus();
+      newFirstName.focus();
       message.className = "";
       message.textContent = "";
     });
@@ -388,6 +394,9 @@
     cancelRegisterButton.addEventListener("click", () => {
       accountPanel.classList.remove("show");
       form.classList.remove("register-mode");
+      newFirstName.value = "";
+      newLastName.value = "";
+      newEmail.value = "";
       newPassword.value = "";
       newPasswordConfirm.value = "";
       message.className = "";
@@ -395,9 +404,12 @@
     });
 
     registerButton.addEventListener("click", async () => {
+      const firstName = newFirstName.value.trim().replace(/\s+/g, " ");
+      const lastName = newLastName.value.trim().replace(/\s+/g, " ");
       const email = newEmail.value.trim();
       const password = newPassword.value;
       const confirm = newPasswordConfirm.value;
+      if(!firstName || !lastName){ message.className="error"; message.textContent="Please enter your first and last name. / أدخل الاسم الأول واسم العائلة."; return; }
       if(!email || !password){ message.className="error"; message.textContent="Please enter email and password."; return; }
       if(password.length < 6){ message.className="error"; message.textContent="Password must be at least 6 characters."; return; }
       if(password !== confirm){ message.className="error"; message.textContent="Passwords do not match."; return; }
@@ -412,6 +424,9 @@
         await setDoc(doc(db, "users", user.uid), {
           uid: user.uid,
           email: user.email || email,
+          firstName,
+          lastName,
+          displayName: firstName + " " + lastName,
           status: "approved",
           role: "teacher",
           createdAt: now,
