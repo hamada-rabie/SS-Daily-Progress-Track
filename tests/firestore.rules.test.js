@@ -25,6 +25,7 @@ test('Firestore rules security suite', async (t) => {
   const teacher2 = env.authenticatedContext('teacher-2', { email: 'teacher2@example.test' }).firestore();
   const fakeAdmin = env.authenticatedContext('fake-admin', { email: 'fake@example.test' }).firestore();
   const admin = env.authenticatedContext('real-admin', { email: 'admin@example.test' }).firestore();
+  const anonymous = env.unauthenticatedContext().firestore();
 
   await env.withSecurityRulesDisabled(async (ctx) => {
     const db = ctx.firestore();
@@ -116,7 +117,7 @@ test('Firestore rules security suite', async (t) => {
   await t.test('reading results reject mismatched IDs, answer keys, scores, and wrong-question lists', async () => {
     await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: 2, score: 4 })));
     await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: 2, answers: [0,0,0,0,0], score: 5 })));
-    await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: '2', answers: [1,1,0,3,2], score: 3, wrongQuestionNumbers: [2,2] })));
+    await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: 2, answers: [1,1,0,3,2], score: 3, wrongQuestionNumbers: [2,2] })));
     await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: 2, answers: [1,1,2,3,2], score: 4, wrongQuestionNumbers: [3,3] })));
   });
 
@@ -133,6 +134,23 @@ test('Firestore rules security suite', async (t) => {
     await assertFails(updateDoc(resultRef(teacher), { score: 4 }));
     await assertFails(deleteDoc(resultRef(teacher)));
     await assertFails(setDoc(resultRef(teacher), validResult({ attempt: 1 }), { merge: true }));
+  });
+
+  await t.test('remediation results reject cross-teacher writes, unauthenticated access, missing and extra fields', async () => {
+    await assertFails(setDoc(resultRef(teacher2), validResult()));
+    await assertFails(getDocs(collection(anonymous, 'remediationResults')));
+    await assertFails(setDoc(resultRef(anonymous), validResult()));
+    const { grading, ...missingField } = validResult();
+    await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_missing'), missingField));
+    await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_extra'), {
+      ...validResult(), admin: true
+    }));
+    await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_badAnswers'), {
+      ...validResult(), answers: [1, 0, 2, 3]
+    }));
+    await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_badAnswerRange'), {
+      ...validResult(), answers: [1, 0, 2, 3, 4]
+    }));
   });
 
   await env.cleanup();
