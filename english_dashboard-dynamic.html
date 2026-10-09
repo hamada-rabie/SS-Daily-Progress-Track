@@ -5293,10 +5293,10 @@ function loadSettingsForm(){
   if(showPhoto) showPhoto.checked = settings.showTeacherPhoto !== false;
   renderThemeSwatches();
   const sp = document.getElementById('school-logo-preview');
-  sp.innerHTML = settings.schoolLogo ? `<img src="${escapeHtml(settings.schoolLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
+  sp.innerHTML = safeImageUrl(settings.schoolLogo) ? `<img src="${escapeHtml(safeImageUrl(settings.schoolLogo))}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
   renderTeacherPhoto();
   const mp = document.getElementById('ministry-logo-preview');
-  mp.innerHTML = settings.ministryLogo ? `<img src="${escapeHtml(settings.ministryLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
+  mp.innerHTML = safeImageUrl(settings.ministryLogo) ? `<img src="${escapeHtml(safeImageUrl(settings.ministryLogo))}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
 }
 function editProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.setAttribute('aria-readonly','false');el.focus();try{el.setSelectionRange(el.value.length,el.value.length);}catch(_){}}
 function deleteProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.value='';el.setAttribute('aria-readonly','false');el.focus();}
@@ -5311,6 +5311,24 @@ let notifUnreadCount = 0;
 
 function escapeHtml(str){
   return String(str==null?'':str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// Context-specific allowlists for values that may enter CSS or URL attributes.
+function safeCssColor(value, fallback='var(--teal)'){
+  const v=String(value==null?'':value).trim();
+  if(/^#[0-9a-fA-F]{3,8}$/.test(v))return v;
+  if(/^var\(--(?:ink|teal|teal-dark|teal-light|paper|card|gold|coral|sky|violet|leaf|line)\)$/.test(v))return v;
+  if(/^(?:rgb|rgba|hsl|hsla)\([0-9.% ,+-]+\)$/.test(v))return v;
+  return fallback;
+}
+function safeIconClass(value, fallback='fa-book'){
+  const v=String(value||'');
+  return Array.isArray(CLASS_ICON_CHOICES)&&CLASS_ICON_CHOICES.includes(v)?v:fallback;
+}
+function safeImageUrl(value){
+  const v=String(value||'').trim();
+  if(/^https:\/\/[a-z0-9.-]+(?::\d+)?(?:[/?#][^\s]*)?$/i.test(v))return v;
+  if(/^data:image\/(?:png|jpeg|webp|gif);base64,[a-z0-9+/=]+$/i.test(v))return v;
+  return '';
 }
 
 function updateNotificationStatusUI(){
@@ -5521,7 +5539,7 @@ function buildGlobalSearchIndex(){
     index.classes.push({
       type:'class', id:c.id, titleEn: label, titleAr: label,
       searchText: (c.name+' '+c.section+' '+label).toLowerCase(),
-      icon: c.icon||'fa-book', color: c.color||'var(--violet)'
+      icon: safeIconClass(c.icon), color: safeCssColor(c.color,'var(--violet)')
     });
   });
   studentsData.forEach(s=>{
@@ -5732,13 +5750,13 @@ function saveSettings(){
   if(!schoolLogoVisible){ logoBox.style.background = 'var(--teal)'; logoBox.classList.add('text-white'); }
   else { logoBox.style.background = '#fff'; }
   const sp = document.getElementById('school-logo-preview');
-  if(sp) sp.innerHTML = settings.schoolLogo ? `<img src="${escapeHtml(settings.schoolLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
+  if(sp) sp.innerHTML = safeImageUrl(settings.schoolLogo) ? `<img src="${escapeHtml(safeImageUrl(settings.schoolLogo))}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
   const mp = document.getElementById('ministry-logo-preview');
-  if(mp) mp.innerHTML = settings.ministryLogo ? `<img src="${escapeHtml(settings.ministryLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
+  if(mp) mp.innerHTML = safeImageUrl(settings.ministryLogo) ? `<img src="${escapeHtml(safeImageUrl(settings.ministryLogo))}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
   const hsl = document.getElementById('header-school-logo');
-  if(hsl) hsl.innerHTML = (settings.showSchoolLogo !== false && settings.schoolLogo) ? `<img src="${escapeHtml(settings.schoolLogo)}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
+  if(hsl) hsl.innerHTML = (settings.showSchoolLogo !== false && safeImageUrl(settings.schoolLogo)) ? `<img src="${escapeHtml(safeImageUrl(settings.schoolLogo))}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
   const hml = document.getElementById('header-ministry-logo');
-  if(hml) hml.innerHTML = (settings.showMinistryLogo !== false && settings.ministryLogo) ? `<img src="${escapeHtml(settings.ministryLogo)}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
+  if(hml) hml.innerHTML = (settings.showMinistryLogo !== false && safeImageUrl(settings.ministryLogo)) ? `<img src="${escapeHtml(safeImageUrl(settings.ministryLogo))}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
   if(typeof renderDashboard === 'function') renderDashboard();
 }
 
