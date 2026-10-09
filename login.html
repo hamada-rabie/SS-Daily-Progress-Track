@@ -468,10 +468,9 @@
         await setPersistence(auth, browserLocalPersistence);
 
         const credential = await signInWithEmailAndPassword(auth, email, password);
-        const user = credential.user;
-        const profileSnap = await getDoc(doc(db, "users", user.uid));
-        const profile = profileSnap.exists() ? profileSnap.data() : null;
 
+        // Do not block successful authentication on an optional Firestore profile read.
+        // The dashboard loads the signed-in teacher's profile and cloud data after redirect.
         // Access is self-service: every authenticated teacher account can enter immediately.
         // Administrator statistics and controls remain admin-only.
         message.className = "success";
