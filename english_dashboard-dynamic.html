@@ -878,6 +878,7 @@ body.lang-ar .frozen-table-header th .ar{font-weight:700 !important;}
 @media(min-width:640px){ .global-search-trigger-label{display:flex !important;} }
 @media(max-width:480px){
   .global-search-trigger-btn{top:10px; inset-inline-end:10px; padding:7px 9px;}
+  #tab-dashboard .hero-secondary-kicker{margin-top:10px!important;position:relative;top:5px;}
 }
 
 #global-search-overlay{position:fixed; inset:0; background:rgba(15,25,23,.45); z-index:70; display:none;}
@@ -7002,6 +7003,30 @@ setPersistence(auth, browserLocalPersistence)
     }, true);
   });
 
+  // Bind the confirmation choices directly in capture phase for mobile/PWA reliability.
+  const logoutModal = document.getElementById('modal-logout-confirm');
+  if(logoutModal){
+    const stayButton = logoutModal.querySelector('[data-action="cancel-logout"]');
+    const exitButton = logoutModal.querySelector('[data-action="confirm-logout"]');
+    if(stayButton && stayButton.dataset.directLogoutChoiceBound !== 'true'){
+      stayButton.dataset.directLogoutChoiceBound = 'true';
+      stayButton.addEventListener('click', function(event){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        closeLogoutConfirm();
+      }, true);
+    }
+    if(exitButton && exitButton.dataset.directLogoutChoiceBound !== 'true'){
+      exitButton.dataset.directLogoutChoiceBound = 'true';
+      exitButton.addEventListener('click', function(event){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        closeLogoutConfirm();
+        logoutUser();
+      }, true);
+    }
+  }
+
   function closeLogoutConfirm(){
     const modal=document.getElementById('modal-logout-confirm');
     if(!modal)return;
@@ -7241,6 +7266,33 @@ body.theme-dark .logout-cancel{background:#111827;color:#E5E7EB;border-color:#37
   .ph-ministry{grid-template-columns:20px 20px;grid-template-rows:38px 20px;gap:2px;}
   .ph-ministry img{height:38px!important;max-width:42px!important;}
   .ph-bell-under-ministry,.ph-mobile-refresh{width:20px!important;height:20px!important;flex-basis:20px!important;}
+}
+@media(max-width:640px){
+  /* Mobile identity stack: profile above hamburger; book + department text stay on one row. */
+  #premium-header-shell .ph-left{
+    display:grid!important;grid-template-columns:32px minmax(0,1fr)!important;
+    grid-template-rows:27px 36px!important;align-content:center!important;
+    align-items:center!important;column-gap:5px!important;row-gap:1px!important;
+    height:100%!important;overflow:visible!important;
+  }
+  #premium-header-shell .ph-left .ph-profile{
+    grid-column:1!important;grid-row:1!important;width:26px!important;height:26px!important;
+    flex:0 0 26px!important;justify-self:center!important;align-self:center!important;
+  }
+  #premium-header-shell .ph-left .sidebar-toggle-btn{
+    grid-column:1!important;grid-row:2!important;justify-self:center!important;align-self:center!important;
+    width:30px!important;height:30px!important;flex:0 0 30px!important;
+  }
+  #premium-header-shell .ph-left .ph-dept{
+    grid-column:2!important;grid-row:2!important;min-width:0!important;width:100%!important;
+    gap:4px!important;align-self:center!important;
+  }
+  #premium-header-shell .ph-left .ph-dept-icon{
+    display:flex!important;width:28px!important;height:28px!important;flex:0 0 28px!important;
+  }
+  #premium-header-shell .ph-left .ph-dept-copy{min-width:0!important;}
+  #premium-header-shell .ph-left .ph-dept-copy .en{font-size:8.5px!important;}
+  #premium-header-shell .ph-left .ph-dept-copy .ar{font-size:7.5px!important;}
 }
 </style>
 <script id="premium-header-redesign-controller-2026-10-05">
