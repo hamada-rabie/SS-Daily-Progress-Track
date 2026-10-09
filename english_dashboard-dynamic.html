@@ -2559,13 +2559,25 @@ async function loadCloudData(){
     }
 
    const uid = window.auth.currentUser.uid;
-    const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
+   const ownerKey = 'ss_cloud_owner_uid';
+   const localOwner = localStorage.getItem(ownerKey);
+   // Fail closed: untagged local data has no verifiable owner and must not be migrated.
+   if(localOwner !== uid){
+     classesData = [];
+     studentsData = [];
+     dailyArchives = {};
+     settings = { teacherName:'', coordinatorName:'', schoolName:'مدرسة عبدالله بن علي المسند الإعدادية', selectedTerm:'first', ministryName:'وزارة التربية والتعليم والتعليم العالي - دولة قطر', schoolLogo: DEFAULT_SCHOOL_LOGO, ministryLogo: DEFAULT_MINISTRY_LOGO, teacherPhoto:'', preferredLanguage:'bilingual', theme:'purple', themeMode:'light', accessibilityZoom:100, fontFamily:'cairo', fontSize:'md', dateFormat:'long', honorParticipationWeight:20, showSchoolLogo:true, showMinistryLogo:true, showTeacherPhoto:true };
+     ['eng_classes','eng_students','eng_daily','eng_settings','ss_cloud_dirty'].forEach(k=>localStorage.removeItem(k));
+   }
+   const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
     const cloudSnap = await window.getDoc(cloudRef);
+    // Ignore stale async responses if the authenticated account changed mid-load.
+    if(window.auth.currentUser?.uid !== uid) return;
 
     if(cloudSnap.exists()){
       const data = cloudSnap.data();
       const hasUnsyncedLocalEdits = localStorage.getItem('ss_cloud_dirty') === '1';
-      if(hasUnsyncedLocalEdits && navigator.onLine){
+      if(hasUnsyncedLocalEdits && localStorage.getItem('ss_cloud_owner_uid') === uid && navigator.onLine){
         console.log('☁️ Local changes are pending; pushing local data before accepting cloud snapshot.');
         await saveCloudData();
         return;
@@ -2579,7 +2591,7 @@ async function loadCloudData(){
       const cloudIsEmpty = cloudClasses.length === 0 && cloudStudents.length === 0 && Object.keys(cloudDaily).length === 0;
       const localHasData = localClasses.length > 0 || localStudents.length > 0 || Object.keys(localDaily).length > 0;
 
-      if(cloudIsEmpty && localHasData){
+      if(cloudIsEmpty && localHasData && localStorage.getItem('ss_cloud_owner_uid') === uid){
         console.log('☁️ Cloud record is empty; preserving local data and migrating it to Firestore...');
         await saveCloudData();
         return;
@@ -2598,6 +2610,8 @@ async function loadCloudData(){
       localStorage.setItem('eng_students', JSON.stringify(studentsData));
       localStorage.setItem('eng_daily', JSON.stringify(dailyArchives));
       localStorage.setItem('eng_settings', JSON.stringify(settings));
+      // Tag the browser cache only after this account's cloud snapshot has been applied.
+      localStorage.setItem(ownerKey, uid);
 
       console.log('☁️ Cloud data loaded:', window.auth.currentUser.email);
       if(typeof renderDashboard === 'function')
@@ -2614,9 +2628,23 @@ async function loadCloudData(){
         window.__refreshStarCard();
 
     }else{
-      console.log('☁️ No cloud data found. Migrating local data...');
+      const sameOwner = localStorage.getItem('ss_cloud_owner_uid') === uid;
+      const localHasData = (Array.isArray(classesData) && classesData.length > 0) || (Array.isArray(studentsData) && studentsData.length > 0) || (dailyArchives && Object.keys(dailyArchives).length > 0);
+      if(sameOwner && localHasData){
+        console.log('☁️ Migrating local data owned by this account...');
+      }else{
+        classesData = [];
+        studentsData = [];
+        dailyArchives = {};
+        localStorage.setItem('eng_classes','[]');
+        localStorage.setItem('eng_students','[]');
+        localStorage.setItem('eng_daily','{}');
+      }
+      // The local dataset has now been verified as empty or owned by this UID.
+      // Tag it before saving so offline retries cannot attribute it to another account.
+      localStorage.setItem(ownerKey, uid);
       await saveCloudData();
-      console.log('✅ Local data migrated to Firestore');
+      console.log('✅ Account-scoped cloud data initialized');
     }
 
   }catch(error){
@@ -2681,6 +2709,13 @@ async function saveCloudData(){
     }
 
     const uid = window.auth.currentUser.uid;
+    const localOwner = localStorage.getItem('ss_cloud_owner_uid');
+    // Fail closed: only upload data explicitly tagged to this signed-in UID.
+    if(localOwner !== uid){
+      console.error('☁️ Cloud save blocked: browser data ownership has not been verified for this account.');
+      setCloudStatus('error');
+      return false;
+    }
     const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
     await window.setDoc(cloudRef, {
       classesData: classesData,
@@ -2689,6 +2724,7 @@ async function saveCloudData(){
       settings: settings,
       updatedAt: new Date().toISOString()
     });
+    localStorage.setItem('ss_cloud_owner_uid', uid);
 
     console.log('☁️ Cloud data saved:', window.auth.currentUser.email);
     setCloudStatus('synced');
@@ -2720,7 +2756,10 @@ window.addEventListener('offline', ()=>{
 });
 window.addEventListener('online', ()=>{
   console.log('🌐 Connection restored. Checking for pending changes...');
-  syncPendingCloudChanges();
+  const uid = window.auth?.currentUser?.uid;
+  const owner = localStorage.getItem('ss_cloud_owner_uid');
+  if(uid && owner === uid) syncPendingCloudChanges();
+  else console.warn('☁️ Pending sync skipped: browser data owner does not match the signed-in account.');
 });
 if(!navigator.onLine) setTimeout(()=>setCloudStatus('offline'),0);
 
@@ -6831,7 +6870,7 @@ window.recordAppUsage=async function(uid){try{
  let existing=null;
  try{ existing=await window.getDoc(userRef); }catch(e){ console.warn('First-login lookup skipped safely:',e); }
  const isFirstLogin=!!(existing && (!existing.exists() || !existing.data()?.lastSeenAt));
- const patch={email:userEmailForStats(),displayName:String(window.auth?.currentUser?.displayName||'').trim(),role:userEmailForStats().toLowerCase()==='h.nasim0202@education.qa'?'admin':'user',timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',lastSeenAt:now,appOpenCount:count,lastSeenPlatform:/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'mobile':'desktop'};
+ const patch={email:userEmailForStats(),displayName:String(window.auth?.currentUser?.displayName||'').trim(),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',lastSeenAt:now,appOpenCount:count,lastSeenPlatform:/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)?'mobile':'desktop'};
  const ua=navigator.userAgent||''; const deviceType=/Mobi|Android|iPhone|iPad/i.test(ua)?'mobile':'desktop'; const os=/Android/i.test(ua)?'Android':/iPhone|iPad/i.test(ua)?'iOS':/Windows/i.test(ua)?'Windows':/Mac OS X/i.test(ua)?'macOS':/Linux/i.test(ua)?'Linux':'Other';
  let deviceId=localStorage.getItem('ss_dpt_device_id'); if(!deviceId){deviceId=(crypto?.randomUUID?crypto.randomUUID():'dev-'+Date.now()+'-'+Math.random().toString(36).slice(2));localStorage.setItem('ss_dpt_device_id',deviceId);}
  try{await window.setDoc(window.doc(window.db,'users',uid,'devices',deviceId),{deviceId,deviceType,os,standalone,lastSeenAt:now,createdAt:now,platformLabel:deviceType==='mobile'?('Mobile · '+os):('Desktop · '+os)},{merge:true});}catch(e){console.warn('Device telemetry skipped safely:',e);}
@@ -6853,17 +6892,16 @@ setPersistence(auth, browserLocalPersistence)
       // Navigation state is managed by the session-aware entry guard above.
       // Do not clear the active tab here: Auth can re-fire during a browser refresh.
       try{ sessionStorage.setItem('ss_app_session_active','1'); }catch(e){}
+      if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
+
+      // Keep the dashboard hidden until the authenticated account's data has been
+      // loaded and browser-cache ownership has been checked.
+      await loadCloudData();
+      // A sign-out/account switch may have happened while the cloud read was pending.
+      if(window.auth.currentUser?.uid !== user.uid) return;
       document.body.classList.remove("auth-pending");
       window.__SS_AUTH_READY = true;
       window.dispatchEvent(new Event("ss-auth-ready"));
-      if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
-
-      if(localStorage.getItem('ss_cloud_dirty') === '1'){
-        if(navigator.onLine) await syncPendingCloudChanges();
-        else setCloudStatus('offline');
-      }else{
-        await loadCloudData();
-      }
       startNotificationsListener(user.uid);
       startAdminFirstLoginMonitor();
     });
@@ -6884,12 +6922,14 @@ setPersistence(auth, browserLocalPersistence)
     try{
       if(adminFirstLoginUnsubscribe) return;
       const admin=auth.currentUser;
-      if(!admin || String(admin.email||'').toLowerCase()!=='h.nasim0202@education.qa') return;
+      if(!admin) return;
+      const adminDoc=await getDoc(doc(db,'admins',admin.uid));
+      if(!adminDoc.exists() || adminDoc.data()?.active !== true) return;
       const usersQuery=query(collection(db,'users'),limit(500));
       adminFirstLoginUnsubscribe=onSnapshot(usersQuery,async(snap)=>{
         for(const d of snap.docs){
           const u=d.data()||{};
-          if(!u.firstLoginAt || String(u.email||'').toLowerCase()==='h.nasim0202@education.qa') continue;
+          if(!u.firstLoginAt || d.id===admin.uid) continue;
           const notifId='new-user-'+d.id;
           try{
             await setDoc(doc(db,'users',admin.uid,'notifications',notifId),{
@@ -7489,18 +7529,18 @@ import { collection, getDocs, query, limit } from "https://www.gstatic.com/fireb
 (function(){'use strict';
 const adminBtn=document.querySelector('[data-action="open-admin-stats"]'),modal=document.getElementById('admin-stats-modal'),grid=document.getElementById('admin-stats-grid'),note=document.getElementById('admin-stats-note'),list=document.getElementById('admin-user-list');
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const ADMIN_EMAIL='h.nasim0202@education.qa';
+// Admin privileges are verified against the trusted /admins/{uid} record below.
 const inferCountryFromTimezone=tz=>{const map={'Asia/Qatar':'Qatar','Asia/Riyadh':'Saudi Arabia','Asia/Kuwait':'Kuwait','Asia/Bahrain':'Bahrain','Asia/Dubai':'United Arab Emirates','Asia/Muscat':'Oman','Asia/Amman':'Jordan','Asia/Beirut':'Lebanon','Africa/Cairo':'Egypt','Europe/London':'United Kingdom','Europe/Paris':'France','Europe/Berlin':'Germany','America/New_York':'United States','America/Chicago':'United States','America/Denver':'United States','America/Los_Angeles':'United States','Asia/Kolkata':'India','Asia/Dhaka':'Bangladesh','Asia/Karachi':'Pakistan','Asia/Manila':'Philippines','Asia/Jakarta':'Indonesia','Asia/Kuala_Lumpur':'Malaysia','Asia/Singapore':'Singapore','Asia/Tokyo':'Japan','Asia/Seoul':'South Korea','Australia/Sydney':'Australia'};return map[String(tz||'')]||''};
-const userRole=u=>String(u.role||'').toLowerCase()==='admin'||String(u.email||'').toLowerCase()===ADMIN_EMAIL.toLowerCase()?'Admin':'User';
+const userRole=u=>String(u.role||'').toLowerCase()==='admin'?'Admin':'User';
 const userLabel=u=>String(u.displayName||u.email||u.uid||'').trim();
 const userCountry=u=>String(u.country||'').trim()||inferCountryFromTimezone(u.timezone)||'Unknown';
-const isAdmin=async()=>{try{const u=window.auth?.currentUser;if(!u)return false;return String(u.email||'').toLowerCase()===ADMIN_EMAIL.toLowerCase()}catch(e){console.warn('Admin identity check failed:',e);return false}};
+const isAdmin=async()=>{try{const u=window.auth?.currentUser;if(!u||!window.db||!window.doc||!window.getDoc)return false;const snap=await window.getDoc(window.doc(window.db,'admins',u.uid));return snap.exists()&&snap.data()?.active===true}catch(e){console.warn('Admin identity check failed:',e);return false}};
 async function loadStats(){if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}grid.innerHTML='<div style="grid-column:1/-1;text-align:center;font-size:10px;color:#7b8b87">Loading… / جارٍ التحميل…</div>';try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})),registered=users,now=Date.now(),active7=registered.filter(u=>u.lastSeenAt&&now-new Date(u.lastSeenAt).getTime()<=7*86400000).length,active30=registered.filter(u=>u.lastSeenAt&&now-new Date(u.lastSeenAt).getTime()<=30*86400000).length,push=registered.filter(u=>u.pushEnabled===true).length,installed=registered.filter(u=>u.installedAt).length;const newUsers=registered.filter(u=>u.firstLoginAt).length;
 const deviceLists=await Promise.all(registered.map(async u=>{try{const ds=await getDocs(collection(window.db,'users',u.uid,'devices'));return [u.uid,ds.docs.map(d=>d.data())]}catch(e){return [u.uid,[]]}}));const deviceMap=new Map(deviceLists),deviceTotal=deviceLists.reduce((n,[,ds])=>n+ds.length,0);
 grid.innerHTML=[[''+registered.length,'Registered Users','مستخدمو التطبيق'],[''+deviceTotal,'Devices / Instances','الأجهزة المستخدمة'],[''+installed,'Installed / Standalone','مثبت على الجهاز'],[''+active7,'Active · 7 days','نشط خلال 7 أيام'],[''+push,'Push-Ready Users','مستخدمون فعّلوا الإشعارات'],[''+newUsers,'First-time Users','مستخدمون دخلوا لأول مرة']].map(x=>'<div class="admin-stat"><div class="n">'+esc(x[0])+'</div><div class="en">'+esc(x[1])+'</div><div class="ar">'+esc(x[2])+'</div></div>').join('');note.innerHTML='<b>Usage snapshot:</b> '+registered.length+' registered · '+active30+' active in 30 days.<br><span dir="rtl">الأرقام تخص حسابات التطبيق واستخدامه فقط، ولا تعرض أي بيانات طلابية.</span>';list.innerHTML=registered.sort((a,b)=>String(a.email||'').localeCompare(String(b.email||''))).map(u=>{const days=u.lastSeenAt?Math.floor((now-new Date(u.lastSeenAt).getTime())/86400000):null,activity=days===null?'Never opened':days===0?'Active today':days+'d ago',country=userCountry(u),role=userRole(u),devices=deviceMap.get(u.uid)||[],platforms=[...new Set(devices.map(d=>d.platformLabel||d.deviceType||'Unknown'))],platform=devices.length?platforms.join(' · '):(u.lastSeenPlatform||'—'),firstLogin=u.firstLoginAt?'🆕 First login':'';return '<div class="admin-user-row"><div class="email"><div>'+esc(userLabel(u))+(u.email&&u.displayName&&u.email!==u.displayName?'<div class="admin-user-email">'+esc(u.email)+'</div>':'')+'</div><div class="admin-user-extra"><span>'+esc(role)+'</span><span>🌍 '+esc(country)+'</span><span>📱 '+esc(platform)+'</span>'+(firstLogin?'<span class="admin-first-login-tag">'+esc(firstLogin)+'</span>':'')+'</div></div><div class="meta">'+esc(activity)+' · '+(u.pushEnabled?'🔔 Push':'—')+'</div></div>'}).join('')||'<div class="admin-stats-note">No registered users yet.</div>';modal.classList.add('open');modal.setAttribute('aria-hidden','false')}catch(err){console.error('Admin statistics failed:',err);grid.innerHTML='<div style="grid-column:1/-1;color:#B94A35;font-size:10px">Could not load statistics. Check deployed Firestore Rules.</div>';modal.classList.add('open');modal.setAttribute('aria-hidden','false')}}
 async function reveal(){if(adminBtn&&await isAdmin())adminBtn.style.display='flex'}
 adminBtn?.addEventListener('click',loadStats);document.getElementById('admin-stats-close')?.addEventListener('click',()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true')});modal?.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');modal.setAttribute('aria-hidden','true')}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true')}});
-document.getElementById('admin-release-send')?.addEventListener('click',async()=>{if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}const title=document.getElementById('admin-release-title-en')?.value.trim(),body=document.getElementById('admin-release-body-en')?.value.trim();if(!title||!body){alert('Enter an update title and message first. / أدخل عنوان التحديث ورسالة التحديث أولًا.');return}try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})),now=new Date().toISOString(),base='release-'+Date.now();await Promise.all(users.map(u=>window.setDoc(window.doc(window.db,'users',u.uid,'notifications',base+'-'+u.uid),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true})));await window.setDoc(window.doc(window.db,'users',window.auth.currentUser.uid,'notifications',base+'-admin'),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true});alert('Update notice sent to approved users and will also appear in your bell. / تم إرسال إشعار التحديث وسيظهر أيضًا في جرسك.');document.getElementById('admin-release-title-en').value='';document.getElementById('admin-release-body-en').value=''}catch(err){console.error('Release notice failed:',err);alert('Could not publish. Check deployed Firestore Rules. / تعذر النشر. تحقق من نشر قواعد Firestore.')}});const revealAdminButton=async()=>{try{if(!adminBtn)return;const u=window.auth?.currentUser;const allowed=!!u&&String(u.email||'').toLowerCase()===ADMIN_EMAIL.toLowerCase();if(allowed){document.body.classList.add('admin-ready');adminBtn.style.display='flex';adminBtn.style.visibility='visible';adminBtn.style.opacity='1';}else{document.body.classList.remove('admin-ready');adminBtn.style.display='none';}}catch(e){console.warn('Admin button reveal retry:',e)}}; window.addEventListener('ss-auth-ready',()=>revealAdminButton()); if(window.__SS_AUTH_READY) revealAdminButton(); let adminRevealAttempts=0; const adminRevealTimer=setInterval(()=>{adminRevealAttempts++; revealAdminButton(); if(adminRevealAttempts>=15)clearInterval(adminRevealTimer);},500);
+document.getElementById('admin-release-send')?.addEventListener('click',async()=>{if(!(await isAdmin())){alert('Administrator access required / يلزم حساب مسؤول');return}const title=document.getElementById('admin-release-title-en')?.value.trim(),body=document.getElementById('admin-release-body-en')?.value.trim();if(!title||!body){alert('Enter an update title and message first. / أدخل عنوان التحديث ورسالة التحديث أولًا.');return}try{const snap=await getDocs(query(collection(window.db,'users'),limit(500))),users=snap.docs.map(d=>({uid:d.id,...d.data()})),now=new Date().toISOString(),base='release-'+Date.now();await Promise.all(users.map(u=>window.setDoc(window.doc(window.db,'users',u.uid,'notifications',base+'-'+u.uid),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true})));await window.setDoc(window.doc(window.db,'users',window.auth.currentUser.uid,'notifications',base+'-admin'),{titleEn:title,titleAr:title,bodyEn:body,bodyAr:body,createdAt:now,read:false,type:'app-update',data:{kind:'app-update'}},{merge:true});alert('Update notice sent to approved users and will also appear in your bell. / تم إرسال إشعار التحديث وسيظهر أيضًا في جرسك.');document.getElementById('admin-release-title-en').value='';document.getElementById('admin-release-body-en').value=''}catch(err){console.error('Release notice failed:',err);alert('Could not publish. Check deployed Firestore Rules. / تعذر النشر. تحقق من نشر قواعد Firestore.')}});const revealAdminButton=async()=>{try{if(!adminBtn)return;const u=window.auth?.currentUser;const allowed=!!u&&await isAdmin();if(allowed){document.body.classList.add('admin-ready');adminBtn.style.display='flex';adminBtn.style.visibility='visible';adminBtn.style.opacity='1';}else{document.body.classList.remove('admin-ready');adminBtn.style.display='none';}}catch(e){console.warn('Admin button reveal retry:',e)}}; window.addEventListener('ss-auth-ready',()=>revealAdminButton()); if(window.__SS_AUTH_READY) revealAdminButton(); let adminRevealAttempts=0; const adminRevealTimer=setInterval(()=>{adminRevealAttempts++; revealAdminButton(); if(adminRevealAttempts>=15)clearInterval(adminRevealTimer);},500);
 })();
 </script>
 <style id="class-evaluation-status-premium-2026-10-05--dup2">
