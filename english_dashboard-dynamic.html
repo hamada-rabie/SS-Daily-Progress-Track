@@ -3622,7 +3622,9 @@ function openSkillBulkMenu(anchor){
   const menu=document.createElement('div');
   menu.className='daily-choice-menu';
   const options=skillBulkOptions();
-  if(bulkApplyTarget==='selected') options.forEach(o=>{o.en=o.en.replace(/All/g,'Selected');o.ar=o.ar.replace(/الكل/g,'الطلاب المحددين').replace(/مسح تقييم المهارة/g,'مسح تقييم المحددين');});
+  const visibleSkills=getVisibleBulkStudents('skills');
+  const selectedSkills=visibleSkills.filter(st=>selectedBulkStudentIds.has(String(st.id))).length;
+  if(selectedSkills>0&&selectedSkills<visibleSkills.length) options.forEach(o=>{o.en=o.en.replace(/All/g,'Selected');o.ar=o.ar.replace(/الكل/g,'الطلاب المحددين').replace(/مسح تقييم المهارة/g,'مسح تقييم المحددين');});
   menu.innerHTML=options.map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
   document.body.appendChild(menu);
   activeDailyChoiceMenu=menu;
@@ -3633,7 +3635,9 @@ function openSkillBulkMenu(anchor){
 function openDailyBulkMenu(anchor,field){
   closeDailyChoiceMenu(); const menu=document.createElement('div'); menu.className='daily-choice-menu';
   const options=dailyBulkOptions(field);
-  if(bulkApplyTarget==='selected') options.forEach(o=>{o.en=o.en.replace(/All/g,'Selected');o.ar=o.ar.replace(/الكل/g,'الطلاب المحددين').replace(/مسح الكل/g,'مسح المحددين');});
+  const visibleDaily=getVisibleBulkStudents('daily');
+  const selectedDaily=visibleDaily.filter(st=>selectedBulkStudentIds.has(String(st.id))).length;
+  if(selectedDaily>0&&selectedDaily<visibleDaily.length) options.forEach(o=>{o.en=o.en.replace(/All/g,'Selected');o.ar=o.ar.replace(/الكل/g,'الطلاب المحددين').replace(/مسح الكل/g,'مسح المحددين');});
   menu.innerHTML=options.map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
   document.body.appendChild(menu); activeDailyChoiceMenu=menu; positionDailyMenu(menu,anchor);
   menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applyDailyBulk(field,btn.dataset.value); closeDailyChoiceMenu(); }));
