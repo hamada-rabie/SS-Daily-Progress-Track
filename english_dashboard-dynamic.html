@@ -1358,6 +1358,34 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
   width:auto!important;
 }
 </style>
+<style id="mobile-hamburger-navigation-2026-10-09">
+@media(max-width:1023px){
+  #app-topbar.premium-header-v3{position:relative!important;}
+  #premium-header-shell .ph-left .sidebar-toggle-btn{
+    display:flex!important;align-items:center;justify-content:center;
+    width:32px;height:32px;flex:0 0 32px;padding:0;margin:0;
+    border-radius:10px;background:rgba(255,255,255,.18);
+    color:#fff;border:1px solid rgba(255,255,255,.48);
+    box-shadow:0 2px 8px rgba(0,0,0,.12);font-size:14px;
+  }
+  #premium-header-shell .ph-left .sidebar-toggle-btn:focus-visible{
+    outline:3px solid #F2A93B;outline-offset:2px;
+  }
+}
+@media(max-width:640px){
+  #premium-header-shell .ph-left{gap:4px;min-width:0;}
+  #premium-header-shell .ph-left .ph-profile{width:36px;height:36px;flex:0 0 36px;}
+  #premium-header-shell .ph-left .ph-dept{gap:4px;min-width:0;}
+  #premium-header-shell .ph-left .ph-dept-copy{min-width:0;}
+  #premium-header-shell .ph-left .ph-dept-copy .en{max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+  #premium-header-shell .ph-left .ph-dept-copy .ar{max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+}
+@media(max-width:380px){
+  #premium-header-shell .ph-left .sidebar-toggle-btn{width:29px;height:29px;flex-basis:29px;border-radius:9px;}
+  #premium-header-shell .ph-left .ph-profile{width:32px;height:32px;flex-basis:32px;}
+  #premium-header-shell .ph-left .ph-dept-copy .en{font-size:8.5px;}
+}
+</style>
 </head>
 <body class="auth-pending flex h-screen overflow-hidden" style="display:flex; height:100vh; height:100dvh; overflow:hidden; margin:0;">
 
@@ -6891,6 +6919,8 @@ setPersistence(auth, browserLocalPersistence)
       // Navigation state is managed by the session-aware entry guard above.
       // Do not clear the active tab here: Auth can re-fire during a browser refresh.
       try{ sessionStorage.setItem('ss_app_session_active','1'); }catch(e){}
+      // Keep the established authenticated-dashboard reveal behavior while cloud loading runs.
+      document.body.classList.remove("auth-pending");
       window.__SS_AUTH_READY = true;
       window.dispatchEvent(new Event("ss-auth-ready"));
       if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
@@ -6904,7 +6934,6 @@ setPersistence(auth, browserLocalPersistence)
       if(typeof window.applyAuthenticatedTeacherName === 'function'){
         await window.applyAuthenticatedTeacherName(user);
       }
-      document.body.classList.remove("auth-pending");
       startNotificationsListener(user.uid);
       startAdminFirstLoginMonitor();
     });
@@ -8678,33 +8707,3 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 </body>
 </html>
-
-<style id="mobile-hamburger-navigation-2026-10-09">
-@media(max-width:1023px){
-  #app-topbar.premium-header-v3{position:relative!important;}
-  #premium-header-shell .ph-left .sidebar-toggle-btn{
-    display:flex!important;align-items:center;justify-content:center;
-    width:32px;height:32px;flex:0 0 32px;padding:0;margin:0;
-    border-radius:10px;background:rgba(255,255,255,.18);
-    color:#fff;border:1px solid rgba(255,255,255,.48);
-    box-shadow:0 2px 8px rgba(0,0,0,.12);font-size:14px;
-  }
-  #premium-header-shell .ph-left .sidebar-toggle-btn:focus-visible{
-    outline:3px solid #F2A93B;outline-offset:2px;
-  }
-}
-@media(max-width:640px){
-  #premium-header-shell .ph-left{gap:4px;min-width:0;}
-  #premium-header-shell .ph-left .ph-profile{width:36px;height:36px;flex:0 0 36px;}
-  #premium-header-shell .ph-left .ph-dept{gap:4px;min-width:0;}
-  #premium-header-shell .ph-left .ph-dept-copy{min-width:0;}
-  #premium-header-shell .ph-left .ph-dept-copy .en{max-width:100%;overflow:hidden;text-overflow:ellipsis;}
-  #premium-header-shell .ph-left .ph-dept-copy .ar{max-width:100%;overflow:hidden;text-overflow:ellipsis;}
-}
-@media(max-width:380px){
-  #premium-header-shell .ph-left .sidebar-toggle-btn{width:29px;height:29px;flex-basis:29px;border-radius:9px;}
-  #premium-header-shell .ph-left .ph-profile{width:32px;height:32px;flex-basis:32px;}
-  #premium-header-shell .ph-left .ph-dept-copy .en{font-size:8.5px;}
-}
-</style>
-
