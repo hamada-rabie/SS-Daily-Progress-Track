@@ -75,7 +75,17 @@ function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className
 function showError(msg){$('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('errorCard').classList.remove('hidden');$('errorText').textContent=msg;}
 if(!SID||!/^\d{1,16}$/.test(SID)){showError('رابط التدريب غير مكتمل أو رقم الطالب غير صالح. اطلب من المعلم إنشاء رابط جديد.');return;}
 if(!SET){showError('مجموعة التدريب غير معروفة. اطلب من المعلم إنشاء رابط صحيح.');return;}
-$('studentLine').textContent='Student ID: '+SID+' • Set: '+SET_ID;
+const ATTEMPT_KEY='ss_practice_'+SID+'_'+SET_ID+'_attempt';
+let attemptCount=0,currentAttempt=0;
+try{attemptCount=Number(localStorage.getItem(ATTEMPT_KEY)||'0');}catch(e){}
+if(!Number.isInteger(attemptCount)||attemptCount<0||attemptCount>=2){
+  showError('اكتملت المحاولتان المسموحتان لهذا التدريب. / Both attempts for this practice set have been used.');
+  $('retryBtn').classList.add('hidden');
+  return;
+}
+currentAttempt=attemptCount+1;
+try{localStorage.setItem(ATTEMPT_KEY,String(currentAttempt));}catch(e){}
+$('studentLine').textContent='Student ID: '+SID+' • Set: '+SET_ID+' • Attempt: '+currentAttempt;
 $('passageTitle').textContent=SET.title;$('passageText').textContent=SET.passage;
 function render(){
  const q=SET.questions[idx];selected=null;checked=false;
@@ -92,9 +102,7 @@ function check(){
  $('feedback').textContent=(correct?'Correct! / إجابة صحيحة. ':'Not quite. / ليست صحيحة. ')+q.ex;$('feedback').classList.remove('hidden');$('checkBtn').classList.add('hidden');$('nextBtn').classList.remove('hidden');$('nextBtn').textContent=idx===SET.questions.length-1?'See result | عرض النتيجة':'Next | التالي';
 }
 function resultUrl(){
-  const attemptKey=KEY+'_attempt';let previous=0;try{previous=Number(localStorage.getItem(attemptKey)||'0');}catch(e){}
-  const attempt=(Number.isSafeInteger(previous)&&previous>=0&&previous<1000000)?previous+1:1;
-  try{localStorage.setItem(attemptKey,String(attempt));}catch(e){}
+ const attempt=currentAttempt;
  const score=answers.reduce((n,a,i)=>n+(a===SET.questions[i].a?1:0),0);
  const payload=[SET_ID,SID,attempt,score,SET.questions.length,wrong.join(','),answers.join(',')].join('.');
  const url=new URL('english_dashboard-dynamic.html',location.href);url.searchParams.set('pr',payload);
@@ -103,10 +111,17 @@ function resultUrl(){
 function finish(){
  $('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('resultCard').classList.remove('hidden');$('progress').style.width='100%';$('progressText').textContent='Completed: '+SET.questions.length+' of '+SET.questions.length;
  const r=resultUrl();$('scoreText').textContent='Score: '+r.score+' / '+SET.questions.length+' • Attempt '+r.attempt+' | النتيجة: '+r.score+' من '+SET.questions.length;
+ if(currentAttempt>=2)$('retryBtn').classList.add('hidden');else $('retryBtn').classList.remove('hidden');
  $('resultNote').textContent='أرسل رابط النتيجة للمعلم. سيتم إعادة التحقق من الإجابات عند استيراد النتيجة، لكن رقم المحاولة المخزن على هذا الجهاز يمكن إعادة ضبطه.';
  $('shareBtn').onclick=async()=>{try{if(navigator.share)await navigator.share({title:'Reading practice result',text:'Student '+SID+' • '+SET_ID+' • '+r.score+'/'+SET.questions.length,url:r.url});else{await navigator.clipboard.writeText(r.url);$('shareStatus').textContent='تم نسخ الرابط؛ أرسله للمعلم.';}}catch(e){$('shareStatus').textContent='يمكنك نسخ الرابط باستخدام زر النسخ.';}};
  $('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(r.url);$('shareStatus').textContent='تم نسخ رابط النتيجة.';}catch(e){$('shareStatus').textContent=r.url;}};
- $('retryBtn').onclick=()=>{idx=0;selected=null;checked=false;answers=[];wrong=[];$('resultCard').classList.add('hidden');$('passageCard').classList.remove('hidden');$('quizCard').classList.remove('hidden');render();};
+ $('retryBtn').onclick=()=>{
+ if(currentAttempt>=2){$('retryBtn').classList.add('hidden');return;}
+ currentAttempt=2;try{localStorage.setItem(ATTEMPT_KEY,'2');}catch(e){}
+ $('studentLine').textContent='Student ID: '+SID+' • Set: '+SET_ID+' • Attempt: '+currentAttempt;
+ idx=0;selected=null;checked=false;answers=[];wrong=[];
+ $('resultCard').classList.add('hidden');$('passageCard').classList.remove('hidden');$('quizCard').classList.remove('hidden');render();
+};
 }
 $('checkBtn').addEventListener('click',check);$('nextBtn').addEventListener('click',()=>{if(!checked)return;if(idx<SET.questions.length-1){idx++;render();}else finish();});
 render();
