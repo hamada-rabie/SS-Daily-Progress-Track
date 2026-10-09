@@ -1711,7 +1711,7 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
           <select id="daily-class-filter" data-action="filter-daily" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
           <input id="daily-date" type="date" data-action="filter-daily" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
-        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick apply to the selected class</span><span class="ar">تطبيق سريع على الصف المحدد</span></p><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="clear-bulk-selection"><span class="en">Clear selection</span><span class="ar">إلغاء التحديد</span></button><span id="daily-bulk-selection-count" class="text-[10px] text-gray-500">0 selected / لا يوجد محددون</span></div><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="behaviour"><i class="fa-solid fa-user-check" style="color:#5C6BC0;"></i><span class="en">Behaviour: Apply to All</span><span class="ar">السلوك: تطبيق على الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="participation"><i class="fa-solid fa-hand" style="color:var(--violet);"></i><span class="en">Participation: Apply to All</span><span class="ar">المشاركة: تطبيق على الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="homework"><i class="fa-solid fa-book-open" style="color:#B5850C;"></i><span class="en">Homework: Apply to All</span><span class="ar">الواجب: تطبيق على الكل</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="attendance"><i class="fa-solid fa-calendar-check" style="color:var(--sky);"></i><span class="en">Attendance: Apply to All</span><span class="ar">الحضور: تطبيق على الكل</span></button></div></div>
+        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick evaluation</span><span class="ar">تقييم سريع</span></p><div class="daily-bulk-row"><span id="daily-bulk-selection-count" class="text-[10px] text-gray-500">0 selected / لا يوجد محددون</span></div><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="behaviour"><i class="fa-solid fa-user-check" style="color:#5C6BC0;"></i><span class="en">Behaviour</span><span class="ar">السلوك</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="participation"><i class="fa-solid fa-hand" style="color:var(--violet);"></i><span class="en">Participation</span><span class="ar">المشاركة</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="homework"><i class="fa-solid fa-book-open" style="color:#B5850C;"></i><span class="en">Homework</span><span class="ar">الواجب</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="attendance"><i class="fa-solid fa-calendar-check" style="color:var(--sky);"></i><span class="en">Attendance</span><span class="ar">الحضور والغياب</span></button></div></div>
       </div>
       <div class="card table-scroll-x">
         <table class="w-full text-sm text-right">
@@ -1736,11 +1736,11 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
           <select id="skills-class-filter" data-action="filter-skills" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
           <input id="skills-date" type="date" data-action="filter-skills-date" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
-        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick apply a skill rating to the selected class</span><span class="ar">تطبيق تقييم مهارة بسرعة على الصف المحدد</span></p><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="clear-bulk-selection"><span class="en">Clear selection</span><span class="ar">إلغاء التحديد</span></button><span id="skills-bulk-selection-count" class="text-[10px] text-gray-500">0 selected / لا يوجد محددون</span></div><div class="daily-bulk-row">
-<button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="reading"><i class="fa-solid fa-book" style="color:#3D7DC9;"></i><span class="en">Reading: Apply to All</span><span class="ar">القراءة: تطبيق على الكل</span></button>
-<button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="writing"><i class="fa-solid fa-pen" style="color:#4C9A5B;"></i><span class="en">Writing: Apply to All</span><span class="ar">الكتابة: تطبيق على الكل</span></button>
-<button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="listening"><i class="fa-solid fa-headphones" style="color:#7C5CBF;"></i><span class="en">Listening: Apply to All</span><span class="ar">الاستماع: تطبيق على الكل</span></button>
-<button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="speaking"><i class="fa-solid fa-comments" style="color:#D9781F;"></i><span class="en">Speaking: Apply to All</span><span class="ar">المحادثة: تطبيق على الكل</span></button>
+        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick skill evaluation</span><span class="ar">تقييم المهارات بسرعة</span></p><div class="daily-bulk-row"><span id="skills-bulk-selection-count" class="text-[10px] text-gray-500">0 selected / لا يوجد محددون</span></div><div class="daily-bulk-row">
+<button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="reading"><i class="fa-solid fa-book" style="color:#3D7DC9;"></i><span class="en">Reading</span><span class="ar">القراءة</span></button>
+<button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="writing"><i class="fa-solid fa-pen" style="color:#4C9A5B;"></i><span class="en">Writing</span><span class="ar">الكتابة</span></button>
+<button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="listening"><i class="fa-solid fa-headphones" style="color:#7C5CBF;"></i><span class="en">Listening</span><span class="ar">الاستماع</span></button>
+<button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="speaking"><i class="fa-solid fa-comments" style="color:#D9781F;"></i><span class="en">Speaking</span><span class="ar">المحادثة</span></button>
 </div></div>
       </div>
       <div class="bulk-student-list-heading"><span class="bi-label"><span class="en">Students</span><span class="ar">الطلاب</span></span><label class="bulk-select-all-label"><input type="checkbox" class="bulk-select-all-check" data-action="toggle-bulk-select-all" data-bulk-view="skills" aria-label="Select all students in this list"><span class="en">Select all</span><span class="ar">تحديد الكل</span></label></div><div id="skills-list" class="space-y-3"></div>
@@ -3617,14 +3617,24 @@ function dailyBulkOptions(field){
 function skillBulkOptions(){
   return SKILL_LEVELS.map(o=>({key:o.key,en:o.en,ar:o.ar,cls:o.score>=5?'badge-ok':o.score>=3?'badge-mid':'badge-warn'})).concat([{key:'',en:'Clear All',ar:'مسح تقييم المهارة',cls:'clear'}]);
 }
+function formatBulkMenuOptions(options,selectedCount,visibleCount,kind){
+  const targetEn=selectedCount===0?'Select students first':selectedCount<visibleCount?'selected students':'all students';
+  const targetAr=selectedCount===0?'يرجى اختيار الطلاب أولاً':selectedCount<visibleCount?'الطلاب المحددين':'كل الطلاب';
+  return options.map(o=>{
+    let en=o.en,ar=o.ar;
+    en=en.replace(/^Mark All\s+/i,'').replace(/^Clear All$/i,'Clear evaluation');
+    ar=ar.replace(/^تحديد الكل\s*/,'').replace(/^تسجيل الكل\s*/,'').replace(/^مسح الكل$/,'مسح التقييم');
+    if(o.cls==='clear'){en='Clear evaluation';ar=kind==='skills'?'مسح تقييم المهارة':'مسح التقييم';}
+    return {...o,en:en+' — Apply to '+targetEn,ar:ar+' — تطبيق على '+targetAr};
+  });
+}
 function openSkillBulkMenu(anchor){
   closeDailyChoiceMenu();
-  const menu=document.createElement('div');
-  menu.className='daily-choice-menu';
-  const options=skillBulkOptions();
   const visibleSkills=getVisibleBulkStudents('skills');
   const selectedSkills=visibleSkills.filter(st=>selectedBulkStudentIds.has(String(st.id))).length;
-  if(selectedSkills>0&&selectedSkills<visibleSkills.length) options.forEach(o=>{o.en=o.en.replace(/All/g,'Selected');o.ar=o.ar.replace(/الكل/g,'الطلاب المحددين').replace(/مسح تقييم المهارة/g,'مسح تقييم المحددين');});
+  const menu=document.createElement('div');
+  menu.className='daily-choice-menu';
+  const options=formatBulkMenuOptions(skillBulkOptions(),selectedSkills,visibleSkills.length,'skills');
   menu.innerHTML=options.map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
   document.body.appendChild(menu);
   activeDailyChoiceMenu=menu;
@@ -3633,11 +3643,11 @@ function openSkillBulkMenu(anchor){
   bindDailyChoiceOutsideClose(menu);
 }
 function openDailyBulkMenu(anchor,field){
-  closeDailyChoiceMenu(); const menu=document.createElement('div'); menu.className='daily-choice-menu';
-  const options=dailyBulkOptions(field);
+  closeDailyChoiceMenu();
   const visibleDaily=getVisibleBulkStudents('daily');
   const selectedDaily=visibleDaily.filter(st=>selectedBulkStudentIds.has(String(st.id))).length;
-  if(selectedDaily>0&&selectedDaily<visibleDaily.length) options.forEach(o=>{o.en=o.en.replace(/All/g,'Selected');o.ar=o.ar.replace(/الكل/g,'الطلاب المحددين').replace(/مسح الكل/g,'مسح المحددين');});
+  const menu=document.createElement('div'); menu.className='daily-choice-menu';
+  const options=formatBulkMenuOptions(dailyBulkOptions(field),selectedDaily,visibleDaily.length,'daily');
   menu.innerHTML=options.map(o=>'<button type="button" class="'+(o.cls==='clear'?'choice-clear':'')+'" data-value="'+o.key+'"><span class="choice-dot" style="background:'+(o.cls==='badge-ok'?'#2C8C46':o.cls==='badge-warn'?'#C85A2E':o.cls==='badge-mid'?'#B5850C':'#B7C5C1')+'"></span><span class="en">'+escapeHtml(o.en)+'</span><span class="ar">'+escapeHtml(o.ar)+'</span></button>').join('');
   document.body.appendChild(menu); activeDailyChoiceMenu=menu; positionDailyMenu(menu,anchor);
   menu.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{ e.stopPropagation(); applyDailyBulk(field,btn.dataset.value); closeDailyChoiceMenu(); }));
@@ -3649,8 +3659,9 @@ function applyDailyBulk(field,value){
   const selectedInClass=list.filter(s=>selectedBulkStudentIds.has(String(s.id)));
   if(selectedBulkStudentIds.size>0&&!selectedInClass.length){showToast('Your selected students are outside the current class / الطلاب المحددون خارج الصف الحالي؛ غيّر الصف أو ألغِ التحديد','error');return;}
   if(selectedInClass.length)list=selectedInClass;
+  if(!selectedInClass.length){showBilingualToast('Please select students first.','رجاءً، اختر الطلاب أولاً.','error');return;}
   if(!list.length){showToast('No students in the selected class / لا يوجد طلاب في الصف المحدد','error');return;}
-  const scopeLabel=selectedInClass.length&&selectedInClass.length<classStudentCount?'selected students':'students in the selected class';
+  const scopeLabel=selectedInClass.length<classStudentCount?'selected students':'students in the selected class';
   if(!confirm('Apply this evaluation to '+list.length+' '+scopeLabel+'? / هل تريد تطبيق التقييم على '+list.length+' طالب؟')) return;
   list.forEach(s=>{ const rec=ensureDailyRecord(date,s.id);
     if(field==='behaviour'){ if(value==='') delete rec.behaviourLevel; else rec.behaviourLevel=value; s.behaviourLevel=latestDailyFieldValue(s.id,'behaviourLevel','disciplined'); }
@@ -3832,8 +3843,9 @@ function applySkillBulk(level){
   const selectedInClass=list.filter(s=>selectedBulkStudentIds.has(String(s.id)));
   if(selectedBulkStudentIds.size>0&&!selectedInClass.length){showToast('Your selected students are outside the current class / الطلاب المحددون خارج الصف الحالي؛ غيّر الصف أو ألغِ التحديد','error');return;}
   if(selectedInClass.length)list=selectedInClass;
+  if(!selectedInClass.length){showBilingualToast('Please select students first.','رجاءً، اختر الطلاب أولاً.','error');return;}
   if(!list.length){showToast('No students in the selected class / لا يوجد طلاب في الصف المحدد','error');return;}
-  const scopeLabel=selectedInClass.length&&selectedInClass.length<classStudentCount?'selected students':'students in the selected class';
+  const scopeLabel=selectedInClass.length<classStudentCount?'selected students':'students in the selected class';
   if(!confirm('Apply this skill rating to '+list.length+' '+scopeLabel+'? / هل تريد تطبيق تقييم المهارة على '+list.length+' طالب؟')) return;
   list.forEach(s=>{
     migrateSkillData(s);
@@ -6222,7 +6234,7 @@ document.addEventListener('click', function(e){
     case 'toggle-bulk-student': toggleBulkStudent(t.dataset.id,t.checked); break;
     case 'toggle-bulk-select-all': setVisibleBulkStudentsSelected(t.dataset.bulkView||'daily',t.checked); break;
     case 'select-visible-bulk': selectVisibleBulkStudents(t.dataset.bulkView||'daily'); break;
-    case 'clear-bulk-selection': clearBulkStudentSelection(); break;
+    case 'clear-bulk-selection': break;
     case 'open-daily-bulk': openDailyBulkMenu(t,t.dataset.bulkField); break;
     case 'open-skill-bulk':
       window.__activeSkillBulkSkill = t.dataset.skill || 'reading';
