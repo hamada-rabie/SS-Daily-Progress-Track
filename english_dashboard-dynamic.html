@@ -3618,13 +3618,14 @@ function skillBulkOptions(){
   return SKILL_LEVELS.map(o=>({key:o.key,en:o.en,ar:o.ar,cls:o.score>=5?'badge-ok':o.score>=3?'badge-mid':'badge-warn'})).concat([{key:'',en:'Clear All',ar:'مسح تقييم المهارة',cls:'clear'}]);
 }
 function formatBulkMenuOptions(options,selectedCount,visibleCount,kind){
-  const targetEn=selectedCount===0?'Select students first':selectedCount<visibleCount?'selected students':'all students';
-  const targetAr=selectedCount===0?'يرجى اختيار الطلاب أولاً':selectedCount<visibleCount?'الطلاب المحددين':'كل الطلاب';
+  const targetEn=selectedCount<visibleCount?'selected students':'all students';
+  const targetAr=selectedCount<visibleCount?'الطلاب المحددين':'كل الطلاب';
   return options.map(o=>{
     let en=o.en,ar=o.ar;
     en=en.replace(/^Mark All\s+/i,'').replace(/^Clear All$/i,'Clear evaluation');
     ar=ar.replace(/^تحديد الكل\s*/,'').replace(/^تسجيل الكل\s*/,'').replace(/^مسح الكل$/,'مسح التقييم');
     if(o.cls==='clear'){en='Clear evaluation';ar=kind==='skills'?'مسح تقييم المهارة':'مسح التقييم';}
+    if(selectedCount===0)return {...o,en,ar};
     return {...o,en:en+' — Apply to '+targetEn,ar:ar+' — تطبيق على '+targetAr};
   });
 }
