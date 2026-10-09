@@ -2559,13 +2559,25 @@ async function loadCloudData(){
     }
 
    const uid = window.auth.currentUser.uid;
-    const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
+   const ownerKey = 'ss_cloud_owner_uid';
+   const localOwner = localStorage.getItem(ownerKey);
+   const isKnownLegacyAdmin = uid === 'RILOr4b1EvZgRxShbhaqyv3vH6N2';
+   // Never let a different account inherit unsynced browser data.
+   // Only the known admin may migrate legacy data created before owner tracking existed.
+   if(localOwner !== uid && !(isKnownLegacyAdmin && !localOwner)){
+     classesData = [];
+     studentsData = [];
+     dailyArchives = {};
+     settings = { teacherName:'', coordinatorName:'', schoolName:'مدرسة عبدالله بن علي المسند الإعدادية', selectedTerm:'first', ministryName:'وزارة التربية والتعليم والتعليم العالي - دولة قطر', schoolLogo: DEFAULT_SCHOOL_LOGO, ministryLogo: DEFAULT_MINISTRY_LOGO, teacherPhoto:'', preferredLanguage:'bilingual', theme:'purple', themeMode:'light', accessibilityZoom:100, fontFamily:'cairo', fontSize:'md', dateFormat:'long', honorParticipationWeight:20, showSchoolLogo:true, showMinistryLogo:true, showTeacherPhoto:true };
+     ['eng_classes','eng_students','eng_daily','eng_settings','ss_cloud_dirty'].forEach(k=>localStorage.removeItem(k));
+   }
+   const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
     const cloudSnap = await window.getDoc(cloudRef);
 
     if(cloudSnap.exists()){
       const data = cloudSnap.data();
       const hasUnsyncedLocalEdits = localStorage.getItem('ss_cloud_dirty') === '1';
-      if(hasUnsyncedLocalEdits && navigator.onLine){
+      if(hasUnsyncedLocalEdits && localStorage.getItem('ss_cloud_owner_uid') === uid && navigator.onLine){
         console.log('☁️ Local changes are pending; pushing local data before accepting cloud snapshot.');
         await saveCloudData();
         return;
@@ -2579,7 +2591,7 @@ async function loadCloudData(){
       const cloudIsEmpty = cloudClasses.length === 0 && cloudStudents.length === 0 && Object.keys(cloudDaily).length === 0;
       const localHasData = localClasses.length > 0 || localStudents.length > 0 || Object.keys(localDaily).length > 0;
 
-      if(cloudIsEmpty && localHasData){
+      if(cloudIsEmpty && localHasData && (localStorage.getItem('ss_cloud_owner_uid') === uid || (uid === 'RILOr4b1EvZgRxShbhaqyv3vH6N2' && !localStorage.getItem('ss_cloud_owner_uid')))){
         console.log('☁️ Cloud record is empty; preserving local data and migrating it to Firestore...');
         await saveCloudData();
         return;
@@ -2614,9 +2626,21 @@ async function loadCloudData(){
         window.__refreshStarCard();
 
     }else{
-      console.log('☁️ No cloud data found. Migrating local data...');
+      const mayMigrateLegacy = uid === 'RILOr4b1EvZgRxShbhaqyv3vH6N2' && !localStorage.getItem('ss_cloud_owner_uid');
+      const sameOwner = localStorage.getItem('ss_cloud_owner_uid') === uid;
+      const localHasData = (Array.isArray(classesData) && classesData.length > 0) || (Array.isArray(studentsData) && studentsData.length > 0) || (dailyArchives && Object.keys(dailyArchives).length > 0);
+      if((sameOwner || mayMigrateLegacy) && localHasData){
+        console.log('☁️ Migrating local data owned by this account...');
+      }else{
+        classesData = [];
+        studentsData = [];
+        dailyArchives = {};
+        localStorage.setItem('eng_classes','[]');
+        localStorage.setItem('eng_students','[]');
+        localStorage.setItem('eng_daily','{}');
+      }
       await saveCloudData();
-      console.log('✅ Local data migrated to Firestore');
+      console.log('✅ Account-scoped cloud data initialized');
     }
 
   }catch(error){
@@ -2689,6 +2713,7 @@ async function saveCloudData(){
       settings: settings,
       updatedAt: new Date().toISOString()
     });
+    localStorage.setItem('ss_cloud_owner_uid', uid);
 
     console.log('☁️ Cloud data saved:', window.auth.currentUser.email);
     setCloudStatus('synced');
@@ -6858,12 +6883,9 @@ setPersistence(auth, browserLocalPersistence)
       window.dispatchEvent(new Event("ss-auth-ready"));
       if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
 
-      if(localStorage.getItem('ss_cloud_dirty') === '1'){
-        if(navigator.onLine) await syncPendingCloudChanges();
-        else setCloudStatus('offline');
-      }else{
-        await loadCloudData();
-      }
+      // Load the authenticated account's cloud dataset before any local sync.
+      // loadCloudData rejects browser data not tagged to this UID.
+      await loadCloudData();
       startNotificationsListener(user.uid);
       startAdminFirstLoginMonitor();
     });
