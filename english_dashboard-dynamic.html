@@ -3928,7 +3928,7 @@ function renderQuickProfileCard(){
     <div class="card p-6 space-y-6">
       <div class="flex items-center justify-between flex-wrap gap-3">
         <div class="flex items-center gap-3">
-          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${cls? cls.color : 'var(--teal)'};">${s.name.charAt(0)}</div>
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold" style="background:${safeCssColor(cls&&cls.color,'var(--teal)')};">${escapeHtml(String(s.name||'').charAt(0))}</div>
           <div>
             <p class="font-display font-extrabold text-lg">${escapeHtml(s.name)}</p>
             <p class="text-xs text-gray-500">${cls? escapeHtml(shortClass(cls)) : '-'}</p>
@@ -4104,7 +4104,7 @@ function renderJourneyCard(){
         ${gi<grouped.length-1?'<div class="w-0.5 flex-1 mt-1" style="background:var(--line);min-height:34px;"></div>':''}
       </div>
       <div class="pb-4 flex-1 min-w-0">
-        <div class="flex items-center gap-2 flex-wrap"><span class="text-[10px] font-extrabold">${fmt(g.date)}</span>${isFirst?'<span class="badge badge-mid">START / البداية</span>':''}${isLast?'<span class="badge badge-ok">CURRENT / الآن</span>':''}</div>
+        <div class="flex items-center gap-2 flex-wrap"><span class="text-[10px] font-extrabold">${escapeHtml(fmt(g.date))}</span>${isFirst?'<span class="badge badge-mid">START / البداية</span>':''}${isLast?'<span class="badge badge-ok">CURRENT / الآن</span>':''}</div>
         <div class="mt-1.5 space-y-1">${items}</div>
       </div>
     </div>`;
@@ -4124,7 +4124,7 @@ function renderJourneyCard(){
         <div class="min-w-0">
           <p class="text-[10px] font-bold uppercase tracking-wide" style="color:var(--violet);">Student Journey / رحلة الطالب</p>
           <p class="font-display font-extrabold text-xl truncate">${escapeHtml(s.name)}</p>
-          <p class="text-xs text-gray-500">${cls?escapeHtml(shortClass(cls)):'—'} · ${fmt(firstDate)} → ${fmt(lastDate)}</p>
+          <p class="text-xs text-gray-500">${cls?escapeHtml(shortClass(cls)):'—'} · ${escapeHtml(fmt(firstDate))} → ${escapeHtml(fmt(lastDate))}</p>
         </div>
         <div class="rounded-xl px-3 py-2 text-right shrink-0" style="background:#F7F3FC;border:1px solid #E4D8F4;">
           <p class="text-[9px] text-gray-400">Recorded points / نقاط مسجلة</p>
@@ -5041,10 +5041,10 @@ function loadSettingsForm(){
   if(showPhoto) showPhoto.checked = settings.showTeacherPhoto !== false;
   renderThemeSwatches();
   const sp = document.getElementById('school-logo-preview');
-  sp.innerHTML = settings.schoolLogo ? `<img src="${escapeHtml(settings.schoolLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
+  sp.innerHTML = safeImageSrc(settings.schoolLogo) ? `<img src="${escapeHtml(safeImageSrc(settings.schoolLogo))}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-school text-gray-300 text-2xl"></i>`;
   renderTeacherPhoto();
   const mp = document.getElementById('ministry-logo-preview');
-  mp.innerHTML = settings.ministryLogo ? `<img src="${escapeHtml(settings.ministryLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
+  mp.innerHTML = safeImageSrc(settings.ministryLogo) ? `<img src="${escapeHtml(safeImageSrc(settings.ministryLogo))}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
 }
 function editProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.setAttribute('aria-readonly','false');el.focus();try{el.setSelectionRange(el.value.length,el.value.length);}catch(_){}}
 function deleteProfileField(fieldId){const el=document.getElementById(fieldId);if(!el)return;el.removeAttribute('readonly');el.value='';el.setAttribute('aria-readonly','false');el.focus();}
@@ -5059,6 +5059,27 @@ let notifUnreadCount = 0;
 
 function escapeHtml(str){
   return String(str==null?'':str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+
+function safeImageSrc(value){
+  const src=String(value==null?'':value).trim();
+  if(/^https:\/\/[a-z0-9.-]+(?::\d+)?(?:[/?#][^\s]*)?$/i.test(src)) return src;
+  if(/^data:image\/(?:png|jpe?g|gif|webp);base64,[a-z0-9+/]+=*$/i.test(src)) return src;
+  return '';
+}
+function safeCssColor(value,fallback='var(--teal)'){
+  const color=String(value==null?'':value).trim();
+  if(/^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(color)) return color;
+  if(/^(?:transparent|black|white|red|green|blue|gray|grey|gold|orange|purple)$/i.test(color)) return color;
+  if(/^var\(--(?:teal|teal-dark|teal-light|violet|gold|coral|leaf|line|card|text|muted)\)$/.test(color)) return color;
+  if(/^rgba?\(\s*(?:\d{1,3}\s*,\s*){2}\d{1,3}(?:\s*,\s*(?:0|1|0?\.\d+))?\s*\)$/i.test(color)) return color;
+  return fallback;
+}
+function safeIconClass(value,fallback='fa-solid fa-circle'){
+  const tokens=String(value==null?'':value).trim().split(/\s+/).filter(Boolean);
+  if(!tokens.length||tokens.some(token=>!/^fa-[a-z0-9-]+$/i.test(token))) return fallback;
+  return tokens.join(' ');
 }
 
 function updateNotificationStatusUI(){
@@ -5484,9 +5505,9 @@ function saveSettings(){
   const mp = document.getElementById('ministry-logo-preview');
   if(mp) mp.innerHTML = settings.ministryLogo ? `<img src="${escapeHtml(settings.ministryLogo)}" class="w-full h-full object-contain">` : `<i class="fa-solid fa-landmark text-gray-300 text-2xl"></i>`;
   const hsl = document.getElementById('header-school-logo');
-  if(hsl) hsl.innerHTML = (settings.showSchoolLogo !== false && settings.schoolLogo) ? `<img src="${escapeHtml(settings.schoolLogo)}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
+  if(hsl) hsl.innerHTML = (settings.showSchoolLogo !== false && safeImageSrc(settings.schoolLogo)) ? `<img src="${escapeHtml(safeImageSrc(settings.schoolLogo))}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
   const hml = document.getElementById('header-ministry-logo');
-  if(hml) hml.innerHTML = (settings.showMinistryLogo !== false && settings.ministryLogo) ? `<img src="${escapeHtml(settings.ministryLogo)}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
+  if(hml) hml.innerHTML = (settings.showMinistryLogo !== false && safeImageSrc(settings.ministryLogo)) ? `<img src="${escapeHtml(safeImageSrc(settings.ministryLogo))}" class="object-contain rounded-lg bg-white shadow-sm" style="height:44px; width:auto; max-width:min(128px,28vw); padding:6px;">` : '';
   if(typeof renderDashboard === 'function') renderDashboard();
 }
 
@@ -5942,16 +5963,16 @@ function handleTeacherPhotoUpload(event){
   reader.readAsDataURL(file);
 }
 function renderTeacherPhoto(){
-  const photoHtml = settings.teacherPhoto
-    ? `<img src="${escapeHtml(settings.teacherPhoto)}" class="w-full h-full object-cover">`
+  const photoHtml = safeImageSrc(settings.teacherPhoto)
+    ? `<img src="${escapeHtml(safeImageSrc(settings.teacherPhoto))}" class="w-full h-full object-cover">`
     : '<i class="fa-solid fa-user text-gray-300 text-2xl"></i>';
   const profileEl = document.getElementById('teacher-profile-photo-preview');
   if(profileEl) profileEl.innerHTML = photoHtml;
   const headerEl = document.getElementById('header-teacher-photo');
   if(headerEl){
     headerEl.style.display = settings.showTeacherPhoto !== false ? '' : 'none';
-    headerEl.innerHTML = settings.teacherPhoto
-      ? `<img src="${escapeHtml(settings.teacherPhoto)}" class="w-full h-full object-cover">`
+    headerEl.innerHTML = safeImageSrc(settings.teacherPhoto)
+      ? `<img src="${escapeHtml(safeImageSrc(settings.teacherPhoto))}" class="w-full h-full object-cover">`
       : '<i class="fa-solid fa-user text-white/80 text-sm"></i>';
   }
 }
@@ -6236,7 +6257,7 @@ function renderSkillExplorer(){
   if(!assessed.length){results.innerHTML='<div class="card p-8 text-center text-gray-500 text-sm lg:col-span-2"><i class="fa-solid fa-chart-column text-3xl mb-2"></i><p><span class="en">No assessed students for this skill in the selected class.</span><span class="ar">لا يوجد طلاب مُقيّمون في هذه المهارة للصف المحدد.</span></p></div>';return;}
   const max=Math.max(...assessed.map(x=>x.score)),min=Math.min(...assessed.map(x=>x.score)),average=Math.round(assessed.reduce((a,x)=>a+x.score,0)/assessed.length*10),highest=assessed.filter(x=>x.score===max),lowest=assessed.filter(x=>x.score===min),pct=v=>Math.max(0,Math.min(100,Math.round(v*10)));
   const person=x=>{const lvl=skillExplorerLevel(x.score),cls=x.classObj;return '<div class="se-person"><div class="se-person-main"><div class="se-avatar" style="background:'+color+';">'+escapeHtml(x.student.name.charAt(0))+'</div><div class="min-w-0"><p class="se-name">'+escapeHtml(x.student.name)+'</p><p class="se-class">'+(cls?escapeHtml(shortClass(cls)):'—')+'</p></div></div><div class="se-score"><strong>'+pct(x.score)+'%</strong><span>'+(lvl?escapeHtml(lvl.en):'—')+'</span></div></div>';};
-  const feature=(title,ar,items,icon,bg)=>{const score=pct(items[0].score);return '<div class="se-feature '+(title==='Highest'?'se-high':'se-low')+'"><div class="se-feature-head"><div class="se-feature-icon" style="background:'+bg+';"><i class="fa-solid '+icon+'"></i></div><div><p>'+title+' <span>/ '+ar+'</span></p><small>'+escapeHtml(label.en)+' / '+escapeHtml(label.ar)+'</small></div><div class="se-score-ring" style="--score:'+score+';--ring:'+color+';"><b>'+score+'%</b></div></div><div class="se-people">'+items.map(person).join('')+'</div></div>';};
+  const feature=(title,ar,items,icon,bg)=>{const score=pct(items[0].score);return '<div class="se-feature '+(title==='Highest'?'se-high':'se-low')+'"><div class="se-feature-head"><div class="se-feature-icon" style="background:'+safeCssColor(bg,'#EAF7F2')+';"><i class="'+safeIconClass('fa-solid '+icon,'fa-solid fa-chart-column')+'"></i></div><div><p>'+title+' <span>/ '+ar+'</span></p><small>'+escapeHtml(label.en)+' / '+escapeHtml(label.ar)+'</small></div><div class="se-score-ring" style="--score:'+score+';--ring:'+color+';"><b>'+score+'%</b></div></div><div class="se-people">'+items.map(person).join('')+'</div></div>';};
   const ranked=assessed.slice().sort((a,b)=>b.score-a.score),visibleRanked=ranked.slice(0,Math.min(8,ranked.length)),extremes=ranked.filter(x=>x.score===max||x.score===min),bars=[...new Map([...visibleRanked,...extremes].map(x=>[x.student.id,x])).values()].map((x)=>{const rank=ranked.indexOf(x)+1,isHigh=x.score===max,isLow=x.score===min;return '<div class="se-rank-row '+(isHigh?'se-rank-high ':'')+(isLow?'se-rank-low':'')+'"><span class="se-rank">'+(rank+1)+'</span><span class="se-rank-name">'+escapeHtml(x.student.name)+(isHigh?'<em class="se-rank-badge">Highest / الأعلى</em>':isLow?'<em class="se-rank-badge">Lowest / الأقل</em>':'')+'</span><div class="se-rank-track"><span style="width:'+pct(x.score)+'%;background:'+color+';"></span></div><b>'+pct(x.score)+'%</b></div>';}).join('');
   const spread=Math.max(0,Math.min(100,Math.round((max-min)/6*100)));
   results.innerHTML='<div class="se-dashboard"><div class="se-summary"><div><span class="se-summary-kicker"><i class="fa-solid fa-compass"></i> Skill Explorer / مستكشف المهارات</span><h3>'+escapeHtml(label.en)+' <span>/ '+escapeHtml(label.ar)+'</span></h3><p><span class="en">A visual view of the assessed range, leaders, and students who need attention.</span><span class="ar">عرض بصري لنطاق التقييم وأعلى الطلاب ومن يحتاجون إلى دعم.</span></p></div><div class="se-summary-stats"><div><b>'+assessed.length+'</b><span>Assessed / مُقيّم</span></div><div><b>'+average+'%</b><span>Average / المتوسط</span></div><div><b>'+spread+'%</b><span>Spread / الفارق</span></div></div></div><div class="se-features">'+feature('Highest','الأعلى',highest,'fa-arrow-trend-up','#E7F6EB')+feature('Lowest','الأقل',lowest,'fa-arrow-trend-down','#FDECE3')+'</div><div class="se-ranking"><div class="se-ranking-head"><div><b>Skill Ranking / ترتيب المهارة</b><span>Top assessed students / أعلى الطلاب المُقيّمين</span></div><span class="se-range">'+pct(min)+'% → '+pct(max)+'%</span></div>'+bars+'</div></div>';
@@ -6492,7 +6513,7 @@ try{
     const momentHtml=moment?bi(QP_SKILL_LABELS[moment.key].en+' improved from '+moment.from+'% to '+moment.to+'%.',QP_SKILL_LABELS[moment.key].ar+' تحسنت من '+moment.from+'% إلى '+moment.to+'%.'):bi('No clear improvement point can be established from the available skill history.','لا يمكن تحديد نقطة تحسن واضحة من سجل المهارات المتاح.');
     const teacherNote=document.getElementById('pr-note')?.checked&&s.notes?'<div class="pr-section"><div style="font-weight:900;color:var(--teal-dark);">'+bi('Teacher Note','ملاحظة المعلم')+'</div><div style="margin-top:6px;white-space:pre-wrap;">'+esc(s.notes)+'</div></div>':'';
     const school=esc(settings.schoolName||'');const term=termLabel();const issue=new Date().toLocaleDateString(document.body.classList.contains('lang-ar')?'ar-QA':'en-GB');
-    out.innerHTML='<div class="pr-report-paper"><header class="pr-report-header"><div>'+(settings.schoolLogo?'<img class="pr-logo" src="'+esc(settings.schoolLogo)+'" alt="">':'')+'</div><div class="pr-report-title"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+school+'</div><div style="font-size:11px;font-weight:800;margin-top:4px;">'+bi('English Language Department','قسم اللغة الإنجليزية')+'</div><div style="font-size:20px;font-weight:900;margin-top:8px;">'+bi('Parent Meeting Report','تقرير اجتماع ولي الأمر')+'</div><div style="font-size:9px;color:var(--teal-dark);margin-top:4px;">'+esc(term.en)+' / '+esc(term.ar)+' · '+esc(issue)+'</div></div><div style="display:flex;justify-content:flex-end;">'+(settings.ministryLogo?'<img class="pr-logo" src="'+esc(settings.ministryLogo)+'" alt="">':'')+'</div></header><section class="pr-section"><div style="font-size:10px;font-weight:800;color:var(--teal-dark);">'+bi('Student Information','بيانات الطالب')+'</div><div style="font-size:18px;font-weight:900;margin-top:5px;">'+esc(s.name)+'</div><div style="margin-top:4px;">'+bi('Class: ','الصف: ')+esc(shortClass(cls))+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Language Skills','مهارات اللغة')+'</div><div class="pr-skill-grid" style="margin-top:10px;">'+skillRows+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Commitment','الالتزام')+'</div><div class="pr-stat-grid" style="margin-top:10px;">'+stat(bi('Attendance','الحضور'),com?com.attendance:null)+stat(bi('Homework','الواجبات'),com?com.homework:null)+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Participation & Behaviour','المشاركة والسلوك')+'</div><div style="margin-top:8px;">'+bi('Latest recorded participation: ','آخر مشاركة مسجلة: ')+(lastLabel(s,'participationLevel',v=>participationLabel(v).en)||bi('No data','لا توجد بيانات كافية'))+'</div><div style="margin-top:5px;">'+bi('Latest recorded behaviour: ','آخر سلوك مسجل: ')+(lastLabel(s,'behaviourLevel',v=>behaviourLabel(v).en)||bi('No data','لا توجد بيانات كافية'))+'</div></section><section class="pr-section"><div class="pr-stat-grid"><div><div style="font-weight:900;color:var(--teal-dark);">'+bi('Strengths','نقاط القوة')+'</div>'+strengthHtml+'</div><div><div style="font-weight:900;color:var(--teal-dark);">'+bi('Focus Areas','مجالات التركيز')+'</div>'+focusHtml+'</div></div><div style="margin-top:12px;"><div style="font-weight:900;color:var(--teal-dark);">'+bi('Key Progress','أبرز تقدم')+'</div><div style="margin-top:5px;">'+momentHtml+'</div></div></section><section class="pr-section"><div style="font-size:9px;color:var(--teal-dark);font-weight:800;">'+bi('Data confidence','موثوقية البيانات')+'</div><div style="font-size:9px;color:var(--teal-dark);margin-top:3px;">'+(reportLang()==='ar'?esc(conf.ar):reportLang()==='en'?esc(conf.en):esc(conf.en)+' / '+esc(conf.ar))+' · '+esc(conf.desc_en)+' / '+esc(conf.desc_ar)+'</div></section><div style="margin-top:12px;line-height:1.5;">'+parentClosing(s,conf)+'</div>'+teacherNote+'<div class="pr-signatures"><div class="pr-signature"><div style="font-weight:900;">'+esc(settings.teacherName||'')+'</div><div style="font-size:10px;">'+bi('Teacher','المعلم')+'</div></div><div class="pr-signature"><div style="font-weight:900;">'+esc(settings.coordinatorName||'')+'</div><div style="font-size:10px;">'+bi('Coordinator','المنسق')+'</div></div></div></div>';
+    out.innerHTML='<div class="pr-report-paper"><header class="pr-report-header"><div>'+(safeImageSrc(settings.schoolLogo)?'<img class="pr-logo" src="'+esc(safeImageSrc(settings.schoolLogo))+' alt="">':'')+'</div><div class="pr-report-title"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+school+'</div><div style="font-size:11px;font-weight:800;margin-top:4px;">'+bi('English Language Department','قسم اللغة الإنجليزية')+'</div><div style="font-size:20px;font-weight:900;margin-top:8px;">'+bi('Parent Meeting Report','تقرير اجتماع ولي الأمر')+'</div><div style="font-size:9px;color:var(--teal-dark);margin-top:4px;">'+esc(term.en)+' / '+esc(term.ar)+' · '+esc(issue)+'</div></div><div style="display:flex;justify-content:flex-end;">'+(safeImageSrc(settings.ministryLogo)?'<img class="pr-logo" src="'+esc(safeImageSrc(settings.ministryLogo))+' alt="">':'')+'</div></header><section class="pr-section"><div style="font-size:10px;font-weight:800;color:var(--teal-dark);">'+bi('Student Information','بيانات الطالب')+'</div><div style="font-size:18px;font-weight:900;margin-top:5px;">'+esc(s.name)+'</div><div style="margin-top:4px;">'+bi('Class: ','الصف: ')+esc(shortClass(cls))+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Language Skills','مهارات اللغة')+'</div><div class="pr-skill-grid" style="margin-top:10px;">'+skillRows+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Commitment','الالتزام')+'</div><div class="pr-stat-grid" style="margin-top:10px;">'+stat(bi('Attendance','الحضور'),com?com.attendance:null)+stat(bi('Homework','الواجبات'),com?com.homework:null)+'</div></section><section class="pr-section"><div style="font-size:12px;font-weight:900;color:var(--teal-dark);">'+bi('Participation & Behaviour','المشاركة والسلوك')+'</div><div style="margin-top:8px;">'+bi('Latest recorded participation: ','آخر مشاركة مسجلة: ')+(lastLabel(s,'participationLevel',v=>participationLabel(v).en)||bi('No data','لا توجد بيانات كافية'))+'</div><div style="margin-top:5px;">'+bi('Latest recorded behaviour: ','آخر سلوك مسجل: ')+(lastLabel(s,'behaviourLevel',v=>behaviourLabel(v).en)||bi('No data','لا توجد بيانات كافية'))+'</div></section><section class="pr-section"><div class="pr-stat-grid"><div><div style="font-weight:900;color:var(--teal-dark);">'+bi('Strengths','نقاط القوة')+'</div>'+strengthHtml+'</div><div><div style="font-weight:900;color:var(--teal-dark);">'+bi('Focus Areas','مجالات التركيز')+'</div>'+focusHtml+'</div></div><div style="margin-top:12px;"><div style="font-weight:900;color:var(--teal-dark);">'+bi('Key Progress','أبرز تقدم')+'</div><div style="margin-top:5px;">'+momentHtml+'</div></div></section><section class="pr-section"><div style="font-size:9px;color:var(--teal-dark);font-weight:800;">'+bi('Data confidence','موثوقية البيانات')+'</div><div style="font-size:9px;color:var(--teal-dark);margin-top:3px;">'+(reportLang()==='ar'?esc(conf.ar):reportLang()==='en'?esc(conf.en):esc(conf.en)+' / '+esc(conf.ar))+' · '+esc(conf.desc_en)+' / '+esc(conf.desc_ar)+'</div></section><div style="margin-top:12px;line-height:1.5;">'+parentClosing(s,conf)+'</div>'+teacherNote+'<div class="pr-signatures"><div class="pr-signature"><div style="font-weight:900;">'+esc(settings.teacherName||'')+'</div><div style="font-size:10px;">'+bi('Teacher','المعلم')+'</div></div><div class="pr-signature"><div style="font-weight:900;">'+esc(settings.coordinatorName||'')+'</div><div style="font-size:10px;">'+bi('Coordinator','المنسق')+'</div></div></div></div>';
     if(typeof syncLanguageVisibility==='function')syncLanguageVisibility();
   }
   window.renderParentReportTab=function(){renderClassOptions('pr-class');renderStudentOptions();renderParentReport();};
