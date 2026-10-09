@@ -116,20 +116,43 @@ service cloud.firestore {
             + (data.answers[4] == 1 ? 1 : 0))
         );
       }
+      function validWrongQuestionNumbers(data) {
+        return data.wrongQuestionNumbers is list
+          && data.wrongQuestionNumbers.size() <= 5
+          && (!data.wrongQuestionNumbers.size() == 0
+              || data.wrongQuestionNumbers.size() == 0);
+      }
       allow create: if signedIn()
+        && request.resource.data.keys().hasAll([
+          'teacherUid', 'studentId', 'studentName', 'setId', 'attempt',
+          'answers', 'score', 'total', 'wrongQuestionNumbers', 'createdAt',
+          'source', 'grading'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'teacherUid', 'studentId', 'studentName', 'setId', 'attempt',
+          'answers', 'score', 'total', 'wrongQuestionNumbers', 'createdAt',
+          'source', 'grading'
+        ])
         && request.resource.data.teacherUid == request.auth.uid
         && request.resource.data.studentId is int
+        && request.resource.data.studentId > 0
+        && request.resource.data.studentName is string
+        && request.resource.data.studentName.size() <= 200
         && request.resource.data.setId in ['R2-S01', 'R2-S02']
         && request.resource.data.attempt is int
         && request.resource.data.attempt >= 1
+        && request.resource.data.attempt <= 1000000
         && request.resource.data.score is int
         && request.resource.data.score >= 0
         && request.resource.data.score <= 5
         && request.resource.data.total == 5
         && validAnswerList(request.resource.data)
         && scoreMatchesKey(request.resource.data)
-        && request.resource.data.wrongQuestionNumbers is list
-        && request.resource.data.createdAt is string;
+        && validWrongQuestionNumbers(request.resource.data)
+        && request.resource.data.createdAt is string
+        && request.resource.data.createdAt.size() <= 40
+        && request.resource.data.source == 'student-shared-result-link'
+        && request.resource.data.grading == 'recalculated-in-dashboard; client-origin answers are not tamper-proof';
       allow get, list: if signedIn()
         && resource.data.teacherUid == request.auth.uid;
       allow update, delete: if false;
