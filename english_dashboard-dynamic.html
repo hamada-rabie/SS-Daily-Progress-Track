@@ -2610,6 +2610,8 @@ async function loadCloudData(){
       localStorage.setItem('eng_students', JSON.stringify(studentsData));
       localStorage.setItem('eng_daily', JSON.stringify(dailyArchives));
       localStorage.setItem('eng_settings', JSON.stringify(settings));
+      // Tag the browser cache only after this account's cloud snapshot has been applied.
+      localStorage.setItem(ownerKey, uid);
 
       console.log('☁️ Cloud data loaded:', window.auth.currentUser.email);
       if(typeof renderDashboard === 'function')
@@ -2639,6 +2641,9 @@ async function loadCloudData(){
         localStorage.setItem('eng_students','[]');
         localStorage.setItem('eng_daily','{}');
       }
+      // The local dataset has now been verified as empty or owned by this UID.
+      // Tag it before saving so offline retries cannot attribute it to another account.
+      localStorage.setItem(ownerKey, uid);
       await saveCloudData();
       console.log('✅ Account-scoped cloud data initialized');
     }
@@ -2705,6 +2710,14 @@ async function saveCloudData(){
     }
 
     const uid = window.auth.currentUser.uid;
+    const localOwner = localStorage.getItem('ss_cloud_owner_uid');
+    const isKnownLegacyAdmin = uid === 'RILOr4b1EvZgRxShbhaqyv3vH6N2';
+    // Fail closed: never upload browser data attributed to another account.
+    if((localOwner && localOwner !== uid) || (!localOwner && !isKnownLegacyAdmin)){
+      console.error('☁️ Cloud save blocked: browser data ownership has not been verified for this account.');
+      setCloudStatus('error');
+      return false;
+    }
     const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
     await window.setDoc(cloudRef, {
       classesData: classesData,
@@ -2745,7 +2758,10 @@ window.addEventListener('offline', ()=>{
 });
 window.addEventListener('online', ()=>{
   console.log('🌐 Connection restored. Checking for pending changes...');
-  syncPendingCloudChanges();
+  const uid = window.auth?.currentUser?.uid;
+  const owner = localStorage.getItem('ss_cloud_owner_uid');
+  if(uid && owner === uid) syncPendingCloudChanges();
+  else console.warn('☁️ Pending sync skipped: browser data owner does not match the signed-in account.');
 });
 if(!navigator.onLine) setTimeout(()=>setCloudStatus('offline'),0);
 
@@ -6878,14 +6894,14 @@ setPersistence(auth, browserLocalPersistence)
       // Navigation state is managed by the session-aware entry guard above.
       // Do not clear the active tab here: Auth can re-fire during a browser refresh.
       try{ sessionStorage.setItem('ss_app_session_active','1'); }catch(e){}
+      if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
+
+      // Keep the dashboard hidden until the authenticated account's data has been
+      // loaded and browser-cache ownership has been checked.
+      await loadCloudData();
       document.body.classList.remove("auth-pending");
       window.__SS_AUTH_READY = true;
       window.dispatchEvent(new Event("ss-auth-ready"));
-      if(typeof window.recordAppUsage==='function') window.recordAppUsage(user.uid);
-
-      // Load the authenticated account's cloud dataset before any local sync.
-      // loadCloudData rejects browser data not tagged to this UID.
-      await loadCloudData();
       startNotificationsListener(user.uid);
       startAdminFirstLoginMonitor();
     });
