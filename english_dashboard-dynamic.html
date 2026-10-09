@@ -6149,7 +6149,7 @@ document.addEventListener('click', function(e){
     case 'confirm-disable-notifications': confirmDisableNotifications(); break;
     case 'show-notif-help': showNotifHelp(); break;
     case 'toggle-notif-center': toggleNotifCenter(); break;
-    case 'mobile-refresh': (async()=>{try{const reg=await navigator.serviceWorker?.getRegistration?.();if(reg)await reg.update().catch(()=>{});}finally{window.location.reload();}})(); break;
+    case 'mobile-refresh': { try{navigator.serviceWorker?.getRegistration?.().then(reg=>reg?.update()).catch(()=>{});}catch(e){} window.location.reload(); break; }
     case 'close-notif-center': closeNotifCenter(); break;
     case 'open-daily-choice': openDailyChoiceMenu(t,t.dataset.choiceField,Number(t.dataset.id)); break;
     case 'open-daily-bulk': openDailyBulkMenu(t,t.dataset.bulkField); break;
@@ -7364,6 +7364,19 @@ try{
 
   header.classList.add('premium-header-v3');
   header.appendChild(shell);
+
+  // Bind refresh directly as well as through the delegated action handler.
+  // The direct path reloads immediately; service-worker update runs in the background.
+  const directMobileRefresh=shell.querySelector('#premium-mobile-refresh');
+  if(directMobileRefresh && !directMobileRefresh.dataset.directRefreshBound){
+    directMobileRefresh.dataset.directRefreshBound='1';
+    directMobileRefresh.addEventListener('click',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      try{navigator.serviceWorker?.getRegistration?.().then(reg=>reg?.update()).catch(()=>{});}catch(err){}
+      window.location.reload();
+    });
+  }
 
   // Keep the mobile navigation discoverable: the hamburger opens the existing
   // right-side drawer and its nested navigation groups.
