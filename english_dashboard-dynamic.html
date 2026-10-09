@@ -2829,7 +2829,7 @@ function switchTab(name){
   }
   try{
     localStorage.setItem('ss_active_tab', name);
-    const appState={ssAppNavigation:true,tab:name};
+    const appState={ssAppNavigation:true,tab:name,guard:!!(window.__SS_HANDLING_APP_POPSTATE && history.state && history.state.guard)};
     const appUrl=(window.__SS_APP_BASE_URL||location.pathname+location.search)+'#'+name;
     if(window.__SS_HANDLING_APP_POPSTATE || window.__SS_NAV_BOOTSTRAP ||
        (history.state && history.state.ssAppNavigation && history.state.tab===name)){
