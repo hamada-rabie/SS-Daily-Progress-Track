@@ -7031,6 +7031,7 @@ setPersistence(auth, browserLocalPersistence)
     const modal=document.getElementById('modal-logout-confirm');
     if(!modal)return;
     modal.classList.remove('open');
+    modal.classList.add('hidden');
     modal.setAttribute('aria-hidden','true');
   }
 
