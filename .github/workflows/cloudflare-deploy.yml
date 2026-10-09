@@ -1,27 +1,28 @@
-# MANUAL-ONLY Cloudflare Pages deploy. There is deliberately NO push / pull_request / schedule trigger:
-# commits, branches, PRs and merges can never start a deployment.
-# Needs repo secrets: CLOUDFLARE_API_TOKEN (Pages:Edit), CLOUDFLARE_ACCOUNT_ID.
+# Manual-only deployment. No push, pull_request, or schedule trigger.
+# IMPORTANT: configure GitHub Environment "production" with required reviewers BEFORE
+# adding Cloudflare secrets or running this workflow. Preview deploys are intentionally
+# disabled because the app bundle currently uses the production Firebase project.
 name: Cloudflare Pages deploy (manual)
 on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "Branch, tag or full commit SHA to deploy"
+        description: "Branch, tag, or full commit SHA to build/deploy"
         required: true
+        type: string
       target:
-        description: "preview (safe URL) or production (live URL)"
+        description: "Only production deployment is enabled; it requires environment approval"
         required: true
         type: choice
-        options: [preview, production]
-        default: preview
+        options: [production]
       confirm:
-        description: "Production only: type the exact 40-char commit SHA being deployed"
-        required: false
-        default: ""
+        description: "Type the exact 40-character commit SHA to authorize production"
+        required: true
+        type: string
 permissions:
   contents: read
 concurrency:
-  group: cloudflare-pages-deploy
+  group: cloudflare-pages-production
   cancel-in-progress: false
 jobs:
   build:
@@ -32,35 +33,38 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
+          persist-credentials: false
       - id: sha
+        shell: bash
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-      - name: Gate (production needs the exact SHA typed)
-        run: scripts/release-gate.sh "${{ inputs.target }}" "${{ inputs.confirm }}" "$(git rev-parse HEAD)"
-      - run: scripts/build-dist.sh dist
+      - name: Validate exact release SHA (inputs passed via environment, not shell interpolation)
+        env:
+          TARGET: ${{ inputs.target }}
+          CONFIRM_SHA: ${{ inputs.confirm }}
+          RESOLVED_SHA: ${{ steps.sha.outputs.sha }}
+        shell: bash
+        run: scripts/release-gate.sh "$TARGET" "$CONFIRM_SHA" "$RESOLVED_SHA"
+      - name: Build allowlisted distribution
+        shell: bash
+        run: scripts/build-dist.sh dist
       - uses: actions/upload-artifact@v4
-        with: { name: dist, path: dist, if-no-files-found: error }
-  preview:
-    if: inputs.target == 'preview'
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with: { name: dist, path: dist }
-      - name: Deploy to a PREVIEW branch URL only
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx --yes wrangler@3 pages deploy dist --project-name=ss-progress-track --branch="preview-${{ needs.build.outputs.sha }}" --commit-hash="${{ needs.build.outputs.sha }}"
+        with:
+          name: dist
+          path: dist
+          if-no-files-found: error
   production:
-    if: inputs.target == 'production'
     needs: build
     runs-on: ubuntu-latest
-    environment: production   # owner must add "Required reviewers" on this environment in GitHub settings
+    environment: production
     steps:
       - uses: actions/download-artifact@v4
-        with: { name: dist, path: dist }
-      - name: Deploy to PRODUCTION
+        with:
+          name: dist
+          path: dist
+      - name: Deploy exact approved build to Cloudflare Pages production
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx --yes wrangler@3 pages deploy dist --project-name=ss-progress-track --branch=main --commit-hash="${{ needs.build.outputs.sha }}"
+          RELEASE_SHA: ${{ needs.build.outputs.sha }}
+        shell: bash
+        run: npx --yes wrangler@3 pages deploy dist --project-name=ss-progress-track --branch=main --commit-hash="$RELEASE_SHA"
