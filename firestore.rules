@@ -8,14 +8,11 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return signedIn() && (
-        (exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-          && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true)
-        ||
-        (exists(/databases/$(database)/documents/users/$(request.auth.uid))
-          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == "approved"
-          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin")
-      );
+      // Admin access must come only from a trusted, console-provisioned record.
+      // A client-controlled /users profile must never grant admin privileges.
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
     }
 
     function isApprovedUser(userId) {
@@ -33,10 +30,14 @@ service cloud.firestore {
 
     // One profile document per authenticated account.
     match /users/{userId} {
+      // Self-registration must never grant an elevated role.
+      // Existing trusted admin profiles remain recognized by isAdmin(), but
+      // a client creating its own profile can only register as a teacher.
       allow create: if signedIn()
         && request.auth.uid == userId
         && request.resource.data.status == "approved"
-        && request.resource.data.uid == userId;
+        && request.resource.data.uid == userId
+        && request.resource.data.role == "teacher";
 
       allow get: if signedIn()
         && (request.auth.uid == userId || isAdmin());
@@ -81,6 +82,79 @@ service cloud.firestore {
       allow list: if isAdmin();
 
       allow update, delete: if isAdmin();
+    }
+
+    // Immutable teacher-owned reading-remedial results.
+    // Only the authenticated teacher dashboard can create results for its own UID.
+    match /remediationResults/{resultId} {
+      function validIndex(value) {
+        return value is int && value >= 0 && value <= 3;
+      }
+      function validAnswerList(data) {
+        return data.answers is list
+          && data.answers.size() == 5
+          && validIndex(data.answers[0])
+          && validIndex(data.answers[1])
+          && validIndex(data.answers[2])
+          && validIndex(data.answers[3])
+          && validIndex(data.answers[4]);
+      }
+      function scoreMatchesKey(data) {
+        return (
+          data.setId == 'R2-S01'
+          && data.score == ((data.answers[0] == 1 ? 1 : 0)
+            + (data.answers[1] == 0 ? 1 : 0)
+            + (data.answers[2] == 2 ? 1 : 0)
+            + (data.answers[3] == 3 ? 1 : 0)
+            + (data.answers[4] == 2 ? 1 : 0))
+        ) || (
+          data.setId == 'R2-S02'
+          && data.score == ((data.answers[0] == 0 ? 1 : 0)
+            + (data.answers[1] == 1 ? 1 : 0)
+            + (data.answers[2] == 1 ? 1 : 0)
+            + (data.answers[3] == 2 ? 1 : 0)
+            + (data.answers[4] == 1 ? 1 : 0))
+        );
+      }
+      function validWrongQuestionNumbers(data) {
+        return data.wrongQuestionNumbers is list
+          && data.wrongQuestionNumbers.size() <= 5
+          && data.wrongQuestionNumbers.hasOnly([1, 2, 3, 4, 5]);
+      }
+      allow create: if signedIn()
+        && request.resource.data.keys().hasAll([
+          'teacherUid', 'studentId', 'studentName', 'setId', 'attempt',
+          'answers', 'score', 'total', 'wrongQuestionNumbers', 'createdAt',
+          'source', 'grading'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'teacherUid', 'studentId', 'studentName', 'setId', 'attempt',
+          'answers', 'score', 'total', 'wrongQuestionNumbers', 'createdAt',
+          'source', 'grading'
+        ])
+        && request.resource.data.teacherUid == request.auth.uid
+        && request.resource.data.studentId is int
+        && request.resource.data.studentId > 0
+        && request.resource.data.studentName is string
+        && request.resource.data.studentName.size() <= 200
+        && request.resource.data.setId in ['R2-S01', 'R2-S02']
+        && request.resource.data.attempt is int
+        && request.resource.data.attempt >= 1
+        && request.resource.data.attempt <= 1000000
+        && request.resource.data.score is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 5
+        && request.resource.data.total == 5
+        && validAnswerList(request.resource.data)
+        && scoreMatchesKey(request.resource.data)
+        && validWrongQuestionNumbers(request.resource.data)
+        && request.resource.data.createdAt is string
+        && request.resource.data.createdAt.size() <= 40
+        && request.resource.data.source == 'student-shared-result-link'
+        && request.resource.data.grading == 'recalculated-in-dashboard; client-origin answers are not tamper-proof';
+      allow get, list: if signedIn()
+        && resource.data.teacherUid == request.auth.uid;
+      allow update, delete: if false;
     }
 
     // Explicitly deny everything else. This prevents accidental public access

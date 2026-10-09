@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0e7c74">
+<title>Reading Remedial Practice</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#18332f;background:#f4f8f7}
+*{box-sizing:border-box}body{margin:0;padding:18px}.shell{max-width:820px;margin:0 auto}.card{background:#fff;border:1px solid #dce8e5;border-radius:20px;padding:22px;margin:14px 0;box-shadow:0 8px 24px #173d3310}
+h1{font-size:clamp(1.5rem,4vw,2rem);margin:0 0 8px;color:#0e655d}p{line-height:1.65}.muted{color:#5f7772}.pill{display:inline-block;border-radius:999px;background:#e6f5f0;padding:5px 10px;font-size:.85rem;font-weight:700}
+.question{font-weight:800;font-size:1.1rem;line-height:1.6}.options{display:grid;gap:10px;margin-top:16px}.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;border:1px solid #d5e3df;border-radius:12px;padding:13px;cursor:pointer;color:inherit;font:inherit}.opt:focus-visible,button:focus-visible{outline:3px solid #edb94d;outline-offset:2px}.opt[aria-pressed="true"]{border-color:#0e7c74;background:#eaf7f4}.opt:disabled{cursor:default}.opt.correct{border-color:#23834b;background:#edf8f0}.opt.wrong{border-color:#c85a2e;background:#fff1eb}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button.primary,button.secondary{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:800;cursor:pointer}button.primary{background:#0e7c74;color:white}button.secondary{background:#e8efed;color:#18332f}.feedback{padding:12px;border-radius:12px;background:#f3f7f6;margin-top:14px}.hidden{display:none!important}.bar{height:8px;border-radius:999px;background:#e5eeeb;overflow:hidden}.bar span{display:block;height:100%;background:#0e7c74;width:0}.passage{white-space:pre-line;line-height:1.9;font-size:1.05rem}.small{font-size:.9rem}.error{color:#a52f1b;font-weight:700}
+</style>
+</head>
+<body><main class="shell">
+<section class="card">
+<span class="pill">Reading Remedial • Practice</span>
+<h1>Reading Practice | تدريب القراءة</h1>
+<p class="muted">اقرأ النص، ثم أجب عن الأسئلة. سيُعرض تصحيح إجاباتك بعد كل سؤال. هذه صفحة تدريب للطالب ولا تحتاج إلى تسجيل دخول.</p>
+<p id="studentLine" class="small muted"></p>
+<div class="bar" aria-label="Progress"><span id="progress"></span></div>
+<p id="progressText" class="small muted">Loading…</p>
+</section>
+<section id="passageCard" class="card"><h2 id="passageTitle"></h2><p id="passageText" class="passage"></p></section>
+<section id="quizCard" class="card">
+<p id="questionNumber" class="pill"></p>
+<p id="questionText" class="question"></p>
+<div id="options" class="options"></div>
+<div id="feedback" class="feedback hidden" role="status" aria-live="polite"></div>
+<div class="actions"><button id="checkBtn" class="primary" type="button">Check answer | تحقق من الإجابة</button><button id="nextBtn" class="secondary hidden" type="button">Next | التالي</button></div>
+</section>
+<section id="resultCard" class="card hidden" aria-live="polite">
+<h2>Practice completed | انتهى التدريب</h2><p id="scoreText"></p><p id="resultNote" class="muted"></p>
+<div class="actions"><button id="shareBtn" class="primary" type="button">Share result with teacher | مشاركة النتيجة مع المعلم</button><button id="copyBtn" class="secondary" type="button">Copy result link | نسخ رابط النتيجة</button><button id="retryBtn" class="secondary" type="button">Try again | إعادة التدريب</button></div>
+<p id="shareStatus" class="small muted" role="status" aria-live="polite"></p>
+</section>
+<section id="errorCard" class="card hidden"><p class="error" id="errorText"></p></section>
+</main>
+<script>
+(function(){
+'use strict';
+const BANK={
+ 'R2-S01':{
+  title:'A Visit to the Community Garden | زيارة حديقة المجتمع',
+  passage:'Last Saturday, Omar and his sister visited a community garden near their home. They saw rows of tomatoes, beans, and herbs. A volunteer explained that plants need sunlight, water, and healthy soil. Omar helped remove weeds while his sister watered the young plants. Before leaving, they learned that the garden gives fresh vegetables to families in the neighbourhood. Omar decided to return next weekend and bring a friend.',
+  questions:[
+   {q:'Where did Omar and his sister go?',o:['To a library','To a community garden','To a museum','To a sports centre'],a:1,ex:'The first sentence says they visited a community garden.'},
+   {q:'What does the volunteer say plants need?',o:['Sunlight, water, and healthy soil','Only cold weather','Music and shade','Large pots only'],a:0,ex:'The volunteer names sunlight, water, and healthy soil.'},
+   {q:'What did Omar do to help?',o:['He picked every tomato','He built a fence','He removed weeds','He cooked lunch'],a:2,ex:'The passage says Omar helped remove weeds.'},
+   {q:'Why is the garden useful to local families?',o:['It sells school books','It has a playground','It offers swimming lessons','It gives them fresh vegetables'],a:3,ex:'The garden gives fresh vegetables to families.'},
+   {q:'What will Omar probably do next weekend?',o:['Move to another town','Stop growing plants','Return with a friend','Visit a hospital'],a:2,ex:'Omar decided to return and bring a friend.'}
+  ]
+ },
+ 'R2-S02':{
+  title:'A School Recycling Project | مشروع إعادة التدوير المدرسي',
+  passage:'Class 8 started a recycling project to reduce waste at school. Students placed labelled boxes for paper, plastic, and cans beside the library. At first, some students put rubbish in the wrong boxes. The science teacher showed them how to check each label carefully. After two weeks, the class collected several bags of recyclable materials. The students were pleased because their small actions helped keep the school cleaner.',
+  questions:[
+   {q:'Why did Class 8 start the project?',o:['To reduce waste at school','To raise money for a trip','To decorate the library','To cancel science lessons'],a:0,ex:'The project was started to reduce school waste.'},
+   {q:'Where were the recycling boxes placed?',o:['Inside the gym','Beside the library','At the bus station','In the teachers’ cars'],a:1,ex:'The boxes were placed beside the library.'},
+   {q:'What problem happened at first?',o:['The boxes disappeared','Some rubbish went into the wrong boxes','The teacher was absent','Students refused to read'],a:1,ex:'Some students used the wrong boxes.'},
+   {q:'How did the teacher help?',o:['By removing all boxes','By closing the library','By showing students how to check labels','By collecting school bags'],a:2,ex:'The teacher explained how to check each label.'},
+   {q:'How did students feel after two weeks?',o:['Angry about the library','Pleased with their contribution','Uninterested in the project','Worried about the weather'],a:1,ex:'They were pleased that their actions helped keep school cleaner.'}
+  ]
+ }
+};
+const params=new URLSearchParams(location.search);
+const SID=(params.get('sid')||'').trim();
+const SET_ID=params.get('set')||'R2-S01';
+const SET=BANK[SET_ID];
+const KEY='ss_practice_'+(SID?SID+'_':'')+SET_ID;
+let idx=0,selected=null,checked=false,answers=[],wrong=[];
+const $=id=>document.getElementById(id);
+function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
+function showError(msg){$('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('errorCard').classList.remove('hidden');$('errorText').textContent=msg;}
+if(!SID||!/^\d{1,16}$/.test(SID)){showError('رابط التدريب غير مكتمل أو رقم الطالب غير صالح. اطلب من المعلم إنشاء رابط جديد.');return;}
+if(!SET){showError('مجموعة التدريب غير معروفة. اطلب من المعلم إنشاء رابط صحيح.');return;}
+$('studentLine').textContent='Student ID: '+SID+' • Set: '+SET_ID;
+$('passageTitle').textContent=SET.title;$('passageText').textContent=SET.passage;
+function render(){
+ const q=SET.questions[idx];selected=null;checked=false;
+ $('questionNumber').textContent='Question '+(idx+1)+' / '+SET.questions.length;
+ $('questionText').textContent=q.q;$('options').replaceChildren();
+ q.o.forEach((label,i)=>{const b=el('button','opt');b.type='button';b.setAttribute('aria-pressed','false');b.append(el('span','pill',String.fromCharCode(65+i)));b.append(el('span','',label));b.addEventListener('click',()=>{if(checked)return;selected=i;[...$('options').children].forEach((x,j)=>x.setAttribute('aria-pressed',String(j===i)));});$('options').append(b);});
+ $('feedback').classList.add('hidden');$('feedback').textContent='';$('checkBtn').classList.remove('hidden');$('checkBtn').disabled=false;$('nextBtn').classList.add('hidden');
+ $('progress').style.width=(idx/SET.questions.length*100)+'%';$('progressText').textContent='Progress: '+idx+' of '+SET.questions.length;
+}
+function check(){
+ if(selected===null){$('feedback').textContent='اختر إجابة أولًا. / Please select an answer first.';$('feedback').classList.remove('hidden');return;}
+ const q=SET.questions[idx];checked=true;answers.push(selected);const correct=selected===q.a;if(!correct)wrong.push(idx+1);
+ [...$('options').children].forEach((b,i)=>{b.disabled=true;if(i===q.a)b.classList.add('correct');if(i===selected&&!correct)b.classList.add('wrong');});
+ $('feedback').textContent=(correct?'Correct! / إجابة صحيحة. ':'Not quite. / ليست صحيحة. ')+q.ex;$('feedback').classList.remove('hidden');$('checkBtn').classList.add('hidden');$('nextBtn').classList.remove('hidden');$('nextBtn').textContent=idx===SET.questions.length-1?'See result | عرض النتيجة':'Next | التالي';
+}
+function resultUrl(){
+  const attemptKey=KEY+'_attempt';let previous=0;try{previous=Number(localStorage.getItem(attemptKey)||'0');}catch(e){}
+  const attempt=(Number.isSafeInteger(previous)&&previous>=0&&previous<1000000)?previous+1:1;
+  try{localStorage.setItem(attemptKey,String(attempt));}catch(e){}
+ const score=answers.reduce((n,a,i)=>n+(a===SET.questions[i].a?1:0),0);
+ const payload=[SET_ID,SID,attempt,score,SET.questions.length,wrong.join(','),answers.join(',')].join('.');
+ const url=new URL('english_dashboard-dynamic.html',location.href);url.searchParams.set('pr',payload);
+ return {url:url.href,score,attempt};
+}
+function finish(){
+ $('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('resultCard').classList.remove('hidden');$('progress').style.width='100%';$('progressText').textContent='Completed: '+SET.questions.length+' of '+SET.questions.length;
+ const r=resultUrl();$('scoreText').textContent='Score: '+r.score+' / '+SET.questions.length+' • Attempt '+r.attempt+' | النتيجة: '+r.score+' من '+SET.questions.length;
+ $('resultNote').textContent='أرسل رابط النتيجة للمعلم. سيتم إعادة التحقق من الإجابات عند استيراد النتيجة، لكن رقم المحاولة المخزن على هذا الجهاز يمكن إعادة ضبطه.';
+ $('shareBtn').onclick=async()=>{try{if(navigator.share)await navigator.share({title:'Reading practice result',text:'Student '+SID+' • '+SET_ID+' • '+r.score+'/'+SET.questions.length,url:r.url});else{await navigator.clipboard.writeText(r.url);$('shareStatus').textContent='تم نسخ الرابط؛ أرسله للمعلم.';}}catch(e){$('shareStatus').textContent='يمكنك نسخ الرابط باستخدام زر النسخ.';}};
+ $('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(r.url);$('shareStatus').textContent='تم نسخ رابط النتيجة.';}catch(e){$('shareStatus').textContent=r.url;}};
+ $('retryBtn').onclick=()=>{idx=0;selected=null;checked=false;answers=[];wrong=[];$('resultCard').classList.add('hidden');$('passageCard').classList.remove('hidden');$('quizCard').classList.remove('hidden');render();};
+}
+$('checkBtn').addEventListener('click',check);$('nextBtn').addEventListener('click',()=>{if(!checked)return;if(idx<SET.questions.length-1){idx++;render();}else finish();});
+render();
+})();
+</script></body></html>
