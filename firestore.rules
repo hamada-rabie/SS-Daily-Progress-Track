@@ -2,63 +2,141 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
     function signedIn() {
       return request.auth != null;
     }
 
+    // Privilege is granted only by a separately provisioned admin registry.
+    // A user-editable profile must never confer administrative privileges.
     function isAdmin() {
-      // Admin access must come only from a trusted, console-provisioned record.
-      // A client-controlled /users profile must never grant admin privileges.
       return signedIn()
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
         && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
     }
 
     function isApprovedUser(userId) {
-      // Access is self-service: every authenticated account can use its own private app data.
       return signedIn() && request.auth.uid == userId;
     }
 
-    // Admin identity is intentionally separate from each teacher's private data.
-    // Bootstrap: create admins/<YOUR_ADMIN_UID> with { active: true } in Firebase
-    // Console once. Do not let clients create or edit admin records.
-    match /admins/{adminId} {
-      allow read: if signedIn() && request.auth.uid == adminId;
-      allow write: if false;
+    function validReadingAnswers(data) {
+      return data.answers is list
+        && data.answers.size() == 5
+        && data.answers.hasOnly([0, 1, 2, 3]);
     }
 
-    // One profile document per authenticated account.
+    function readingScoreMatchesKey(data) {
+      return (
+        data.setId == "R2-S01"
+        && data.score == (
+          (data.answers[0] == 1 ? 1 : 0)
+          + (data.answers[1] == 0 ? 1 : 0)
+          + (data.answers[2] == 2 ? 1 : 0)
+          + (data.answers[3] == 3 ? 1 : 0)
+          + (data.answers[4] == 2 ? 1 : 0)
+        )
+      ) || (
+        data.setId == "R2-S02"
+        && data.score == (
+          (data.answers[0] == 0 ? 1 : 0)
+          + (data.answers[1] == 1 ? 1 : 0)
+          + (data.answers[2] == 1 ? 1 : 0)
+          + (data.answers[3] == 2 ? 1 : 0)
+          + (data.answers[4] == 1 ? 1 : 0)
+        )
+      );
+    }
+
+    function wrongQuestionsMatchAnswers(data) {
+      return (
+        data.setId == "R2-S01"
+        && data.wrongQuestionNumbers.hasAny([1]) == (data.answers[0] != 1)
+        && data.wrongQuestionNumbers.hasAny([2]) == (data.answers[1] != 0)
+        && data.wrongQuestionNumbers.hasAny([3]) == (data.answers[2] != 2)
+        && data.wrongQuestionNumbers.hasAny([4]) == (data.answers[3] != 3)
+        && data.wrongQuestionNumbers.hasAny([5]) == (data.answers[4] != 2)
+      ) || (
+        data.setId == "R2-S02"
+        && data.wrongQuestionNumbers.hasAny([1]) == (data.answers[0] != 0)
+        && data.wrongQuestionNumbers.hasAny([2]) == (data.answers[1] != 1)
+        && data.wrongQuestionNumbers.hasAny([3]) == (data.answers[2] != 1)
+        && data.wrongQuestionNumbers.hasAny([4]) == (data.answers[3] != 2)
+        && data.wrongQuestionNumbers.hasAny([5]) == (data.answers[4] != 1)
+      );
+    }
+
+    function validReadingResult(data, resultId) {
+      return data.keys().hasAll([
+          "teacherUid", "studentId", "studentName", "setId", "attempt",
+          "answers", "score", "total", "wrongQuestionNumbers", "createdAt",
+          "source", "grading"
+        ])
+        && data.keys().hasOnly([
+          "teacherUid", "studentId", "studentName", "setId", "attempt",
+          "answers", "score", "total", "wrongQuestionNumbers", "createdAt",
+          "source", "grading"
+        ])
+        && data.teacherUid is string
+        && data.teacherUid == request.auth.uid
+        && data.studentId is int
+        && data.studentId > 0
+        && data.studentId <= 9007199254740991
+        && data.studentName is string
+        && data.studentName.size() <= 120
+        && data.setId is string
+        && data.setId in ["R2-S01", "R2-S02"]
+        && data.attempt is int
+        && data.attempt >= 1
+        && data.attempt <= 2
+        && data.score is int
+        && data.score >= 0
+        && data.score <= 5
+        && data.total is int
+        && data.total == 5
+        && validReadingAnswers(data)
+        && readingScoreMatchesKey(data)
+        && data.wrongQuestionNumbers is list
+        && data.wrongQuestionNumbers.size() == 5 - data.score
+        && data.wrongQuestionNumbers.hasOnly([1, 2, 3, 4, 5])
+        && data.wrongQuestionNumbers.toSet().size() == data.wrongQuestionNumbers.size()
+        && wrongQuestionsMatchAnswers(data)
+        && data.createdAt is string
+        && data.createdAt.size() <= 40
+        && data.source == "student-shared-result-link"
+        && data.grading is string
+        && data.grading.size() <= 100
+        && resultId == data.teacherUid + "_" + string(data.studentId)
+          + "_" + data.setId + "_a" + string(data.attempt);
+    }
+
+    // Admin records are provisioned out-of-band; clients cannot create or edit them.
+    match /admins/{adminId} {
+      allow get: if signedIn() && request.auth.uid == adminId;
+      allow list, create, update, delete: if false;
+    }
+
     match /users/{userId} {
-      // Self-registration must never grant an elevated role.
-      // Existing trusted admin profiles remain recognized by isAdmin(), but
-      // a client creating its own profile can only register as a teacher.
+      // Self-registration may create teacher profiles only, never admin profiles.
       allow create: if signedIn()
         && request.auth.uid == userId
-        && request.resource.data.status == "approved"
         && request.resource.data.uid == userId
+        && request.resource.data.status == "approved"
         && request.resource.data.role == "teacher";
 
-      allow get: if signedIn()
-        && (request.auth.uid == userId || isAdmin());
-
+      allow get: if signedIn() && (request.auth.uid == userId || isAdmin());
       allow list: if isAdmin();
 
       allow update: if isAdmin()
         || (
           signedIn()
           && request.auth.uid == userId
+          && request.resource.data.uid == resource.data.uid
           && request.resource.data.status == resource.data.status
           && request.resource.data.role == resource.data.role
-          && request.resource.data.uid == resource.data.uid
         );
 
       allow delete: if isAdmin();
 
-      // All private teacher data lives below this user's UID.
       match /appData/{docId} {
-        // Read-only one-time migration path for legacy accounts created before
-        // access profiles existed. Pending accounts cannot write legacy data.
         allow get: if signedIn() && request.auth.uid == userId
           && !exists(/databases/$(database)/documents/users/$(userId));
         allow read, write: if isAdmin() || isApprovedUser(userId);
@@ -69,96 +147,24 @@ service cloud.firestore {
       }
     }
 
-    // New account requests are visible to the requester and the admin only.
     match /accessRequests/{requestId} {
       allow create: if signedIn()
         && request.auth.uid == requestId
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.status == "pending";
-
-      allow get: if signedIn()
-        && (request.auth.uid == requestId || isAdmin());
-
+      allow get: if signedIn() && (request.auth.uid == requestId || isAdmin());
       allow list: if isAdmin();
-
       allow update, delete: if isAdmin();
     }
 
-    // Immutable teacher-owned reading-remedial results.
-    // Only the authenticated teacher dashboard can create results for its own UID.
+    // Reading remediation results are append-only and owner-scoped.
     match /remediationResults/{resultId} {
-      function validIndex(value) {
-        return value is int && value >= 0 && value <= 3;
-      }
-      function validAnswerList(data) {
-        return data.answers is list
-          && data.answers.size() == 5
-          && validIndex(data.answers[0])
-          && validIndex(data.answers[1])
-          && validIndex(data.answers[2])
-          && validIndex(data.answers[3])
-          && validIndex(data.answers[4]);
-      }
-      function scoreMatchesKey(data) {
-        return (
-          data.setId == 'R2-S01'
-          && data.score == ((data.answers[0] == 1 ? 1 : 0)
-            + (data.answers[1] == 0 ? 1 : 0)
-            + (data.answers[2] == 2 ? 1 : 0)
-            + (data.answers[3] == 3 ? 1 : 0)
-            + (data.answers[4] == 2 ? 1 : 0))
-        ) || (
-          data.setId == 'R2-S02'
-          && data.score == ((data.answers[0] == 0 ? 1 : 0)
-            + (data.answers[1] == 1 ? 1 : 0)
-            + (data.answers[2] == 1 ? 1 : 0)
-            + (data.answers[3] == 2 ? 1 : 0)
-            + (data.answers[4] == 1 ? 1 : 0))
-        );
-      }
-      function validWrongQuestionNumbers(data) {
-        return data.wrongQuestionNumbers is list
-          && data.wrongQuestionNumbers.size() <= 5
-          && data.wrongQuestionNumbers.hasOnly([1, 2, 3, 4, 5]);
-      }
-      allow create: if signedIn()
-        && request.resource.data.keys().hasAll([
-          'teacherUid', 'studentId', 'studentName', 'setId', 'attempt',
-          'answers', 'score', 'total', 'wrongQuestionNumbers', 'createdAt',
-          'source', 'grading'
-        ])
-        && request.resource.data.keys().hasOnly([
-          'teacherUid', 'studentId', 'studentName', 'setId', 'attempt',
-          'answers', 'score', 'total', 'wrongQuestionNumbers', 'createdAt',
-          'source', 'grading'
-        ])
-        && request.resource.data.teacherUid == request.auth.uid
-        && request.resource.data.studentId is int
-        && request.resource.data.studentId > 0
-        && request.resource.data.studentName is string
-        && request.resource.data.studentName.size() <= 200
-        && request.resource.data.setId in ['R2-S01', 'R2-S02']
-        && request.resource.data.attempt is int
-        && request.resource.data.attempt >= 1
-        && request.resource.data.attempt <= 1000000
-        && request.resource.data.score is int
-        && request.resource.data.score >= 0
-        && request.resource.data.score <= 5
-        && request.resource.data.total == 5
-        && validAnswerList(request.resource.data)
-        && scoreMatchesKey(request.resource.data)
-        && validWrongQuestionNumbers(request.resource.data)
-        && request.resource.data.createdAt is string
-        && request.resource.data.createdAt.size() <= 40
-        && request.resource.data.source == 'student-shared-result-link'
-        && request.resource.data.grading == 'recalculated-in-dashboard; client-origin answers are not tamper-proof';
-      allow get, list: if signedIn()
-        && resource.data.teacherUid == request.auth.uid;
+      allow create: if signedIn() && validReadingResult(request.resource.data, resultId);
+      allow get: if signedIn() && resource.data.teacherUid == request.auth.uid;
+      allow list: if signedIn() && resource.data.teacherUid == request.auth.uid;
       allow update, delete: if false;
     }
 
-    // Explicitly deny everything else. This prevents accidental public access
-    // if a new collection is added later without a matching rule.
     match /{document=**} {
       allow read, write: if false;
     }
