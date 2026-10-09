@@ -77,9 +77,98 @@ service cloud.firestore {
         ])
         && data.teacherUid is string
         && data.teacherUid == request.auth.uid
-        && data.studentId is int
-        && data.studentId > 0
-        && data.studentId <= 9007199254740991
+        && data.studentId is string
+        && data.studentId.matches('^[1-9][0-9]{0,15}
+        && data.studentName is string
+        && data.studentName.size() <= 120
+        && data.setId is string
+        && data.setId in ["R2-S01", "R2-S02"]
+        && data.attempt is string
+        && data.attempt in ["1", "2"]
+        && data.score is int
+        && data.score >= 0
+        && data.score <= 5
+        && data.total is int
+        && data.total == 5
+        && validReadingAnswers(data)
+        && readingScoreMatchesKey(data)
+        && data.wrongQuestionNumbers is list
+        && data.wrongQuestionNumbers.size() == 5 - data.score
+        && data.wrongQuestionNumbers.hasOnly([1, 2, 3, 4, 5])
+        && data.wrongQuestionNumbers.toSet().size() == data.wrongQuestionNumbers.size()
+        && wrongQuestionsMatchAnswers(data)
+        && data.createdAt is string
+        && data.createdAt.size() <= 40
+        && data.source == "student-shared-result-link"
+        && data.grading is string
+        && data.grading.size() <= 100
+        && resultId == data.teacherUid + "_" + data.studentId
+          + "_" + data.setId + "_a" + data.attempt;
+    }
+
+    // Admin records are provisioned out-of-band; clients cannot create or edit them.
+    match /admins/{adminId} {
+      allow get: if signedIn() && request.auth.uid == adminId;
+      allow list, create, update, delete: if false;
+    }
+
+    match /users/{userId} {
+      // Self-registration may create teacher profiles only, never admin profiles.
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.uid == userId
+        && request.resource.data.status == "approved"
+        && request.resource.data.role == "teacher";
+
+      allow get: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin();
+
+      allow update: if isAdmin()
+        || (
+          signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.uid == resource.data.uid
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.role == resource.data.role
+        );
+
+      allow delete: if isAdmin();
+
+      match /appData/{docId} {
+        allow get: if signedIn() && request.auth.uid == userId
+          && !exists(/databases/$(database)/documents/users/$(userId));
+        allow read, write: if isAdmin() || isApprovedUser(userId);
+      }
+
+      match /{subcollection=**} {
+        allow read, write: if isAdmin() || isApprovedUser(userId);
+      }
+    }
+
+    match /accessRequests/{requestId} {
+      allow create: if signedIn()
+        && request.auth.uid == requestId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == "pending";
+      allow get: if signedIn() && (request.auth.uid == requestId || isAdmin());
+      allow list: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // Reading remediation results are append-only and owner-scoped.
+    match /remediationResults/{resultId} {
+      allow create: if signedIn() && validReadingResult(request.resource.data, resultId);
+      allow get: if signedIn() && resource.data.teacherUid == request.auth.uid;
+      allow list: if signedIn() && resource.data.teacherUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+)
         && data.studentName is string
         && data.studentName.size() <= 120
         && data.setId is string
