@@ -21,6 +21,7 @@ test('Firestore rules security suite', async (t) => {
   });
 
   const teacher = env.authenticatedContext('teacher-1', { email: 'teacher@example.test' }).firestore();
+  const newTeacher = env.authenticatedContext('teacher-new', { email: 'new@example.test' }).firestore();
   const teacher2 = env.authenticatedContext('teacher-2', { email: 'teacher2@example.test' }).firestore();
   const fakeAdmin = env.authenticatedContext('fake-admin', { email: 'fake@example.test' }).firestore();
   const admin = env.authenticatedContext('real-admin', { email: 'admin@example.test' }).firestore();
@@ -40,7 +41,7 @@ test('Firestore rules security suite', async (t) => {
   });
 
   await t.test('self-registration cannot create an admin profile', async () => {
-    await assertSucceeds(setDoc(doc(teacher, 'users', 'teacher-new'), {
+    await assertSucceeds(setDoc(doc(newTeacher, 'users', 'teacher-new'), {
       uid: 'teacher-new', email: 'new@example.test', status: 'approved', role: 'teacher'
     }));
     await assertFails(setDoc(doc(teacher, 'users', 'teacher-admin'), {
@@ -117,8 +118,8 @@ test('Firestore rules security suite', async (t) => {
     await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: '1' })));
     await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: '2', score: 4 })));
     await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: '2', answers: [0,0,0,0,0], score: 5 })));
-    await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: '2', answers: [1,1,2,3,2], score: 4, wrongQuestionNumbers: [2,2] })));
-    await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: '2', answers: [1,1,2,3,2], score: 4, wrongQuestionNumbers: [2,3] })));
+    await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: '2', answers: [1,1,0,3,2], score: 3, wrongQuestionNumbers: [2,2] })));
+    await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: '2', answers: [1,1,2,3,2], score: 4, wrongQuestionNumbers: [3] })));
   });
 
   await t.test('reading results reject invalid types, ranges, and oversized strings', async () => {
