@@ -104,6 +104,8 @@ body.lang-ar .en{display:none !important;}
 body.lang-en .bi-label .en,
 body.lang-ar .bi-label .ar{display:block !important;}
 .header-teacher-photo{transition:transform .15s ease, box-shadow .15s ease;}
+.home-teacher-photo{width:44px;height:44px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.18);box-shadow:0 4px 14px rgba(0,0,0,.18);flex:0 0 44px;}
+.home-teacher-photo img{display:block;width:100%;height:100%;object-fit:cover;}
 .header-teacher-photo:hover{transform:scale(1.04); box-shadow:0 3px 12px rgba(0,0,0,.22) !important;}
 .hero-bilingual-cta .hero-cta-en{direction:ltr; text-align:left; white-space:nowrap;}
 .hero-bilingual-cta .hero-cta-ar{direction:rtl; text-align:right; unicode-bidi:plaintext; white-space:nowrap;}
@@ -292,7 +294,7 @@ body.lang-ar .nav-link .bi-label .ar,body.lang-ar .nav-group-toggle .bi-label .a
 .daily-choice-btn.choice-warn{background:#FFF8F5;border-color:#F2D2C6;}.daily-choice-btn.choice-mid{background:#FFFBF1;border-color:#EADBAF;}.daily-choice-btn.choice-ok{background:#F4FBF6;border-color:#CBE7D1;}
 .daily-choice-menu{position:fixed;z-index:90;min-width:190px;max-width:min(310px,calc(100vw - 24px));padding:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 38px rgba(0,0,0,.18);direction:ltr;}
 .daily-choice-menu button{width:100%;display:flex;align-items:center;gap:8px;padding:8px 9px;border:0;background:transparent;border-radius:9px;cursor:pointer;text-align:left;color:var(--ink);font-size:11px;}.daily-choice-menu button:hover{background:#F1F7F5;}.daily-choice-menu .choice-dot{width:8px;height:8px;border-radius:999px;flex:0 0 auto;}.daily-choice-menu .choice-clear{border-top:1px solid var(--line);margin-top:4px;padding-top:9px;}
-.pj-timeline-track{position:relative;display:flex;flex-direction:row;flex-wrap:wrap;align-items:stretch;gap:18px 14px;padding:8px 4px 10px;}.pj-timeline-track::before{content:'';position:absolute;left:4px;right:4px;top:24px;height:3px;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--violet),var(--teal));opacity:.18;pointer-events:none;}.pj-timeline-item{position:relative;display:flex;flex:1 1 190px;max-width:240px;min-width:165px;flex-direction:column;gap:8px;align-items:stretch;opacity:0;transform:translateY(22px) scale(.97);filter:blur(2px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1),filter .55s ease;}.pj-timeline-item.is-visible{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}.pj-timeline-node{position:relative;z-index:2;width:34px;height:34px;margin:0 auto;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,var(--violet),var(--teal));box-shadow:0 0 0 5px color-mix(in srgb,var(--teal-light) 12%,transparent),0 5px 12px rgba(0,0,0,.12);font-size:10px;}.pj-timeline-item:first-child .pj-timeline-node{background:var(--gold);}.pj-timeline-item:last-child .pj-timeline-node{background:var(--teal);}.pj-timeline-content{min-width:0;min-height:100%;border-top:3px solid var(--line);border-left:0;}.pj-timeline-item.is-visible .pj-timeline-content{border-top-color:var(--teal-light);}.bulk-student-label{display:grid;grid-template-columns:16px minmax(0,1fr);align-items:center;gap:8px;width:100%;direction:rtl;}.bulk-student-label .bulk-student-name{text-align:right;min-width:0;}.bulk-student-label input{width:16px;height:16px;margin:0;justify-self:start;flex-shrink:0;}.bulk-student-heading{display:flex;align-items:center;justify-content:flex-start;gap:8px;direction:rtl;}.bulk-student-heading .bi-label{flex:1;text-align:right;}.bulk-select-all-check{width:16px;height:16px;margin:0;flex-shrink:0;cursor:pointer;accent-color:var(--teal);}.bulk-student-list-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:12px;font-weight:700;}.bulk-select-all-label{display:inline-flex;align-items:center;gap:7px;direction:rtl;cursor:pointer;font-size:10px;color:var(--ink);}.daily-bulk-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}.daily-bulk-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:6px 9px;font-size:10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}.daily-bulk-btn:hover{border-color:var(--teal-light);background:#F1F7F5;}
+.pj-timeline-track{position:relative;display:flex;flex-direction:row;flex-wrap:wrap;align-items:stretch;gap:18px 14px;padding:8px 4px 10px;}.pj-timeline-track::before{content:'';position:absolute;left:4px;right:4px;top:24px;height:3px;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--violet),var(--teal));opacity:.18;pointer-events:none;}.pj-timeline-item{position:relative;display:flex;flex:1 1 190px;max-width:240px;min-width:165px;flex-direction:column;gap:8px;align-items:stretch;opacity:0;transform:translateY(22px) scale(.97);filter:blur(2px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1),filter .55s ease;}.pj-timeline-item.is-visible{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}.pj-timeline-node{position:relative;z-index:2;width:34px;height:34px;margin:0 auto;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,var(--violet),var(--teal));box-shadow:0 0 0 5px color-mix(in srgb,var(--teal-light) 12%,transparent),0 5px 12px rgba(0,0,0,.12);font-size:10px;}.pj-timeline-item:first-child .pj-timeline-node{background:var(--gold);}.pj-timeline-item:last-child .pj-timeline-node{background:var(--teal);}.pj-timeline-content{min-width:0;min-height:100%;border-top:3px solid var(--line);border-left:0;}.pj-timeline-item.is-visible .pj-timeline-content{border-top-color:var(--teal-light);}.bulk-student-label{display:grid;grid-template-columns:16px minmax(0,1fr);align-items:center;gap:8px;width:100%;direction:rtl;}.bulk-student-label .bulk-student-name{text-align:right;min-width:0;}.bulk-student-label input{width:16px;height:16px;margin:0;justify-self:start;flex-shrink:0;}.bulk-student-heading{display:flex;align-items:center;justify-content:flex-start;gap:8px;direction:rtl;}.bulk-student-heading .bi-label{flex:1;text-align:right;}.bulk-select-all-check{width:16px;height:16px;margin:0;flex-shrink:0;cursor:pointer;accent-color:var(--teal);}.bulk-student-list-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:12px;font-weight:700;}.bulk-select-all-label{display:inline-flex;align-items:center;gap:7px;direction:rtl;cursor:pointer;font-size:10px;color:var(--ink);}.daily-bulk-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}.daily-bulk-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;}.daily-bulk-buttons .daily-bulk-btn{width:100%;justify-content:flex-start;min-height:38px;}.daily-bulk-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:6px 9px;font-size:10px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}.daily-bulk-btn:hover{border-color:var(--teal-light);background:#F1F7F5;}
 @media(max-width:640px){.daily-choice-btn{min-width:104px;font-size:10px}.daily-choice-menu{min-width:175px}.daily-bulk-btn{font-size:9px;padding:6px 8px;}}
 .chk{width:20px;height:20px;border:2px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;color:#8A9A96;}
 .chk.unset{border-style:dashed;background:#F7FAF9;}
@@ -1550,7 +1552,8 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
           <p class="text-xs sm:text-sm home-hero-tagline"><span class="en">Track student progress every day with clarity and evidence.</span><span class="ar">تابع تقدم الطلاب يوميًا بوضوح واستنادًا إلى بيانات موثوقة.</span></p>
         </div>
 
-        <div class="home-books-visual flex justify-center mt-3" aria-label="English Language: Learn, Practice, Speak, Succeed">
+        <div id="home-teacher-photo" class="home-teacher-photo flex items-center justify-center mx-auto mb-2" title="Teacher Profile / ملف المعلم" aria-label="Teacher profile photo"></div>
+        <div class="home-books-visual flex justify-center mt-1" aria-label="English Language: Learn, Practice, Speak, Succeed">
   <svg viewBox="0 0 220 132" style="width:112px;height:68px;" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
     <defs>
       <linearGradient id="engBookTeal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#27C0AE"/><stop offset="1" stop-color="#08746C"/></linearGradient>
@@ -1711,7 +1714,7 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
           <select id="daily-class-filter" data-action="filter-daily" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
           <input id="daily-date" type="date" data-action="filter-daily" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
-        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick evaluation</span><span class="ar">تقييم سريع</span></p><div class="daily-bulk-row"><span id="daily-bulk-selection-count" class="text-[10px] text-gray-500">0 selected / لا يوجد محددون</span></div><div class="daily-bulk-row"><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="behaviour"><i class="fa-solid fa-user-check" style="color:#5C6BC0;"></i><span class="en">Behaviour</span><span class="ar">السلوك</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="participation"><i class="fa-solid fa-hand" style="color:var(--violet);"></i><span class="en">Participation</span><span class="ar">المشاركة</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="homework"><i class="fa-solid fa-book-open" style="color:#B5850C;"></i><span class="en">Homework</span><span class="ar">الواجب</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="attendance"><i class="fa-solid fa-calendar-check" style="color:var(--sky);"></i><span class="en">Attendance</span><span class="ar">الحضور والغياب</span></button></div></div>
+        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick evaluation</span><span class="ar">تقييم سريع</span></p><div class="daily-bulk-row"><span id="daily-bulk-selection-count" class="text-[10px] text-gray-500">0 selected / لا يوجد محددون</span></div><div class="daily-bulk-row daily-bulk-buttons"><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="behaviour"><i class="fa-solid fa-user-check" style="color:#5C6BC0;"></i><span class="en">Behaviour</span><span class="ar">السلوك</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="participation"><i class="fa-solid fa-hand" style="color:var(--violet);"></i><span class="en">Participation</span><span class="ar">المشاركة</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="homework"><i class="fa-solid fa-book-open" style="color:#B5850C;"></i><span class="en">Homework</span><span class="ar">الواجب</span></button><button type="button" class="daily-bulk-btn" data-action="open-daily-bulk" data-bulk-field="attendance"><i class="fa-solid fa-calendar-check" style="color:var(--sky);"></i><span class="en">Attendance</span><span class="ar">الحضور والغياب</span></button></div></div>
       </div>
       <div class="card table-scroll-x">
         <table class="w-full text-sm text-right">
@@ -1736,7 +1739,7 @@ body.dark [data-action="save-settings"][data-preferences-save="1"]{
           <select id="skills-class-filter" data-action="filter-skills" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);"></select>
           <input id="skills-date" type="date" data-action="filter-skills-date" class="text-sm border rounded-lg px-3 py-2" style="border-color:var(--line);">
         </div>
-        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick skill evaluation</span><span class="ar">تقييم المهارات بسرعة</span></p><div class="daily-bulk-row"><span id="skills-bulk-selection-count" class="text-[10px] text-gray-500">0 selected / لا يوجد محددون</span></div><div class="daily-bulk-row">
+        <div class="space-y-2"><p class="text-[10px] text-gray-500"><span class="en">Quick skill evaluation</span><span class="ar">تقييم المهارات بسرعة</span></p><div class="daily-bulk-row"><span id="skills-bulk-selection-count" class="text-[10px] text-gray-500">0 selected / لا يوجد محددون</span></div><div class="daily-bulk-row daily-bulk-buttons">
 <button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="reading"><i class="fa-solid fa-book" style="color:#3D7DC9;"></i><span class="en">Reading</span><span class="ar">القراءة</span></button>
 <button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="writing"><i class="fa-solid fa-pen" style="color:#4C9A5B;"></i><span class="en">Writing</span><span class="ar">الكتابة</span></button>
 <button type="button" class="daily-bulk-btn" data-action="open-skill-bulk" data-skill="listening"><i class="fa-solid fa-headphones" style="color:#7C5CBF;"></i><span class="en">Listening</span><span class="ar">الاستماع</span></button>
@@ -2759,7 +2762,41 @@ if(!navigator.onLine) setTimeout(()=>setCloudStatus('offline'),0);
 
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
-/* ---------- toast ---------- */
+/* Branded in-app confirmation: avoids browser-native dialogs showing the hosting domain. */
+function showBrandedConfirm(messageEn,messageAr,onConfirm){
+  const previous=document.getElementById('branded-confirm-overlay');
+  if(previous) previous.remove();
+  const overlay=document.createElement('div');
+  overlay.id='branded-confirm-overlay';
+  overlay.setAttribute('role','presentation');
+  overlay.style.cssText='position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(12,24,32,.58);backdrop-filter:blur(3px);';
+  const dialog=document.createElement('div');
+  dialog.setAttribute('role','dialog');
+  dialog.setAttribute('aria-modal','true');
+  dialog.setAttribute('aria-labelledby','branded-confirm-title');
+  dialog.style.cssText='width:min(100%,390px);padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--card);color:var(--ink);box-shadow:0 24px 70px rgba(0,0,0,.28);';
+  const title=document.createElement('div');
+  title.id='branded-confirm-title';
+  title.textContent="SS' Daily Progress Track";
+  title.style.cssText='font-weight:800;font-size:16px;color:var(--teal);margin-bottom:14px;text-align:center;';
+  const message=document.createElement('div');
+  message.style.cssText='display:flex;flex-direction:column;gap:8px;text-align:center;font-size:13px;line-height:1.6;margin-bottom:22px;';
+  const en=document.createElement('div'); en.className='en'; en.textContent=messageEn;
+  const ar=document.createElement('div'); ar.className='ar'; ar.textContent=messageAr; ar.style.direction='rtl';
+  message.append(en,ar);
+  const actions=document.createElement('div');
+  actions.style.cssText='display:flex;gap:10px;justify-content:center;';
+  const cancel=document.createElement('button'); cancel.type='button'; cancel.style.cssText='flex:1;min-height:40px;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink);font-weight:700;cursor:pointer;';
+  cancel.innerHTML='<span class="en">Cancel</span><span class="ar">إلغاء</span>';
+  const confirmBtn=document.createElement('button'); confirmBtn.type='button'; confirmBtn.style.cssText='flex:1;min-height:40px;border:0;border-radius:11px;background:var(--teal);color:#fff;font-weight:700;cursor:pointer;';
+  confirmBtn.innerHTML='<span class="en">Confirm</span><span class="ar">تأكيد</span>';
+  const close=()=>overlay.remove();
+  cancel.addEventListener('click',close);
+  confirmBtn.addEventListener('click',()=>{close();if(typeof onConfirm==='function')onConfirm();});
+  overlay.addEventListener('click',event=>{if(event.target===overlay)close();});
+  dialog.append(title,message,actions); actions.append(cancel,confirmBtn); overlay.appendChild(dialog); document.body.appendChild(overlay);
+  confirmBtn.focus();
+}
 function showToast(msg, type){
   const c = document.getElementById('toast-container');
   const colors = {success:'#2C8C46', error:'#C0392B', info:'#0E7C74'};
@@ -3662,8 +3699,10 @@ function applyDailyBulk(field,value){
   if(selectedInClass.length)list=selectedInClass;
   if(!selectedInClass.length){showBilingualToast('Please select students first.','رجاءً، اختر الطلاب أولاً.','error');return;}
   if(!list.length){showToast('No students in the selected class / لا يوجد طلاب في الصف المحدد','error');return;}
-  const scopeLabel=selectedInClass.length<classStudentCount?'selected students':'students in the selected class';
-  if(!confirm('Apply this evaluation to '+list.length+' '+scopeLabel+'? / هل تريد تطبيق التقييم على '+list.length+' طالب؟')) return;
+  const isSelectedSubset=selectedInClass.length<classStudentCount;
+  const targetEn=isSelectedSubset?'selected students':'students in the selected class';
+  const targetAr=isSelectedSubset?'الطلاب المحددين':'طلاب الصف المحدد';
+  showBrandedConfirm('Apply this evaluation to '+list.length+' '+targetEn+'?','هل تريد تطبيق التقييم على '+list.length+' من '+targetAr+'؟',()=>{
   list.forEach(s=>{ const rec=ensureDailyRecord(date,s.id);
     if(field==='behaviour'){ if(value==='') delete rec.behaviourLevel; else rec.behaviourLevel=value; s.behaviourLevel=latestDailyFieldValue(s.id,'behaviourLevel','disciplined'); }
     else if(field==='participation'){ if(value==='') delete rec.participationLevel; else rec.participationLevel=value; s.participationLevel=latestDailyFieldValue(s.id,'participationLevel','active'); }
@@ -3671,6 +3710,7 @@ function applyDailyBulk(field,value){
     else if(field==='attendance'){ if(value==='clear') delete rec.attendance; else rec.attendance=value; s.attendance=latestDailyFieldValue(s.id,'attendance','present'); }
   });
   saveData(); renderDailyTable(); renderStudentsTable(); list.forEach(s=>evaluateStudentSmartAlerts(s.id,date)); showToast('Bulk update applied / تم تطبيق الاختيار على الصف المحدد','success');
+  });
 }
 function setParticipation(id, val){
   const s = studentsData.find(x=>x.id===id); if(!s) return;
@@ -3846,8 +3886,10 @@ function applySkillBulk(level){
   if(selectedInClass.length)list=selectedInClass;
   if(!selectedInClass.length){showBilingualToast('Please select students first.','رجاءً، اختر الطلاب أولاً.','error');return;}
   if(!list.length){showToast('No students in the selected class / لا يوجد طلاب في الصف المحدد','error');return;}
-  const scopeLabel=selectedInClass.length<classStudentCount?'selected students':'students in the selected class';
-  if(!confirm('Apply this skill rating to '+list.length+' '+scopeLabel+'? / هل تريد تطبيق تقييم المهارة على '+list.length+' طالب؟')) return;
+  const isSelectedSubset=selectedInClass.length<classStudentCount;
+  const targetEn=isSelectedSubset?'selected students':'students in the selected class';
+  const targetAr=isSelectedSubset?'الطلاب المحددين':'طلاب الصف المحدد';
+  showBrandedConfirm('Apply this skill rating to '+list.length+' '+targetEn+'?','هل تريد تطبيق تقييم المهارة على '+list.length+' من '+targetAr+'؟',()=>{
   list.forEach(s=>{
     migrateSkillData(s);
     let entry=s.skillHistory.find(h=>h.date===date);
@@ -3859,6 +3901,7 @@ function applySkillBulk(level){
   });
   saveData();renderSkillsTable();renderStudentsTable();list.forEach(s=>evaluateStudentSmartAlerts(s.id,date));
   showToast(level===''?'Skill rating cleared for the selected class / تم مسح تقييم المهارة للصف المحدد':'Skill rating applied to the selected class / تم تطبيق تقييم المهارة على الصف المحدد','success');
+  });
 }
 /* ---------- honor board / English Excellence Board ---------- */
 /* Badges are derived ONLY from existing data/functions — no new scoring, no fabrication. */
@@ -6070,6 +6113,13 @@ function renderTeacherPhoto(){
     : '<i class="fa-solid fa-user text-gray-300 text-2xl"></i>';
   const profileEl = document.getElementById('teacher-profile-photo-preview');
   if(profileEl) profileEl.innerHTML = photoHtml;
+  const homePhotoEl = document.getElementById('home-teacher-photo');
+  if(homePhotoEl){
+    homePhotoEl.style.display = settings.showTeacherPhoto !== false ? 'flex' : 'none';
+    homePhotoEl.innerHTML = settings.teacherPhoto
+      ? `<img src="${settings.teacherPhoto}" class="w-full h-full object-cover">`
+      : '<i class="fa-solid fa-user text-white/80 text-sm"></i>';
+  }
   const headerEl = document.getElementById('header-teacher-photo');
   if(headerEl){
     headerEl.style.display = settings.showTeacherPhoto !== false ? '' : 'none';
