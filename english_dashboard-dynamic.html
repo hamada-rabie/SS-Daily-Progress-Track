@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
 <script id="fresh-session-home-guard-2026-10-05">
+  // Preserve the dashboard URL so a Back press can never strand the app on login.html.
+  window.__SS_APP_BASE_URL=location.pathname+location.search;
   // Session-aware navigation:
   // - Browser refresh: keep the page the teacher was on.
   // - Closing/reopening the app: start clean on Home.
@@ -2827,7 +2829,14 @@ function switchTab(name){
   }
   try{
     localStorage.setItem('ss_active_tab', name);
-    history.replaceState(null, '', '#'+name);
+    const appState={ssAppNavigation:true,tab:name};
+    const appUrl=(window.__SS_APP_BASE_URL||location.pathname+location.search)+'#'+name;
+    if(window.__SS_HANDLING_APP_POPSTATE || window.__SS_NAV_BOOTSTRAP ||
+       (history.state && history.state.ssAppNavigation && history.state.tab===name)){
+      history.replaceState(appState,'',appUrl);
+    }else{
+      history.pushState(appState,'',appUrl);
+    }
   }catch(e){}
   document.querySelectorAll('.nav-group-toggle[data-group]').forEach(toggle=>{
     toggle.setAttribute('aria-expanded','false');
@@ -2846,6 +2855,38 @@ function switchTab(name){
   }
   syncLanguageVisibility();
   refreshAllViews();
+}
+
+// Browser/Android Back: restore the prior in-app tab instead of leaving the dashboard.
+// A dedicated guard entry keeps the authenticated app open when the user is already at Home.
+(function installAppBackNavigation(){
+  if(window.__SS_BACK_NAV_INSTALLED) return;
+  window.__SS_BACK_NAV_INSTALLED=true;
+  const base=window.__SS_APP_BASE_URL||location.pathname+location.search;
+  const tabFromState=state=>state&&state.ssAppNavigation&&typeof state.tab==='string'&&document.getElementById('tab-'+state.tab)?state.tab:null;
+  const currentTab=()=>((location.hash||'').slice(1))||localStorage.getItem('ss_active_tab')||'dashboard';
+  try{
+    const tab=currentTab();
+    // Replace the page entry, then add a protected guard underneath normal tab history.
+    history.replaceState({ssAppNavigation:true,tab,guard:true},'',base+'#'+tab);
+    history.pushState({ssAppNavigation:true,tab,guard:false},'',base+'#'+tab);
+  }catch(e){}
+  window.addEventListener('popstate',function(event){
+    const tab=tabFromState(event.state);
+    if(tab){
+      window.__SS_HANDLING_APP_POPSTATE=true;
+      try{switchTab(tab);}finally{window.__SS_HANDLING_APP_POPSTATE=false;}
+      // When the protected bottom entry is reached, replenish the top entry so Back
+      // cannot traverse into the login page. The user can log out through the app UI.
+      if(event.state.guard){
+        try{history.pushState({ssAppNavigation:true,tab,guard:false},'',base+'#'+tab);}catch(e){}
+      }
+      return;
+    }
+    // If an older/foreign history entry is encountered, recover to the current tab.
+    const active=currentTab();
+    try{history.pushState({ssAppNavigation:true,tab:active,guard:false},'',base+'#'+active);}catch(e){}
+  },false);
 }
 
 /* ---------- modals ---------- */
