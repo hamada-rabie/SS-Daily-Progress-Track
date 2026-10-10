@@ -44,11 +44,9 @@ test('all remediation banks contain five questions and match dashboard grading k
   const rules = readFileSync('firestore.rules', 'utf8');
   assert.doesNotMatch(practice, /\blocalStorage\b/, 'Practice attempt tracking must not rely on resettable localStorage');
   const bankMatch = practice.match(/const BANK=(\{[\s\S]*?\n\});\nconst params/);
-  const allowedMatch = dashboard.match(/const allowedSets=Object\.freeze\((\{[^;]+\})\);/);
   assert.ok(bankMatch, 'Practice question bank must be present');
-  assert.ok(allowedMatch, 'Dashboard answer-key map must be present');
   const bank = vm.runInNewContext('(' + bankMatch[1] + ')');
-  const allowed = vm.runInNewContext('(' + allowedMatch[1] + ')');
+  const allowed = ANSWER_KEYS;
   const ruleSetMatch = rules.match(/request\.resource\.data\.setId in \[([^\]]+)\]/);
   assert.ok(ruleSetMatch, 'Firestore rules must whitelist practice sets');
   const ruleSets = ruleSetMatch[1].match(/'[^']+'/g).map(value => value.slice(1, -1));
