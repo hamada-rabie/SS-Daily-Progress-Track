@@ -142,6 +142,25 @@ function finish(){
   {min:4,emoji:'🏆',title:'ممتاز! خطوة من القمة!',message:'أربع إجابات صحيحة! واضح إنك بتفهم وبتتقدم. راجع السؤال المتبقي عشان تعرف السبب، وحوّل الغلطة لخبرة.',foot:'الطالب الشاطر مش اللي ما يغلطش؛ اللي يتعلم من غلطه.'},
   {min:5,emoji:'🎉',title:'يا سلام! إنجاز رائع!',message:'درجة كاملة! تستحق تفرح بمجهودك وتركيزك. احتفظ بنفس حب التعلّم، وخلي كل نص جديد فرصة لتحدّي نفسك.',foot:'افرح بإنجازك، وافتكر إن الاستمرار هو سرّ التميّز.'}
  ].find(x=>r.score>=x.min);
+ const encouragementEN=[
+  ['A fresh start — keep going!','Mistakes show what you can learn next. Review the feedback and take the next step with confidence.','Every expert started somewhere.'],
+  ['You found your first piece!','You got one answer right. Review the questions you missed and the picture will become clearer.','Today’s mistake can become tomorrow’s strength.'],
+  ['You are moving forward!','You understood part of the passage. Learn from each answer and keep building your reading skills.','Small, steady steps matter.'],
+  ['Good work — you are close!','Your result is encouraging. Review the tricky question and keep the same focus.','Keep going; each attempt adds experience.'],
+  ['Excellent progress!','Four correct answers show strong understanding. Review the remaining question and turn it into a learning opportunity.','Strong learners learn from mistakes.'],
+  ['Brilliant work — full marks!','You answered every question correctly. Celebrate your effort and keep challenging yourself with new texts.','Consistency turns progress into achievement.']
+ ];
+ const encouragementAR=[
+  ['بداية جديدة… استمر!','الأخطاء توضح ما يمكنك تعلمه بعد ذلك. راجع التصحيح وخذ خطوتك التالية بثقة.','كل خبير بدأ بخطوة.'],
+  ['أحسنت في أول خطوة!','إجابة صحيحة واحدة بداية تستحق التشجيع. راجع الأسئلة التي أخطأت فيها لتتضح الصورة.','خطأ اليوم قد يصبح قوة الغد.'],
+  ['أنت تتقدم!','فهمت جزءًا من النص. تعلّم من كل إجابة وواصل بناء مهارات القراءة.','الخطوات الصغيرة الثابتة تصنع فرقًا.'],
+  ['عمل جيد… اقتربت!','نتيجتك مشجعة. راجع السؤال الصعب وواصل التركيز.','كل محاولة تضيف خبرة جديدة.'],
+  ['تقدم ممتاز!','أربع إجابات صحيحة تدل على فهم جيد. راجع السؤال المتبقي وحوّله إلى فرصة للتعلم.','المتعلم المتميز يستفيد من أخطائه.'],
+  ['رائع! الدرجة كاملة!','أجبت عن جميع الأسئلة إجابة صحيحة. احتفِ بمجهودك واستمر في تحدي نفسك بنصوص جديدة.','الاستمرار يحول التقدم إلى إنجاز.']
+ ];
+ const tier=Math.max(0,Math.min(5,r.score));
+ if(LANGUAGE==='en'){[encouragement.title,encouragement.message,encouragement.foot]=encouragementEN[tier];}
+ else if(LANGUAGE==='bilingual'){const en=encouragementEN[tier],ar=encouragementAR[tier];[encouragement.title,encouragement.message,encouragement.foot]=[en[0]+' | '+ar[0],en[1]+' | '+ar[1],en[2]+' | '+ar[2]];}
  $('resultEmoji').textContent=encouragement.emoji;$('resultTitle').textContent=encouragement.title;$('resultMessage').textContent=encouragement.message;$('resultFootnote').textContent=LANGUAGE==='en'?'Keep going: every attempt can teach you something new.':LANGUAGE==='ar'?encouragement.foot:encouragement.foot+' | Keep going: every attempt can teach you something new.';$('resultScoreline').textContent=t('score')+': '+r.score+' / '+SET.questions.length+' • '+pct+'%';$('resultMeterFill').style.width=pct+'%';
  if(currentAttempt>=2)$('retryBtn').classList.add('hidden');else $('retryBtn').classList.remove('hidden');
  $('resultNote').textContent=t('exportNote');
