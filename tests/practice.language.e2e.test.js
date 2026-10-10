@@ -33,10 +33,10 @@ async function finishWithScore(lang, score, sid = '1760000000001') {
     await page.locator('#checkBtn').click();
     await page.locator('#nextBtn').click();
   }
-  const text = await page.evaluate(() => ['resultTitle', 'resultMessage', 'resultFootnote'].map(id => document.getElementById(id).textContent).join(' || '));
+  const texts = await page.evaluate(() => ['resultTitle', 'resultMessage', 'resultFootnote'].map(id => document.getElementById(id).textContent));
   await page.locator('#shareBtn').click(); await page.waitForTimeout(250);
   await ctx.close();
-  return { text, wa: hits[0] ? decodeURIComponent(hits[0].split('?text=')[1]) : '' };
+  return { texts, wa: hits[0] ? decodeURIComponent(hits[0].split('?text=')[1]) : '' };
 }
 
 test('result messages always show English above Arabic for every score 0-5', async (t) => {
