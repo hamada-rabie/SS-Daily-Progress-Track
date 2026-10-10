@@ -1,0 +1,21 @@
+{
+  "name": "ss-daily-progress-track-security-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Local/emulated security tests for SS Daily Progress Track Firestore rules",
+  "scripts": {
+    "test:syntax": "node --test tests/syntax.test.js",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-ss-dpt \"node --test tests/firestore.rules.test.js\"",
+    "test:payload": "node --test tests/remediation-validation.test.js",
+    "test:e2e": "node --test tests/practice.e2e.test.js",
+    "test": "npm run test:syntax && npm run test:payload && npm run test:rules && npm run test:e2e && npm run test:nav && npm run test:lang",
+    "test:nav": "node --test tests/dashboard-nav.e2e.test.js",
+    "test:lang": "node --test tests/practice.language.e2e.test.js"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "4.0.1",
+    "firebase": "11.10.0",
+    "firebase-tools": "14.12.1",
+    "playwright": "1.56.1"
+  }
+}
