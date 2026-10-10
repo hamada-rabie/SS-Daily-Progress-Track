@@ -22,7 +22,7 @@
 <div class="bar" aria-label="Progress"><span id="progress"></span></div>
 <p id="progressText" class="small muted">Loading…</p>
 </section>
-<section id="passageCard" class="card"><h2 id="passageTitle"></h2><p id="passageText" class="passage"></p></section>
+<section id="passageCard" class="card"><h2 id="passageTitle"></h2><p id="passageText" class="passage"></p><button id="listenBtn" class="secondary hidden" type="button" style="margin-top:12px">▶ Listen to the passage / استمع إلى النص</button><p id="listenStatus" class="small muted" role="status" aria-live="polite"></p></section>
 <section id="quizCard" class="card">
 <p id="questionNumber" class="pill"></p>
 <p id="questionText" class="question"></p>
@@ -211,6 +211,16 @@ function applyLanguage(){
  document.body.style.direction=LANGUAGE==='ar'?'rtl':'ltr';
  const set=(id,key)=>{const n=document.getElementById(id);if(n)n.textContent=t(key);};
  set('brandLine','brand');set('heroTitle','hero');set('heroIntro','intro');
+ const skill=SKILL_LABELS[SKILL_TYPE]||SKILL_LABELS.R2;
+ if(SKILL_TYPE!=='R2'){
+  const brand=LANGUAGE==='en'?skill.en+' Quest':LANGUAGE==='ar'?'رحلة '+skill.ar:skill.en+' Quest | رحلة '+skill.ar;
+  const hero=LANGUAGE==='en'?'Small steps. Stronger '+skill.en.toLowerCase()+'.':LANGUAGE==='ar'?'خطوات صغيرة… ومهارة '+skill.ar+' أقوى': 'Small steps. Stronger '+skill.en.toLowerCase()+'. | خطوات صغيرة… ومهارة '+skill.ar+' أقوى';
+  const intro=LANGUAGE==='en'?'Practise one step at a time. Read or listen carefully, choose your answer, and learn from feedback.':LANGUAGE==='ar'?'تدرّب خطوة بخطوة. اقرأ أو استمع بعناية، واختر إجابتك، وتعلّم من التصحيح.':'Practise one step at a time. | تدرّب خطوة بخطوة، وتعلّم من التصحيح.';
+  document.getElementById('brandLine').textContent='✦ '+brand;
+  document.getElementById('heroTitle').textContent=hero;
+  document.getElementById('heroIntro').textContent=intro;
+  document.title=skill.en+' Remedial Practice | تدريب علاجي';
+ }else{document.title=LANGUAGE==='en'?'Reading Remedial Practice':LANGUAGE==='ar'?'تدريب علاجي للقراءة':'Reading Remedial Practice | تدريب علاجي للقراءة';}
  set('languageLabel','language');set('retryTitle','retryTitle');set('retryCopy','retryText');
  set('retryCancel','retryCancel');set('retryConfirm','retryConfirm');set('checkBtn','check');set('shareBtn','send');set('retryBtn','retry');
  const select=document.getElementById('languageMode');if(select)select.value=LANGUAGE;
@@ -220,6 +230,8 @@ const SID=(params.get('sid')||'').trim();
 const STUDENT_NAME=(params.get('sname')||'').trim().slice(0,100);
 const SET_ID=params.get('set')||'R2-S01';
 const SET=BANK[SET_ID];
+const SKILL_TYPE=SET_ID.slice(0,2);
+const SKILL_LABELS={R2:{en:'Reading',ar:'القراءة'},W2:{en:'Writing',ar:'الكتابة'},L2:{en:'Listening',ar:'الاستماع'},S2:{en:'Speaking',ar:'المحادثة'}};
 let idx=0,selected=null,checked=false,answers=[],wrong=[];
 const $=id=>document.getElementById(id);
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
@@ -230,8 +242,22 @@ if(!SID||!/^\d{1,16}$/.test(SID)){showError('رابط التدريب غير مك
 if(!SET){showError('مجموعة التدريب غير معروفة. اطلب من المعلم إنشاء رابط صحيح.');return;}
 // Attempt number is session-only UI state, never a security boundary.
 let currentAttempt=1;
-$('studentLine').textContent=(LANGUAGE==='en'?(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟':'Welcome 🌟')+' • Reading practice':LANGUAGE==='ar'?(STUDENT_NAME?'أهلًا يا '+STUDENT_NAME+' 🌟':'أهلًا بك 🌟')+' • تدريب القراءة':(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟 / أهلًا يا '+STUDENT_NAME+' 🌟':'Welcome 🌟 / أهلًا بك 🌟')+' • Reading practice / تدريب القراءة');
-$('passageTitle').textContent=SET.title;$('passageText').textContent=SET.passage;
+$('studentLine').textContent=(LANGUAGE==='en'?(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟':'Welcome 🌟')+' • '+(SKILL_LABELS[SKILL_TYPE]?.en||'Reading')+' practice':LANGUAGE==='ar'?(STUDENT_NAME?'أهلًا يا '+STUDENT_NAME+' 🌟':'أهلًا بك 🌟')+' • تدريب '+(SKILL_LABELS[SKILL_TYPE]?.ar||'القراءة'):(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟 / أهلًا يا '+STUDENT_NAME+' 🌟':'Welcome 🌟 / أهلًا بك 🌟')+' • '+(SKILL_LABELS[SKILL_TYPE]?.en||'Reading')+' practice / تدريب '+(SKILL_LABELS[SKILL_TYPE]?.ar||'القراءة'));
+$('passageTitle').textContent=SET.title;
+if(SKILL_TYPE==='L2'){
+ $('passageText').textContent=LANGUAGE==='en'?'Press play to listen to the passage, then answer the questions.':LANGUAGE==='ar'?'اضغط تشغيل للاستماع إلى النص، ثم أجب عن الأسئلة.':'Press play to listen to the passage, then answer the questions. | اضغط تشغيل للاستماع إلى النص، ثم أجب عن الأسئلة.';
+ $('listenBtn').classList.remove('hidden');
+ $('listenBtn').textContent=LANGUAGE==='en'?'▶ Listen to the passage':LANGUAGE==='ar'?'▶ استمع إلى النص':'▶ Listen to the passage / استمع إلى النص';
+ $('listenBtn').addEventListener('click',()=>{
+  if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)){$('listenStatus').textContent=LANGUAGE==='en'?'Audio playback is not supported by this browser.':LANGUAGE==='ar'?'المتصفح لا يدعم تشغيل الصوت.':'Audio playback is not supported. | المتصفح لا يدعم تشغيل الصوت.';return;}
+  window.speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(SET.passage);utterance.lang='en-GB';utterance.rate=0.88;
+  utterance.onstart=()=>{$('listenStatus').textContent=LANGUAGE==='ar'?'جارٍ تشغيل النص…':'Playing the passage…';};
+  utterance.onend=()=>{$('listenStatus').textContent=LANGUAGE==='ar'?'انتهى تشغيل النص؛ يمكنك الاستماع مرة أخرى.':'Passage finished. You can listen again.';};
+  utterance.onerror=()=>{$('listenStatus').textContent=LANGUAGE==='ar'?'تعذر تشغيل الصوت.':'Audio playback could not start.';};
+  window.speechSynthesis.speak(utterance);
+ });
+}else{$('passageText').textContent=SET.passage;}
 function render(){
  const q=SET.questions[idx];selected=null;checked=false;
  $('questionNumber').textContent=(LANGUAGE==='ar'?'السؤال ':LANGUAGE==='en'?'Question ':'Question / السؤال ')+(idx+1)+' / '+SET.questions.length;
