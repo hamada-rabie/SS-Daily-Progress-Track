@@ -41,6 +41,7 @@ test('all remediation banks contain five questions and match dashboard grading k
   const practice = readFileSync('practice.html', 'utf8');
   const dashboard = readFileSync('english_dashboard-dynamic.html', 'utf8');
   const rules = readFileSync('firestore.rules', 'utf8');
+  assert.doesNotMatch(practice, /\\blocalStorage\\b/, 'Practice attempt tracking must not rely on resettable localStorage');
   const bankMatch = practice.match(/const BANK=(\{[\s\S]*?\n\});\nconst params/);
   const allowedMatch = dashboard.match(/const allowedSets=Object\.freeze\((\{[^;]+\})\);/);
   assert.ok(bankMatch, 'Practice question bank must be present');
@@ -53,6 +54,7 @@ test('all remediation banks contain five questions and match dashboard grading k
   assert.deepEqual(Object.keys(bank).sort(), Object.keys(allowed).sort(), 'Every practice bank must have a dashboard answer key');
   for (const [setId, set] of Object.entries(bank)) {
     assert.equal(set.questions.length, 5, setId + ' must contain five questions');
+    assert.ok(set.questions.every(question => Array.isArray(question.o) && question.o.length === 4 && Number.isInteger(question.a) && question.a >= 0 && question.a < question.o.length), setId + ' must have four options and a valid answer index per question');
     const bankKey = JSON.parse(JSON.stringify(set.questions.map(question => question.a)));
     const dashboardKey = JSON.parse(JSON.stringify(allowed[setId]));
     assert.deepEqual(dashboardKey, bankKey, setId + ' answer key must match the practice bank');
