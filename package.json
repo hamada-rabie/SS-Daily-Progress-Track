@@ -8,8 +8,9 @@
     "test:rules": "firebase emulators:exec --only firestore --project demo-ss-dpt \"node --test tests/firestore.rules.test.js\"",
     "test:payload": "node --test tests/remediation-validation.test.js",
     "test:e2e": "node --test tests/practice.e2e.test.js",
-    "test": "npm run test:syntax && npm run test:payload && npm run test:rules && npm run test:e2e && npm run test:nav",
-    "test:nav": "node --test tests/dashboard-nav.e2e.test.js"
+    "test": "npm run test:syntax && npm run test:payload && npm run test:rules && npm run test:e2e && npm run test:nav && npm run test:lang",
+    "test:nav": "node --test tests/dashboard-nav.e2e.test.js",
+    "test:lang": "node --test tests/practice.language.e2e.test.js"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "4.0.1",

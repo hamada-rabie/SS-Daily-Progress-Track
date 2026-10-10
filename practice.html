@@ -310,6 +310,7 @@ function finish(){
  ];
  const tier=Math.max(0,Math.min(5,r.score));
  if(LANGUAGE==='en'){[encouragement.title,encouragement.message,encouragement.foot]=encouragementEN[tier];}
+ else if(LANGUAGE==='ar'){[encouragement.title,encouragement.message,encouragement.foot]=encouragementAR[tier];}
  else if(LANGUAGE==='bilingual'){const en=encouragementEN[tier],ar=encouragementAR[tier];[encouragement.title,encouragement.message,encouragement.foot]=[en[0]+' | '+ar[0],en[1]+' | '+ar[1],en[2]+' | '+ar[2]];}
  $('resultEmoji').textContent=encouragement.emoji;$('resultTitle').textContent=encouragement.title;$('resultMessage').textContent=encouragement.message;$('resultFootnote').textContent=LANGUAGE==='en'?'Keep going: every attempt can teach you something new.':LANGUAGE==='ar'?encouragement.foot:encouragement.foot+' | Keep going: every attempt can teach you something new.';$('resultScoreline').textContent=t('score')+': '+r.score+' / '+SET.questions.length+' • '+pct+'%';$('resultMeterFill').style.width=pct+'%';
  if(currentAttempt>=2)$('retryBtn').classList.add('hidden');else $('retryBtn').classList.remove('hidden');
