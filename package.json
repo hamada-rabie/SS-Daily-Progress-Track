@@ -6,8 +6,9 @@
   "scripts": {
     "test:syntax": "node --test tests/syntax.test.js",
     "test:rules": "firebase emulators:exec --only firestore --project demo-ss-dpt \"node --test tests/firestore.rules.test.js\"",
+    "test:payload": "node --test tests/remediation-validation.test.js",
     "test:e2e": "node --test tests/practice.e2e.test.js",
-    "test": "npm run test:syntax && npm run test:rules && npm run test:e2e"
+    "test": "npm run test:syntax && npm run test:payload && npm run test:rules && npm run test:e2e"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "4.0.1",
