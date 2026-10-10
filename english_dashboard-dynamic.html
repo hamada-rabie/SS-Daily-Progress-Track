@@ -2913,6 +2913,15 @@ function installAppBackNavigation(){
     history.pushState({ssAppNavigation:true,tab,guard:false},'',base+'#'+tab);
   }catch(e){}
   window.addEventListener('popstate',function(event){
+    // Back with the mobile drawer open closes the drawer first and keeps the current tab.
+    if(document.body.classList.contains('sidebar-open')){
+      closeSidebar();
+      document.querySelectorAll('[data-action="toggle-sidebar"]').forEach(b=>b.setAttribute('aria-expanded','false'));
+      const activeId=(document.querySelector('.tab-content.active')||{}).id||'';
+      const activeTab=activeId.replace(/^tab-/,'')||currentTab();
+      try{history.pushState({ssAppNavigation:true,tab:activeTab,guard:false},'',base+'#'+activeTab);}catch(e){}
+      return;
+    }
     const tab=tabFromState(event.state);
     if(tab){
       window.__SS_HANDLING_APP_POPSTATE=true;
