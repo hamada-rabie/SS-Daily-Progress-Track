@@ -82,6 +82,19 @@ test('remedial practice browser acceptance', async (t) => {
     await page.close();
   });
 
+  await t.test('mobile viewport remains usable without horizontal overflow', async () => {
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    await page.goto(baseUrl + '?set=W2-VW01&sid=123&sname=Mobile&lang=ar');
+    await page.locator('#questionNumber').waitFor();
+    const dimensions = await page.evaluate(() => ({ viewport: window.innerWidth, document: document.documentElement.scrollWidth }));
+    assert.ok(dimensions.document <= dimensions.viewport + 1, 'mobile practice must not overflow horizontally: ' + JSON.stringify(dimensions));
+    assert.equal(await page.locator('#checkBtn').isVisible(), true);
+    assert.equal(await page.locator('#options .opt').count(), 4);
+    await page.locator('#options .opt').nth(0).click();
+    assert.equal(await page.locator('#checkBtn').isEnabled(), true);
+    await page.close();
+  });
+
   await t.test('student name is rendered as text and result sharing opens WhatsApp only', async () => {
     const page = await browser.newPage();
     let whatsappUrl = '';
