@@ -127,7 +127,7 @@ function finish(){
  $('resultNote').textContent='شكرًا لمحاولتك! تعلّمك من الأخطاء هو أهم خطوة نحو التقدم. أرسل نتيجتك للمعلم حتى يساعدك في الخطوة التالية.';
  $('shareBtn').onclick=()=>{
    const name=STUDENT_NAME||'طالب';
-   const message='نتيجة تدريب القراءة 📘\\nالطالب: '+name+'\\nالتدريب: '+SET_ID+'\\nالنتيجة: '+r.score+'/'+SET.questions.length+'\\nالمحاولة: '+r.attempt+'\\n\\nرابط النتيجة للمعلم: '+r.url;
+   const message='نتيجة تدريب القراءة 📘\nالطالب: '+name+'\nالتدريب: '+SET_ID+'\nالنتيجة: '+r.score+'/'+SET.questions.length+'\nالمحاولة: '+r.attempt+'\n\nرابط النتيجة للمعلم: '+r.url;
    const waUrl='https://wa.me/?text='+encodeURIComponent(message);
    window.location.href=waUrl;
  };
