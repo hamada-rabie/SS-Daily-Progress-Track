@@ -4795,6 +4795,36 @@ function renderS360Card(){
   renderReadingResultsForStudent(s.id);
 }
 
+async function exportReadingResultsToExcel(studentId){
+  if(!window.XLSX){showToast('Excel library not loaded — check your connection / مكتبة الإكسل غير محمّلة، تأكد من الاتصال','error');return;}
+  if(!auth.currentUser){showToast('Sign in to export results / سجّل الدخول لتصدير النتائج','error');return;}
+  const student=studentsData.find(s=>String(s.id)===String(studentId));
+  if(!student){showToast('Student not found / لم يتم العثور على الطالب','error');return;}
+  try{
+    const snap=await getDocs(query(collection(db,'remediationResults'),where('teacherUid','==',auth.currentUser.uid)));
+    const items=snap.docs.map(d=>({id:d.id,...d.data()})).filter(r=>String(r.studentId)===String(studentId)).sort((a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||'')));
+    if(!items.length){showToast('No saved reading results to export / لا توجد نتائج قراءة محفوظة للتصدير','error');return;}
+    const cls=classesData.find(x=>String(x.id)===String(student.classId));
+    const rows=items.map(r=>({
+      'Student Name / اسم الطالب':student.name||'',
+      'Class / الصف':cls?shortClass(cls):'',
+      'Skill / المهارة':'Reading / القراءة',
+      'Test Date / تاريخ الاختبار':String(r.createdAt||''),
+      'Practice Set / مجموعة التدريب':String(r.setId||''),
+      'Score / الدرجة':Number.isFinite(Number(r.score))?Number(r.score):'',
+      'Total / المجموع النهائي':Number.isFinite(Number(r.total))?Number(r.total):'',
+      'Attempt / المحاولة':Number.isFinite(Number(r.attempt))?Number(r.attempt):'',
+      'Wrong Questions / الأسئلة الخاطئة':Array.isArray(r.wrongQuestionNumbers)?r.wrongQuestionNumbers.join(', '):''
+    }));
+    const wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet(rows);
+    ws['!cols']=[{wch:26},{wch:18},{wch:22},{wch:24},{wch:20},{wch:14},{wch:18},{wch:14},{wch:26}];
+    XLSX.utils.book_append_sheet(wb,ws,'Reading Results');
+    const safeName=String(student.name||'student').replace(/[^a-z0-9_-]+/gi,'_').slice(0,40)||'student';
+    XLSX.writeFile(wb,'SS_Reading_Results_'+safeName+'_'+todayStr().replaceAll('/','-')+'.xlsx');
+    showToast('Reading results exported / تم تصدير نتائج القراءة','success');
+  }catch(err){console.error('Reading results export failed:',err);showToast('Could not export saved results. Check Firestore access. / تعذر تصدير النتائج المحفوظة؛ تحقق من صلاحيات Firestore.','error');}
+}
+
 async function renderReadingResultsForStudent(studentId){
   const box=document.getElementById('reading-remedial-history');
   if(!box)return;
@@ -4807,6 +4837,7 @@ async function renderReadingResultsForStudent(studentId){
       .sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
     if(!items.length){box.textContent='No saved reading results yet / لا توجد نتائج قراءة محفوظة حتى الآن';return;}
     const title=document.createElement('p');title.className='font-bold mb-2';title.textContent='Saved practice results / نتائج التدريب المحفوظة';box.append(title);
+    const exportBtn=document.createElement('button');exportBtn.type='button';exportBtn.className='text-xs font-bold rounded-lg px-3 py-2 mb-2';exportBtn.style.cssText='background:var(--teal);color:var(--on-primary,#fff);';exportBtn.textContent='Export reading results to Excel / تصدير نتائج القراءة إلى Excel';exportBtn.addEventListener('click',()=>exportReadingResultsToExcel(studentId));box.append(exportBtn);
     items.slice(0,8).forEach(r=>{
       const row=document.createElement('div');row.className='rounded-lg p-2 mb-2';row.style.border='1px solid var(--line)';
       const line=document.createElement('p');line.className='font-semibold';
