@@ -92,10 +92,10 @@ test('remedial practice browser acceptance', async (t) => {
     const url = new URL(baseUrl);
     url.searchParams.set('set', 'R2-S01');
     url.searchParams.set('sid', '123');
-    url.searchParams.set('sname', '<img src=x onerror=alert(1)>');
+    url.searchParams.set('sname', 'Test Student');
     url.searchParams.set('lang', 'en');
     await page.goto(url.href);
-    assert.equal(await page.locator('#studentLine img').count(), 0, 'untrusted student name must not become HTML');
+    assert.equal(await page.locator('#studentLine img').count(), 0, 'student name must be rendered as text');
     for (const answer of KEYS['R2-S01']) {
       await page.locator('#options .opt').nth(answer).click();
       await page.locator('#checkBtn').click();
@@ -103,7 +103,15 @@ test('remedial practice browser acceptance', async (t) => {
     }
     await page.locator('#shareBtn').click().catch(() => {});
     assert.match(whatsappUrl, /^https:\/\/wa\.me\//, 'result sharing must use WhatsApp, not a generic share sheet');
+    const sharedMessage=new URL(whatsappUrl).searchParams.get('text')||'';
+    assert.match(sharedMessage,/Student: Test Student/,'WhatsApp message must show the student name');
+    assert.doesNotMatch(sharedMessage,/Student: 123/,'WhatsApp message must not substitute the numeric student ID for the name');
     await page.close();
+    const xssPage=await browser.newPage();
+    const xssUrl=new URL(baseUrl);xssUrl.searchParams.set('set','R2-S01');xssUrl.searchParams.set('sid','123');xssUrl.searchParams.set('sname','<img src=x onerror=alert(1)>');
+    await xssPage.goto(xssUrl.href);
+    assert.equal(await xssPage.locator('#studentLine img').count(),0,'hostile student name must not create an image element');
+    await xssPage.close();
   });
 
   await browser.close();
