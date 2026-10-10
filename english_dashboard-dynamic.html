@@ -4809,6 +4809,7 @@ async function exportReadingResultsToExcel(studentId){
       'Student Name / اسم الطالب':student.name||'',
       'Class / الصف':cls?shortClass(cls):'',
       'Skill / المهارة':(String(r.setId||'').startsWith('W2')?'Writing / الكتابة':String(r.setId||'').startsWith('L2')?'Listening / الاستماع':String(r.setId||'').startsWith('S2')?'Speaking / المحادثة':'Reading / القراءة'),
+      'Level / المستوى':String(r.setId||'').endsWith('VW01')?'Very Weak / ضعيف جدًا':String(r.setId||'').endsWith('WK01')?'Weak / ضعيف':String(r.setId||'').endsWith('MD01')?'Medium / متوسط':'Standard practice / تدريب عام',
       'Test Date / تاريخ الاختبار':String(r.createdAt||''),
       'Practice Set / مجموعة التدريب':String(r.setId||''),
       'Score / الدرجة':Number.isFinite(Number(r.score))?Number(r.score):'',
@@ -4817,7 +4818,7 @@ async function exportReadingResultsToExcel(studentId){
       'Wrong Questions / الأسئلة الخاطئة':Array.isArray(r.wrongQuestionNumbers)?r.wrongQuestionNumbers.join(', '):''
     }));
     const wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet(rows);
-    ws['!cols']=[{wch:26},{wch:18},{wch:22},{wch:24},{wch:20},{wch:14},{wch:18},{wch:14},{wch:26}];
+    ws['!cols']=[{wch:26},{wch:18},{wch:22},{wch:24},{wch:20},{wch:20},{wch:14},{wch:18},{wch:14},{wch:26}];
     XLSX.utils.book_append_sheet(wb,ws,'Reading Results');
     const safeName=String(student.name||'student').replace(/[^a-z0-9_-]+/gi,'_').slice(0,40)||'student';
     XLSX.writeFile(wb,'SS_Remediation_Results_'+safeName+'_'+todayStr().replaceAll('/','-')+'.xlsx');
@@ -4841,7 +4842,7 @@ async function renderReadingResultsForStudent(studentId){
     items.slice(0,8).forEach(r=>{
       const row=document.createElement('div');row.className='rounded-lg p-2 mb-2';row.style.border='1px solid var(--line)';
       const line=document.createElement('p');line.className='font-semibold';
-      line.textContent=String(r.setId||'Reading')+' · '+String(r.score??'—')+'/'+String(r.total??'—')+' · Attempt '+String(r.attempt??'—');
+      const setId=String(r.setId||'');const skill=setId.startsWith('W2')?'Writing / الكتابة':setId.startsWith('L2')?'Listening / الاستماع':setId.startsWith('S2')?'Speaking / المحادثة':'Reading / القراءة';const level=setId.endsWith('VW01')?'Very Weak / ضعيف جدًا':setId.endsWith('WK01')?'Weak / ضعيف':setId.endsWith('MD01')?'Medium / متوسط':setId;line.textContent=skill+' · '+level+' · '+String(r.score??'—')+'/'+String(r.total??'—')+' · Attempt '+String(r.attempt??'—');
       const detail=document.createElement('p');detail.className='text-gray-500 mt-1';
       detail.textContent='Wrong questions: '+((Array.isArray(r.wrongQuestionNumbers)&&r.wrongQuestionNumbers.length)?r.wrongQuestionNumbers.join(', '):'None')+' · '+String(r.createdAt||'');
       row.append(line,detail);box.append(row);
