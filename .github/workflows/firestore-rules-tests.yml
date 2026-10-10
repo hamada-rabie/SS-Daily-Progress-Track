@@ -5,6 +5,7 @@ on:
     branches:
       - remediation/stabilize-2026-10-10
       - remediation/student-practice-ux-2026-10-10
+      - work/complete-remediation-2026-10-10
   pull_request:
     branches:
       - release-candidate-2026-10-09
