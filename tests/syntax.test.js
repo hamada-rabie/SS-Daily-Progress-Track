@@ -65,3 +65,12 @@ test('all remediation banks contain five questions and match dashboard grading k
     assert.ok(rules.includes("data.setId == '" + setId + "'"), setId + ' must have server-side answer-key validation');
   }
 });
+
+test('remediation assets are included in the deployable build and offline shell', () => {
+  const build = readFileSync('scripts/build-dist.sh', 'utf8');
+  const worker = readFileSync('firebase-messaging-sw.js', 'utf8');
+  assert.match(build, /remediation-validation\\.js/, 'build must include the result-link validator');
+  assert.match(worker, /'\\.\/practice\\.html'/, 'offline shell must cache practice.html');
+  assert.match(worker, /'\\.\/remediation-validation\\.js'/, 'offline shell must cache the result-link validator');
+  assert.match(worker, /ss-dpt-pwa-v23/, 'cache version must change when shell assets change');
+});
