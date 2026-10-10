@@ -117,8 +117,7 @@ test('remedial practice browser acceptance', async (t) => {
     await page.locator('#shareBtn').click().catch(() => {});
     assert.match(whatsappUrl, /^https:\/\/wa\.me\//, 'result sharing must use WhatsApp, not a generic share sheet');
     const sharedMessage=new URL(whatsappUrl).searchParams.get('text')||'';
-    assert.match(sharedMessage,/Student:\nTest Student/,'WhatsApp message must show the student name on a separate line');
-    assert.match(sharedMessage,/اسم الطالب:\nTest Student/,'Arabic student label must also place the name on its own line');
+    assert.match(sharedMessage,/Student \/ اسم الطالب:\nTest Student/,'WhatsApp message must show the bilingual student label and name on separate lines');
     assert.match(sharedMessage,/Questions to review:/,'WhatsApp message must identify questions needing review');
     assert.match(sharedMessage,/الأسئلة التي تحتاج إلى مراجعة:/,'WhatsApp message must include Arabic review details');
     assert.doesNotMatch(sharedMessage,/https?:\/\/|\bpr=/i,'WhatsApp message must not expose any result URL or payload');
