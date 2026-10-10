@@ -7232,14 +7232,14 @@ window.recordAppUsage=async function(uid){try{
 })();
 
 
-/* Accessible in-app confirmation for imported reading results. */
+/* Accessible in-app confirmation for imported skill-remediation results. */
 function confirmReadingResult(details){
   return new Promise(resolve=>{
     const mode=document.body.classList.contains('lang-ar')?'ar':document.body.classList.contains('lang-en')?'en':'bilingual';
     const text={
-      en:{title:'Confirm reading result',intro:'Review the student and score before saving this result.',student:'Student',className:'Class',set:'Practice level',attempt:'Attempt',score:'Score',save:'Confirm and save',cancel:'Cancel'},
-      ar:{title:'تأكيد نتيجة القراءة',intro:'راجع بيانات الطالب والدرجة قبل حفظ النتيجة.',student:'الطالب',className:'الصف',set:'مستوى التدريب',attempt:'المحاولة',score:'الدرجة',save:'تأكيد الحفظ',cancel:'إلغاء'},
-      bilingual:{title:'Confirm reading result | تأكيد نتيجة القراءة',intro:'Review the student and score before saving. | راجع بيانات الطالب والدرجة قبل الحفظ.',student:'Student / الطالب',className:'Class / الصف',set:'Practice level / مستوى التدريب',attempt:'Attempt / المحاولة',score:'Score / الدرجة',save:'Confirm and save / تأكيد الحفظ',cancel:'Cancel / إلغاء'}
+      en:{title:'Confirm practice result',intro:'Review the student and score before saving this result.',student:'Student',className:'Class',set:'Practice level',attempt:'Attempt',score:'Score',save:'Confirm and save',cancel:'Cancel'},
+      ar:{title:'تأكيد نتيجة التدريب',intro:'راجع بيانات الطالب والدرجة قبل حفظ النتيجة.',student:'الطالب',className:'الصف',set:'مستوى التدريب',attempt:'المحاولة',score:'الدرجة',save:'تأكيد الحفظ',cancel:'إلغاء'},
+      bilingual:{title:'Confirm practice result | تأكيد نتيجة التدريب',intro:'Review the student and score before saving. | راجع بيانات الطالب والدرجة قبل الحفظ.',student:'Student / الطالب',className:'Class / الصف',set:'Practice level / مستوى التدريب',attempt:'Attempt / المحاولة',score:'Score / الدرجة',save:'Confirm and save / تأكيد الحفظ',cancel:'Cancel / إلغاء'}
     }[mode];
     const backdrop=document.createElement('div');
     backdrop.setAttribute('role','presentation');
@@ -7337,10 +7337,10 @@ async function processPendingReadingResult(uid){
       throw writeErr;
     }
     removePending();
-    if(typeof showToast==='function')showToast('Reading remedial result recorded / تم تسجيل نتيجة تدريب القراءة','success');
+    if(typeof showToast==='function')showToast('Remedial practice result recorded / تم تسجيل نتيجة التدريب العلاجي','success');
     if(typeof renderReadingResultsForStudent==='function')await renderReadingResultsForStudent(studentId);
   }catch(err){
-    console.error('Reading remedial result rejected:',err);
+    console.error('Remedial practice result rejected:',err);
     if(!isTemporaryFailure)removePending();
     const code=String(err&&err.code||'');
     let msg;
