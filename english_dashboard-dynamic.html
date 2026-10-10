@@ -38,7 +38,7 @@
     window.__SS_FRESH_APP_SESSION = false;
   }
 </script>
-<meta name="theme-color" content="#B75C72">
+<meta name="theme-color" content="#B55A70">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -2617,7 +2617,7 @@ async function loadCloudData(){
      classesData = [];
      studentsData = [];
      dailyArchives = {};
-     settings = { teacherName:'', coordinatorName:'', schoolName:'مدرسة عبدالله بن علي المسند الإعدادية', selectedTerm:'first', ministryName:'وزارة التربية والتعليم والتعليم العالي - دولة قطر', schoolLogo: DEFAULT_SCHOOL_LOGO, ministryLogo: DEFAULT_MINISTRY_LOGO, teacherPhoto:'', preferredLanguage:'bilingual', theme:'purple', themeMode:'light', accessibilityZoom:100, fontFamily:'cairo', fontSize:'md', dateFormat:'long', honorParticipationWeight:20, showSchoolLogo:true, showMinistryLogo:true, showTeacherPhoto:true };
+     settings = { teacherName:'', coordinatorName:'', schoolName:'مدرسة عبدالله بن علي المسند الإعدادية', selectedTerm:'first', ministryName:'وزارة التربية والتعليم والتعليم العالي - دولة قطر', schoolLogo: DEFAULT_SCHOOL_LOGO, ministryLogo: DEFAULT_MINISTRY_LOGO, teacherPhoto:'', preferredLanguage:'bilingual', theme:'burgundy', themeMode:'light', accessibilityZoom:100, fontFamily:'cairo', fontSize:'md', dateFormat:'long', honorParticipationWeight:20, showSchoolLogo:true, showMinistryLogo:true, showTeacherPhoto:true };
      ['eng_classes','eng_students','eng_daily','eng_settings','ss_cloud_dirty'].forEach(k=>localStorage.removeItem(k));
    }
    const cloudRef = window.doc(window.db, 'users', uid, 'appData', 'main');
@@ -2655,6 +2655,15 @@ async function loadCloudData(){
 
       if(data.settings){
         settings = Object.assign({}, settings, data.settings);
+        // Preferences saved in the cloud must win over the first-paint defaults on a fresh device.
+        try{
+          applyTheme(settings.theme || 'burgundy');
+          applyThemeMode(settings.themeMode || 'light');
+          applyLanguage(settings.preferredLanguage || 'bilingual');
+          applyFontFamily(settings.fontFamily || 'cairo');
+          applyFontSize(settings.fontSize || 'md');
+          applyAccessibilityZoom(settings.accessibilityZoom || 100);
+        }catch(prefErr){ console.warn('Could not apply saved preferences:', prefErr); }
       }
 
       localStorage.setItem('eng_classes', JSON.stringify(classesData));
@@ -2965,6 +2974,15 @@ function installAppBackNavigation(){
     history.pushState({ssAppNavigation:true,tab,guard:false},'',base+'#'+tab);
   }catch(e){}
   window.addEventListener('popstate',function(event){
+    // Back with the mobile drawer open closes the drawer first and keeps the current tab.
+    if(document.body.classList.contains('sidebar-open')){
+      closeSidebar();
+      document.querySelectorAll('[data-action="toggle-sidebar"]').forEach(b=>b.setAttribute('aria-expanded','false'));
+      const activeId=(document.querySelector('.tab-content.active')||{}).id||'';
+      const activeTab=activeId.replace(/^tab-/,'')||currentTab();
+      try{history.pushState({ssAppNavigation:true,tab:activeTab,guard:false},'',base+'#'+activeTab);}catch(e){}
+      return;
+    }
     const tab=tabFromState(event.state);
     if(tab){
       window.__SS_HANDLING_APP_POPSTATE=true;
@@ -6088,7 +6106,7 @@ const THEME_PALETTES = {
   plum:{p:'#7B3F73', d:'#572C51', l:'#AE78A5', label:'Plum'},
   graphite:{p:'#46515B', d:'#2F3840', l:'#7B8791', label:'Graphite'},
   aqua:{p:'#1FA7A0', d:'#13716D', l:'#66D1CB', label:'Aqua'},
-  burgundy:{p:'#B75C72', d:'#863B4F', l:'#E4A0AF', label:'Burgundy'},
+  burgundy:{p:'#B55A70', d:'#863B4F', l:'#E4A0AF', label:'Burgundy'},
   gold:{p:'#C28A20', d:'#8B6116', l:'#E1B95B', label:'Gold'},
   lime:{p:'#78A92E', d:'#55791F', l:'#A9D05D', label:'Lime'},
   tangerine:{p:'#E8792F', d:'#A94E19', l:'#F4A56F', label:'Tangerine'},
