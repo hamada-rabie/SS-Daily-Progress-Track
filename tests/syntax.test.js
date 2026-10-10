@@ -3,6 +3,7 @@ const { spawnSync } = require('node:child_process');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const vm = require('node:vm');
+const { ANSWER_KEYS } = require('../remediation-validation');
 
 function inlineScripts(path) {
   const html = readFileSync(path, 'utf8');
@@ -52,12 +53,14 @@ test('all remediation banks contain five questions and match dashboard grading k
   assert.ok(ruleSetMatch, 'Firestore rules must whitelist practice sets');
   const ruleSets = ruleSetMatch[1].match(/'[^']+'/g).map(value => value.slice(1, -1));
   assert.deepEqual(Object.keys(bank).sort(), Object.keys(allowed).sort(), 'Every practice bank must have a dashboard answer key');
+  assert.deepEqual(Object.keys(bank).sort(), Object.keys(ANSWER_KEYS).sort(), 'Every practice bank must have a server-side validation key');
   for (const [setId, set] of Object.entries(bank)) {
     assert.equal(set.questions.length, 5, setId + ' must contain five questions');
     assert.ok(set.questions.every(question => Array.isArray(question.o) && question.o.length === 4 && Number.isInteger(question.a) && question.a >= 0 && question.a < question.o.length), setId + ' must have four options and a valid answer index per question');
     const bankKey = JSON.parse(JSON.stringify(set.questions.map(question => question.a)));
     const dashboardKey = JSON.parse(JSON.stringify(allowed[setId]));
     assert.deepEqual(dashboardKey, bankKey, setId + ' answer key must match the practice bank');
+    assert.deepEqual(JSON.parse(JSON.stringify(ANSWER_KEYS[setId])), bankKey, setId + ' validator key must match the practice bank');
     assert.ok(ruleSets.includes(setId), setId + ' must be allowed by Firestore rules');
     assert.ok(rules.includes("data.setId == '" + setId + "'"), setId + ' must have server-side answer-key validation');
   }
