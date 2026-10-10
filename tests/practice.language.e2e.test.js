@@ -1,5 +1,4 @@
-// Student-facing result messages: Arabic mode must be Modern Standard Arabic only (no dialect),
-// English mode English only, bilingual both; WhatsApp text keeps real line breaks and hides the student id.
+// Student-facing results keep English fully above Arabic; WhatsApp is bilingual, line-separated, and contains no result URL or student ID.
 const http = require('node:http');
 const path = require('node:path');
 const { readFileSync } = require('node:fs');
@@ -27,6 +26,7 @@ async function finishWithScore(lang, score, sid = '1760000000001') {
   await page.route('https://wa.me/**', r => { hits.push(r.request().url()); r.abort(); });
   const url = new URL(base); url.searchParams.set('set', 'R2-S01'); url.searchParams.set('sid', sid); url.searchParams.set('sname', 'Test Student'); url.searchParams.set('lang', lang);
   await page.goto(url.href);
+  assert.equal(await page.locator('#languageMode').count(), 0, 'student must not be offered a language selector');
   for (let i = 0; i < 5; i++) {
     const pick = i < score ? KEY[i] : (KEY[i] + 1) % 4;
     await page.locator('#options .opt').nth(pick).click();
