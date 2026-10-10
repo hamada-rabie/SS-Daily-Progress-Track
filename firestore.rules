@@ -84,7 +84,7 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // Immutable teacher-owned reading-remedial results.
+    // Immutable teacher-owned skill-remediation results.
     // Only the authenticated teacher dashboard can create results for its own UID.
     match /remediationResults/{resultId} {
       function validIndex(value) {
