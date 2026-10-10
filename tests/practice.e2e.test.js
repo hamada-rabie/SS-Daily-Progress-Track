@@ -58,11 +58,11 @@ test('remedial practice browser acceptance', async (t) => {
     }
   });
 
-  await t.test('language selector and retry confirmation work', async () => {
+  await t.test('fixed bilingual display and retry confirmation work', async () => {
     const page = await browser.newPage();
     await page.goto(baseUrl + '?set=R2-VW01&sid=123&sname=Test&lang=ar');
     assert.match(await page.locator('#heroTitle').innerText(), /خطوات صغيرة/);
-    assert.equal(await page.locator('#checkBtn').innerText(), 'تحقق من الإجابة');
+    assert.equal(await page.locator('#checkBtn').innerText(), 'Check answer\nتحقق من الإجابة');
     const key = KEYS['R2-VW01'];
     for (let i = 0; i < key.length; i++) {
       await page.locator('#options .opt').nth(key[i]).click();
@@ -118,6 +118,9 @@ test('remedial practice browser acceptance', async (t) => {
     assert.match(whatsappUrl, /^https:\/\/wa\.me\//, 'result sharing must use WhatsApp, not a generic share sheet');
     const sharedMessage=new URL(whatsappUrl).searchParams.get('text')||'';
     assert.match(sharedMessage,/Student: Test Student/,'WhatsApp message must show the student name');
+    assert.match(sharedMessage,/Questions to review:/,'WhatsApp message must identify questions needing review');
+    assert.match(sharedMessage,/الأسئلة التي تحتاج إلى مراجعة:/,'WhatsApp message must include Arabic review details');
+    assert.doesNotMatch(sharedMessage,/https?:\/\/|\bpr=/i,'WhatsApp message must not expose any result URL or payload');
     assert.doesNotMatch(sharedMessage,/Student: 123/,'WhatsApp message must not substitute the numeric student ID for the name');
     await page.close();
     const xssPage=await browser.newPage();
