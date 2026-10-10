@@ -220,6 +220,7 @@ function applyLanguage(){
   document.getElementById('heroTitle').textContent=hero;
   document.getElementById('heroIntro').textContent=intro;
   document.title=skill.en+' Remedial Practice | تدريب علاجي';
+  UI.en.resultKicker='YOUR '+skill.en.toUpperCase()+' JOURNEY';UI.ar.resultKicker='رحلتك مع '+skill.ar;UI.bilingual.resultKicker='YOUR '+skill.en.toUpperCase()+' JOURNEY | رحلتك مع '+skill.ar;
  }else{document.title=LANGUAGE==='en'?'Reading Remedial Practice':LANGUAGE==='ar'?'تدريب علاجي للقراءة':'Reading Remedial Practice | تدريب علاجي للقراءة';}
  set('languageLabel','language');set('retryTitle','retryTitle');set('retryCopy','retryText');
  set('retryCancel','retryCancel');set('retryConfirm','retryConfirm');set('checkBtn','check');set('shareBtn','send');set('retryBtn','retry');
@@ -281,7 +282,7 @@ function resultUrl(){
 }
 function finish(){
  $('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('resultCard').classList.remove('hidden');$('progress').style.width='100%';$('progressText').textContent=t('completed')+': '+SET.questions.length+' / '+SET.questions.length;
- const r=resultUrl();$('scoreText').textContent='Score: '+r.score+' / '+SET.questions.length+' • Attempt '+r.attempt+' | النتيجة: '+r.score+' من '+SET.questions.length;
+ const r=resultUrl();$('scoreText').textContent=(LANGUAGE==='en'?'Score: '+r.score+' / '+SET.questions.length+' • Attempt '+r.attempt:LANGUAGE==='ar'?'النتيجة: '+r.score+' من '+SET.questions.length+' • المحاولة '+r.attempt:'Score / النتيجة: '+r.score+' / '+SET.questions.length+' • Attempt / المحاولة '+r.attempt);
  const pct=Math.round((r.score/SET.questions.length)*100);
  const encouragement=[
   {min:0,emoji:'🌱',title:'بداية جديدة… وأنت قدّها!',message:'مش مهم إنك غلطت؛ المهم إنك عرفت إن عندك حاجات تتعلمها. راجع التصحيح، وخلّي المحاولة الجاية أقوى!',foot:'كل خبير بدأ من أول خطوة. كمّل، إحنا بنكبر بالتعلّم.'},
