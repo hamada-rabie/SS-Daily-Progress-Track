@@ -28,8 +28,9 @@ test.before(async () => {
 });
 test.after(async () => { await browser.close(); server.close(); });
 
-async function openDashboard(settings) {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+async function openDashboard(settings, opts) {
+  const o = Object.assign({ viewport: { width: 390, height: 844 } }, opts || {});
+  const ctx = await browser.newContext(o);
   await ctx.route('**/*', route => {
     const u = route.request().url();
     if (u.startsWith('https://www.gstatic.com/firebasejs/12.19.0/')) {
@@ -112,4 +113,51 @@ test('default Burgundy theme is light enough, readable, and user choices are kep
     assert.equal(await cssVar(page, '--teal'), '#2574a9');
     await ctx.close();
   });
+});
+
+// Real touch input (emulated phone: hasTouch + isMobile) goes through browser hit-testing, so a covered or
+// double-handled hamburger would fail here even though a scripted element.click() would pass.
+test('hamburger works with real touch taps and does not double-fire', async (t) => {
+  const { ctx, page, errors } = await openDashboard(undefined, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const open = () => page.evaluate(() => document.body.classList.contains('sidebar-open'));
+  await t.test('hamburger is the topmost element at its own centre', async () => {
+    const hit = await page.evaluate(() => { const b = document.querySelector('.sidebar-toggle-btn'); const r = b.getBoundingClientRect(); return { n: document.querySelectorAll('.sidebar-toggle-btn').length, ok: b.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)) }; });
+    assert.equal(hit.n, 1); assert.equal(hit.ok, true);
+  });
+  await t.test('one tap opens, and exactly one toggle runs (no open-then-close)', async () => {
+    await page.evaluate(() => { window.__toggles = 0; const o = window.toggleSidebar; window.toggleSidebar = function () { window.__toggles++; return o.apply(this, arguments); }; });
+    await page.locator('.sidebar-toggle-btn').tap(); await page.waitForTimeout(400);
+    assert.equal(await open(), true);
+    assert.equal(await page.evaluate(() => window.__toggles), 1);
+    assert.equal(await page.locator('.sidebar-toggle-btn').getAttribute('aria-expanded'), 'true');
+  });
+  await t.test('drawer is the element hit inside its area; tapping the overlay closes it; it reopens', async () => {
+    const hitAside = await page.evaluate(() => { const a = document.getElementById('sidebar').getBoundingClientRect(); const e = document.elementFromPoint(a.x + a.width / 2, 200); return !!(e && e.closest('aside')); });
+    assert.equal(hitAside, true);
+    await page.tap('#sidebar-overlay', { position: { x: 20, y: 400 } }); await page.waitForTimeout(400);
+    assert.equal(await open(), false);
+    await page.locator('.sidebar-toggle-btn').tap(); await page.waitForTimeout(400);
+    assert.equal(await open(), true);
+  });
+  await t.test('expanding a nav group keeps the drawer open; tapping a tab link switches tab and closes it', async () => {
+    await page.locator('#sidebar [data-action="toggle-nav-group"]').first().tap(); await page.waitForTimeout(300);
+    assert.equal(await open(), true);
+    await page.locator('#sidebar [data-action="switch-tab"][data-tab="students"]').first().tap(); await page.waitForTimeout(400);
+    assert.equal(await page.evaluate(() => document.querySelector('.tab-content.active').id), 'tab-students');
+    assert.equal(await open(), false);
+  });
+  await t.test('a viewport resize (mobile address bar) does not close an open drawer', async () => {
+    await page.locator('.sidebar-toggle-btn').tap(); await page.waitForTimeout(300);
+    await page.setViewportSize({ width: 390, height: 760 }); await page.waitForTimeout(300);
+    assert.equal(await open(), true);
+  });
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('desktop layout is unchanged: no hamburger, sidebar visible without opening', async () => {
+  const { ctx, page, errors } = await openDashboard(undefined, { viewport: { width: 1280, height: 800 } });
+  const r = await page.evaluate(() => ({ burger: getComputedStyle(document.querySelector('.sidebar-toggle-btn')).display, left: document.getElementById('sidebar').getBoundingClientRect().left, w: document.getElementById('sidebar').getBoundingClientRect().width, vw: innerWidth }));
+  assert.equal(r.burger, 'none'); assert.ok(r.left >= 0 && r.left + r.w <= r.vw + 1, 'sidebar fully on screen'); assert.deepEqual(errors, []);
+  await ctx.close();
 });
