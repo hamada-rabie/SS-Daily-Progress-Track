@@ -6,18 +6,18 @@
 <meta name="theme-color" content="#0e7c74">
 <title>Reading Remedial Practice</title>
 <style>
-:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#18332f;background:#f4f8f7}
-*{box-sizing:border-box}body{margin:0;padding:18px}.shell{max-width:820px;margin:0 auto}.card{background:#fff;border:1px solid #dce8e5;border-radius:20px;padding:22px;margin:14px 0;box-shadow:0 8px 24px #173d3310}
-h1{font-size:clamp(1.5rem,4vw,2rem);margin:0 0 8px;color:#0e655d}p{line-height:1.65}.muted{color:#5f7772}.pill{display:inline-block;border-radius:999px;background:#e6f5f0;padding:5px 10px;font-size:.85rem;font-weight:700}
-.question{font-weight:800;font-size:1.1rem;line-height:1.6}.options{display:grid;gap:10px;margin-top:16px}.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;border:1px solid #d5e3df;border-radius:12px;padding:13px;cursor:pointer;color:inherit;font:inherit}.opt:focus-visible,button:focus-visible{outline:3px solid #edb94d;outline-offset:2px}.opt[aria-pressed="true"]{border-color:#0e7c74;background:#eaf7f4}.opt:disabled{cursor:default}.opt.correct{border-color:#23834b;background:#edf8f0}.opt.wrong{border-color:#c85a2e;background:#fff1eb}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button.primary,button.secondary{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:800;cursor:pointer}button.primary{background:#0e7c74;color:white}button.secondary{background:#e8efed;color:#18332f}.feedback{padding:12px;border-radius:12px;background:#f3f7f6;margin-top:14px}.hidden{display:none!important}.bar{height:8px;border-radius:999px;background:#e5eeeb;overflow:hidden}.bar span{display:block;height:100%;background:#0e7c74;width:0}.passage{white-space:pre-line;line-height:1.9;font-size:1.05rem}.small{font-size:.9rem}.error{color:#a52f1b;font-weight:700}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#18332f;background:#f2f7fb;--teal:#087f75;--ink:#18332f;--line:#dce8e5}
+*{box-sizing:border-box}body{margin:0;padding:clamp(10px,3vw,24px);background:radial-gradient(ellipse at top right,#e1f4ee 0,transparent 42%),radial-gradient(ellipse at bottom left,#fff0df 0,transparent 38%),#f2f7fb;min-height:100vh}.shell{max-width:820px;margin:0 auto}.card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,4vw,25px);margin:14px 0;box-shadow:0 8px 24px #173d3310}
+#resultCard{border-top:4px solid #0e9b80}h1{font-size:clamp(1.5rem,4vw,2rem);margin:8px 0;color:#0e655d;line-height:1.35}h2{line-height:1.4}p{line-height:1.7}.muted{color:#5f7772}.pill{display:inline-block;border-radius:999px;background:#e6f5f0;color:#0c655d;padding:6px 11px;font-size:.85rem;font-weight:800}
+.question{font-weight:800;font-size:1.1rem;line-height:1.7}.options{display:grid;gap:10px;margin-top:16px}.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;border:1px solid #d5e3df;border-radius:14px;padding:14px;cursor:pointer;color:inherit;font:inherit;transition:background .15s,border-color .15s,transform .15s}.opt:active{transform:scale(.995)}.opt:focus-visible,button:focus-visible{outline:3px solid #edb94d;outline-offset:2px}.opt[aria-pressed="true"]{border-color:#0e7c74;background:#eaf7f4}.opt:disabled{cursor:default}.opt.correct{border-color:#23834b;background:#edf8f0}.opt.wrong{border-color:#c85a2e;background:#fff1eb}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button.primary,button.secondary{border:0;border-radius:13px;padding:12px 16px;font:inherit;font-weight:800;cursor:pointer}button.primary{background:linear-gradient(135deg,#0e8c7e,#08665e);color:white;box-shadow:0 5px 12px #087f7526}button.secondary{background:#e8efed;color:#18332f}.feedback{padding:13px;border-radius:13px;background:#f3f7f6;margin-top:14px}.hidden{display:none!important}.bar{height:9px;border-radius:999px;background:#e5eeeb;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,#0e7c74,#55bea2);width:0;transition:width .25s}.passage{white-space:pre-line;line-height:1.95;font-size:1.05rem}.small{font-size:.9rem}.error{color:#a52f1b;font-weight:700}.modal-backdrop{position:fixed;inset:0;z-index:10;background:#102c2bb3;display:grid;place-items:center;padding:18px}.modal{width:min(100%,440px);background:#fff;border-radius:22px;padding:24px;box-shadow:0 22px 70px #0003;text-align:center}.modal-icon{width:58px;height:58px;border-radius:18px;background:#e6f5f0;color:#087f75;display:grid;place-items:center;font-size:28px;margin:0 auto 12px}.modal p{color:#536d67}.modal .actions{justify-content:center}.modal .actions button{flex:1}
 </style>
 </head>
 <body><main class="shell">
 <section class="card">
-<span class="pill">Reading Remedial • Practice</span>
-<h1>Reading Practice | تدريب القراءة</h1>
-<p class="muted">اقرأ النص، ثم أجب عن الأسئلة. سيُعرض تصحيح إجاباتك بعد كل سؤال. هذه صفحة تدريب للطالب ولا تحتاج إلى تسجيل دخول.</p>
+<span class="pill">✦ Reading Quest | رحلة القراءة</span>
+<h1>Small steps. Stronger reading. | خطوة صغيرة… قراءة أقوى</h1>
+<p class="muted">اقرأ بهدوء، واختَر إجابتك، وتعلّم من التصحيح بعد كل سؤال. الهدف إنك تفهم أكتر وتتحسن خطوة بخطوة، مش الدرجة وبس.</p>
 <p id="studentLine" class="small muted"></p>
 <div class="bar" aria-label="Progress"><span id="progress"></span></div>
 <p id="progressText" class="small muted">Loading…</p>
@@ -32,10 +32,11 @@ h1{font-size:clamp(1.5rem,4vw,2rem);margin:0 0 8px;color:#0e655d}p{line-height:1
 </section>
 <section id="resultCard" class="card hidden" aria-live="polite">
 <h2>Practice completed | انتهى التدريب</h2><p id="scoreText"></p><p id="resultNote" class="muted"></p>
-<div class="actions"><button id="shareBtn" class="primary" type="button">Share result with teacher | مشاركة النتيجة مع المعلم</button><button id="copyBtn" class="secondary" type="button">Copy result link | نسخ رابط النتيجة</button><button id="retryBtn" class="secondary" type="button">Try again | إعادة التدريب</button></div>
+<div class="actions"><button id="shareBtn" class="primary" type="button">🟢 إرسال النتيجة عبر واتساب للمعلم</button><button id="retryBtn" class="secondary" type="button">إعادة التدريب | Try again</button></div>
 <p id="shareStatus" class="small muted" role="status" aria-live="polite"></p>
 </section>
 <section id="errorCard" class="card hidden"><p class="error" id="errorText"></p></section>
+<div id="retryModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="retryTitle"><div class="modal"><div class="modal-icon" aria-hidden="true">✦</div><h2 id="retryTitle">فرصة جديدة للتعلّم</h2><p>إعادة التدريب فرصة تفهم أخطاءك وتتعلم منها. سيظهر للمعلم أنها محاولة تدريب جديدة؛ والأهم هو تقدمك وفهمك، مش الدرجة وحدها.</p><div class="actions"><button id="retryCancel" class="secondary" type="button">مش دلوقتي</button><button id="retryConfirm" class="primary" type="button">يلا نتعلم من جديد</button></div></div></div>
 </main>
 <script>
 (function(){
@@ -66,6 +67,7 @@ const BANK={
 };
 const params=new URLSearchParams(location.search);
 const SID=(params.get('sid')||'').trim();
+const STUDENT_NAME=(params.get('sname')||'').trim().slice(0,100);
 const SET_ID=params.get('set')||'R2-S01';
 const SET=BANK[SET_ID];
 const KEY='ss_practice_'+(SID?SID+'_':'')+SET_ID;
@@ -85,7 +87,7 @@ if(!Number.isInteger(attemptCount)||attemptCount<0||attemptCount>=2){
 }
 currentAttempt=attemptCount+1;
 try{localStorage.setItem(ATTEMPT_KEY,String(currentAttempt));}catch(e){}
-$('studentLine').textContent='Student ID: '+SID+' • Set: '+SET_ID+' • Attempt: '+currentAttempt;
+$('studentLine').textContent=(STUDENT_NAME ? 'أهلًا يا '+STUDENT_NAME+' 🌟' : 'أهلًا بيك 🌟')+' • تدريب القراءة';
 $('passageTitle').textContent=SET.title;$('passageText').textContent=SET.passage;
 function render(){
  const q=SET.questions[idx];selected=null;checked=false;
@@ -112,16 +114,27 @@ function finish(){
  $('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('resultCard').classList.remove('hidden');$('progress').style.width='100%';$('progressText').textContent='Completed: '+SET.questions.length+' of '+SET.questions.length;
  const r=resultUrl();$('scoreText').textContent='Score: '+r.score+' / '+SET.questions.length+' • Attempt '+r.attempt+' | النتيجة: '+r.score+' من '+SET.questions.length;
  if(currentAttempt>=2)$('retryBtn').classList.add('hidden');else $('retryBtn').classList.remove('hidden');
- $('resultNote').textContent='أرسل رابط النتيجة للمعلم. سيتم إعادة التحقق من الإجابات عند استيراد النتيجة، لكن رقم المحاولة المخزن على هذا الجهاز يمكن إعادة ضبطه.';
- $('shareBtn').onclick=async()=>{try{if(navigator.share)await navigator.share({title:'Reading practice result',text:'Student '+SID+' • '+SET_ID+' • '+r.score+'/'+SET.questions.length,url:r.url});else{await navigator.clipboard.writeText(r.url);$('shareStatus').textContent='تم نسخ الرابط؛ أرسله للمعلم.';}}catch(e){$('shareStatus').textContent='يمكنك نسخ الرابط باستخدام زر النسخ.';}};
- $('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(r.url);$('shareStatus').textContent='تم نسخ رابط النتيجة.';}catch(e){$('shareStatus').textContent=r.url;}};
+ $('resultNote').textContent='شكرًا لمحاولتك! تعلّمك من الأخطاء هو أهم خطوة نحو التقدم. أرسل نتيجتك للمعلم حتى يساعدك في الخطوة التالية.';
+ $('shareBtn').onclick=()=>{
+   const name=STUDENT_NAME||'طالب';
+   const message='نتيجة تدريب القراءة 📘\\nالطالب: '+name+'\\nالتدريب: '+SET_ID+'\\nالنتيجة: '+r.score+'/'+SET.questions.length+'\\nالمحاولة: '+r.attempt+'\\n\\nرابط النتيجة للمعلم: '+r.url;
+   const waUrl='https://wa.me/?text='+encodeURIComponent(message);
+   window.location.href=waUrl;
+ };
  $('retryBtn').onclick=()=>{
- if(currentAttempt>=2){$('retryBtn').classList.add('hidden');return;}
- currentAttempt=2;try{localStorage.setItem(ATTEMPT_KEY,'2');}catch(e){}
- $('studentLine').textContent='Student ID: '+SID+' • Set: '+SET_ID+' • Attempt: '+currentAttempt;
- idx=0;selected=null;checked=false;answers=[];wrong=[];
- $('resultCard').classList.add('hidden');$('passageCard').classList.remove('hidden');$('quizCard').classList.remove('hidden');render();
-};
+   if(currentAttempt>=2){$('retryBtn').classList.add('hidden');return;}
+   $('retryModal').classList.remove('hidden');
+   $('retryConfirm').focus();
+ };
+ $('retryCancel').onclick=()=>{$('retryModal').classList.add('hidden');$('retryBtn').focus();};
+ $('retryConfirm').onclick=()=>{
+   if(currentAttempt>=2){$('retryModal').classList.add('hidden');$('retryBtn').classList.add('hidden');return;}
+   currentAttempt=2;try{localStorage.setItem(ATTEMPT_KEY,'2');}catch(e){}
+   $('retryModal').classList.add('hidden');
+   $('studentLine').textContent=(STUDENT_NAME ? 'أهلًا يا '+STUDENT_NAME+' 🌟' : 'أهلًا بيك 🌟')+' • تدريب القراءة';
+   idx=0;selected=null;checked=false;answers=[];wrong=[];
+   $('resultCard').classList.add('hidden');$('passageCard').classList.remove('hidden');$('quizCard').classList.remove('hidden');render();
+ };
 }
 $('checkBtn').addEventListener('click',check);$('nextBtn').addEventListener('click',()=>{if(!checked)return;if(idx<SET.questions.length-1){idx++;render();}else finish();});
 render();
