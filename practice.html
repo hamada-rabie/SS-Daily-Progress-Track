@@ -315,23 +315,21 @@ function finish(){
  else if(LANGUAGE==='ar'){[encouragement.title,encouragement.message,encouragement.foot]=encouragementAR[tier];}
  else if(LANGUAGE==='bilingual'){const en=encouragementEN[tier],ar=encouragementAR[tier];[encouragement.title,encouragement.message,encouragement.foot]=[en[0]+'\n'+ar[0],en[1]+'\n'+ar[1],en[2]+'\n'+ar[2]];}
  $('resultEmoji').textContent=encouragement.emoji;$('resultTitle').textContent=encouragement.title;$('resultMessage').textContent=encouragement.message;$('resultFootnote').textContent=encouragement.foot;$('resultScoreline').textContent='Score: '+r.score+' / '+SET.questions.length+' • '+pct+'%\nالنتيجة: '+r.score+' من '+SET.questions.length+' • '+pct+'%';$('resultMeterFill').style.width=pct+'%';
+ if(LANGUAGE==='bilingual'){const en=encouragementEN[tier],ar=encouragementAR[tier];$('resultTitle').textContent=en[0]+'\n'+ar[0];$('resultMessage').textContent=en[1]+'\n'+ar[1];$('resultFootnote').textContent=en[2]+'\n'+ar[2];}
  if(currentAttempt>=2)$('retryBtn').classList.add('hidden');else $('retryBtn').classList.remove('hidden');
  $('resultNote').textContent=t('exportNote');
  $('shareBtn').textContent=t('send');$('resultCard').querySelector('.result-kicker').textContent=t('resultKicker');
  $('shareBtn').onclick=()=>{
    const name=STUDENT_NAME||'طالب';
    const message=[
-      'REMEDIAL PRACTICE RESULT 📘',
-      'نتيجة التدريب العلاجي 📘',
+      'REMEDIAL PRACTICE RESULT',
+      'نتيجة التدريب العلاجي',
       '',
       'Student: '+name,
-      'الطالب: '+name,
+      'اسم الطالب: كما هو موضح في السطر السابق',
       '',
       'Skill: '+(SKILL_LABELS[SKILL_TYPE]?.en||'Reading'),
       'المهارة: '+(SKILL_LABELS[SKILL_TYPE]?.ar||'القراءة'),
-      '',
-      'Practice set: '+SET_ID,
-      'مجموعة التدريب: '+SET_ID,
       '',
       'Score: '+r.score+' / '+SET.questions.length,
       'النتيجة: '+r.score+' من '+SET.questions.length,
