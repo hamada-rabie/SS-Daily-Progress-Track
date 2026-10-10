@@ -15,7 +15,7 @@
 </head>
 <body><main class="shell">
 <section class="card">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span class="pill" id="brandLine">✦ Reading Quest | رحلة القراءة</span><label class="small muted" id="languageModeLabel" for="languageMode">Language / اللغة <select id="languageMode" aria-label="Language mode" style="border:1px solid #c9d8d3;border-radius:9px;padding:6px;background:white;color:#18332f"><option value="bilingual">Bilingual / ثنائي اللغة</option><option value="en">English</option><option value="ar">العربية</option></select></label></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span class="pill" id="brandLine">✦ Reading Quest | رحلة القراءة</span><label class="small muted" id="languageModeLabel" for="languageMode"><span id="languageLabel">Language / اللغة</span> <select id="languageMode" aria-label="Language mode" style="border:1px solid #c9d8d3;border-radius:9px;padding:6px;background:white;color:#18332f"><option value="bilingual">Bilingual / ثنائي اللغة</option><option value="en">English</option><option value="ar">العربية</option></select></label></div>
 <h1 id="heroTitle">Small steps. Stronger reading. | خطوة صغيرة… قراءة أقوى</h1>
 <p id="heroIntro" class="muted">اقرأ بهدوء، واختَر إجابتك، وتعلّم من التصحيح بعد كل سؤال. الهدف إنك تفهم أكتر وتتحسن خطوة بخطوة، مش الدرجة وبس.</p>
 <p id="studentLine" class="small muted"></p>
@@ -79,7 +79,7 @@ function applyLanguage(){
  document.body.style.direction=LANGUAGE==='ar'?'rtl':'ltr';
  const set=(id,key)=>{const n=document.getElementById(id);if(n)n.textContent=t(key);};
  set('brandLine','brand');set('heroTitle','hero');set('heroIntro','intro');
- set('languageModeLabel','language');set('retryTitle','retryTitle');set('retryCopy','retryText');
+ set('languageLabel','language');set('retryTitle','retryTitle');set('retryCopy','retryText');
  set('retryCancel','retryCancel');set('retryConfirm','retryConfirm');set('checkBtn','check');set('shareBtn','send');set('retryBtn','retry');
  const select=document.getElementById('languageMode');if(select)select.value=LANGUAGE;
 }
@@ -107,7 +107,7 @@ if(!Number.isInteger(attemptCount)||attemptCount<0||attemptCount>=2){
 }
 currentAttempt=attemptCount+1;
 try{localStorage.setItem(ATTEMPT_KEY,String(currentAttempt));}catch(e){}
-$('studentLine').textContent=(STUDENT_NAME ? 'أهلًا يا '+STUDENT_NAME+' 🌟' : 'أهلًا بيك 🌟')+' • تدريب القراءة';
+$('studentLine').textContent=(LANGUAGE==='en'?(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟':'Welcome 🌟')+' • Reading practice':LANGUAGE==='ar'?(STUDENT_NAME?'أهلًا يا '+STUDENT_NAME+' 🌟':'أهلًا بك 🌟')+' • تدريب القراءة':(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟 / أهلًا يا '+STUDENT_NAME+' 🌟':'Welcome 🌟 / أهلًا بك 🌟')+' • Reading practice / تدريب القراءة');
 $('passageTitle').textContent=SET.title;$('passageText').textContent=SET.passage;
 function render(){
  const q=SET.questions[idx];selected=null;checked=false;
@@ -162,7 +162,7 @@ function finish(){
    if(currentAttempt>=2){$('retryModal').classList.add('hidden');$('retryBtn').classList.add('hidden');return;}
    currentAttempt=2;try{localStorage.setItem(ATTEMPT_KEY,'2');}catch(e){}
    $('retryModal').classList.add('hidden');
-   $('studentLine').textContent=(STUDENT_NAME ? 'أهلًا يا '+STUDENT_NAME+' 🌟' : 'أهلًا بيك 🌟')+' • تدريب القراءة';
+   $('studentLine').textContent=(LANGUAGE==='en'?(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟':'Welcome 🌟')+' • Reading practice':LANGUAGE==='ar'?(STUDENT_NAME?'أهلًا يا '+STUDENT_NAME+' 🌟':'أهلًا بك 🌟')+' • تدريب القراءة':(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟 / أهلًا يا '+STUDENT_NAME+' 🌟':'Welcome 🌟 / أهلًا بك 🌟')+' • Reading practice / تدريب القراءة');
    idx=0;selected=null;checked=false;answers=[];wrong=[];
    $('resultCard').classList.add('hidden');$('passageCard').classList.remove('hidden');$('quizCard').classList.remove('hidden');render();
  };
