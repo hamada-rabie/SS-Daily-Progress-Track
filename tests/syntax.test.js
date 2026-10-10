@@ -41,7 +41,7 @@ test('all remediation banks contain five questions and match dashboard grading k
   const practice = readFileSync('practice.html', 'utf8');
   const dashboard = readFileSync('english_dashboard-dynamic.html', 'utf8');
   const rules = readFileSync('firestore.rules', 'utf8');
-  assert.doesNotMatch(practice, /\\blocalStorage\\b/, 'Practice attempt tracking must not rely on resettable localStorage');
+  assert.doesNotMatch(practice, /\blocalStorage\b/, 'Practice attempt tracking must not rely on resettable localStorage');
   const bankMatch = practice.match(/const BANK=(\{[\s\S]*?\n\});\nconst params/);
   const allowedMatch = dashboard.match(/const allowedSets=Object\.freeze\((\{[^;]+\})\);/);
   assert.ok(bankMatch, 'Practice question bank must be present');
