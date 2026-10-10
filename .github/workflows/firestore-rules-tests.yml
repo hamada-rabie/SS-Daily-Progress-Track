@@ -12,6 +12,8 @@ on:
     paths:
       - 'firestore.rules'
       - 'tests/firestore.rules.test.js'
+      - 'tests/syntax.test.js'
+      - 'tests/practice.e2e.test.js'
       - 'firebase.json'
       - 'package.json'
       - '.github/workflows/firestore-rules-tests.yml'
@@ -39,5 +41,7 @@ jobs:
           java-version: '21'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Run Firestore rules tests
+      - name: Install Chromium for browser acceptance tests
+        run: npx playwright install --with-deps chromium
+      - name: Run security and browser tests
         run: npm test
