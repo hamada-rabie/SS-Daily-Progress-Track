@@ -352,6 +352,22 @@ select, input{font-family:'Cairo',sans-serif;}.skill-level-select{min-width:155p
 #bulk-cert-output:empty{ display:none; }
 #bulk-cert-output{ display:none; }
 @media print{ #bulk-cert-output.has-content{ display:block !important; } #single-cert-wrap.bulk-active{ display:none !important; } }
+
+/* Student 360 refresh: tighter rhythm, readable labels, and a centered in-app level dialog. */
+#tab-student360 #s360-card-wrap > .card{padding:clamp(12px,2.2vw,20px)!important;gap:1rem!important}
+#tab-student360 #s360-card-wrap .s360-compact{padding:clamp(12px,2.2vw,20px)!important;gap:1rem!important}
+#tab-student360 #s360-card-wrap .s360-compact [class*="text-[9px]"],#tab-student360 #s360-card-wrap .s360-compact [class*="text-[10px]"],#tab-student360 #s360-card-wrap .s360-compact [class*="text-[11px]"]{font-size:12px!important;line-height:1.5!important;color:var(--ink)!important}
+#tab-student360 #s360-card-wrap .text-gray-400{color:var(--muted,#64736f)!important}
+#tab-student360 #s360-card-wrap .text-gray-500,#tab-student360 #s360-card-wrap .text-gray-600{color:var(--muted,#52645f)!important}
+.ssr-modal-backdrop{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:16px;background:rgba(12,27,30,.58);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.ssr-modal{width:min(100%,520px);max-height:min(88dvh,760px);overflow:auto;background:var(--card,#fff);color:var(--ink,#18332f);border:1px solid var(--line,#dce8e5);border-radius:24px;padding:clamp(18px,4vw,28px);box-shadow:0 24px 80px #0004}
+.ssr-level-option{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1px solid var(--line,#dce8e5);border-radius:14px;text-align:start;background:var(--card,#fff);color:var(--ink,#18332f);cursor:pointer;margin-top:8px}
+.ssr-level-option[aria-checked=true]{border-color:var(--teal,#0e7c74);background:color-mix(in srgb,var(--teal,#0e7c74) 10%,var(--card,#fff));box-shadow:0 0 0 2px color-mix(in srgb,var(--teal,#0e7c74) 18%,transparent)}
+.ssr-modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.ssr-modal-actions button{flex:1;min-width:130px;border:0;border-radius:12px;padding:12px 14px;font-weight:800;cursor:pointer}
+.ssr-primary{background:var(--teal,#0e7c74);color:#fff}.ssr-secondary{background:color-mix(in srgb,var(--line,#dce8e5) 65%,var(--card,#fff));color:var(--ink,#18332f)}
+.ssr-week-summary{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;background:var(--card)}
+.ssr-trend-legend{display:flex;gap:8px 14px;flex-wrap:wrap;font-size:12px;margin:8px 0;color:var(--ink)}.ssr-trend-legend span{display:inline-flex;align-items:center;gap:6px}.ssr-trend-legend i{display:inline-block;width:9px;height:9px;border-radius:50%}
+@media(max-width:520px){#tab-student360 #s360-card-wrap .grid.grid-cols-2{gap:8px!important}.ssr-modal{border-radius:20px}.ssr-modal-actions{flex-direction:column}}
 </style><style id="ss-certificate-premium-v3-2026-10-05">
 .ss-cert-shell{position:absolute;inset:0;overflow:hidden;container-type:inline-size;background:linear-gradient(135deg,#fbfaf5 0%,#f4f8f6 52%,#eef5f2 100%);color:#153c38;font-family:'Cairo',sans-serif;display:flex;flex-direction:column;align-items:center;text-align:center;padding:4.5% 8% 3.2%;box-sizing:border-box;isolation:isolate;}
 .ss-cert-shell:before{content:'';position:absolute;inset:2.4%;border:1px solid rgba(14,124,116,.35);border-radius:18px;box-shadow:inset 0 0 0 6px rgba(242,169,59,.08);pointer-events:none;}
@@ -4700,7 +4716,7 @@ function renderS360Card(){
     : '';
 
   wrap.innerHTML = `
-    <div class="card p-6 space-y-6">
+    <div class="card s360-compact">
       <!-- Header -->
       <div class="flex items-start justify-between flex-wrap gap-3">
         <div class="flex items-center gap-3">
@@ -4842,51 +4858,150 @@ async function exportReadingResultsToExcel(studentId){
   }catch(err){console.error('Reading results export failed:',err);showToast('Could not export saved results. Check Firestore access. / تعذر تصدير النتائج المحفوظة؛ تحقق من صلاحيات Firestore.','error');}
 }
 
-function sendRemedialPlanToWhatsApp(studentId, skillKey, recommendedLevel){
+function openRemedialLevelModal(studentId, skillKey, recommendedLevel){
   const student=studentsData.find(s=>String(s.id)===String(studentId));
   if(!student){showToast('Student not found / لم يتم العثور على الطالب','error');return;}
   const levels=[
-    {id:'VW01',en:'Very Weak',ar:'ضعيف جدًا'},
-    {id:'WK01',en:'Weak',ar:'ضعيف'},
-    {id:'MD01',en:'Medium',ar:'متوسط'}
+    {id:'VW01',en:'Very Weak',ar:'ضعيف جدًا',hint:'Start with short, highly supported practice. / ابدأ بتدريب قصير وموجّه.'},
+    {id:'WK01',en:'Weak',ar:'ضعيف',hint:'Build accuracy with guided practice. / نمِّ الدقة من خلال تدريب موجّه.'},
+    {id:'MD01',en:'Medium',ar:'متوسط',hint:'Practise comprehension and apply the skill. / تدرّب على الفهم وتطبيق المهارة.'}
   ];
   const suggested=levels.find(x=>x.id===recommendedLevel)||levels[1];
-  let chosen=suggested;
-  const change=window.confirm('Suggested level: '+suggested.en+' / '+suggested.ar+'\nDo you want to change the question level?\nالمستوى المقترح: '+suggested.ar+'\nهل تريد تغيير مستوى الأسئلة؟\n\nChoose OK to change; Cancel to send the suggested level. / اختر موافق للتغيير أو إلغاء للإرسال بالمستوى المقترح.');
-  if(change){
-    const menu=levels.map((x,i)=>(i+1)+'. '+x.en+' / '+x.ar).join('\n');
-    const answer=window.prompt('Choose the question level / اختر مستوى الأسئلة:\n'+menu,'1');
-    if(answer===null)return;
-    const index=Number(answer)-1;
-    if(!Number.isInteger(index)||index<0||index>=levels.length){showToast('No valid level selected / لم يتم اختيار مستوى صحيح','error');return;}
-    chosen=levels[index];
-  }
   const prefixes={reading:'R2',writing:'W2',listening:'L2',speaking:'S2'};
   const prefix=prefixes[skillKey];
   if(!prefix){showToast('Skill is not supported / المهارة غير مدعومة','error');return;}
-  const setId=prefix+'-'+chosen.id;
-  const practiceUrl=new URL('practice.html?set='+encodeURIComponent(setId)+'&sid='+encodeURIComponent(String(student.id))+'&sname='+encodeURIComponent(String(student.name||''))+'&lang=bilingual',location.href).href;
   const skillNames={reading:['Reading','القراءة'],writing:['Writing','الكتابة'],listening:['Listening','الاستماع'],speaking:['Speaking','المحادثة']};
   const skill=skillNames[skillKey]||skillNames.reading;
-  const message=[
-    'Your teacher has recommended a short practice activity.',
-    'المعلم يوصي بتدريب قصير لدعم تقدمك.',
-    '',
-    'Skill: '+skill[0],
-    'المهارة: '+skill[1],
-    'Question level: '+chosen.en,
-    'مستوى الأسئلة: '+chosen.ar,
-    '',
-    'Open your practice here:',
-    'افتح التدريب من هنا:',
-    practiceUrl
-  ].join('\n');
-  const phone=(Array.isArray(student.phoneNumbers)&&student.phoneNumbers[0])||student.parentPhone||'';
-  const digits=String(phone).replace(/[^0-9]/g,'');
-  const waUrl='https://wa.me/'+digits+'?text='+encodeURIComponent(message);
-  window.open(waUrl,'_blank','noopener,noreferrer');
-  showToast('WhatsApp message prepared with the recommended level / تم تجهيز رسالة واتساب بالمستوى المختار','success');
+  document.getElementById('ssr-level-dialog')?.remove();
+  const backdrop=document.createElement('div');
+  backdrop.id='ssr-level-dialog';backdrop.className='ssr-modal-backdrop';
+  backdrop.setAttribute('role','presentation');
+  backdrop.innerHTML='<section class="ssr-modal" role="dialog" aria-modal="true" aria-labelledby="ssr-modal-title" aria-describedby="ssr-modal-help" dir="auto">'+
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div style="width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:color-mix(in srgb,var(--teal,#0e7c74) 12%,var(--card,#fff));color:var(--teal,#0e7c74);font-size:22px"><i class="fa-solid fa-book-open"></i></div><div><p style="margin:0;font-size:12px;font-weight:800;color:var(--teal,#0e7c74)">REMEDIAL PRACTICE / التدريب العلاجي</p><h2 id="ssr-modal-title" style="margin:3px 0 0;font-size:21px;font-weight:900;line-height:1.4">Confirm practice level / تأكيد مستوى التدريب</h2></div></div>'+
+    '<p style="margin:8px 0 3px;font-weight:800">'+escapeHtml(student.name||'')+' · '+escapeHtml(skill[0])+' / '+escapeHtml(skill[1])+'</p>'+
+    '<p id="ssr-modal-help" style="margin:0 0 12px;font-size:13px;line-height:1.7;color:var(--muted,#64736f)">The suggested level is highlighted. Keep it or choose another level before opening WhatsApp. / المستوى المقترح محدد أمامك؛ يمكنك اعتماده أو اختيار مستوى آخر قبل فتح واتساب.</p>'+
+    '<div id="ssr-level-options">'+levels.map(l=>'<button type="button" class="ssr-level-option" role="radio" aria-checked="'+(l.id===suggested.id)+'" data-level="'+l.id+'"><span style="font-size:20px">'+(l.id==='VW01'?'🌱':l.id==='WK01'?'🌿':'🌳')+'</span><span style="flex:1"><strong style="display:block">'+l.en+' / '+l.ar+(l.id===suggested.id?' · Suggested / مقترح':'')+'</strong><span style="display:block;font-size:12px;margin-top:3px;color:var(--muted,#64736f)">'+l.hint+'</span></span><i class="fa-solid '+(l.id===suggested.id?'fa-circle-check':'fa-circle')+'" aria-hidden="true"></i></button>').join('')+'</div>'+
+    '<div class="ssr-modal-actions"><button type="button" class="ssr-secondary" data-ssr-cancel>Cancel / إلغاء</button><button type="button" class="ssr-primary" data-ssr-send>Confirm &amp; open WhatsApp / تأكيد وفتح واتساب</button></div></section>';
+  document.body.appendChild(backdrop);
+  let chosen=suggested;
+  const options=backdrop.querySelector('#ssr-level-options');
+  options.addEventListener('click',event=>{
+    const button=event.target.closest('[data-level]');if(!button)return;
+    chosen=levels.find(l=>l.id===button.dataset.level)||suggested;
+    options.querySelectorAll('[data-level]').forEach(el=>{
+      const selected=el.dataset.level===chosen.id;el.setAttribute('aria-checked',String(selected));
+      const icon=el.querySelector('i');if(icon)icon.className='fa-solid '+(selected?'fa-circle-check':'fa-circle');
+    });
+  });
+  const close=()=>{backdrop.remove();};
+  backdrop.querySelector('[data-ssr-cancel]').addEventListener('click',close);
+  backdrop.addEventListener('click',event=>{if(event.target===backdrop)close();});
+  backdrop.querySelector('[data-ssr-send]').addEventListener('click',()=>{
+    const setId=prefix+'-'+chosen.id;
+    const practiceUrl=new URL('practice.html?set='+encodeURIComponent(setId)+'&sid='+encodeURIComponent(String(student.id))+'&sname='+encodeURIComponent(String(student.name||''))+'&lang=bilingual',location.href).href;
+    const message=['Your teacher has recommended a short practice activity.','المعلم يوصي بتدريب قصير لدعم تقدمك.','','Skill: '+skill[0],'المهارة: '+skill[1],'Question level: '+chosen.en,'مستوى الأسئلة: '+chosen.ar,'','Open your practice here:','افتح التدريب من هنا:',practiceUrl].join('\n');
+    const phone=(Array.isArray(student.phoneNumbers)&&student.phoneNumbers[0])||student.parentPhone||'';
+    const digits=String(phone).replace(/[^0-9]/g,'');
+    const waUrl='https://wa.me/'+digits+'?text='+encodeURIComponent(message);
+    window.open(waUrl,'_blank','noopener,noreferrer');
+    close();
+    showToast('WhatsApp message prepared with the selected level / تم تجهيز رسالة واتساب بالمستوى المختار','success');
+  });
+  backdrop.querySelector('[data-ssr-cancel]').focus();
 }
+function sendRemedialPlanToWhatsApp(studentId, skillKey, recommendedLevel){
+  openRemedialLevelModal(studentId,skillKey,recommendedLevel);
+}
+
+function renderWeeklyRemediationInsights(box,items){
+  const skills=[
+    {prefix:'R2',key:'reading',en:'Reading',ar:'القراءة',color:'#0E7C74'},
+    {prefix:'W2',key:'writing',en:'Writing',ar:'الكتابة',color:'#8B6BC7'},
+    {prefix:'L2',key:'listening',en:'Listening',ar:'الاستماع',color:'#D28B20'},
+    {prefix:'S2',key:'speaking',en:'Speaking',ar:'المحادثة',color:'#4C8FD1'}
+  ];
+  const levelName=id=>id==='VW01'?'Very Weak / ضعيف جدًا':id==='WK01'?'Weak / ضعيف':id==='MD01'?'Medium / متوسط':id||'—';
+  const parseDate=r=>{
+    const raw=r.createdAt;
+    if(raw&&typeof raw.toDate==='function')return raw.toDate();
+    if(raw&&typeof raw.seconds==='number')return new Date(raw.seconds*1000);
+    const d=new Date(String(raw||''));return Number.isNaN(d.getTime())?null:d;
+  };
+  const weekStart=d=>{const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x;};
+  const dayKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const weekKey=d=>dayKey(weekStart(d));
+  const fmt=d=>String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+  const valid=items.map(r=>({...r,_date:parseDate(r)})).filter(r=>r._date&&Number.isFinite(Number(r.score))&&Number(r.total)>0);
+  const now=new Date(),currentStart=weekStart(now),currentKey=dayKey(currentStart);
+  const grouped=new Map();
+  valid.forEach(r=>{
+    const wk=weekKey(r._date),skill=skills.find(x=>String(r.setId||'').startsWith(x.prefix));
+    if(!skill)return;
+    const key=wk+'|'+skill.key;
+    if(!grouped.has(key))grouped.set(key,{week:wk,skill,rows:[]});
+    grouped.get(key).rows.push(r);
+  });
+  const daily=new Map();
+  valid.forEach(r=>{
+    const skill=skills.find(x=>String(r.setId||'').startsWith(x.prefix));if(!skill)return;
+    const key=dayKey(r._date)+'|'+skill.key;
+    if(!daily.has(key))daily.set(key,{date:new Date(r._date.getFullYear(),r._date.getMonth(),r._date.getDate()),skill,values:[]});
+    daily.get(key).values.push(Math.max(0,Math.min(100,Math.round(Number(r.score)/Number(r.total)*100))));
+  });
+  const heading=document.createElement('div');heading.style.cssText='margin:14px 0 8px;';
+  heading.innerHTML='<p style="font-weight:900;font-size:15px;margin:0">Weekly results & decisions / النتائج والقرارات الأسبوعية</p><p style="font-size:12px;line-height:1.7;color:var(--muted,#64736f);margin:3px 0 0">Each decision uses this skill’s average for the week—not one attempt. The current week stays provisional until it ends. / يعتمد القرار على متوسط المهارة خلال الأسبوع، لا على محاولة واحدة. يظل قرار الأسبوع الحالي مبدئيًا حتى نهايته.</p>';
+  box.append(heading);
+  const groups=[...grouped.values()].sort((a,b)=>b.week.localeCompare(a.week)||a.skill.key.localeCompare(b.skill.key));
+  if(!groups.length){
+    const empty=document.createElement('p');empty.className='ssr-week-summary';empty.textContent='No dated results are available yet. Once a student completes and shares a practice, the saved result will appear here. / لا توجد نتائج مؤرخة حتى الآن. ستظهر النتيجة هنا بعد أن يُكمل الطالب التدريب ويرسلها.';box.append(empty);return;
+  }
+  const weeks=[...new Set(groups.map(g=>g.week))].slice(0,6);
+  weeks.forEach(wk=>{
+    const weekDate=new Date(wk+'T12:00:00');
+    const end=new Date(weekDate);end.setDate(end.getDate()+6);
+    const isCurrent=wk===currentKey,finalized=end<new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    const card=document.createElement('section');card.className='ssr-week-summary';
+    const title=document.createElement('p');title.style.cssText='font-weight:900;font-size:13px;margin:0 0 8px;';
+    title.textContent=fmt(weekDate)+' – '+fmt(end)+' · '+(isCurrent&&!finalized?'In progress / جارٍ':'Weekly result / نتيجة أسبوعية');card.append(title);
+    groups.filter(g=>g.week===wk).forEach(g=>{
+      const vals=g.rows.map(r=>Number(r.score)/Number(r.total)*100);
+      const avg=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+      const levels=[...new Set(g.rows.map(r=>String(r.setId||'').split('-').pop()))];
+      let decisionEn,decisionAr,color;
+      if(avg<50){decisionEn='Continue the current level; reteach the missed skill and practise again.';decisionAr='استمر في المستوى الحالي، وأعد شرح المهارة التي أخفق فيها الطالب ثم كرر التدريب.';color='#C85A2E';}
+      else if(avg<80){decisionEn='Consolidate this level; review errors and repeat practice before moving up.';decisionAr='ثبّت المستوى الحالي، وراجع الأخطاء وأعد التدريب قبل الانتقال.';color='#B5850C';}
+      else if(levels.includes('MD01')){decisionEn='Strong weekly result; keep the level and use extension practice.';decisionAr='نتيجة أسبوعية قوية؛ حافظ على المستوى واستخدم تدريبًا إثرائيًا.';color='#2C8C46';}
+      else{decisionEn='Ready to try the next level, subject to teacher approval.';decisionAr='يمكن تجربة المستوى التالي بعد موافقة المعلم.';color='#2C8C46';}
+      const row=document.createElement('div');row.style.cssText='display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start;padding:9px 0;border-top:1px solid var(--line);';
+      const detail=document.createElement('div');detail.innerHTML='<p style="margin:0;font-weight:800;color:'+g.skill.color+'">'+g.skill.en+' / '+g.skill.ar+'</p><p style="margin:3px 0 0;font-size:12px;line-height:1.6;color:var(--ink)">'+decisionEn+'</p><p dir="rtl" style="margin:2px 0 0;font-size:12px;line-height:1.6;color:var(--ink)">'+decisionAr+'</p><p style="margin:3px 0 0;font-size:11px;color:var(--muted,#64736f)">Practice level(s): '+levels.map(levelName).join(', ')+' · '+g.rows.length+' result(s)</p>';
+      const score=document.createElement('strong');score.style.cssText='font-size:17px;color:'+color+';white-space:nowrap';score.textContent=avg+'%';
+      row.append(detail,score);card.append(row);
+    });
+    const note=document.createElement('p');note.style.cssText='font-size:11px;color:var(--muted,#64736f);margin:8px 0 0;line-height:1.6';
+    note.textContent=isCurrent&&!finalized?'Provisional average — the final weekly decision is made after the week ends. / متوسط مبدئي؛ يصدر القرار النهائي بعد انتهاء الأسبوع.':'Weekly average based on all saved results for this skill in this week. / متوسط الأسبوع بناءً على جميع النتائج المحفوظة للمهارة.';card.append(note);box.append(card);
+  });
+  const chartSection=document.createElement('section');chartSection.className='ssr-week-summary';
+  chartSection.innerHTML='<p style="font-weight:900;font-size:15px;margin:0">Daily progress trend / منحنى التقدم اليومي</p><p style="font-size:12px;line-height:1.7;color:var(--muted,#64736f);margin:3px 0 0">Scores are averaged by skill for each day with a submitted result. Blank days mean no result was received—not zero progress. / يُحسب متوسط كل مهارة في الأيام التي وصلت فيها نتائج؛ اليوم الفارغ يعني عدم وصول نتيجة، وليس صفرًا في التقدم.</p>';
+  const legend=document.createElement('div');legend.className='ssr-trend-legend';legend.innerHTML=skills.map(sk=>'<span><i style="background:'+sk.color+'"></i>'+sk.en+' / '+sk.ar+'</span>').join('');chartSection.append(legend);
+  const svgNS='http://www.w3.org/2000/svg',svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox','0 0 340 178');svg.setAttribute('role','img');svg.setAttribute('aria-label','Daily submitted practice scores by skill for the current week');svg.style.cssText='display:block;width:100%;height:auto;overflow:visible;';
+  const left=28,right=330,top=12,bottom=140;
+  [0,25,50,75,100].forEach(v=>{const y=bottom-v/100*(bottom-top);const line=document.createElementNS(svgNS,'line');line.setAttribute('x1',left);line.setAttribute('x2',right);line.setAttribute('y1',y);line.setAttribute('y2',y);line.setAttribute('stroke','var(--line,#dce8e5)');line.setAttribute('stroke-dasharray',v===0?'0':'3 4');svg.append(line);const label=document.createElementNS(svgNS,'text');label.setAttribute('x','22');label.setAttribute('y',String(y+4));label.setAttribute('text-anchor','end');label.setAttribute('font-size','9');label.setAttribute('fill','var(--muted,#64736f)');label.textContent=String(v);svg.append(label);});
+  const weekDays=Array.from({length:7},(_,i)=>{const d=new Date(currentStart);d.setDate(d.getDate()+i);return d;});
+  weekDays.forEach((d,i)=>{const x=left+i*(right-left)/6;const label=document.createElementNS(svgNS,'text');label.setAttribute('x',String(x));label.setAttribute('y','158');label.setAttribute('text-anchor','middle');label.setAttribute('font-size','9');label.setAttribute('fill','var(--muted,#64736f)');label.textContent=['M','T','W','T','F','S','S'][i]+' '+d.getDate();svg.append(label);});
+  skills.forEach(sk=>{
+    const points=[];
+    weekDays.forEach((d,i)=>{
+      const item=daily.get(dayKey(d)+'|'+sk.key);if(!item)return;
+      const pct=Math.round(item.values.reduce((a,b)=>a+b,0)/item.values.length),x=left+i*(right-left)/6,y=bottom-pct/100*(bottom-top);points.push({x,y,pct,date:d});
+    });
+    if(points.length>1){const path=document.createElementNS(svgNS,'path');path.setAttribute('d',points.map((p,i)=>(i?'L':'M')+p.x+' '+p.y).join(' '));path.setAttribute('fill','none');path.setAttribute('stroke',sk.color);path.setAttribute('stroke-width','2.5');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.append(path);}
+    points.forEach(p=>{const c=document.createElementNS(svgNS,'circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r','4');c.setAttribute('fill',sk.color);c.setAttribute('stroke','var(--card,#fff)');c.setAttribute('stroke-width','1.5');c.append();const title=document.createElementNS(svgNS,'title');title.textContent=sk.en+' · '+dayKey(p.date)+' · '+p.pct+'%';c.append(title);svg.append(c);});
+  });
+  chartSection.append(svg);
+  if(!daily.size){const empty=document.createElement('p');empty.style.cssText='font-size:12px;color:var(--muted,#64736f);margin:8px 0 0';empty.textContent='No dated daily points yet. / لا توجد نقاط يومية مؤرخة حتى الآن.';chartSection.append(empty);}
+  box.append(chartSection);
+}
+
 if(!window.__ssRemedialPlanClickHandler){
   window.__ssRemedialPlanClickHandler=true;
   document.addEventListener('click',function(event){
@@ -4909,26 +5024,13 @@ async function renderReadingResultsForStudent(studentId){
     if(!items.length){box.textContent='No saved practice results yet / لا توجد نتائج تدريب محفوظة حتى الآن';return;}
     const title=document.createElement('p');title.className='font-bold mb-2';title.textContent='Saved remedial results / نتائج التدريب العلاجي المحفوظة';box.append(title);
     const exportBtn=document.createElement('button');exportBtn.type='button';exportBtn.className='text-xs font-bold rounded-lg px-3 py-2 mb-2';exportBtn.style.cssText='background:var(--teal);color:var(--on-primary,#fff);';exportBtn.textContent='Export remedial results to Excel / تصدير النتائج العلاجية إلى Excel';exportBtn.addEventListener('click',()=>exportReadingResultsToExcel(studentId));box.append(exportBtn);
-    const chartTitle=document.createElement('p');chartTitle.className='font-bold text-xs mt-2 mb-2';chartTitle.textContent='Progress feedback / متابعة التقدم';box.append(chartTitle);
-    const chart=document.createElement('div');chart.setAttribute('role','img');chart.setAttribute('aria-label','Student practice scores across recorded attempts');chart.style.cssText='display:flex;align-items:flex-end;gap:8px;min-height:128px;padding:12px 8px 8px;border:1px solid var(--line);border-radius:12px;background:var(--surface, #f7faf9);overflow-x:auto;';
-    const chronological=items.slice().reverse().slice(-8);
-    chronological.forEach((r,index)=>{
-      const score=Number(r.score),total=Number(r.total)||5;
-      const pct=Number.isFinite(score)?Math.max(0,Math.min(100,Math.round(score/total*100))):0;
-      const col=document.createElement('div');col.style.cssText='flex:1;min-width:42px;max-width:72px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:108px;';
-      const value=document.createElement('span');value.textContent=pct+'%';value.style.cssText='font-size:10px;font-weight:800;color:var(--ink);';
-      const bar=document.createElement('div');bar.title='Attempt '+String(r.attempt||index+1)+': '+pct+'%';bar.style.cssText='width:24px;height:'+Math.max(5,pct)+'%;min-height:5px;border-radius:7px 7px 2px 2px;background:'+(pct>=80?'#2C8C46':pct>=50?'#D9A323':'#C85A2E')+';';
-      const label=document.createElement('span');label.textContent='A'+String(r.attempt||index+1);label.style.cssText='font-size:10px;color:var(--muted);';
-      col.append(value,bar,label);chart.append(col);
-    });
-    box.append(chart);
+      renderWeeklyRemediationInsights(box,items);
     const latest=items[0], previous=items[1];
     const feedback=document.createElement('p');feedback.className='text-xs mt-2';feedback.style.cssText='line-height:1.7;color:var(--ink);';
     if(latest){
       const pct=Math.round(Number(latest.score||0)/(Number(latest.total)||5)*100);
       const previousPct=previous?Math.round(Number(previous.score||0)/(Number(previous.total)||5)*100):null;
-      const msg=pct>=80?'Strong result. Consider moving to the next level if the teacher agrees. / نتيجة قوية؛ يمكن الانتقال للمستوى التالي بموافقة المعلم.':pct>=50?'Developing well. Review missed questions and repeat practice if needed. / تقدم جيد؛ راجع الأسئلة الخاطئة وأعد التدريب عند الحاجة.':'More practice is recommended. Focus on the missed questions before retrying. / يُنصح بمزيد من التدريب؛ ركّز على الأسئلة الخاطئة قبل إعادة المحاولة.';
-      feedback.textContent=msg+(previousPct!==null?' Latest score: '+pct+'%; previous score: '+previousPct+'%. / النتيجة الأخيرة: '+pct+'٪؛ السابقة: '+previousPct+'٪.':'');
+      feedback.textContent='Weekly decisions are shown above and are based on the average of saved results for each skill during that week. / القرارات الأسبوعية معروضة أعلاه، وتعتمد على متوسط النتائج المحفوظة لكل مهارة خلال الأسبوع.';
       box.append(feedback);
     }
 
