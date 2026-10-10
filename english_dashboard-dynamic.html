@@ -4804,7 +4804,7 @@ function renderS360Card(){
       <div class="card p-4" style="border:1px solid var(--line);">
         <p class="font-bold text-sm">Remedial Skills Plan / خطة علاج المهارات</p>
         <p class="text-xs text-gray-500 mt-1">Choose a skill and a suitable level. Students share the result through WhatsApp; you confirm it before saving. / اختر المهارة والمستوى المناسبين. يشارك الطالب النتيجة عبر واتساب، ثم تؤكدها قبل الحفظ.</p>
-        \${remedialSkills.length ? '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">'+remedialSkills.map(item=>{const level=item.value<25?'VW01':item.value<40?'WK01':'MD01';const levelEn=level==='VW01'?'Very Weak':level==='WK01'?'Weak':'Medium';const levelAr=level==='VW01'?'ضعيف جدًا':level==='WK01'?'ضعيف':'متوسط';return '<div class="rounded-xl p-3" style="background:var(--card);border:1px solid var(--line);"><div class="flex items-center justify-between gap-2"><span class="text-sm font-bold">'+escapeHtml(QP_SKILL_LABELS[item.key].en)+' / '+escapeHtml(QP_SKILL_LABELS[item.key].ar)+'</span><strong style="color:var(--coral);">'+item.value+'%</strong></div><p class="text-xs mt-1 text-gray-500">Suggested level / المستوى المقترح: <b>'+levelEn+' / '+levelAr+'</b></p><button type="button" class="text-xs font-bold rounded-lg px-3 py-2 mt-2" style="background:var(--teal);color:white;" data-action="send-remedial-plan" data-student-id="'+String(s.id)+'" data-skill="'+item.key+'" data-level="'+level+'">Send plan & level / إرسال الخطة والمستوى</button></div>';}).join('')+'</div>' : '<p class="text-xs text-gray-500 mt-3">No assessed skill currently meets the remedial recommendation threshold. / لا توجد مهارة مُقيّمة تستدعي التوصية بخطة علاجية حاليًا.</p>')}
+        ${remedialSkills.length ? '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">'+remedialSkills.map(item=>{const level=item.value<25?'VW01':item.value<40?'WK01':'MD01';const levelEn=level==='VW01'?'Very Weak':level==='WK01'?'Weak':'Medium';const levelAr=level==='VW01'?'ضعيف جدًا':level==='WK01'?'ضعيف':'متوسط';return '<div class="rounded-xl p-3" style="background:var(--card);border:1px solid var(--line);"><div class="flex items-center justify-between gap-2"><span class="text-sm font-bold">'+escapeHtml(QP_SKILL_LABELS[item.key].en)+' / '+escapeHtml(QP_SKILL_LABELS[item.key].ar)+'</span><strong style="color:var(--coral);">'+item.value+'%</strong></div><p class="text-xs mt-1 text-gray-500">Suggested level / المستوى المقترح: <b>'+levelEn+' / '+levelAr+'</b></p><button type="button" class="text-xs font-bold rounded-lg px-3 py-2 mt-2" style="background:var(--teal);color:white;" data-action="send-remedial-plan" data-student-id="'+String(s.id)+'" data-skill="'+item.key+'" data-level="'+level+'">Send plan & level / إرسال الخطة والمستوى</button></div>';}).join('')+'</div>' : '<p class="text-xs text-gray-500 mt-3">No assessed skill currently meets the remedial recommendation threshold. / لا توجد مهارة مُقيّمة تستدعي التوصية بخطة علاجية حاليًا.</p>')}
         <div id="reading-remedial-history" class="mt-3 text-xs text-gray-600" aria-live="polite">Loading previous reading results… / جارٍ تحميل النتائج السابقة…</div>
       </div>
     </div>`;
@@ -4909,6 +4909,29 @@ async function renderReadingResultsForStudent(studentId){
     if(!items.length){box.textContent='No saved practice results yet / لا توجد نتائج تدريب محفوظة حتى الآن';return;}
     const title=document.createElement('p');title.className='font-bold mb-2';title.textContent='Saved remedial results / نتائج التدريب العلاجي المحفوظة';box.append(title);
     const exportBtn=document.createElement('button');exportBtn.type='button';exportBtn.className='text-xs font-bold rounded-lg px-3 py-2 mb-2';exportBtn.style.cssText='background:var(--teal);color:var(--on-primary,#fff);';exportBtn.textContent='Export remedial results to Excel / تصدير النتائج العلاجية إلى Excel';exportBtn.addEventListener('click',()=>exportReadingResultsToExcel(studentId));box.append(exportBtn);
+    const chartTitle=document.createElement('p');chartTitle.className='font-bold text-xs mt-2 mb-2';chartTitle.textContent='Progress feedback / متابعة التقدم';box.append(chartTitle);
+    const chart=document.createElement('div');chart.setAttribute('role','img');chart.setAttribute('aria-label','Student practice scores across recorded attempts');chart.style.cssText='display:flex;align-items:flex-end;gap:8px;min-height:128px;padding:12px 8px 8px;border:1px solid var(--line);border-radius:12px;background:var(--surface, #f7faf9);overflow-x:auto;';
+    const chronological=items.slice().reverse().slice(-8);
+    chronological.forEach((r,index)=>{
+      const score=Number(r.score),total=Number(r.total)||5;
+      const pct=Number.isFinite(score)?Math.max(0,Math.min(100,Math.round(score/total*100))):0;
+      const col=document.createElement('div');col.style.cssText='flex:1;min-width:42px;max-width:72px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:108px;';
+      const value=document.createElement('span');value.textContent=pct+'%';value.style.cssText='font-size:10px;font-weight:800;color:var(--ink);';
+      const bar=document.createElement('div');bar.title='Attempt '+String(r.attempt||index+1)+': '+pct+'%';bar.style.cssText='width:24px;height:'+Math.max(5,pct)+'%;min-height:5px;border-radius:7px 7px 2px 2px;background:'+(pct>=80?'#2C8C46':pct>=50?'#D9A323':'#C85A2E')+';';
+      const label=document.createElement('span');label.textContent='A'+String(r.attempt||index+1);label.style.cssText='font-size:10px;color:var(--muted);';
+      col.append(value,bar,label);chart.append(col);
+    });
+    box.append(chart);
+    const latest=items[0], previous=items[1];
+    const feedback=document.createElement('p');feedback.className='text-xs mt-2';feedback.style.cssText='line-height:1.7;color:var(--ink);';
+    if(latest){
+      const pct=Math.round(Number(latest.score||0)/(Number(latest.total)||5)*100);
+      const previousPct=previous?Math.round(Number(previous.score||0)/(Number(previous.total)||5)*100):null;
+      const msg=pct>=80?'Strong result. Consider moving to the next level if the teacher agrees. / نتيجة قوية؛ يمكن الانتقال للمستوى التالي بموافقة المعلم.':pct>=50?'Developing well. Review missed questions and repeat practice if needed. / تقدم جيد؛ راجع الأسئلة الخاطئة وأعد التدريب عند الحاجة.':'More practice is recommended. Focus on the missed questions before retrying. / يُنصح بمزيد من التدريب؛ ركّز على الأسئلة الخاطئة قبل إعادة المحاولة.';
+      feedback.textContent=msg+(previousPct!==null?' Latest score: '+pct+'%; previous score: '+previousPct+'%. / النتيجة الأخيرة: '+pct+'٪؛ السابقة: '+previousPct+'٪.':'');
+      box.append(feedback);
+    }
+
     items.slice(0,8).forEach(r=>{
       const row=document.createElement('div');row.className='rounded-lg p-2 mb-2';row.style.border='1px solid var(--line)';
       const line=document.createElement('p');line.className='font-semibold';
