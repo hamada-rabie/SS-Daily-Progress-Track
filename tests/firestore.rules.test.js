@@ -121,6 +121,25 @@ test('Firestore rules security suite', async (t) => {
     await assertFails(setDoc(resultRef(teacher, 'teacher-1_42_R2-S01_a2'), validResult({ attempt: 2, answers: [1,1,2,3,2], score: 4, wrongQuestionNumbers: [3,3] })));
   });
 
+  await t.test('leveled reading sets accept only their matching answer keys', async () => {
+    const cases = [
+      ['R2-VW01', [1, 2, 0, 1, 3]],
+      ['R2-WK01', [1, 2, 0, 3, 1]],
+      ['R2-MD01', [0, 1, 2, 3, 1]]
+    ];
+    for (const [setId, answers] of cases) {
+      const id = 'teacher-1_43_' + setId + '_a1';
+      await assertSucceeds(setDoc(resultRef(teacher, id), validResult({
+        studentId: 43, setId, answers, score: 5, wrongQuestionNumbers: []
+      })));
+      const forged = answers.slice();
+      forged[0] = (forged[0] + 1) % 4;
+      await assertFails(setDoc(resultRef(teacher, id + '_forged'), validResult({
+        studentId: 43, setId, answers: forged, score: 5, wrongQuestionNumbers: []
+      })));
+    }
+  });
+
   await t.test('reading results reject invalid types, ranges, and oversized strings', async () => {
     const id = 'teacher-1_42_R2-S01_a2';
     await assertFails(setDoc(resultRef(teacher, id), validResult({ attempt: 3 })));
