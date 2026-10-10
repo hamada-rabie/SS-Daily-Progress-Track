@@ -42,7 +42,8 @@ async function finishWithScore(lang, score, sid = '1760000000001') {
 test('result messages always show English above Arabic for every score 0-5', async (t) => {
   for (let score = 0; score <= 5; score++) {
     await t.test('score ' + score, async () => {
-      const { text } = await finishWithScore('bilingual', score);
+      const { texts } = await finishWithScore('bilingual', score);
+      const text = texts.join('\n');
       assert.match(text, /[A-Za-z]{2,}/, 'must include English');
       assert.match(text, /[؀-ۿ]/, 'must include Arabic');
       assert.doesNotMatch(text, DIALECT, 'Arabic text should remain formal Arabic (score ' + score + '): ' + text);
