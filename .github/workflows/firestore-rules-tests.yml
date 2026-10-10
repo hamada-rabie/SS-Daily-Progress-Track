@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - remediation/stabilize-2026-10-10
+      - remediation/student-practice-ux-2026-10-10
   pull_request:
     branches:
       - release-candidate-2026-10-09
@@ -13,6 +14,8 @@ on:
       - 'firebase.json'
       - 'package.json'
       - '.github/workflows/firestore-rules-tests.yml'
+      - 'practice.html'
+      - 'english_dashboard-dynamic.html'
 
 permissions:
   contents: read

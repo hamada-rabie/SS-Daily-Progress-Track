@@ -3596,7 +3596,7 @@ function renderDailyTable(){
     const partDot = part ? (part.cls==='badge-ok'?'#2C8C46':part.cls==='badge-warn'?'#C85A2E':'#B5850C') : '#B7C5C1';
     const behDot = beh ? (beh.cls==='badge-ok'?'#2C8C46':beh.cls==='badge-warn'?'#C85A2E':'#B5850C') : '#B7C5C1';
     return `<tr class="border-b text-sm" style="border-color:var(--line);">
-      <td class="p-3 font-semibold"><label class="bulk-student-label"><input type="checkbox" class="bulk-student-check" data-action="toggle-bulk-student" data-id="${s.id}" ${selectedBulkStudentIds.has(String(s.id))?'checked':''} aria-label="Select ${escapeHtml(s.name)}"><span class="bulk-student-name">${s.name}</span></label></td>
+      <td class="p-3 font-semibold"><label class="bulk-student-label"><input type="checkbox" class="bulk-student-check" data-action="toggle-bulk-student" data-id="${s.id}" ${selectedBulkStudentIds.has(String(s.id))?'checked':''} aria-label="Select ${escapeHtml(s.name)}"><span class="bulk-student-name">${escapeHtml(s.name)}</span></label></td>
       <td class="p-3"><button type="button" class="daily-choice-btn ${behClass}" data-action="open-daily-choice" data-choice-field="behaviour" data-id="${s.id}"><span class="choice-main"><span class="choice-dot" style="background:${behDot};"></span><span class="en">${beh ? beh.en : "Not Assessed"}</span><span class="ar">${beh ? beh.ar : "لم يُقيَّم"}</span></span><i class="fa-solid fa-chevron-down text-[9px] text-gray-400"></i></button></td>
       <td class="p-3"><button type="button" class="daily-choice-btn ${partClass}" data-action="open-daily-choice" data-choice-field="participation" data-id="${s.id}"><span class="choice-main"><span class="choice-dot" style="background:${partDot};"></span><span class="en">${part ? part.en : "Not Assessed"}</span><span class="ar">${part ? part.ar : "لم يُقيَّم"}</span></span><i class="fa-solid fa-chevron-down text-[9px] text-gray-400"></i></button></td>
       <td class="p-3"><span class="chk ${hwClass}" data-action="toggle-homework" data-id="${s.id}" title="${hwState==='unset'?'Not recorded / لم يُسجَّل':''}">${hwHtml}</span></td>
@@ -3868,7 +3868,7 @@ function renderSkillsTable(){
       </div>`;
     }).join('');
     return `<div class="card p-4">
-      <label class="bulk-student-label font-bold text-sm mb-2"><input type="checkbox" class="bulk-student-check" data-action="toggle-bulk-student" data-id="${s.id}" ${selectedBulkStudentIds.has(String(s.id))?'checked':''} aria-label="Select ${escapeHtml(s.name)}"><span class="bulk-student-name">${s.name}</span></label>
+      <label class="bulk-student-label font-bold text-sm mb-2"><input type="checkbox" class="bulk-student-check" data-action="toggle-bulk-student" data-id="${s.id}" ${selectedBulkStudentIds.has(String(s.id))?'checked':''} aria-label="Select ${escapeHtml(s.name)}"><span class="bulk-student-name">${escapeHtml(s.name)}</span></label>
       ${rows}
     </div>`;
   }).join('');
@@ -4407,7 +4407,7 @@ function playStudentJourney(id){
   events.sort((a,b)=>a.date===b.date?(a.type==='skill'?1:-1):(a.date<b.date?-1:1));
   if(!events.length){wrap.innerHTML='<div class="card p-6 text-center text-gray-500 text-sm mt-3">Not enough historical data to play a meaningful journey.<br>لا توجد بيانات تاريخية كافية لعرض رحلة ذات معنى.</div>';return;}
   const grouped=[];events.forEach(e=>{let g=grouped.find(x=>x.date===e.date);if(!g){g={date:e.date,items:[]};grouped.push(g);}g.items.push(e);});
-  const fmt=ds=>{const p=ds.split('-');return p[2]+'/'+p[1]+'/'+p[0];};
+  const fmt=ds=>{const p=String(ds).split('-');return escapeHtml(p[2]+'/'+p[1]+'/'+p[0]);};
   const avgSkill=obj=>{if(!obj)return null;const vals=Object.keys(QP_SKILL_LABELS).map(k=>skillLevelScore(obj[k])).filter(v=>v!==null);return vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length/6*100):null;};
   let carry=null;const points=grouped.map((g,i)=>{const sh=g.items.find(e=>e.type==='skill'),v=avgSkill(sh&&sh.rec);if(v!==null)carry=v;return{date:g.date,value:carry,first:i===0,last:i===grouped.length-1};});
   const usable=points.map(p=>p.value).filter(v=>v!==null),base=usable.length?Math.min(...usable):50,top=usable.length?Math.max(...usable):50,range=Math.max(10,top-base);
@@ -4774,8 +4774,8 @@ function renderS360Card(){
         <p class="font-bold text-sm">Reading Remedial / علاج القراءة</p>
         <p class="text-xs text-gray-500 mt-1">Open a short reading practice for this student, then ask the student to share the result link with you. / افتح تدريب قراءة قصيرًا لهذا الطالب، ثم اطلب منه مشاركة رابط النتيجة معك.</p>
         <div class="flex flex-wrap gap-2 mt-3">
-          <a class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal);color:white;" target="_blank" rel="noopener noreferrer" href="practice.html?set=R2-S01&amp;sid=${encodeURIComponent(String(s.id))}">Practice Set 1 / التدريب الأول</a>
-          <a class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal-dark);color:white;" target="_blank" rel="noopener noreferrer" href="practice.html?set=R2-S02&amp;sid=${encodeURIComponent(String(s.id))}">Practice Set 2 / التدريب الثاني</a>
+          <a class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal);color:white;" target="_blank" rel="noopener noreferrer" href="practice.html?set=R2-S01&amp;sid=${encodeURIComponent(String(s.id))}&amp;sname=${encodeURIComponent(String(s.name||''))}">Practice Set 1 / التدريب الأول</a>
+          <a class="text-xs font-bold px-4 py-2 rounded-xl" style="background:var(--teal-dark);color:white;" target="_blank" rel="noopener noreferrer" href="practice.html?set=R2-S02&amp;sid=${encodeURIComponent(String(s.id))}&amp;sname=${encodeURIComponent(String(s.name||''))}">Practice Set 2 / التدريب الثاني</a>
         </div>
         <div id="reading-remedial-history" class="mt-3 text-xs text-gray-600" aria-live="polite">Loading previous reading results… / جارٍ تحميل النتائج السابقة…</div>
       </div>
@@ -5192,7 +5192,7 @@ function buildCertificateInnerHTML(s,type,lang){
   const name=s?s.name:(lang==='ar'?'اسم الطالب':'Student Name'),school=settings.schoolName,term=termLabel().en,cfg=certificateTypeConfig(type,lang,s),evidence=getCertificateEvidence(s,type),isAr=lang==='ar';
   const d=new Date(),certDateStr=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
   const standardType=!!CERT_TEXT[type],typeLabel=standardType?cfg.sub:(isAr?evidence.badgeAr:evidence.badgeEn),metric=standardType?'':(isAr?evidence.metricAr:evidence.metricEn),evidenceText=standardType?cfg.closingMain:(isAr?evidence.evidenceAr:evidence.evidenceEn),skillIcon=evidence.icon||'fa-star';
-  return '<div class="ss-cert-shell ss-cert-creative" data-cert-type="'+type+'"><div class="ss-cert-frame"></div><div class="ss-cert-ribbon ribbon-a"></div><div class="ss-cert-ribbon ribbon-b"></div><div class="ss-cert-topline"><span>SS\' DAILY PROGRESS TRACK</span><span>'+certDateStr+'</span></div><div class="ss-cert-brand-row"><div class="ss-cert-logo-slot">'+(settings.schoolLogo?'<img src="'+settings.schoolLogo+'" alt="School">':'')+'</div><div class="ss-cert-brand-center"><div class="ss-cert-emblem"><i class="fa-solid fa-chart-line"></i></div><div><strong>SS\'</strong><small>Daily Progress Track</small></div></div><div class="ss-cert-logo-slot">'+(settings.ministryLogo?'<img src="'+settings.ministryLogo+'" alt="Ministry">':'')+'</div></div><div class="ss-cert-kicker"><span class="en">TEACHER ACHIEVEMENT CERTIFICATE</span><span class="ar">إنجاز وتميّز</span></div><div class="ss-cert-title-wrap"><div class="ss-cert-line"></div><h2 class="ss-cert-title">Achievement Certificate</h2><div class="ss-cert-line"></div></div><div class="ss-cert-award"><div class="ss-cert-award-icon"><i class="fa-solid '+skillIcon+'"></i></div><div><span>'+typeLabel+'</span>'+(metric?'<b>'+escapeHtml(metric)+'</b>':'')+'</div></div><p class="ss-cert-present">'+cfg.body(escapeHtml(name),escapeHtml(school||'School Name'),term)+'</p><div class="ss-cert-nameplate"><span>AWARDED TO</span><strong class="ss-cert-name">'+escapeHtml(name)+'</strong></div><div class="ss-cert-evidence"><div class="ss-cert-evidence-label"><i class="fa-solid fa-shield-check"></i> '+(isAr?'دليل الإنجاز':'EVIDENCE OF ACHIEVEMENT')+'</div><div class="ss-cert-evidence-text">'+escapeHtml(evidenceText)+'</div></div><div class="ss-cert-footer-grid"><div><b>'+escapeHtml(school||'School Name')+'</b><span>'+(isAr?'قسم اللغة الإنجليزية':'English Language Department')+'</span></div><div class="ss-cert-term">'+(isAr?termLabel().duringAr:termLabel().duringEn)+'</div></div><div class="ss-cert-signatures"><div><b>'+(isAr?'منسق اللغة الإنجليزية':'English Language Coordinator')+'</b><strong>'+escapeHtml(stripNameTitle(settings.coordinatorName))+'</strong><span>'+(isAr?'التوقيع':'Signature')+'</span></div><div><b>'+(isAr?'معلم اللغة الإنجليزية':'English Language Teacher')+'</b><strong>'+escapeHtml(stripNameTitle(settings.teacherName))+'</strong><span>'+(isAr?'التوقيع':'Signature')+'</span></div></div><div class="ss-cert-bottom-mark"><span>TRACK</span><i class="fa-solid fa-arrow-right"></i><span>UNDERSTAND</span><i class="fa-solid fa-arrow-right"></i><span>ACT</span><i class="fa-solid fa-arrow-right"></i><span>CELEBRATE</span></div></div>';
+  return '<div class="ss-cert-shell ss-cert-creative" data-cert-type="'+type+'"><div class="ss-cert-frame"></div><div class="ss-cert-ribbon ribbon-a"></div><div class="ss-cert-ribbon ribbon-b"></div><div class="ss-cert-topline"><span>SS\' DAILY PROGRESS TRACK</span><span>'+certDateStr+'</span></div><div class="ss-cert-brand-row"><div class="ss-cert-logo-slot">'+(safeImageUrl(settings.schoolLogo)?'<img src="'+escapeHtml(safeImageUrl(settings.schoolLogo))+'" alt="School">':'')+'</div><div class="ss-cert-brand-center"><div class="ss-cert-emblem"><i class="fa-solid fa-chart-line"></i></div><div><strong>SS\'</strong><small>Daily Progress Track</small></div></div><div class="ss-cert-logo-slot">'+(safeImageUrl(settings.ministryLogo)?'<img src="'+escapeHtml(safeImageUrl(settings.ministryLogo))+'" alt="Ministry">':'')+'</div></div><div class="ss-cert-kicker"><span class="en">TEACHER ACHIEVEMENT CERTIFICATE</span><span class="ar">إنجاز وتميّز</span></div><div class="ss-cert-title-wrap"><div class="ss-cert-line"></div><h2 class="ss-cert-title">Achievement Certificate</h2><div class="ss-cert-line"></div></div><div class="ss-cert-award"><div class="ss-cert-award-icon"><i class="fa-solid '+skillIcon+'"></i></div><div><span>'+typeLabel+'</span>'+(metric?'<b>'+escapeHtml(metric)+'</b>':'')+'</div></div><p class="ss-cert-present">'+cfg.body(escapeHtml(name),escapeHtml(school||'School Name'),term)+'</p><div class="ss-cert-nameplate"><span>AWARDED TO</span><strong class="ss-cert-name">'+escapeHtml(name)+'</strong></div><div class="ss-cert-evidence"><div class="ss-cert-evidence-label"><i class="fa-solid fa-shield-check"></i> '+(isAr?'دليل الإنجاز':'EVIDENCE OF ACHIEVEMENT')+'</div><div class="ss-cert-evidence-text">'+escapeHtml(evidenceText)+'</div></div><div class="ss-cert-footer-grid"><div><b>'+escapeHtml(school||'School Name')+'</b><span>'+(isAr?'قسم اللغة الإنجليزية':'English Language Department')+'</span></div><div class="ss-cert-term">'+(isAr?termLabel().duringAr:termLabel().duringEn)+'</div></div><div class="ss-cert-signatures"><div><b>'+(isAr?'منسق اللغة الإنجليزية':'English Language Coordinator')+'</b><strong>'+escapeHtml(stripNameTitle(settings.coordinatorName))+'</strong><span>'+(isAr?'التوقيع':'Signature')+'</span></div><div><b>'+(isAr?'معلم اللغة الإنجليزية':'English Language Teacher')+'</b><strong>'+escapeHtml(stripNameTitle(settings.teacherName))+'</strong><span>'+(isAr?'التوقيع':'Signature')+'</span></div></div><div class="ss-cert-bottom-mark"><span>TRACK</span><i class="fa-solid fa-arrow-right"></i><span>UNDERSTAND</span><i class="fa-solid fa-arrow-right"></i><span>ACT</span><i class="fa-solid fa-arrow-right"></i><span>CELEBRATE</span></div></div>';
 }function renderCertificatePreview(){
   const sid = Number(document.getElementById('cert-student-select').value);
   const s = studentsData.find(x=>x.id===sid);
@@ -7200,31 +7200,32 @@ async function processPendingReadingResult(uid){
     removePending(); return;
   }
   let isTemporaryFailure=false;
+  const bad=(kind,m)=>{const e=new Error(m);e.kind=kind;return e;};
   try{
     const raw=String(pending.raw||'');
-    if(raw.length>4096)throw new Error('Result link too long');
+    if(raw.length>4096)throw bad('link','Result link too long');
     const params=new URLSearchParams(raw.startsWith('?')?raw.slice(1):raw);
     const allPr=params.getAll('pr');
-    if(allPr.length!==1)throw new Error('Missing or duplicate result payload');
+    if(allPr.length!==1)throw bad('link','Missing or duplicate result payload');
     const encoded=allPr[0];
-    if(!encoded || encoded.length>1024)throw new Error('Invalid result payload length');
+    if(!encoded || encoded.length>1024)throw bad('link','Invalid result payload length');
     const parts=encoded.split('.');
-    if(parts.length!==7)throw new Error('Invalid result link format');
+    if(parts.length!==7)throw bad('link','Invalid result link format');
     const [setId,studentIdRaw,attemptRaw,claimedScoreRaw,totalRaw,wrongRaw,answersRaw]=parts;
     const allowedSets=Object.freeze({'R2-S01':[1,0,2,3,2],'R2-S02':[0,1,1,2,1]});
-    if(!Object.prototype.hasOwnProperty.call(allowedSets,setId))throw new Error('Unknown practice set');
+    if(!Object.prototype.hasOwnProperty.call(allowedSets,setId))throw bad('link','Unknown practice set');
     const key=allowedSets[setId];
-    if(!/^\d{1,16}$/.test(studentIdRaw)||!/^([1-2])$/.test(attemptRaw)||!/^([0-5])$/.test(claimedScoreRaw)||totalRaw!=='5')throw new Error('Invalid student, attempt, score, or total');
-    if(!/^(?:[0-3],[0-3],[0-3],[0-3],[0-3])$/.test(answersRaw))throw new Error('Invalid answer list');
+    if(!/^\d{1,16}$/.test(studentIdRaw)||!/^([1-2])$/.test(attemptRaw)||!/^([0-5])$/.test(claimedScoreRaw)||totalRaw!=='5')throw bad('link','Invalid student, attempt, score, or total');
+    if(!/^(?:[0-3],[0-3],[0-3],[0-3],[0-3])$/.test(answersRaw))throw bad('link','Invalid answer list');
     const studentId=Number(studentIdRaw), attempt=Number(attemptRaw), claimedScore=Number(claimedScoreRaw);
-    if(!Number.isSafeInteger(studentId)||studentId<=0)throw new Error('Unsafe student ID');
+    if(!Number.isSafeInteger(studentId)||studentId<=0)throw bad('link','Unsafe student ID');
     const answers=answersRaw.split(',').map(Number);
     const score=answers.reduce((n,a,i)=>n+(a===key[i]?1:0),0);
     const wrong=answers.map((a,i)=>a===key[i]?null:i+1).filter(v=>v!==null);
     const claimedWrong=wrongRaw===''?[]:wrongRaw.split(',').map(v=>/^([1-5])$/.test(v)?Number(v):NaN);
-    if(claimedWrong.some(v=>!Number.isInteger(v)) || score!==claimedScore || JSON.stringify(wrong)!==JSON.stringify(claimedWrong))throw new Error('Score or wrong-question list does not match submitted answers');
+    if(claimedWrong.some(v=>!Number.isInteger(v)) || score!==claimedScore || JSON.stringify(wrong)!==JSON.stringify(claimedWrong))throw bad('link','Score or wrong-question list does not match submitted answers');
     const matchingStudents=studentsData.filter(s=>String(s.id)===studentIdRaw);
-    if(matchingStudents.length!==1)throw new Error('Student ID must match exactly one student in the current teacher roster');
+    if(matchingStudents.length!==1)throw bad('roster','Student ID must match exactly one student in the current teacher roster');
     const student=matchingStudents[0];
     const confirmed=typeof window.confirm==='function' && window.confirm(
       'Confirm reading practice result?\nStudent: '+String(student.name||'')+
@@ -7264,7 +7265,14 @@ async function processPendingReadingResult(uid){
   }catch(err){
     console.error('Reading remedial result rejected:',err);
     if(!isTemporaryFailure)removePending();
-    if(typeof showToast==='function')showToast('Reading result was not recorded. Check the result link / لم تُسجّل النتيجة؛ راجع رابط النتيجة','error');
+    const code=String(err&&err.code||'');
+    let msg;
+    if(err&&err.kind==='roster')msg='Result NOT recorded: this student is not in the signed-in teacher\'s class list (check you are using the right account) / لم تُسجّل النتيجة: الطالب غير موجود في قائمة هذا الحساب';
+    else if(err&&err.kind==='link')msg='Result NOT recorded: the result link is invalid or was altered / لم تُسجّل النتيجة: رابط النتيجة غير صالح أو معدَّل';
+    else if(code==='permission-denied')msg='Result NOT recorded: Firestore refused the write (rules for results are not active for this account) / لم تُسجّل النتيجة: رفضت قاعدة البيانات الحفظ (قواعد النتائج غير مفعّلة)';
+    else if(isTemporaryFailure)msg='Result NOT recorded yet: connection problem. Reopen the link within 30 minutes / لم تُسجّل النتيجة بعد: مشكلة اتصال، أعد فتح الرابط خلال 30 دقيقة';
+    else msg='Result NOT recorded: unexpected error / لم تُسجّل النتيجة: خطأ غير متوقع';
+    if(typeof showToast==='function')showToast(msg,'error');
   }
 }
 
