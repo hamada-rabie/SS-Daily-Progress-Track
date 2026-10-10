@@ -339,9 +339,8 @@ function finish(){
       'Attempt: '+r.attempt,
       'المحاولة: '+r.attempt,
       '',
-      'Teacher-only result link (teacher sign-in and roster validation required):',
-      'رابط النتيجة للمعلم فقط (يتطلب تسجيل الدخول والتحقق من سجل الطلاب):',
-      r.url
+      'Questions to review: '+(wrong.length?wrong.join(', '):'None'),
+      'الأسئلة التي تحتاج إلى مراجعة: '+(wrong.length?wrong.join('، '):'لا توجد أخطاء'),
     ].join('\n');const waUrl='https://wa.me/?text='+encodeURIComponent(message);
    window.location.href=waUrl;
  };
