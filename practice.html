@@ -11,11 +11,13 @@
 .result-celebration{position:relative;overflow:hidden;text-align:center;padding:22px 16px 18px;border-radius:18px;background:linear-gradient(135deg,#e7faf2,#edf5ff 60%,#fff3df);border:1px solid #cce9df;margin:8px 0 18px}.result-emoji{font-size:clamp(2.2rem,8vw,3.2rem);line-height:1.2;filter:drop-shadow(0 5px 5px #173d3315);animation:resultPop .55s ease-out both}.result-kicker{font-weight:800;color:#397269;font-size:.85rem;letter-spacing:.04em;margin:7px 0}.result-title{color:#124f49;font-size:clamp(1.25rem,4vw,1.8rem);font-weight:900;margin:4px 0 8px;line-height:1.4}.result-message{max-width:540px;margin:0 auto;color:#355c56;font-size:1rem;line-height:1.8}.result-meter{height:9px;border-radius:999px;background:#dceae5;overflow:hidden;margin:16px auto 7px;max-width:360px}.result-meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,#10a37f,#70c99d);border-radius:999px;transition:width .7s ease}.result-scoreline{font-weight:800;color:#155c52;font-size:.92rem}.result-footnote{font-size:.9rem;color:#536d67;margin:10px 0 0}@keyframes resultPop{0%{transform:scale(.72);opacity:0}75%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}@media(prefers-reduced-motion:reduce){.result-emoji,.result-meter span{animation:none;transition:none}}#resultCard{border-top:4px solid #0e9b80}h1{font-size:clamp(1.5rem,4vw,2rem);margin:8px 0;color:#0e655d;line-height:1.35}h2{line-height:1.4}p{line-height:1.7}.muted{color:#5f7772}.pill{display:inline-block;border-radius:999px;background:#e6f5f0;color:#0c655d;padding:6px 11px;font-size:.85rem;font-weight:800}
 .question{font-weight:800;font-size:1.1rem;line-height:1.7}.options{display:grid;gap:10px;margin-top:16px}.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;border:1px solid #d5e3df;border-radius:14px;padding:14px;cursor:pointer;color:inherit;font:inherit;transition:background .15s,border-color .15s,transform .15s}.opt:active{transform:scale(.995)}.opt:focus-visible,button:focus-visible{outline:3px solid #edb94d;outline-offset:2px}.opt[aria-pressed="true"]{border-color:#0e7c74;background:#eaf7f4}.opt:disabled{cursor:default}.opt.correct{border-color:#23834b;background:#edf8f0}.opt.wrong{border-color:#c85a2e;background:#fff1eb}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button.primary,button.secondary{border:0;border-radius:13px;padding:12px 16px;font:inherit;font-weight:800;cursor:pointer}button.primary{background:linear-gradient(135deg,#0e8c7e,#08665e);color:white;box-shadow:0 5px 12px #087f7526}button.secondary{background:#e8efed;color:#18332f}.feedback{padding:13px;border-radius:13px;background:#f3f7f6;margin-top:14px}.hidden{display:none!important}.bar{height:9px;border-radius:999px;background:#e5eeeb;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,#0e7c74,#55bea2);width:0;transition:width .25s}.passage{white-space:pre-line;line-height:1.95;font-size:1.05rem}.small{font-size:.9rem}.error{color:#a52f1b;font-weight:700}.modal-backdrop{position:fixed;inset:0;z-index:10;background:#102c2bb3;display:grid;place-items:center;padding:18px}.modal{width:min(100%,440px);background:#fff;border-radius:22px;padding:24px;box-shadow:0 22px 70px #0003;text-align:center}.modal-icon{width:58px;height:58px;border-radius:18px;background:#e6f5f0;color:#087f75;display:grid;place-items:center;font-size:28px;margin:0 auto 12px}.modal p{color:#536d67}.modal .actions{justify-content:center}.modal .actions button{flex:1}
+
+#brandLine,#heroTitle,#heroIntro,#studentLine,#progressText,#passageTitle,#passageText,#listenBtn,#listenStatus,#questionNumber,#questionText,#feedback,#checkBtn,#nextBtn,#resultTitle,#resultMessage,#resultFootnote,#resultScoreline,#scoreText,#resultNote,#shareBtn,#retryTitle,#retryCopy,#retryCancel,#retryConfirm{white-space:pre-line}
 </style>
 </head>
 <body><main class="shell">
 <section class="card">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span class="pill" id="brandLine">✦ Reading Quest | رحلة القراءة</span><label class="small muted" id="languageModeLabel" for="languageMode"><span id="languageLabel">Language / اللغة</span> <select id="languageMode" aria-label="Language mode" style="border:1px solid #c9d8d3;border-radius:9px;padding:6px;background:white;color:#18332f"><option value="bilingual">Bilingual / ثنائي اللغة</option><option value="en">English</option><option value="ar">العربية</option></select></label></div>
+<div style="display:flex;justify-content:flex-start;align-items:center;gap:10px;flex-wrap:wrap"><span class="pill" id="brandLine">✦ Reading Quest</span></div>
 <h1 id="heroTitle">Small steps. Stronger reading. | خطوة صغيرة… قراءة أقوى</h1>
 <p id="heroIntro" class="muted">اقرأ بهدوء، واختَر إجابتك، وتعلّم من التصحيح بعد كل سؤال. الهدف إنك تفهم أكتر وتتحسن خطوة بخطوة، مش الدرجة وبس.</p>
 <p id="studentLine" class="small muted"></p>
@@ -43,7 +45,7 @@
 'use strict';
 const BANK={
  'R2-S01':{
-  title:'A Visit to the Community Garden | زيارة حديقة المجتمع',
+  title:'A Visit to the Community Garden\nزيارة حديقة المجتمع',
   passage:'Last Saturday, Omar and his sister visited a community garden near their home. They saw rows of tomatoes, beans, and herbs. A volunteer explained that plants need sunlight, water, and healthy soil. Omar helped remove weeds while his sister watered the young plants. Before leaving, they learned that the garden gives fresh vegetables to families in the neighbourhood. Omar decided to return next weekend and bring a friend.',
   questions:[
    {q:'Where did Omar and his sister go?',o:['To a library','To a community garden','To a museum','To a sports centre'],a:1,ex:'The first sentence says they visited a community garden.'},
@@ -54,7 +56,7 @@ const BANK={
   ]
  },
  'R2-S02':{
-  title:'A School Recycling Project | مشروع إعادة التدوير المدرسي',
+  title:'A School Recycling Project\nمشروع إعادة التدوير المدرسي',
   passage:'Class 8 started a recycling project to reduce waste at school. Students placed labelled boxes for paper, plastic, and cans beside the library. At first, some students put rubbish in the wrong boxes. The science teacher showed them how to check each label carefully. After two weeks, the class collected several bags of recyclable materials. The students were pleased because their small actions helped keep the school cleaner.',
   questions:[
    {q:'Why did Class 8 start the project?',o:['To reduce waste at school','To raise money for a trip','To decorate the library','To cancel science lessons'],a:0,ex:'The project was started to reduce school waste.'},
@@ -65,7 +67,7 @@ const BANK={
   ]
  },
  'R2-VW01':{
-  title:'My School Day | يومي المدرسي — Very Weak / ضعيف جدًا',
+  title:'My School Day\nيومي المدرسي',
   passage:'Ali goes to school at seven. He has a blue bag. He reads a book in class. At break, he eats an apple. He goes home at two.',
   questions:[
    {q:'When does Ali go to school?',o:['At nine','At seven','At two','At five'],a:1,ex:'The passage says Ali goes to school at seven.'},
@@ -76,7 +78,7 @@ const BANK={
   ]
  },
  'R2-WK01':{
-  title:'A Helpful Classmate | زميل متعاون — Weak / ضعيف',
+  title:'A Helpful Classmate\nزميل متعاون',
   passage:'Mariam noticed that her classmate Noor had forgotten her ruler. Mariam lent Noor a spare one before the maths lesson began. They worked quietly and checked their answers together. Noor thanked Mariam after the lesson. Both students finished their work on time and felt pleased.',
   questions:[
    {q:'What had Noor forgotten?',o:['Her notebook','Her ruler','Her lunch','Her book'],a:1,ex:'Noor had forgotten her ruler.'},
@@ -87,7 +89,7 @@ const BANK={
   ]
  },
  'R2-MD01':{
-  title:'Planning a Class Project | التخطيط لمشروع صفي — Medium / متوسط',
+  title:'Planning a Class Project\nالتخطيط لمشروع صفي',
   passage:'The school eco-club planned a campaign to reduce the use of single-use plastic. Before choosing activities, the members surveyed students about their daily habits. The results showed that many students bought drinks in disposable bottles. The club then invited students to bring reusable bottles and placed clear signs near the water stations. After a month, teachers noticed fewer plastic bottles in the bins, so the club decided to continue the campaign.',
   questions:[
    {q:'What was the main aim of the campaign?',o:['To reduce single-use plastic','To sell more drinks','To close the water stations','To organise a sports day'],a:0,ex:'The club planned a campaign to reduce single-use plastic.'},
@@ -98,7 +100,7 @@ const BANK={
   ]
  },
  'W2-VW01':{
-  title:'Build a Clear Sentence | كوّن جملة واضحة — Writing / الكتابة · Very Weak',
+  title:'Build a Clear Sentence\nكوّن جملة واضحة',
   passage:'Writing focus: choose the word that makes each short sentence correct.',
   questions:[
    {q:'I ___ a student.',o:['am','is','are','be'],a:0,ex:'Use “am” with “I”.'},
@@ -109,7 +111,7 @@ const BANK={
   ]
  },
  'W2-WK01':{
-  title:'Improve the Sentence | حسّن الجملة — Writing / الكتابة · Weak',
+  title:'Improve the Sentence\nحسّن الجملة',
   passage:'Writing focus: choose accurate grammar, punctuation, and linking words.',
   questions:[
    {q:'Yesterday, we ___ the museum.',o:['visit','visited','visiting','visits'],a:1,ex:'Use the past form “visited” with yesterday.'},
@@ -120,7 +122,7 @@ const BANK={
   ]
  },
  'W2-MD01':{
-  title:'Organise a Short Paragraph | نظّم فقرة قصيرة — Writing / الكتابة · Medium',
+  title:'Organise a Short Paragraph\nنظّم فقرة قصيرة',
   passage:'Writing focus: organise ideas logically and select precise language.',
   questions:[
    {q:'Which is the best topic sentence for a paragraph about exercise?',o:['Exercise helps people stay healthy.','Yesterday was Tuesday.','My shoes are blue.','There are many pencils.'],a:0,ex:'A topic sentence introduces the main idea.'},
@@ -131,7 +133,7 @@ const BANK={
   ]
  },
  'L2-VW01':{
-  title:'Listen for Key Words | استمع للكلمات الأساسية — Listening / الاستماع · Very Weak',
+  title:'Listen for Key Words\nاستمع للكلمات الأساسية',
   passage:'Hello, my name is Sami. I am twelve years old. I live near the school. I walk to class with my brother. My favourite subject is English.',
   questions:[
    {q:'What is the speaker’s name?',o:['Ali','Sami','Omar','Hamad'],a:1,ex:'The speaker says, “My name is Sami.”'},
@@ -142,7 +144,7 @@ const BANK={
   ]
  },
  'L2-WK01':{
-  title:'Listen for Details | استمع للتفاصيل — Listening / الاستماع · Weak',
+  title:'Listen for Details\nاستمع للتفاصيل',
   passage:'The school bus will leave at half past six on Thursday morning. Students should meet outside the main gate ten minutes earlier. They need to bring a packed lunch, a water bottle, and a notebook. The weather may be warm, so students should wear a hat. The bus will return to school at three o’clock.',
   questions:[
    {q:'When will the bus leave?',o:['At six','At half past six','At seven','At half past seven'],a:1,ex:'The bus leaves at half past six.'},
@@ -153,7 +155,7 @@ const BANK={
   ]
  },
  'L2-MD01':{
-  title:'Listen for Purpose and Inference | استمع للغرض والاستنتاج — Listening / الاستماع · Medium',
+  title:'Listen for Purpose and Inference\nاستمع للغرض والاستنتاج',
   passage:'Good morning, students. Because the library will be used for exams this week, please return borrowed books by Wednesday. The reading club meeting has moved to Room 12 and will begin fifteen minutes later than usual. If you cannot attend, send a message to Ms Noor before lunchtime. Thank you for helping everyone plan ahead.',
   questions:[
    {q:'Why must students return books by Wednesday?',o:['The library will be used for exams','The books are damaged','The school is closing','The reading club is cancelled'],a:0,ex:'The library will be used for exams this week.'},
@@ -164,7 +166,7 @@ const BANK={
   ]
  },
  'S2-VW01':{
-  title:'Everyday Speaking | التحدث في المواقف اليومية — Speaking / المحادثة · Very Weak',
+  title:'Everyday Speaking\nالتحدث في المواقف اليومية',
   passage:'Speaking focus: choose a polite and suitable response for each simple situation.',
   questions:[
    {q:'A classmate says “Hello!” What can you say?',o:['I am a pencil.','Hello! How are you?','Yesterday blue.','No, thank you.'],a:1,ex:'Greeting back and asking how they are is suitable.'},
@@ -175,7 +177,7 @@ const BANK={
   ]
  },
  'S2-WK01':{
-  title:'Speak in Full Responses | أجب بجمل كاملة — Speaking / المحادثة · Weak',
+  title:'Speak in Full Responses\nأجب بجمل كاملة',
   passage:'Speaking focus: select a clear response that gives enough information.',
   questions:[
    {q:'“What do you do after school?”',o:['After school.','Blue and green.','I usually finish my homework and then play football.','At seven yesterday?'],a:2,ex:'A full response answers the question with relevant details.'},
@@ -186,7 +188,7 @@ const BANK={
   ]
  },
  'S2-MD01':{
-  title:'Discuss and Justify an Opinion | ناقش الرأي وعلّله — Speaking / المحادثة · Medium',
+  title:'Discuss and Justify an Opinion\nناقش الرأي وعلّله',
   passage:'Speaking focus: choose responses that justify opinions, build on ideas, and manage discussion.',
   questions:[
    {q:'Which response best supports an opinion about school gardens?',o:['Gardens are green.','I like Mondays.','No, because no.','I support school gardens because students can learn about plants and responsibility.'],a:3,ex:'It states an opinion and gives relevant reasons.'},
@@ -198,11 +200,11 @@ const BANK={
  }
 };
 const params=new URLSearchParams(location.search);
-const LANGUAGE=['en','ar','bilingual'].includes(params.get('lang'))?params.get('lang'):'bilingual';
+const LANGUAGE='bilingual';
 const UI={
 en:{brand:'✦ Reading Quest',hero:'Small steps. Stronger reading.',intro:'Read carefully, choose an answer, and learn from the feedback after each question. Understanding matters more than the score.',language:'Language',progress:'Progress',check:'Check answer',next:'Next',seeResult:'See result',completed:'Completed',retryTitle:'Another chance to learn',retryText:'A new attempt is a chance to understand your mistakes. Your teacher can see the new attempt and help you improve.',retryCancel:'Not now',retryConfirm:'Learn again',score:'Your score',correct:'Correct!',notQuite:'Not quite.',selectAnswer:'Please select an answer first.',resultKicker:'YOUR READING JOURNEY',send:'Send result to teacher via WhatsApp',retry:'Try again',exportNote:'Share your result with your teacher so they can support your next step.'},
 ar:{brand:'✦ رحلة القراءة',hero:'خطوات صغيرة… وقراءة أقوى',intro:'اقرأ بعناية، واختر إجابة، وتعلّم من التصحيح بعد كل سؤال. الفهم أهم من الدرجة وحدها.',language:'اللغة',progress:'التقدم',check:'تحقق من الإجابة',next:'التالي',seeResult:'عرض النتيجة',completed:'اكتمل التدريب',retryTitle:'فرصة جديدة للتعلّم',retryText:'المحاولة الجديدة فرصة لفهم الأخطاء والتعلّم منها. يستطيع المعلم رؤية المحاولة الجديدة ومساعدتك على التحسن.',retryCancel:'ليس الآن',retryConfirm:'أتعلم من جديد',score:'نتيجتك',correct:'إجابة صحيحة!',notQuite:'ليست صحيحة.',selectAnswer:'اختر إجابة أولًا.',resultKicker:'رحلتك مع القراءة',send:'إرسال النتيجة للمعلم عبر واتساب',retry:'إعادة التدريب',exportNote:'شارك نتيجتك مع المعلم ليساعدك في الخطوة التالية.'},
-bilingual:{brand:'✦ Reading Quest | رحلة القراءة',hero:'Small steps. Stronger reading. | خطوات صغيرة… وقراءة أقوى',intro:'Read carefully and learn from each answer. | اقرأ بعناية وتعلّم من كل إجابة؛ فالفهم أهم من الدرجة وحدها.',language:'Language / اللغة',progress:'Progress / التقدم',check:'Check answer / تحقق من الإجابة',next:'Next / التالي',seeResult:'See result / عرض النتيجة',completed:'Completed / اكتمل التدريب',retryTitle:'Another chance to learn | فرصة جديدة للتعلّم',retryText:'A new attempt helps you learn from mistakes. Your teacher can see it and help you improve. | المحاولة الجديدة فرصة للتعلّم من الأخطاء، وسيتمكن المعلم من رؤيتها ومساعدتك على التحسن.',retryCancel:'Not now / ليس الآن',retryConfirm:'Learn again / أتعلم من جديد',score:'Your score / نتيجتك',correct:'Correct! / إجابة صحيحة!',notQuite:'Not quite. / ليست صحيحة.',selectAnswer:'Please select an answer first. / اختر إجابة أولًا.',resultKicker:'YOUR READING JOURNEY | رحلتك مع القراءة',send:'Send result to teacher via WhatsApp / إرسال النتيجة للمعلم عبر واتساب',retry:'Try again / إعادة التدريب',exportNote:'Share your result with your teacher so they can support your next step. | شارك نتيجتك مع المعلم ليساعدك في الخطوة التالية.'}
+bilingual:{brand:'✦ Reading Quest\nرحلة القراءة',hero:'Small steps. Stronger reading.\nخطوات صغيرة… وقراءة أقوى',intro:'Read carefully and learn from each answer.\nاقرأ بعناية وتعلّم من كل إجابة؛ فالفهم أهم من الدرجة وحدها.',language:'Language\nاللغة',progress:'Progress\nالتقدم',check:'Check answer\nتحقق من الإجابة',next:'Next\nالتالي',seeResult:'See result\nعرض النتيجة',completed:'Completed\nاكتمل التدريب',retryTitle:'Another chance to learn\nفرصة جديدة للتعلّم',retryText:'After you try again, send your result to your teacher on WhatsApp. Your teacher can then see this new attempt and review the questions where you need help.\nبعد إعادة المحاولة، أرسل نتيجتك إلى المعلم عبر واتساب. عندها سيتمكن المعلم من الاطلاع على المحاولة الجديدة ومراجعة الأسئلة التي تحتاج فيها إلى مساعدة.',retryCancel:'Not now\nليس الآن',retryConfirm:'Learn again\nأتعلم من جديد',score:'Your score\nنتيجتك',correct:'Correct!\nإجابة صحيحة!',notQuite:'Not quite.\nليست صحيحة.',selectAnswer:'Please select an answer first.\nاختر إجابة أولًا.',resultKicker:'YOUR READING JOURNEY\nرحلتك مع القراءة',send:'Send result to teacher via WhatsApp\nإرسال النتيجة للمعلم عبر واتساب',retry:'Try again\nإعادة التدريب',exportNote:'Share your result with your teacher so they can support your next step.\nشارك نتيجتك مع المعلم ليساعدك في الخطوة التالية.'}
 };
 function t(key){return UI[LANGUAGE][key]||UI.bilingual[key]||key;}
 function applyLanguage(){
@@ -213,15 +215,15 @@ function applyLanguage(){
  set('brandLine','brand');set('heroTitle','hero');set('heroIntro','intro');
  const skill=SKILL_LABELS[SKILL_TYPE]||SKILL_LABELS.R2;
  if(SKILL_TYPE!=='R2'){
-  const brand=LANGUAGE==='en'?skill.en+' Quest':LANGUAGE==='ar'?'رحلة '+skill.ar:skill.en+' Quest | رحلة '+skill.ar;
-  const hero=LANGUAGE==='en'?'Small steps. Stronger '+skill.en.toLowerCase()+'.':LANGUAGE==='ar'?'خطوات صغيرة… ومهارة '+skill.ar+' أقوى': 'Small steps. Stronger '+skill.en.toLowerCase()+'. | خطوات صغيرة… ومهارة '+skill.ar+' أقوى';
-  const intro=LANGUAGE==='en'?'Practise one step at a time. Read or listen carefully, choose your answer, and learn from feedback.':LANGUAGE==='ar'?'تدرّب خطوة بخطوة. اقرأ أو استمع بعناية، واختر إجابتك، وتعلّم من التصحيح.':'Practise one step at a time. | تدرّب خطوة بخطوة، وتعلّم من التصحيح.';
+  const brand=LANGUAGE==='en'?skill.en+' Quest':LANGUAGE==='ar'?'رحلة '+skill.ar:skill.en+' Quest\nرحلة '+skill.ar;
+  const hero=LANGUAGE==='en'?'Small steps. Stronger '+skill.en.toLowerCase()+'.':LANGUAGE==='ar'?'خطوات صغيرة… ومهارة '+skill.ar+' أقوى': 'Small steps. Stronger '+skill.en.toLowerCase()+'.\nخطوات صغيرة… ومهارة '+skill.ar+' أقوى';
+  const intro=LANGUAGE==='en'?'Practise one step at a time. Read or listen carefully, choose your answer, and learn from feedback.':LANGUAGE==='ar'?'تدرّب خطوة بخطوة. اقرأ أو استمع بعناية، واختر إجابتك، وتعلّم من التصحيح.':'Practise one step at a time.\nتدرّب خطوة بخطوة، وتعلّم من التصحيح.';
   document.getElementById('brandLine').textContent='✦ '+brand;
   document.getElementById('heroTitle').textContent=hero;
   document.getElementById('heroIntro').textContent=intro;
-  document.title=skill.en+' Remedial Practice | تدريب علاجي';
-  UI.en.resultKicker='YOUR '+skill.en.toUpperCase()+' JOURNEY';UI.ar.resultKicker='رحلتك مع '+skill.ar;UI.bilingual.resultKicker='YOUR '+skill.en.toUpperCase()+' JOURNEY | رحلتك مع '+skill.ar;
- }else{document.title=LANGUAGE==='en'?'Reading Remedial Practice':LANGUAGE==='ar'?'تدريب علاجي للقراءة':'Reading Remedial Practice | تدريب علاجي للقراءة';}
+  document.title=skill.en+' Remedial Practice\nتدريب علاجي';
+  UI.en.resultKicker='YOUR '+skill.en.toUpperCase()+' JOURNEY';UI.ar.resultKicker='رحلتك مع '+skill.ar;UI.bilingual.resultKicker='YOUR '+skill.en.toUpperCase()+' JOURNEY\nرحلتك مع '+skill.ar;
+ }else{document.title=LANGUAGE==='en'?'Reading Remedial Practice':LANGUAGE==='ar'?'تدريب علاجي للقراءة':'Reading Remedial Practice\nتدريب علاجي للقراءة';}
  set('languageLabel','language');set('retryTitle','retryTitle');set('retryCopy','retryText');
  set('retryCancel','retryCancel');set('retryConfirm','retryConfirm');set('checkBtn','check');set('shareBtn','send');set('retryBtn','retry');
  const select=document.getElementById('languageMode');if(select)select.value=LANGUAGE;
@@ -238,19 +240,19 @@ const $=id=>document.getElementById(id);
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
 function showError(msg){$('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('errorCard').classList.remove('hidden');$('errorText').textContent=msg;}
 applyLanguage();
-document.getElementById('languageMode').addEventListener('change',event=>{const next=new URL(location.href);next.searchParams.set('lang',event.target.value);location.href=next.href;});
+
 if(!SID||!/^\d{1,16}$/.test(SID)){showError('رابط التدريب غير مكتمل أو رقم الطالب غير صالح. اطلب من المعلم إنشاء رابط جديد.');return;}
 if(!SET){showError('مجموعة التدريب غير معروفة. اطلب من المعلم إنشاء رابط صحيح.');return;}
 // Attempt number is session-only UI state, never a security boundary.
 let currentAttempt=1;
-$('studentLine').textContent=(LANGUAGE==='en'?(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟':'Welcome 🌟')+' • '+(SKILL_LABELS[SKILL_TYPE]?.en||'Reading')+' practice':LANGUAGE==='ar'?(STUDENT_NAME?'أهلًا يا '+STUDENT_NAME+' 🌟':'أهلًا بك 🌟')+' • تدريب '+(SKILL_LABELS[SKILL_TYPE]?.ar||'القراءة'):(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟 / أهلًا يا '+STUDENT_NAME+' 🌟':'Welcome 🌟 / أهلًا بك 🌟')+' • '+(SKILL_LABELS[SKILL_TYPE]?.en||'Reading')+' practice / تدريب '+(SKILL_LABELS[SKILL_TYPE]?.ar||'القراءة'));
+$('studentLine').textContent=(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟':'Welcome 🌟')+' • '+(SKILL_LABELS[SKILL_TYPE]?.en||'Reading')+' practice\n'+(STUDENT_NAME?'أهلًا يا '+STUDENT_NAME+' 🌟':'أهلًا بك 🌟')+' • تدريب '+(SKILL_LABELS[SKILL_TYPE]?.ar||'القراءة');
 $('passageTitle').textContent=SET.title;
 if(SKILL_TYPE==='L2'){
- $('passageText').textContent=LANGUAGE==='en'?'Press play to listen to the passage, then answer the questions.':LANGUAGE==='ar'?'اضغط تشغيل للاستماع إلى النص، ثم أجب عن الأسئلة.':'Press play to listen to the passage, then answer the questions. | اضغط تشغيل للاستماع إلى النص، ثم أجب عن الأسئلة.';
+ $('passageText').textContent=LANGUAGE==='en'?'Press play to listen to the passage, then answer the questions.':LANGUAGE==='ar'?'اضغط تشغيل للاستماع إلى النص، ثم أجب عن الأسئلة.':'Press play to listen to the passage, then answer the questions.\nاضغط تشغيل للاستماع إلى النص، ثم أجب عن الأسئلة.';
  $('listenBtn').classList.remove('hidden');
- $('listenBtn').textContent=LANGUAGE==='en'?'▶ Listen to the passage':LANGUAGE==='ar'?'▶ استمع إلى النص':'▶ Listen to the passage / استمع إلى النص';
+ $('listenBtn').textContent=LANGUAGE==='en'?'▶ Listen to the passage':LANGUAGE==='ar'?'▶ استمع إلى النص':'▶ Listen to the passage\nاستمع إلى النص';
  $('listenBtn').addEventListener('click',()=>{
-  if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)){$('listenStatus').textContent=LANGUAGE==='en'?'Audio playback is not supported by this browser.':LANGUAGE==='ar'?'المتصفح لا يدعم تشغيل الصوت.':'Audio playback is not supported. | المتصفح لا يدعم تشغيل الصوت.';return;}
+  if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)){$('listenStatus').textContent=LANGUAGE==='en'?'Audio playback is not supported by this browser.':LANGUAGE==='ar'?'المتصفح لا يدعم تشغيل الصوت.':'Audio playback is not supported.\nالمتصفح لا يدعم تشغيل الصوت.';return;}
   window.speechSynthesis.cancel();
   const utterance=new SpeechSynthesisUtterance(SET.passage);utterance.lang='en-GB';utterance.rate=0.88;
   utterance.onstart=()=>{$('listenStatus').textContent=LANGUAGE==='ar'?'جارٍ تشغيل النص…':'Playing the passage…';};
@@ -261,11 +263,11 @@ if(SKILL_TYPE==='L2'){
 }else{$('passageText').textContent=SET.passage;}
 function render(){
  const q=SET.questions[idx];selected=null;checked=false;
- $('questionNumber').textContent=(LANGUAGE==='ar'?'السؤال ':LANGUAGE==='en'?'Question ':'Question / السؤال ')+(idx+1)+' / '+SET.questions.length;
+ $('questionNumber').textContent=(LANGUAGE==='ar'?'السؤال ':LANGUAGE==='en'?'Question ':'Question\nالسؤال ')+(idx+1)+'\n'+SET.questions.length;
  $('questionText').textContent=q.q;$('options').replaceChildren();
  q.o.forEach((label,i)=>{const b=el('button','opt');b.type='button';b.setAttribute('aria-pressed','false');b.append(el('span','pill',String.fromCharCode(65+i)));b.append(el('span','',label));b.addEventListener('click',()=>{if(checked)return;selected=i;[...$('options').children].forEach((x,j)=>x.setAttribute('aria-pressed',String(j===i)));});$('options').append(b);});
  $('feedback').classList.add('hidden');$('feedback').textContent='';$('checkBtn').classList.remove('hidden');$('checkBtn').disabled=false;$('checkBtn').textContent=t('check');$('nextBtn').classList.add('hidden');
- $('progress').style.width=(idx/SET.questions.length*100)+'%';$('progressText').textContent=t('progress')+': '+idx+' / '+SET.questions.length;
+ $('progress').style.width=(idx/SET.questions.length*100)+'%';$('progressText').textContent=t('progress')+': '+idx+'\n'+SET.questions.length;
 }
 function check(){
  if(selected===null){$('feedback').textContent=t('selectAnswer');$('feedback').classList.remove('hidden');return;}
@@ -281,8 +283,8 @@ function resultUrl(){
  return {url:url.href,score,attempt};
 }
 function finish(){
- $('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('resultCard').classList.remove('hidden');$('progress').style.width='100%';$('progressText').textContent=t('completed')+': '+SET.questions.length+' / '+SET.questions.length;
- const r=resultUrl();$('scoreText').textContent=(LANGUAGE==='en'?'Score: '+r.score+' / '+SET.questions.length+' • Attempt '+r.attempt:LANGUAGE==='ar'?'النتيجة: '+r.score+' من '+SET.questions.length+' • المحاولة '+r.attempt:'Score / النتيجة: '+r.score+' / '+SET.questions.length+' • Attempt / المحاولة '+r.attempt);
+ $('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('resultCard').classList.remove('hidden');$('progress').style.width='100%';$('progressText').textContent=t('completed')+': '+SET.questions.length+'\n'+SET.questions.length;
+ const r=resultUrl();$('scoreText').textContent='Score: '+r.score+' / '+SET.questions.length+' • Attempt '+r.attempt+'\nالنتيجة: '+r.score+' من '+SET.questions.length+' • المحاولة '+r.attempt;
  const pct=Math.round((r.score/SET.questions.length)*100);
  const encouragement=[
   {min:0,emoji:'🌱',title:'بداية جديدة… وأنت قدّها!',message:'مش مهم إنك غلطت؛ المهم إنك عرفت إن عندك حاجات تتعلمها. راجع التصحيح، وخلّي المحاولة الجاية أقوى!',foot:'كل خبير بدأ من أول خطوة. كمّل، إحنا بنكبر بالتعلّم.'},
@@ -311,15 +313,36 @@ function finish(){
  const tier=Math.max(0,Math.min(5,r.score));
  if(LANGUAGE==='en'){[encouragement.title,encouragement.message,encouragement.foot]=encouragementEN[tier];}
  else if(LANGUAGE==='ar'){[encouragement.title,encouragement.message,encouragement.foot]=encouragementAR[tier];}
- else if(LANGUAGE==='bilingual'){const en=encouragementEN[tier],ar=encouragementAR[tier];[encouragement.title,encouragement.message,encouragement.foot]=[en[0]+' | '+ar[0],en[1]+' | '+ar[1],en[2]+' | '+ar[2]];}
- $('resultEmoji').textContent=encouragement.emoji;$('resultTitle').textContent=encouragement.title;$('resultMessage').textContent=encouragement.message;$('resultFootnote').textContent=LANGUAGE==='en'?'Keep going: every attempt can teach you something new.':LANGUAGE==='ar'?encouragement.foot:encouragement.foot+' | Keep going: every attempt can teach you something new.';$('resultScoreline').textContent=t('score')+': '+r.score+' / '+SET.questions.length+' • '+pct+'%';$('resultMeterFill').style.width=pct+'%';
+ else if(LANGUAGE==='bilingual'){const en=encouragementEN[tier],ar=encouragementAR[tier];[encouragement.title,encouragement.message,encouragement.foot]=[en[0]+'\n'+ar[0],en[1]+'\n'+ar[1],en[2]+'\n'+ar[2]];}
+ $('resultEmoji').textContent=encouragement.emoji;$('resultTitle').textContent=encouragement.title;$('resultMessage').textContent=encouragement.message;$('resultFootnote').textContent=encouragement.foot;$('resultScoreline').textContent='Score: '+r.score+' / '+SET.questions.length+' • '+pct+'%\nالنتيجة: '+r.score+' من '+SET.questions.length+' • '+pct+'%';$('resultMeterFill').style.width=pct+'%';
  if(currentAttempt>=2)$('retryBtn').classList.add('hidden');else $('retryBtn').classList.remove('hidden');
  $('resultNote').textContent=t('exportNote');
  $('shareBtn').textContent=t('send');$('resultCard').querySelector('.result-kicker').textContent=t('resultKicker');
  $('shareBtn').onclick=()=>{
    const name=STUDENT_NAME||'طالب';
-   const message=(LANGUAGE==='en'?'Reading practice result 📘\nStudent: ':LANGUAGE==='ar'?'نتيجة تدريب القراءة 📘\nالطالب: ':'Reading practice result / نتيجة تدريب القراءة 📘\nStudent / الطالب: ')+name+'\n'+(LANGUAGE==='en'?'Set: ':LANGUAGE==='ar'?'التدريب: ':'Set / التدريب: ')+SET_ID+'\n'+(LANGUAGE==='en'?'Score: ':LANGUAGE==='ar'?'النتيجة: ':'Score / النتيجة: ')+r.score+'/'+SET.questions.length+'\n'+(LANGUAGE==='en'?'Attempt: ':LANGUAGE==='ar'?'المحاولة: ':'Attempt / المحاولة: ')+r.attempt+'\n\n'+(LANGUAGE==='en'?'Result link for teacher: ':LANGUAGE==='ar'?'رابط النتيجة للمعلم: ':'Teacher result link / رابط النتيجة للمعلم: ')+r.url;
-   const waUrl='https://wa.me/?text='+encodeURIComponent(message);
+   const message=[
+      'REMEDIAL PRACTICE RESULT 📘',
+      'نتيجة التدريب العلاجي 📘',
+      '',
+      'Student: '+name,
+      'الطالب: '+name,
+      '',
+      'Skill: '+(SKILL_LABELS[SKILL_TYPE]?.en||'Reading'),
+      'المهارة: '+(SKILL_LABELS[SKILL_TYPE]?.ar||'القراءة'),
+      '',
+      'Practice set: '+SET_ID,
+      'مجموعة التدريب: '+SET_ID,
+      '',
+      'Score: '+r.score+' / '+SET.questions.length,
+      'النتيجة: '+r.score+' من '+SET.questions.length,
+      '',
+      'Attempt: '+r.attempt,
+      'المحاولة: '+r.attempt,
+      '',
+      'Teacher-only result link (teacher sign-in and roster validation required):',
+      'رابط النتيجة للمعلم فقط (يتطلب تسجيل الدخول والتحقق من سجل الطلاب):',
+      r.url
+    ].join('\n');const waUrl='https://wa.me/?text='+encodeURIComponent(message);
    window.location.href=waUrl;
  };
  $('retryBtn').onclick=()=>{
@@ -332,7 +355,7 @@ function finish(){
    if(currentAttempt>=2){$('retryModal').classList.add('hidden');$('retryBtn').classList.add('hidden');return;}
    currentAttempt=2;
    $('retryModal').classList.add('hidden');
-   $('studentLine').textContent=(LANGUAGE==='en'?(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟':'Welcome 🌟')+' • Reading practice':LANGUAGE==='ar'?(STUDENT_NAME?'أهلًا يا '+STUDENT_NAME+' 🌟':'أهلًا بك 🌟')+' • تدريب القراءة':(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟 / أهلًا يا '+STUDENT_NAME+' 🌟':'Welcome 🌟 / أهلًا بك 🌟')+' • Reading practice / تدريب القراءة');
+   $('studentLine').textContent=(LANGUAGE==='en'?(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟':'Welcome 🌟')+' • Reading practice':LANGUAGE==='ar'?(STUDENT_NAME?'أهلًا يا '+STUDENT_NAME+' 🌟':'أهلًا بك 🌟')+' • تدريب القراءة':(STUDENT_NAME?'Welcome, '+STUDENT_NAME+' 🌟\nأهلًا يا '+STUDENT_NAME+' 🌟':'Welcome 🌟\nأهلًا بك 🌟')+' • Reading practice\nتدريب القراءة');
    idx=0;selected=null;checked=false;answers=[];wrong=[];
    $('resultCard').classList.add('hidden');$('passageCard').classList.remove('hidden');$('quizCard').classList.remove('hidden');render();
  };
