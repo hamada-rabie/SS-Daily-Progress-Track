@@ -41,13 +41,13 @@ test('all remediation banks contain five questions and match dashboard grading k
   const practice = readFileSync('practice.html', 'utf8');
   const dashboard = readFileSync('english_dashboard-dynamic.html', 'utf8');
   const rules = readFileSync('firestore.rules', 'utf8');
-  const bankMatch = practice.match(/const BANK=(\\{[\\s\\S]*?\\n\\});\\nconst params/);
-  const allowedMatch = dashboard.match(/const allowedSets=Object\\.freeze\\((\\{[^;]+\\})\\);/);
+  const bankMatch = practice.match(/const BANK=(\{[\s\S]*?\n\});\nconst params/);
+  const allowedMatch = dashboard.match(/const allowedSets=Object\.freeze\((\{[^;]+\})\);/);
   assert.ok(bankMatch, 'Practice question bank must be present');
   assert.ok(allowedMatch, 'Dashboard answer-key map must be present');
   const bank = vm.runInNewContext('(' + bankMatch[1] + ')');
   const allowed = vm.runInNewContext('(' + allowedMatch[1] + ')');
-  const ruleSetMatch = rules.match(/request\\.resource\\.data\\.setId in \\[([^\\]]+)\\]/);
+  const ruleSetMatch = rules.match(/request\.resource\.data\.setId in \[([^\]]+)\]/);
   assert.ok(ruleSetMatch, 'Firestore rules must whitelist practice sets');
   const ruleSets = ruleSetMatch[1].match(/'[^']+'/g).map(value => value.slice(1, -1));
   assert.deepEqual(Object.keys(bank).sort(), Object.keys(allowed).sort(), 'Every practice bank must have a dashboard answer key');
