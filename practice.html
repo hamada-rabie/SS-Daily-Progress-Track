@@ -15,9 +15,9 @@
 </head>
 <body><main class="shell">
 <section class="card">
-<span class="pill">✦ Reading Quest | رحلة القراءة</span>
-<h1>Small steps. Stronger reading. | خطوة صغيرة… قراءة أقوى</h1>
-<p class="muted">اقرأ بهدوء، واختَر إجابتك، وتعلّم من التصحيح بعد كل سؤال. الهدف إنك تفهم أكتر وتتحسن خطوة بخطوة، مش الدرجة وبس.</p>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span class="pill" id="brandLine">✦ Reading Quest | رحلة القراءة</span><label class="small muted" id="languageModeLabel" for="languageMode">Language / اللغة <select id="languageMode" aria-label="Language mode" style="border:1px solid #c9d8d3;border-radius:9px;padding:6px;background:white;color:#18332f"><option value="bilingual">Bilingual / ثنائي اللغة</option><option value="en">English</option><option value="ar">العربية</option></select></label></div>
+<h1 id="heroTitle">Small steps. Stronger reading. | خطوة صغيرة… قراءة أقوى</h1>
+<p id="heroIntro" class="muted">اقرأ بهدوء، واختَر إجابتك، وتعلّم من التصحيح بعد كل سؤال. الهدف إنك تفهم أكتر وتتحسن خطوة بخطوة، مش الدرجة وبس.</p>
 <p id="studentLine" class="small muted"></p>
 <div class="bar" aria-label="Progress"><span id="progress"></span></div>
 <p id="progressText" class="small muted">Loading…</p>
@@ -36,7 +36,7 @@
 <p id="shareStatus" class="small muted" role="status" aria-live="polite"></p>
 </section>
 <section id="errorCard" class="card hidden"><p class="error" id="errorText"></p></section>
-<div id="retryModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="retryTitle"><div class="modal"><div class="modal-icon" aria-hidden="true">✦</div><h2 id="retryTitle">فرصة جديدة للتعلّم</h2><p>إعادة التدريب فرصة تفهم أخطاءك وتتعلم منها. سيظهر للمعلم أنها محاولة تدريب جديدة؛ والأهم هو تقدمك وفهمك، مش الدرجة وحدها.</p><div class="actions"><button id="retryCancel" class="secondary" type="button">مش دلوقتي</button><button id="retryConfirm" class="primary" type="button">يلا نتعلم من جديد</button></div></div></div>
+<div id="retryModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="retryTitle"><div class="modal"><div class="modal-icon" aria-hidden="true">✦</div><h2 id="retryTitle">فرصة جديدة للتعلّم</h2><p id="retryCopy">A new attempt helps you learn from mistakes. Your teacher can see it and help you improve.</p><div class="actions"><button id="retryCancel" class="secondary" type="button">مش دلوقتي</button><button id="retryConfirm" class="primary" type="button">يلا نتعلم من جديد</button></div></div></div>
 </main>
 <script>
 (function(){
@@ -66,6 +66,24 @@ const BANK={
  }
 };
 const params=new URLSearchParams(location.search);
+const LANGUAGE=['en','ar','bilingual'].includes(params.get('lang'))?params.get('lang'):'bilingual';
+const UI={
+en:{brand:'✦ Reading Quest',hero:'Small steps. Stronger reading.',intro:'Read carefully, choose an answer, and learn from the feedback after each question. Understanding matters more than the score.',language:'Language',progress:'Progress',check:'Check answer',next:'Next',seeResult:'See result',completed:'Completed',retryTitle:'Another chance to learn',retryText:'A new attempt is a chance to understand your mistakes. Your teacher can see the new attempt and help you improve.',retryCancel:'Not now',retryConfirm:'Learn again',score:'Your score',correct:'Correct!',notQuite:'Not quite.',selectAnswer:'Please select an answer first.',resultKicker:'YOUR READING JOURNEY',send:'Send result to teacher via WhatsApp',retry:'Try again',exportNote:'Share your result with your teacher so they can support your next step.'},
+ar:{brand:'✦ رحلة القراءة',hero:'خطوات صغيرة… وقراءة أقوى',intro:'اقرأ بعناية، واختر إجابة، وتعلّم من التصحيح بعد كل سؤال. الفهم أهم من الدرجة وحدها.',language:'اللغة',progress:'التقدم',check:'تحقق من الإجابة',next:'التالي',seeResult:'عرض النتيجة',completed:'اكتمل التدريب',retryTitle:'فرصة جديدة للتعلّم',retryText:'المحاولة الجديدة فرصة لفهم الأخطاء والتعلّم منها. يستطيع المعلم رؤية المحاولة الجديدة ومساعدتك على التحسن.',retryCancel:'ليس الآن',retryConfirm:'أتعلم من جديد',score:'نتيجتك',correct:'إجابة صحيحة!',notQuite:'ليست صحيحة.',selectAnswer:'اختر إجابة أولًا.',resultKicker:'رحلتك مع القراءة',send:'إرسال النتيجة للمعلم عبر واتساب',retry:'إعادة التدريب',exportNote:'شارك نتيجتك مع المعلم ليساعدك في الخطوة التالية.'},
+bilingual:{brand:'✦ Reading Quest | رحلة القراءة',hero:'Small steps. Stronger reading. | خطوات صغيرة… وقراءة أقوى',intro:'Read carefully and learn from each answer. | اقرأ بعناية وتعلّم من كل إجابة؛ فالفهم أهم من الدرجة وحدها.',language:'Language / اللغة',progress:'Progress / التقدم',check:'Check answer / تحقق من الإجابة',next:'Next / التالي',seeResult:'See result / عرض النتيجة',completed:'Completed / اكتمل التدريب',retryTitle:'Another chance to learn | فرصة جديدة للتعلّم',retryText:'A new attempt helps you learn from mistakes. Your teacher can see it and help you improve. | المحاولة الجديدة فرصة للتعلّم من الأخطاء، وسيتمكن المعلم من رؤيتها ومساعدتك على التحسن.',retryCancel:'Not now / ليس الآن',retryConfirm:'Learn again / أتعلم من جديد',score:'Your score / نتيجتك',correct:'Correct! / إجابة صحيحة!',notQuite:'Not quite. / ليست صحيحة.',selectAnswer:'Please select an answer first. / اختر إجابة أولًا.',resultKicker:'YOUR READING JOURNEY | رحلتك مع القراءة',send:'Send result to teacher via WhatsApp / إرسال النتيجة للمعلم عبر واتساب',retry:'Try again / إعادة التدريب',exportNote:'Share your result with your teacher so they can support your next step. | شارك نتيجتك مع المعلم ليساعدك في الخطوة التالية.'}
+};
+function t(key){return UI[LANGUAGE][key]||UI.bilingual[key]||key;}
+function applyLanguage(){
+ document.documentElement.lang=LANGUAGE==='ar'?'ar':'en';
+ document.documentElement.dir=LANGUAGE==='ar'?'rtl':'ltr';
+ document.body.style.direction=LANGUAGE==='ar'?'rtl':'ltr';
+ const set=(id,key)=>{const n=document.getElementById(id);if(n)n.textContent=t(key);};
+ set('brandLine','brand');set('heroTitle','hero');set('heroIntro','intro');
+ set('languageModeLabel','language');set('retryTitle','retryTitle');set('retryCopy','retryText');
+ set('retryCancel','retryCancel');set('retryConfirm','retryConfirm');set('checkBtn','check');set('shareBtn','send');set('retryBtn','retry');
+ const select=document.getElementById('languageMode');if(select)select.value=LANGUAGE;
+}
+
 const SID=(params.get('sid')||'').trim();
 const STUDENT_NAME=(params.get('sname')||'').trim().slice(0,100);
 const SET_ID=params.get('set')||'R2-S01';
@@ -75,6 +93,8 @@ let idx=0,selected=null,checked=false,answers=[],wrong=[];
 const $=id=>document.getElementById(id);
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
 function showError(msg){$('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('errorCard').classList.remove('hidden');$('errorText').textContent=msg;}
+applyLanguage();
+document.getElementById('languageMode').addEventListener('change',event=>{const next=new URL(location.href);next.searchParams.set('lang',event.target.value);location.href=next.href;});
 if(!SID||!/^\d{1,16}$/.test(SID)){showError('رابط التدريب غير مكتمل أو رقم الطالب غير صالح. اطلب من المعلم إنشاء رابط جديد.');return;}
 if(!SET){showError('مجموعة التدريب غير معروفة. اطلب من المعلم إنشاء رابط صحيح.');return;}
 const ATTEMPT_KEY='ss_practice_'+SID+'_'+SET_ID+'_attempt';
@@ -91,17 +111,17 @@ $('studentLine').textContent=(STUDENT_NAME ? 'أهلًا يا '+STUDENT_NAME+' �
 $('passageTitle').textContent=SET.title;$('passageText').textContent=SET.passage;
 function render(){
  const q=SET.questions[idx];selected=null;checked=false;
- $('questionNumber').textContent='Question '+(idx+1)+' / '+SET.questions.length;
+ $('questionNumber').textContent=(LANGUAGE==='ar'?'السؤال ':LANGUAGE==='en'?'Question ':'Question / السؤال ')+(idx+1)+' / '+SET.questions.length;
  $('questionText').textContent=q.q;$('options').replaceChildren();
  q.o.forEach((label,i)=>{const b=el('button','opt');b.type='button';b.setAttribute('aria-pressed','false');b.append(el('span','pill',String.fromCharCode(65+i)));b.append(el('span','',label));b.addEventListener('click',()=>{if(checked)return;selected=i;[...$('options').children].forEach((x,j)=>x.setAttribute('aria-pressed',String(j===i)));});$('options').append(b);});
- $('feedback').classList.add('hidden');$('feedback').textContent='';$('checkBtn').classList.remove('hidden');$('checkBtn').disabled=false;$('nextBtn').classList.add('hidden');
- $('progress').style.width=(idx/SET.questions.length*100)+'%';$('progressText').textContent='Progress: '+idx+' of '+SET.questions.length;
+ $('feedback').classList.add('hidden');$('feedback').textContent='';$('checkBtn').classList.remove('hidden');$('checkBtn').disabled=false;$('checkBtn').textContent=t('check');$('nextBtn').classList.add('hidden');
+ $('progress').style.width=(idx/SET.questions.length*100)+'%';$('progressText').textContent=t('progress')+': '+idx+' / '+SET.questions.length;
 }
 function check(){
- if(selected===null){$('feedback').textContent='اختر إجابة أولًا. / Please select an answer first.';$('feedback').classList.remove('hidden');return;}
+ if(selected===null){$('feedback').textContent=t('selectAnswer');$('feedback').classList.remove('hidden');return;}
  const q=SET.questions[idx];checked=true;answers.push(selected);const correct=selected===q.a;if(!correct)wrong.push(idx+1);
  [...$('options').children].forEach((b,i)=>{b.disabled=true;if(i===q.a)b.classList.add('correct');if(i===selected&&!correct)b.classList.add('wrong');});
- $('feedback').textContent=(correct?'Correct! / إجابة صحيحة. ':'Not quite. / ليست صحيحة. ')+q.ex;$('feedback').classList.remove('hidden');$('checkBtn').classList.add('hidden');$('nextBtn').classList.remove('hidden');$('nextBtn').textContent=idx===SET.questions.length-1?'See result | عرض النتيجة':'Next | التالي';
+ $('feedback').textContent=(correct?t('correct')+' ':t('notQuite')+' ')+q.ex;$('feedback').classList.remove('hidden');$('checkBtn').classList.add('hidden');$('nextBtn').classList.remove('hidden');$('nextBtn').textContent=idx===SET.questions.length-1?t('seeResult'):t('next');
 }
 function resultUrl(){
  const attempt=currentAttempt;
@@ -111,7 +131,7 @@ function resultUrl(){
  return {url:url.href,score,attempt};
 }
 function finish(){
- $('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('resultCard').classList.remove('hidden');$('progress').style.width='100%';$('progressText').textContent='Completed: '+SET.questions.length+' of '+SET.questions.length;
+ $('quizCard').classList.add('hidden');$('passageCard').classList.add('hidden');$('resultCard').classList.remove('hidden');$('progress').style.width='100%';$('progressText').textContent=t('completed')+': '+SET.questions.length+' / '+SET.questions.length;
  const r=resultUrl();$('scoreText').textContent='Score: '+r.score+' / '+SET.questions.length+' • Attempt '+r.attempt+' | النتيجة: '+r.score+' من '+SET.questions.length;
  const pct=Math.round((r.score/SET.questions.length)*100);
  const encouragement=[
@@ -122,12 +142,13 @@ function finish(){
   {min:4,emoji:'🏆',title:'ممتاز! خطوة من القمة!',message:'أربع إجابات صحيحة! واضح إنك بتفهم وبتتقدم. راجع السؤال المتبقي عشان تعرف السبب، وحوّل الغلطة لخبرة.',foot:'الطالب الشاطر مش اللي ما يغلطش؛ اللي يتعلم من غلطه.'},
   {min:5,emoji:'🎉',title:'يا سلام! إنجاز رائع!',message:'درجة كاملة! تستحق تفرح بمجهودك وتركيزك. احتفظ بنفس حب التعلّم، وخلي كل نص جديد فرصة لتحدّي نفسك.',foot:'افرح بإنجازك، وافتكر إن الاستمرار هو سرّ التميّز.'}
  ].find(x=>r.score>=x.min);
- $('resultEmoji').textContent=encouragement.emoji;$('resultTitle').textContent=encouragement.title;$('resultMessage').textContent=encouragement.message;$('resultFootnote').textContent=encouragement.foot;$('resultScoreline').textContent='نتيجتك '+r.score+' من '+SET.questions.length+' • '+pct+'%';$('resultMeterFill').style.width=pct+'%';
+ $('resultEmoji').textContent=encouragement.emoji;$('resultTitle').textContent=encouragement.title;$('resultMessage').textContent=encouragement.message;$('resultFootnote').textContent=LANGUAGE==='en'?'Keep going: every attempt can teach you something new.':LANGUAGE==='ar'?encouragement.foot:encouragement.foot+' | Keep going: every attempt can teach you something new.';$('resultScoreline').textContent=t('score')+': '+r.score+' / '+SET.questions.length+' • '+pct+'%';$('resultMeterFill').style.width=pct+'%';
  if(currentAttempt>=2)$('retryBtn').classList.add('hidden');else $('retryBtn').classList.remove('hidden');
- $('resultNote').textContent='شكرًا لمحاولتك! تعلّمك من الأخطاء هو أهم خطوة نحو التقدم. أرسل نتيجتك للمعلم حتى يساعدك في الخطوة التالية.';
+ $('resultNote').textContent=t('exportNote');
+ $('shareBtn').textContent=t('send');$('resultCard').querySelector('.result-kicker').textContent=t('resultKicker');
  $('shareBtn').onclick=()=>{
    const name=STUDENT_NAME||'طالب';
-   const message='نتيجة تدريب القراءة 📘\nالطالب: '+name+'\nالتدريب: '+SET_ID+'\nالنتيجة: '+r.score+'/'+SET.questions.length+'\nالمحاولة: '+r.attempt+'\n\nرابط النتيجة للمعلم: '+r.url;
+   const message=(LANGUAGE==='en'?'Reading practice result 📘\nStudent: ':LANGUAGE==='ar'?'نتيجة تدريب القراءة 📘\nالطالب: ':'Reading practice result / نتيجة تدريب القراءة 📘\nStudent / الطالب: ')+name+'\n'+(LANGUAGE==='en'?'Set: ':LANGUAGE==='ar'?'التدريب: ':'Set / التدريب: ')+SET_ID+'\n'+(LANGUAGE==='en'?'Score: ':LANGUAGE==='ar'?'النتيجة: ':'Score / النتيجة: ')+r.score+'/'+SET.questions.length+'\n'+(LANGUAGE==='en'?'Attempt: ':LANGUAGE==='ar'?'المحاولة: ':'Attempt / المحاولة: ')+r.attempt+'\n\n'+(LANGUAGE==='en'?'Result link for teacher: ':LANGUAGE==='ar'?'رابط النتيجة للمعلم: ':'Teacher result link / رابط النتيجة للمعلم: ')+r.url;
    const waUrl='https://wa.me/?text='+encodeURIComponent(message);
    window.location.href=waUrl;
  };
