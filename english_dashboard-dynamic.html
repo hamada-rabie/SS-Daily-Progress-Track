@@ -4651,6 +4651,7 @@ function renderS360Card(){
   const beh = behaviourLabel(s.behaviourLevel);
   const strengths = getStudentStrengths(s);
   const focuses = getStudentFocusAreas(s);
+  const remedialSkills = ['reading','writing','listening','speaking'].map(key=>({key,value:skillPercentage(s,key)})).filter(item=>item.value!==null && item.value<50);
   const moment = getStudentProgressMoment(s);
   const bestPeriod = getStudentBestPeriod(s);
 
@@ -4714,6 +4715,17 @@ function renderS360Card(){
           <span class="text-[10px] text-gray-400"> · ${assessedSkillCount(s)} of 4 skills assessed / ${assessedSkillCount(s)} من 4 مهارات تم تقييمها</span>
         </div>
       </div>
+
+      <!-- Remedial support status: derived only from assessed skill data -->
+      <section class="rounded-xl p-4" style="border:1px solid var(--coral);background:color-mix(in srgb,var(--coral) 7%,var(--card));" aria-live="polite">
+        <div class="flex items-start justify-between gap-2 flex-wrap">
+          <div><p class="text-sm font-extrabold" style="color:var(--teal-dark);"><span class="en">Remedial Support Status</span><span class="ar">حالة الدعم العلاجي</span></p>
+          <p class="text-xs text-gray-600 mt-1"><span class="en">Assessed skills below 50% are flagged for teacher review.</span><span class="ar">تُحدَّد المهارات المُقيّمة الأقل من ٥٠٪ لمراجعة المعلم.</span></p></div>
+          <span class="px-3 py-1 rounded-full text-xs font-extrabold" style="background:${remedialSkills.length?'#FCE7E3':'#E7F6EB'};color:${remedialSkills.length?'#9F352A':'#267346'};">${remedialSkills.length?'Plan recommended / يُوصى بخطة':'No low assessed skills / لا توجد مهارات منخفضة مُقيّمة'}</span>
+        </div>
+        ${remedialSkills.length ? '<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">'+remedialSkills.map(item=>'<div class="rounded-lg p-3 flex items-center justify-between gap-2" style="background:var(--card);border:1px solid var(--line);"><span class="text-sm font-bold">'+escapeHtml(QP_SKILL_LABELS[item.key].en)+' / '+escapeHtml(QP_SKILL_LABELS[item.key].ar)+'</span><strong style="color:var(--coral);">'+item.value+'%</strong></div>').join('')+'</div>' : '<p class="text-xs text-gray-500 mt-3"><span class="en">This is not proof that every skill is mastered; it means no assessed skill is currently below the review threshold.</span><span class="ar">لا يعني ذلك إتقان جميع المهارات؛ بل لا توجد مهارة مُقيّمة حاليًا دون حد المراجعة.</span></p>'}
+        ${remedialSkills.some(item=>item.key==='reading') ? '<div class="mt-3"><span class="text-xs font-bold" style="color:var(--teal-dark);">Reading practice is available below / تدريب القراءة متاح أدناه</span></div>' : ''}
+      </section>
 
       <!-- Classroom & Personal Performance -->
       <div>
