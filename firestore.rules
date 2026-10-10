@@ -135,7 +135,7 @@ service cloud.firestore {
             + (data.answers[2] == 2 ? 1 : 0)
             + (data.answers[3] == 3 ? 1 : 0)
             + (data.answers[4] == 1 ? 1 : 0))
- || (
+        ) || (
           data.setId == 'W2-VW01'
           && data.score == ((data.answers[0] == 0 ? 1 : 0)
             + (data.answers[1] == 1 ? 1 : 0)
