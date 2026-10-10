@@ -53,7 +53,7 @@ test('all remediation banks contain five questions and match dashboard grading k
   assert.deepEqual(Object.keys(bank).sort(), Object.keys(allowed).sort(), 'Every practice bank must have a dashboard answer key');
   for (const [setId, set] of Object.entries(bank)) {
     assert.equal(set.questions.length, 5, setId + ' must contain five questions');
-    const bankKey = set.questions.map(question => question.a);
+    const bankKey = JSON.parse(JSON.stringify(set.questions.map(question => question.a)));
     const dashboardKey = JSON.parse(JSON.stringify(allowed[setId]));
     assert.deepEqual(dashboardKey, bankKey, setId + ' answer key must match the practice bank');
     assert.ok(ruleSets.includes(setId), setId + ' must be allowed by Firestore rules');
