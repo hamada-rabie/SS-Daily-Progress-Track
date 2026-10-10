@@ -39,33 +39,33 @@ async function finishWithScore(lang, score, sid = '1760000000001') {
   return { text, wa: hits[0] ? decodeURIComponent(hits[0].split('?text=')[1]) : '' };
 }
 
-test('result messages follow the selected language for every score 0-5', async (t) => {
-  for (const lang of ['ar', 'en', 'bilingual']) {
-    await t.test(lang, async () => {
-      for (let score = 0; score <= 5; score++) {
-        const { text } = await finishWithScore(lang, score);
-        if (lang === 'ar') {
-          assert.doesNotMatch(text, /[A-Za-z]{2,}/, 'Arabic mode must not contain English words (score ' + score + '): ' + text);
-          assert.doesNotMatch(text, DIALECT, 'Arabic mode must be Modern Standard Arabic (score ' + score + '): ' + text);
-        } else if (lang === 'en') {
-          assert.doesNotMatch(text, /[؀-ۿ]/, 'English mode must not contain Arabic (score ' + score + '): ' + text);
-        } else {
-          assert.match(text, /[A-Za-z]{2,}/); assert.match(text, /[؀-ۿ]/);
-          assert.doesNotMatch(text, DIALECT, 'Arabic part must be Modern Standard Arabic (score ' + score + '): ' + text);
-        }
+test('result messages always show English above Arabic for every score 0-5', async (t) => {
+  for (let score = 0; score <= 5; score++) {
+    await t.test('score ' + score, async () => {
+      const { text } = await finishWithScore('bilingual', score);
+      assert.match(text, /[A-Za-z]{2,}/, 'must include English');
+      assert.match(text, /[؀-ۿ]/, 'must include Arabic');
+      assert.doesNotMatch(text, DIALECT, 'Arabic text should remain formal Arabic (score ' + score + '): ' + text);
+      for (const line of text.split('\\n')) {
+        assert.ok(!(/[A-Za-z]{2,}/.test(line) && /[؀-ۿ]/.test(line)), 'English and Arabic must be on separate lines: ' + line);
       }
     });
   }
 });
 
-test('WhatsApp text: real line breaks, student name not id, result link kept', async () => {
+test('WhatsApp text has separate bilingual lines and no result URL or student id', async () => {
   for (const lang of ['ar', 'en', 'bilingual']) {
     const { wa } = await finishWithScore(lang, 3);
     assert.ok(wa, 'share must open wa.me for ' + lang);
-    assert.ok(!wa.includes('\\n'), 'no literal backslash-n');
-    assert.ok(wa.split('\n').length >= 5, 'multi-line message');
+    assert.ok(!wa.includes('\\\\n'), 'no literal backslash-n');
+    assert.ok(wa.split('\\n').length >= 8, 'multi-line message');
     assert.ok(wa.includes('Test Student'));
-    assert.ok(!wa.split('http')[0].includes('1760000000001'), 'student id must not appear in the readable part');
-    assert.match(wa, /english_dashboard-dynamic\.html\?pr=R2-S01\.1760000000001\.1\.3\.5\./, 'result link must keep the validated payload');
+    assert.ok(!wa.includes('1760000000001'), 'student id must not appear in WhatsApp text');
+    assert.doesNotMatch(wa, /https?:\\/\\/|\\bpr=/i, 'result URL/payload must not appear in WhatsApp');
+    assert.match(wa, /Questions to review:/);
+    assert.match(wa, /الأسئلة التي تحتاج إلى مراجعة:/);
+    for (const line of wa.split('\\n')) {
+      assert.ok(!(/[A-Za-z]{2,}/.test(line) && /[؀-ۿ]/.test(line)), 'English and Arabic must be on separate WhatsApp lines: ' + line);
+    }
   }
-});
+});});
