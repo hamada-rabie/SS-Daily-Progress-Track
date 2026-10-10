@@ -46,7 +46,7 @@ test('result messages always show English above Arabic for every score 0-5', asy
       assert.match(text, /[A-Za-z]{2,}/, 'must include English');
       assert.match(text, /[؀-ۿ]/, 'must include Arabic');
       assert.doesNotMatch(text, DIALECT, 'Arabic text should remain formal Arabic (score ' + score + '): ' + text);
-      for (const line of text.split('\\n')) {
+      for (const line of text.split('\n')) {
         assert.ok(!(/[A-Za-z]{2,}/.test(line) && /[؀-ۿ]/.test(line)), 'English and Arabic must be on separate lines: ' + line);
       }
     });
@@ -57,15 +57,15 @@ test('WhatsApp text has separate bilingual lines and no result URL or student id
   for (const lang of ['ar', 'en', 'bilingual']) {
     const { wa } = await finishWithScore(lang, 3);
     assert.ok(wa, 'share must open wa.me for ' + lang);
-    assert.ok(!wa.includes('\\\\n'), 'no literal backslash-n');
-    assert.ok(wa.split('\\n').length >= 8, 'multi-line message');
+    assert.ok(!wa.includes('\\n'), 'no literal backslash-n');
+    assert.ok(wa.split('\n').length >= 8, 'multi-line message');
     assert.ok(wa.includes('Test Student'));
     assert.ok(!wa.includes('1760000000001'), 'student id must not appear in WhatsApp text');
-    assert.doesNotMatch(wa, /https?:\\/\\/|\\bpr=/i, 'result URL/payload must not appear in WhatsApp');
+    assert.doesNotMatch(wa, /https?:\/\/|\bpr=/i, 'result URL/payload must not appear in WhatsApp');
     assert.match(wa, /Questions to review:/);
     assert.match(wa, /الأسئلة التي تحتاج إلى مراجعة:/);
-    for (const line of wa.split('\\n')) {
+    for (const line of wa.split('\n')) {
       assert.ok(!(/[A-Za-z]{2,}/.test(line) && /[؀-ۿ]/.test(line)), 'English and Arabic must be on separate WhatsApp lines: ' + line);
     }
   }
-});});
+});
